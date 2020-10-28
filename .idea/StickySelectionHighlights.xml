@@ -8,6 +8,11 @@
             <PaintGroupHighlightMap />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/controller/UserController.java">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/domain/Article.java">
           <value>
             <PaintGroupHighlightMap />
@@ -29,6 +34,21 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/domain/User.java">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/mapper/UserMapper.java">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/service/UserDetailServiceImpl.java">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/service/UserService.java">
           <value>
             <PaintGroupHighlightMap />
           </value>
