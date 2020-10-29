@@ -33,6 +33,11 @@
             <PaintGroupHighlightMap />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/controller/FeedbackController.java">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/controller/UserController.java">
           <value>
             <PaintGroupHighlightMap />
@@ -63,12 +68,22 @@
             <PaintGroupHighlightMap />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/mapper/FeedbackMapper.java">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/mapper/UserMapper.java">
           <value>
             <PaintGroupHighlightMap />
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/security/SecurityConfig.java">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/security/SimpleAuthenticationFailureHandler.java">
           <value>
             <PaintGroupHighlightMap />
           </value>
@@ -89,6 +104,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/security/SimpleUserDetailsService.java">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/service/FeedbackService.java">
           <value>
             <PaintGroupHighlightMap />
           </value>
