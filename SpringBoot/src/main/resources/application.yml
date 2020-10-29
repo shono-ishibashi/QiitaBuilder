@@ -10,4 +10,3 @@ server:
   servlet:
     context-path: /qiita_builder
 
-logging.level.org.springframework: DEBUG
