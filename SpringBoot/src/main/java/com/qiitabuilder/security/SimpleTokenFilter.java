@@ -70,7 +70,8 @@ public class SimpleTokenFilter extends GenericFilterBean {
     String uid = jwt.getSubject();
     userMapper.findByUid(uid).ifPresent(user -> {
       SimpleLoginUser simpleLoginUser = new SimpleLoginUser(user);
-      SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(simpleLoginUser, null, simpleLoginUser.getAuthorities()));
+      SecurityContextHolder.getContext()
+              .setAuthentication(new UsernamePasswordAuthenticationToken(simpleLoginUser, null, simpleLoginUser.getAuthorities()));
     });
   }
 }
