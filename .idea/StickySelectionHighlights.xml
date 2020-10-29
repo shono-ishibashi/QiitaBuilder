@@ -33,6 +33,11 @@
             <PaintGroupHighlightMap />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/controller/ArticleController.java">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/controller/FeedbackController.java">
           <value>
             <PaintGroupHighlightMap />
