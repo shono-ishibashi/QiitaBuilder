@@ -1,0 +1,27 @@
+package com.qiitabuilder.controller;
+
+import com.qiitabuilder.domain.Article;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping(value = "/my-article")
+public class MyArticleController {
+
+    /////////////////////////////
+    //// GET
+    /////////////////////////////
+
+    /////////////////////////////
+    //// POST
+    /////////////////////////////
+
+    /////////////////////////////
+    //// PUT
+    /////////////////////////////
+
+
+    /////////////////////////////
+    //// DELETE
+    /////////////////////////////
+}
