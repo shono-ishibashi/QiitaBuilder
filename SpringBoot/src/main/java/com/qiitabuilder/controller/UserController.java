@@ -3,9 +3,9 @@ package com.qiitabuilder.controller;
 import com.qiitabuilder.domain.User;
 import com.qiitabuilder.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 
 @RestController
@@ -15,15 +15,22 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    /**
+     *
+     * userを新規登録するメソッド
+     *
+     * @param requestBody フロント側から投げられてくるリクエストボディ
+     * @return
+     */
     @RequestMapping(value = "/" , method = RequestMethod.POST)
-    public User insertUser(User user) {
-        return null;
-    }
+    public Map<String, String> insertUser(@RequestBody Map<String, String> requestBody) {
+        User user = new User();
+        user.setUid(requestBody.get("uid"));
+        user.setPassword(requestBody.get("password"));
 
-    @RequestMapping(value = "/test",method = RequestMethod.GET)
-    public String test(){
-        userService.test();
-        return "test";
+        userService.insertUser(user);
+
+        return null;
     }
 
 }
