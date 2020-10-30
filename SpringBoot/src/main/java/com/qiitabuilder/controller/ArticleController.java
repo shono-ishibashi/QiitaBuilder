@@ -23,7 +23,7 @@ public class ArticleController {
     //// POST
     /////////////////////////////
 
-    @PostMapping("")
+    @RequestMapping(value = "/", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public Article postArticle(@RequestBody Article article) {
         return null;
@@ -32,7 +32,14 @@ public class ArticleController {
     /////////////////////////////
     //// PUT
     /////////////////////////////
-    
+    @RequestMapping(value = "/" , method = RequestMethod.PUT)
+    @ResponseStatus(HttpStatus.OK)
+    public Article editArticle(@RequestBody Article article) {
+
+        System.out.println(article);
+
+        return null;
+    }
 
     /////////////////////////////
     //// DELETE
