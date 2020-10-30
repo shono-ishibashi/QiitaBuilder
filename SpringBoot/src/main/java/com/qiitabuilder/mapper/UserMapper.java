@@ -12,8 +12,12 @@ import java.util.Optional;
 @Repository
 public interface UserMapper {
     List<Map<String, String>> selectTest();
+
     Optional<User> findByUid(String uid);
+
     Optional<User> findByUserId(Integer userId);
+
     void insert(User user);
+
     User fetchUserDetails(Integer userId);
 }
