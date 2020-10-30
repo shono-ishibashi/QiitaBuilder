@@ -13,7 +13,7 @@ public class FeedbackService {
     private FeedbackMapper feedbackMapper;
 
     public Feedback postFeedback(Feedback feedback){
-        feedbackMapper.insert(feedback);
+//        feedbackMapper.insert(feedback);
         return null;
     }
 

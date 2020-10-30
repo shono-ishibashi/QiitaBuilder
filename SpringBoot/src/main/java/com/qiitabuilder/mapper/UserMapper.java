@@ -6,10 +6,14 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Mapper
 @Repository
 public interface UserMapper {
     List<Map<String, String>> selectTest();
+    Optional<User> findByUid(String uid);
+    Optional<User> findByUserId(Integer userId);
+    void insert(User user);
     User fetchUserDetails(Integer userId);
 }

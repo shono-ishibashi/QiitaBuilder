@@ -11,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 public class User {
     private Integer userId;
+    private String password;
     private List<Article> postArticles;
     private String displayName;
     private String photoUrl;
