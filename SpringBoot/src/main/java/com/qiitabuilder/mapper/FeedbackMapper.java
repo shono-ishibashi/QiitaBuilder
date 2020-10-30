@@ -1,5 +1,6 @@
 package com.qiitabuilder.mapper;
 
+import com.qiitabuilder.domain.Article;
 import com.qiitabuilder.domain.Feedback;
 import com.qiitabuilder.domain.User;
 import org.apache.ibatis.annotations.Mapper;
@@ -16,4 +17,5 @@ public interface FeedbackMapper {
 //    List<User> getFBRank();
 //    List<Integer> getArticleIdByUserId(Integer userId);
 //    Integer getCount(Integer userId);
+    List<Article> getFeedbackedArticleListByUserId(Integer userId);
 }

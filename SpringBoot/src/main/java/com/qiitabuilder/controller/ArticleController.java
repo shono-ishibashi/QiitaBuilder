@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -52,6 +53,17 @@ public class ArticleController {
     /////////////////////////////
     //// DELETE
     /////////////////////////////
+
+    /**
+     * ユーザーがFBした記事の一覧を取得するメソッド
+     *
+     * @param userId　取得したいユーザーID
+     * @return　フィードバックした記事の一覧
+     */
+    @RequestMapping(value = "/feedbacked",  method = RequestMethod.GET)
+    public List<Article> getFeedbackedArticleListByUserId(Integer userId) {
+        return articleService.getFeedbackedArticleListByUserId(userId);
+    }
 
 
 
