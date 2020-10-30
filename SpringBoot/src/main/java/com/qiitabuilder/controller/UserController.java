@@ -19,14 +19,11 @@ public class UserController {
      *
      * userを新規登録するメソッド
      *
-     * @param requestBody フロント側から投げられてくるリクエストボディ
+     * @param user フロント側から投げられてくるリクエストボディ
      * @return
      */
     @RequestMapping(value = "/" , method = RequestMethod.POST)
-    public Map<String, String> insertUser(@RequestBody Map<String, String> requestBody) {
-        User user = new User();
-        user.setUid(requestBody.get("uid"));
-        user.setPassword(requestBody.get("password"));
+    public Map<String, String> insertUser(@RequestBody User user) {
 
         userService.insertUser(user);
 

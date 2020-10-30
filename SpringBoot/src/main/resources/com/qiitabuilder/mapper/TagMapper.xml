@@ -3,5 +3,12 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qiitabuilder.mapper.TagMapper">
+    <select id="findAll" resultType="com.qiitabuilder.domain.Tag">
+        SELECT
+            tag_id as tagId,
+            tag_name as tagName
+        FROM tags
+        ORDER BY tag_name
+    </select>
 
 </mapper>
