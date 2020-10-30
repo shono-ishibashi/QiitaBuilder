@@ -1,13 +1,21 @@
 package com.qiitabuilder.controller;
 
 import com.qiitabuilder.domain.Article;
+import com.qiitabuilder.mapper.TagMapper;
+import com.qiitabuilder.service.ArticleService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 
 @RestController
 @RequestMapping(value = "/article")
 public class ArticleController {
+
+    @Autowired
+    private ArticleService articleService;
 
     /////////////////////////////
     //// GET
@@ -32,16 +40,20 @@ public class ArticleController {
     /////////////////////////////
     //// PUT
     /////////////////////////////
+
+
     @RequestMapping(value = "/" , method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.OK)
     public Article editArticle(@RequestBody Article article) {
 
-        System.out.println(article);
-
-        return null;
+        return article;
     }
 
     /////////////////////////////
     //// DELETE
     /////////////////////////////
+
+
+
+
 }
