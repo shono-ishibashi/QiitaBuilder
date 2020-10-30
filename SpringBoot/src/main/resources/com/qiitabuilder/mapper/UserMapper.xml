@@ -5,7 +5,36 @@
 
 <mapper namespace="com.qiitabuilder.mapper.UserMapper">
     <select id="selectTest" resultType="map">
-        SELECT * FROM users;
+        SELECT *
+        FROM users;
+    </select>
+    <select id="fetchUserDetails" parameterType="Integer" resultType="User">
+        select u.display_name                    as displayName,
+               u.photo_url                       as photoUrl,
+               tag_cnt_table.tag_cnt             as usedTagCount,
+               tags.tag_name                     as tagName,
+               feed_cnt_table.feed_cnt           as feedbackCount,
+               art_qiita_cnt_table.art_qiita_cnt as postedArticleCount,
+               recommend_cnt_table.recommend_cnt as qiitaRecommendedAllCount
+        from qiita_builder.users as u
+                 left outer join (select tag_id, posted_user_id, count(a_t_relation.tag_id) as tag_cnt
+                                  from qiita_builder.articles_tags_relations as a_t_relation
+                                  group by a_t_relation.tag_id) as tag_cnt_table
+                                 on u.user_id = tag_cnt_table.posted_user_id
+                 left outer join qiita_builder.tags as tags on tag_cnt_table.tag_id = tags.tag_id
+                 left outer join (select user_id, count(feed.user_id) as feed_cnt
+                                  from qiita_builder.feedbacks as feed
+                                  group by feed.user_id) as feed_cnt_table
+                                 on u.user_id = feed_cnt_table.user_id
+                 left outer join (select user_id, count(art.user_id) as art_qiita_cnt
+                                  from qiita_builder.articles as art
+                                  group by art.user_id) as art_qiita_cnt_table
+                                 on u.user_id = art_qiita_cnt_table.user_id
+                 left outer join (select posted_user_id, count(recommend.posted_user_id) as recommend_cnt
+                                  from qiita_builder.qiita_recommends as recommend
+                                  group by recommend.posted_user_id) as recommend_cnt_table
+                                 on u.user_id = recommend_cnt_table.posted_user_id
+        where u.user_id = #{param1};
     </select>
 
 

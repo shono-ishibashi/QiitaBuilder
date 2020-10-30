@@ -20,4 +20,5 @@ public class User {
     private Integer feedbackCount;
     private Integer postedArticleCount;
     private Integer qiitaRecommendedAllCount;
+    private List<Tag> usedTags;
 }
