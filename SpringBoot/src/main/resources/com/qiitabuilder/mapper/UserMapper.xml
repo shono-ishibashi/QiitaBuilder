@@ -4,35 +4,29 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.qiitabuilder.mapper.UserMapper">
-    <select id="selectTest" resultType="map">
-        SELECT * FROM users;
-    </select>
-
     <select id="findByUid" resultMap="userResultMap">
-        SELECT
-            user_id as user_id,
-            uid as uid,
-            photo_url as photo_url,
-            display_name as display_name,
-            password as password
+        SELECT user_id      as user_id,
+               uid          as uid,
+               photo_url    as photo_url,
+               display_name as display_name,
+               password     as password
         FROM users
         WHERE uid = #{uid}
     </select>
 
     <select id="findByUserId" >
-        SELECT
-            user_id as user_id,
-            uid as uid,
-            photo_url as photo_url,
-            display_name as display_name,
-            password as password
+        SELECT user_id      as user_id,
+               uid          as uid,
+               photo_url    as photo_url,
+               display_name as display_name,
+               password     as password
         FROM users
         WHERE user_id = #{userId}
     </select>
 
     <insert id="insert">
-        INSERT INTO users(uid,password)
-        VALUES (#{uid},#{password})
+        INSERT INTO users(uid, password)
+        VALUES (#{uid}, #{password})
     </insert>
 
     <resultMap id="userResultMap" type="com.qiitabuilder.domain.User">

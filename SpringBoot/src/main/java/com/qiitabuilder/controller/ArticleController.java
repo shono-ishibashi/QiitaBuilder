@@ -34,6 +34,7 @@ public class ArticleController {
     @RequestMapping(value = "/", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public Article postArticle(@RequestBody Article article) {
+        articleService.saveArticle(article);
         return null;
     }
 
@@ -45,6 +46,7 @@ public class ArticleController {
     @RequestMapping(value = "/" , method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.OK)
     public Article editArticle(@RequestBody Article article) {
+        articleService.saveArticle(article);
 
         return article;
     }

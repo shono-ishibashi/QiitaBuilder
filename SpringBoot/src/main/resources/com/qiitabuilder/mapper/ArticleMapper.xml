@@ -3,5 +3,39 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qiitabuilder.mapper.ArticleMapper">
+    <insert id="insertArticle">
+        INSERT INTO articles(
+        user_id,
+        created_at,
+        updated_at,
+        title,
+        content,
+        qiita_article_id,
+        state_flag)
+        VALUES (
+        #{userId},
+        NOW(),
+        #{updatedAt},
+        #{title},
+        #{content},
+        #{qiitaArticleId},
+        #{stateFlag})
+
+        <selectKey resultType="Integer" keyProperty="articleId" order="AFTER">
+            select @@IDENTITY
+        </selectKey>
+    </insert>
+
+    <update id="updateArticle">
+        UPDATE articles
+        SET user_id          = #{userId},
+            created_at       = #{createdAt},
+            updated_at       = NOW(),
+            title            = #{title},
+            content          = #{content},
+            qiita_article_id = #{qiitaArticleId},
+            state_flag       = #{stateFlag}
+        WHERE article_id = #{articleId}
+    </update>
 
 </mapper>
