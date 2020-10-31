@@ -61,8 +61,20 @@ public class ArticleController {
      * @return　フィードバックした記事の一覧
      */
     @RequestMapping(value = "/feedbacked",  method = RequestMethod.GET)
-    public List<Article> getFeedbackedArticleListByUserId(Integer userId) {
-        return articleService.getFeedbackedArticleListByUserId(userId);
+    public List<Article> getFeedbackedArticlesByUserId(Integer userId) {
+        return articleService.getFeedbackedArticlesByUserId(userId);
+    }
+
+    /**
+     * My記事登録した記事の一覧を取得するメソッド
+     * 各記事は記事ID、タイトル、作成・更新日時、状態、各カウント、タグリスト、記事作成者のID・名前・写真URL　を持つ
+     *
+     * @param userId 取得したいユーザーID
+     * @return　My記事登録した記事の一覧
+     */
+    @RequestMapping(value = "/myArticles", method = RequestMethod.GET)
+    public List<Article> getMyArticlesByUserId(Integer userId){
+        return articleService.getMyArticlesByUserId(userId);
     }
 
 

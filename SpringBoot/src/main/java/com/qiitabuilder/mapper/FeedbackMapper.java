@@ -4,6 +4,7 @@ import com.qiitabuilder.domain.Article;
 import com.qiitabuilder.domain.Feedback;
 import com.qiitabuilder.domain.User;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,5 +18,5 @@ public interface FeedbackMapper {
 //    List<User> getFBRank();
 //    List<Integer> getArticleIdByUserId(Integer userId);
 //    Integer getCount(Integer userId);
-    List<Article> getFeedbackedArticleListByUserId(Integer userId);
+    List<Article> getFeedbackedArticlesByUserId(@Param("userId") Integer userId);
 }
