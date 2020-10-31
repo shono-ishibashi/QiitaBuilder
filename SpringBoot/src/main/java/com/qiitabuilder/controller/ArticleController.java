@@ -72,7 +72,7 @@ public class ArticleController {
      * @param userId 取得したいユーザーID
      * @return　My記事登録した記事の一覧
      */
-    @RequestMapping(value = "/myArticles", method = RequestMethod.GET)
+    @RequestMapping(value = "/my-articles", method = RequestMethod.GET)
     public List<Article> getMyArticlesByUserId(Integer userId){
         return articleService.getMyArticlesByUserId(userId);
     }
