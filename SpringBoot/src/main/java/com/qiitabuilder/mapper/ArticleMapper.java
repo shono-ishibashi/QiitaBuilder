@@ -15,6 +15,7 @@ public interface ArticleMapper {
 
     /**
      * 検索条件に一致する記事一覧を取得
+     *
      * @param searchArticleForm
      * @return
      */
@@ -27,8 +28,20 @@ public interface ArticleMapper {
      * @return
      */
     Integer getTotalPage(@Param("search") SearchArticleForm searchArticleForm);
+
     List<Integer> getPostedArticleCountRank();
+
     Integer getCountByUserId(Integer userId);
+
     Integer insertArticle(Article article);
+
     void updateArticle(Article article);
+
+    /**
+     * 記事IDを基に記事情報を取得する
+     *
+     * @param articleId
+     * @return 記事情報
+     */
+    Article load(Integer articleId);
 }

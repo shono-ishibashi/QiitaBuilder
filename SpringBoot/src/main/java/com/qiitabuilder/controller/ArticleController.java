@@ -21,29 +21,28 @@ public class ArticleController {
     @Autowired
     private ArticleService articleService;
 
+    /////////////////////////////
+    //// GET
+    /////////////////////////////
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
     public List<Article> fetchArticle(@ModelAttribute SearchArticleForm searchArticleForm) {
-        /////////////////////////////
-        //// GET
         return articleService.fetchArticle(searchArticleForm);
-        /////////////////////////////
     }
 
-
-    @RequestMapping(value = "/totalPage" ,method = RequestMethod.GET)
+    @RequestMapping(value = "/totalPage", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    public Integer totalPage(@ModelAttribute SearchArticleForm searchArticleForm){
+    public Integer totalPage(@ModelAttribute SearchArticleForm searchArticleForm) {
         System.out.println(articleService.getTotalPage(searchArticleForm));
         return articleService.getTotalPage(searchArticleForm);
     }
 
     @GetMapping("/{articleId}")
     @ResponseStatus(HttpStatus.OK)
-    public Article getArticle(@PathVariable("articleId") String articleId) {
-        return null;
+    public Article getArticle(@PathVariable("articleId") Integer articleId) {
+        return articleService.getArticle(articleId);
     }
 
     /////////////////////////////
@@ -62,7 +61,7 @@ public class ArticleController {
     /////////////////////////////
 
 
-    @RequestMapping(value = "/" , method = RequestMethod.PUT)
+    @RequestMapping(value = "/", method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.OK)
     public Article editArticle(@RequestBody Article article) {
         articleService.saveArticle(article);
@@ -77,8 +76,8 @@ public class ArticleController {
     @Autowired
     private QiitaAPIService qiitaAPIService;
 
-    @RequestMapping(value = "/test",method = RequestMethod.GET)
-    public void test(){
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    public void test() {
         qiitaAPIService.restTemplateTest();
     }
 
