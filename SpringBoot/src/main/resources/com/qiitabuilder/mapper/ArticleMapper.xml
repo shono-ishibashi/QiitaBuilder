@@ -4,4 +4,19 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qiitabuilder.mapper.ArticleMapper">
 
+    <select id="getPostedArticleCountRank" resultType="Integer">
+        SELECT user_id
+        FROM articles
+        WHERE state_flag = 1 OR state_flag = 2
+        GROUP BY user_id
+        ORDER BY count(*) DESC;
+    </select>
+
+    <select id="getCountByUserId" resultType="Integer">
+        SELECT count(*)
+        FROM articles
+        WHERE user_id = #{userId}
+          AND (state_flag = 1 OR state_flag = 2);
+    </select>
+
 </mapper>
