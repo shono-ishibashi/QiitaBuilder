@@ -19,30 +19,37 @@
     </insert>
 
     <insert id="insertArticleTag">
-        INSERT INTO articles_tags_relations(
-            article_id,
-            posted_user_id,
-            tag_id)
+        INSERT INTO articles_tags_relations(article_id,
+                                            posted_user_id,
+                                            tag_id)
         VALUES (#{articleId},
                 #{userId},
                 #{tagId})
     </insert>
 
-    <update id="updateArticleTag">
-
-    </update>
-
     <delete id="deleteArticleTag">
+        DELETE
+        FROM articles_tags_relations atr
+        WHERE tag_id = #{tagId}
+          AND article_id = #{articleId}
+          AND posted_user_id = #{userId}
+
 
     </delete>
 
-    <select id="findArticleTagByArticleId" >
-        SELECT
-            tags_relation_id,
-            article_id,
-            posted_user_id,
-            tag_id
-        FROM
-            articles_tags_relations
+    <select id="findArticleTagByArticleId">
+        SELECT article_id,
+               posted_user_id,
+               tag_id
+        FROM articles_tags_relations
+        WHERE article_id = #{articleId}
+          AND posted_user_id = #{userId}
+    </select>
+
+    <select id="findAllArticleTag" resultType="Integer">
+        SELECT tag_id
+        FROM articles_tags_relations
+        WHERE article_id = #{articleId}
+          AND posted_user_id = #{userId}
     </select>
 </mapper>
