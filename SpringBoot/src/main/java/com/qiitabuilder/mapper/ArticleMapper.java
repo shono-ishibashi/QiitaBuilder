@@ -4,6 +4,7 @@ import com.qiitabuilder.domain.Article;
 import com.qiitabuilder.form.SearchArticleForm;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -26,4 +27,8 @@ public interface ArticleMapper {
      * @return
      */
     Integer getTotalPage(@Param("search") SearchArticleForm searchArticleForm);
+    List<Integer> getPostedArticleCountRank();
+    Integer getCountByUserId(Integer userId);
+    Integer insertArticle(Article article);
+    void updateArticle(Article article);
 }

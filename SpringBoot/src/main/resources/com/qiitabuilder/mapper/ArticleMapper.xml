@@ -112,3 +112,52 @@
         </collection>
     </resultMap>
 </mapper>
+    <insert id="insertArticle" useGeneratedKeys="true" keyProperty="articleId">
+        INSERT INTO articles(
+        user_id,
+        created_at,
+        title,
+        content,
+        qiita_article_id,
+        state_flag)
+        VALUES (
+        #{postedUser.userId},
+        NOW(),
+        #{title},
+        #{content},
+        #{qiitaArticleId},
+        #{stateFlag})
+      
+      <selectKey resultType="Integer" keyProperty="articleId" order="AFTER">
+            select @@IDENTITY
+        </selectKey>
+    </insert>
+  
+    <update id="updateArticle">
+        UPDATE articles
+        SET user_id          = #{postedUser.userId},
+            updated_at       = NOW(),
+            title            = #{title},
+            content          = #{content},
+            qiita_article_id = #{qiitaArticleId},
+            state_flag       = #{stateFlag}
+        WHERE article_id = #{articleId}
+    </update>
+
+    <select id="getPostedArticleCountRank" resultType="Integer">
+        SELECT user_id
+        FROM articles
+        WHERE state_flag = 1 OR state_flag = 2
+        GROUP BY user_id
+        ORDER BY count(*) DESC;
+    </select>
+
+    <select id="getCountByUserId" resultType="Integer">
+        SELECT count(*)
+        FROM articles
+        WHERE user_id = #{userId}
+          AND (state_flag = 1 OR state_flag = 2);
+    </select>
+
+</mapper>
+
