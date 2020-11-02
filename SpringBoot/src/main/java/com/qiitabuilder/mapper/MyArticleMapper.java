@@ -7,10 +7,10 @@ import org.apache.ibatis.annotations.Mapper;
 public interface MyArticleMapper {
 
     /**
-     * 検索条件に一致するレコードのmyArticleIdを取得する
+     * 検索条件に一致するレコードを取得する
      * @param articleId
      * @param registerUserId
-     * @return 検索条件に一致したmyArticleId
+     * @return 検索条件に一致したレコード
      */
     MyArticle findByArticleIdAndRegisterUserId(Integer articleId, Integer registerUserId);
 
