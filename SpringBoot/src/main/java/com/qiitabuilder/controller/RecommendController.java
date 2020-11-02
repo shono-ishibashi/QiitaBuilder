@@ -16,6 +16,11 @@ public class RecommendController {
     /////////////////////////////
     //// GET
     /////////////////////////////
+    @GetMapping("")
+    @ResponseStatus(HttpStatus.OK)
+    public Recommend fetchRecommend(Integer articleId, Integer recommendUserId) {
+        return recommendService.fetchRecommend(articleId, recommendUserId);
+    }
 
     /////////////////////////////
     //// POST
@@ -34,4 +39,9 @@ public class RecommendController {
     /////////////////////////////
     //// DELETE
     /////////////////////////////
+    @DeleteMapping("/{recommendId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteRecommend(@PathVariable("recommendId") Integer recommendId) {
+        recommendService.deleteRecommend(recommendId);
+    }
 }
