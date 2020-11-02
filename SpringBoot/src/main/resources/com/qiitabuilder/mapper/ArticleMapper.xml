@@ -249,7 +249,7 @@
         ON art.article_id = recommend_cnt_table.article_id
 
         WHERE
-        art.article_id = 1
+        art.article_id = #{articleId}
 
         ORDER BY
         art.article_id
