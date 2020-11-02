@@ -74,4 +74,12 @@ public interface ArticleMapper {
      * @param article 記事情報
      */
     void updateArticle(Article article);
+
+    /**
+     * 記事IDを基に記事情報を取得する
+     *
+     * @param articleId
+     * @return 記事情報
+     */
+    Article load(Integer articleId);
 }

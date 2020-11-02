@@ -1,9 +1,9 @@
 package com.qiitabuilder.controller;
 
 import com.qiitabuilder.domain.Article;
+import com.qiitabuilder.exception.BadRequestException;
+import com.qiitabuilder.exception.NotFoundException;
 import com.qiitabuilder.form.SearchArticleForm;
-import com.qiitabuilder.service.ArticleService;
-import com.qiitabuilder.mapper.TagMapper;
 import com.qiitabuilder.service.ArticleService;
 import com.qiitabuilder.service.QiitaAPIService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 
 
 @RestController
@@ -21,21 +21,20 @@ public class ArticleController {
     @Autowired
     private ArticleService articleService;
 
+    /////////////////////////////
+    //// GET
+    /////////////////////////////
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
     public List<Article> fetchArticle(@ModelAttribute SearchArticleForm searchArticleForm) {
-        /////////////////////////////
-        //// GET
         return articleService.fetchArticle(searchArticleForm);
-        /////////////////////////////
     }
 
-
-    @RequestMapping(value = "/totalPage" ,method = RequestMethod.GET)
+    @RequestMapping(value = "/totalPage", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    public Integer totalPage(@ModelAttribute SearchArticleForm searchArticleForm){
+    public Integer totalPage(@ModelAttribute SearchArticleForm searchArticleForm) {
         System.out.println(articleService.getTotalPage(searchArticleForm));
         return articleService.getTotalPage(searchArticleForm);
     }
@@ -43,7 +42,23 @@ public class ArticleController {
     @GetMapping("/{articleId}")
     @ResponseStatus(HttpStatus.OK)
     public Article getArticle(@PathVariable("articleId") String articleId) {
-        return null;
+        Integer parsedArticleId;
+        // 入力値が正しくない場合はBadRequestExceptionを投げる
+        try {
+            parsedArticleId = Integer.parseInt(articleId);
+        } catch (NumberFormatException e) {
+            throw new BadRequestException("");
+        }
+
+        Article result = articleService.getArticle(parsedArticleId);
+
+        // 検索結果がない場合はNotFoundExceptionを投げる
+        if (Objects.isNull(result)) {
+            throw new NotFoundException("not found");
+        }
+
+        return result;
+
     }
 
     /////////////////////////////
@@ -62,7 +77,7 @@ public class ArticleController {
     /////////////////////////////
 
 
-    @RequestMapping(value = "/" , method = RequestMethod.PUT)
+    @RequestMapping(value = "/", method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.OK)
     public Article editArticle(@RequestBody Article article) {
         articleService.saveArticle(article);
@@ -77,8 +92,8 @@ public class ArticleController {
     @Autowired
     private QiitaAPIService qiitaAPIService;
 
-    @RequestMapping(value = "/test",method = RequestMethod.GET)
-    public void test(){
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    public void test() {
         qiitaAPIService.restTemplateTest();
     }
 
