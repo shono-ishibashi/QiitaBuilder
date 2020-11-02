@@ -4,4 +4,14 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qiitabuilder.mapper.RecommendMapper">
 
+    <insert id="insert" parameterType="com.qiitabuilder.domain.Recommend">
+        INSERT INTO
+        qiita_recommends(article_id, posted_user_id, recommend_user_id)
+        VALUES( #{articleId}, #{postedUserId}, #{recommendUserId} );
+    </insert>
+
+    <select id="getAutoIncrementKey" resultType="int">
+        SELECT LAST_INSERT_ID();
+    </select>
+
 </mapper>
