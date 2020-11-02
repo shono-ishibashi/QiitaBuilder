@@ -4,4 +4,89 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qiitabuilder.mapper.RecommendMapper">
 
+    <select id="getQiitaRecommendedRank" resultType="Integer">
+        SELECT posted_user_id
+        FROM qiita_recommends
+        GROUP BY posted_user_id
+        ORDER BY count(*) DESC;
+    </select>
+
+    <select id="getAllCountByUserId" resultType="Integer">
+        SELECT count(*)
+        FROM qiita_recommends
+        WHERE posted_user_id = #{postedUserId};
+    </select>
+
+    <select id="getMostRecommendedArticleId" resultType="Integer">
+        # sortId =
+        # 1 : FB投稿数Rank
+        # 2 : 記事投稿数Rank
+
+        SELECT
+        (
+        select qr.article_id
+        from qiita_recommends AS qr
+        WHERE qr.article_id IN (
+        <choose>
+            <when test='sortId == "1"'>
+                SELECT fb.article_id
+                FROM feedbacks AS fb
+                WHERE fb.user_id = #{userId}
+                AND fb.article_id IN (
+                SELECT art.article_id
+                FROM articles AS art
+                WHERE art.state_flag = 1 OR art.state_flag = 2
+                )
+            </when>
+            <when test='sortId == "2"'>
+                SELECT art.article_id
+                FROM articles AS art
+                WHERE art.user_id = #{userId}
+                AND (state_flag = 1 OR state_flag = 2)
+            </when>
+            <otherwise>
+                SELECT art.article_id
+                FROM articles AS art
+                WHERE art.user_id = #{userId}
+                AND (state_flag = 1 OR state_flag = 2)
+            </otherwise>
+        </choose>
+        )
+        group by qr.article_id
+        having count(*) = max(b.cnt)
+        ) AS max_count_article_id
+        FROM (
+        SELECT article_id,
+        count(*) AS cnt
+        FROM qiita_recommends
+        WHERE article_id IN (
+        <choose>
+            <when test='sortId == "1"'>
+                SELECT fb.article_id
+                FROM feedbacks AS fb
+                WHERE fb.user_id = #{userId}
+                AND fb.article_id IN (
+                SELECT art.article_id
+                FROM articles AS art
+                WHERE art.state_flag = 1 OR art.state_flag = 2
+                )
+            </when>
+            <when test='sortId == "2"'>
+                SELECT article_id
+                FROM articles
+                WHERE user_id = #{userId}
+                AND (state_flag = 1 OR state_flag = 2)
+            </when>
+            <otherwise>
+                SELECT article_id
+                FROM articles
+                WHERE user_id = #{userId}
+                AND (state_flag = 1 OR state_flag = 2)
+            </otherwise>
+        </choose>
+        )
+        GROUP BY article_id
+        ) AS b;
+    </select>
+
 </mapper>
