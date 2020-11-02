@@ -17,13 +17,13 @@
     </resultMap>
 
     <!-- ****** SELECT ****** -->
-<!--    <select id="getCount" resultType="Integer">-->
-<!--        SELECT count(*)-->
-<!--        FROM feedbacks-->
-<!--        <where>-->
-<!--            user_id = #{userId};-->
-<!--        </where>-->
-<!--    </select>-->
+    <!--    <select id="getCount" resultType="Integer">-->
+    <!--        SELECT count(*)-->
+    <!--        FROM feedbacks-->
+    <!--        <where>-->
+    <!--            user_id = #{userId};-->
+    <!--        </where>-->
+    <!--    </select>-->
 
     <select id="getFBRank" resultMap="rankingUserResultMap">
         SELECT users.user_id,
