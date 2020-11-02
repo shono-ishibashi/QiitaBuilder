@@ -111,7 +111,7 @@
             <result column="tagName" property="tagName"/>
         </collection>
     </resultMap>
-</mapper>
+
     <insert id="insertArticle" useGeneratedKeys="true" keyProperty="articleId">
         INSERT INTO articles(
         user_id,

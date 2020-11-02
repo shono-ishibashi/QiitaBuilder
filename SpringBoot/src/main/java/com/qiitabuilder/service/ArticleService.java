@@ -5,23 +5,17 @@ import com.qiitabuilder.form.SearchArticleForm;
 import com.qiitabuilder.mapper.ArticleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.qiitabuilder.domain.Tag;
-import com.qiitabuilder.mapper.ArticleMapper;
 import com.qiitabuilder.mapper.TagMapper;
 import com.qiitabuilder.security.SimpleLoginUser;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
 
 @Service
@@ -29,6 +23,9 @@ import static java.util.Objects.nonNull;
 public class ArticleService {
     @Autowired
     private ArticleMapper articleMapper;
+
+    @Autowired
+    private TagMapper tagMapper;
 
     /**
      * 条件に合った記事一覧を取得するメソッド
@@ -65,14 +62,9 @@ public class ArticleService {
      * @param searchArticleForm
      * @return
      */
-    public Integer getTotalPage(SearchArticleForm searchArticleForm){
+    public Integer getTotalPage(SearchArticleForm searchArticleForm) {
         return articleMapper.getTotalPage(searchArticleForm);
-
-    @Autowired
-    private ArticleMapper articleMapper;
-
-    @Autowired
-    private TagMapper tagMapper;
+    }
 
     /**
      * 記事をDBに更新もしくは追加するメソッド
