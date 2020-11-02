@@ -35,4 +35,13 @@ public class RecommendService {
         recommend.setRecommendId(recommendId);
         return recommend;
     }
+
+    /**
+     * My記事を削除する
+     *
+     * @param recommendId
+     */
+    public void deleteRecommend(Integer recommendId) {
+        recommendMapper.delete(recommendId);
+    }
 }

@@ -116,4 +116,12 @@
         SELECT LAST_INSERT_ID();
     </select>
 
+    <delete id="delete">
+        DELETE
+        FROM
+        qiita_recommends
+        WHERE
+        recommend_id = #{recommendId};
+    </delete>
+
 </mapper>

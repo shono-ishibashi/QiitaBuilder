@@ -35,4 +35,10 @@ public interface RecommendMapper {
      * @return 自動採番の値
      */
     Integer getAutoIncrementKey();
+
+    /**
+     * Recommendを削除する
+     * @param recommendId
+     */
+    void delete(Integer recommendId);
 }

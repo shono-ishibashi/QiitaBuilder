@@ -1,6 +1,5 @@
 package com.qiitabuilder.controller;
 
-import com.qiitabuilder.domain.MyArticle;
 import com.qiitabuilder.domain.Recommend;
 import com.qiitabuilder.service.RecommendService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,4 +39,9 @@ public class RecommendController {
     /////////////////////////////
     //// DELETE
     /////////////////////////////
+    @DeleteMapping("/{recommendId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteRecommend(@PathVariable("recommendId") Integer recommendId) {
+        recommendService.deleteRecommend(recommendId);
+    }
 }
