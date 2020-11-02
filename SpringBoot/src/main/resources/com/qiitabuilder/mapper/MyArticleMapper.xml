@@ -3,5 +3,39 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qiitabuilder.mapper.MyArticleMapper">
+    <select id="findByArticleIdAndRegisterUserId" resultMap="findByArticleIdAndRegisterUserIdResult">
+        SELECT
+        *
+        FROM
+        my_articles
+        WHERE
+        article_id = #{articleId}
+        AND
+        register_user_id = #{registerUserId};
+    </select>
 
+    <insert id="insert" parameterType="com.qiitabuilder.domain.MyArticle">
+        INSERT INTO
+        my_articles(article_id, posted_user_id, register_user_id)
+        VALUES( #{articleId}, #{postedUserId}, #{registerUserId} );
+    </insert>
+
+    <select id="getAutoIncrementKey" resultType="int">
+        SELECT LAST_INSERT_ID();
+    </select>
+
+    <delete id="delete">
+        DELETE
+        FROM
+        my_articles
+        WHERE
+        my_article_id = #{myArticleId};
+    </delete>
+
+    <resultMap id="findByArticleIdAndRegisterUserIdResult" type="com.qiitabuilder.domain.MyArticle">
+        <id property="myArticleId" column="my_article_id"/>
+        <result property="articleId" column="article_id"/>
+        <result property="postedUserId" column="posted_user_id"/>
+        <result property="registerUserId" column="register_user_id"/>
+    </resultMap>
 </mapper>
