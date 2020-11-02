@@ -18,12 +18,12 @@
         #{content},
         #{qiitaArticleId},
         #{stateFlag})
-
-        <selectKey resultType="Integer" keyProperty="articleId" order="AFTER">
+      
+      <selectKey resultType="Integer" keyProperty="articleId" order="AFTER">
             select @@IDENTITY
         </selectKey>
     </insert>
-
+  
     <update id="updateArticle">
         UPDATE articles
         SET user_id          = #{postedUser.userId},
@@ -35,4 +35,20 @@
         WHERE article_id = #{articleId}
     </update>
 
+    <select id="getPostedArticleCountRank" resultType="Integer">
+        SELECT user_id
+        FROM articles
+        WHERE state_flag = 1 OR state_flag = 2
+        GROUP BY user_id
+        ORDER BY count(*) DESC;
+    </select>
+
+    <select id="getCountByUserId" resultType="Integer">
+        SELECT count(*)
+        FROM articles
+        WHERE user_id = #{userId}
+          AND (state_flag = 1 OR state_flag = 2);
+    </select>
+
 </mapper>
+

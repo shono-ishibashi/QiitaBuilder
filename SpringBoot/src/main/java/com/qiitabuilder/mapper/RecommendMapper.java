@@ -2,9 +2,17 @@ package com.qiitabuilder.mapper;
 
 import com.qiitabuilder.domain.Recommend;
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Mapper
+@Repository
 public interface RecommendMapper {
+
+    List<Integer> getQiitaRecommendedRank();
+    Integer getAllCountByPostedUserId(Integer postedUserId);
+    List<Integer> getMostRecommendedArticleId(Integer userId, Integer sortId);
 
     /**
      * Recommendを新規作成する
@@ -17,5 +25,4 @@ public interface RecommendMapper {
      * @return 自動採番の値
      */
     Integer getAutoIncrementKey();
-
 }
