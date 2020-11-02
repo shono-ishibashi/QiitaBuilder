@@ -13,7 +13,7 @@ public interface FeedbackMapper {
 //    void insert(Feedback feedback);
 //    Integer getAutoIncrementKey();
 //    void update(Feedback feedback);
-//    List<User> getFBRank();
-//    List<Integer> getArticleIdByUserId(Integer userId);
-//    Integer getCount(Integer userId);
+    List<Integer> getFBRank();
+    List<Integer> getArticleIdByUserId(Integer userId);
+    Integer getCount(Integer userId);
 }
