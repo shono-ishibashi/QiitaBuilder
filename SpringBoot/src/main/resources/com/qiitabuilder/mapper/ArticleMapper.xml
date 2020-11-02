@@ -3,19 +3,17 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qiitabuilder.mapper.ArticleMapper">
-    <insert id="insertArticle">
+    <insert id="insertArticle" useGeneratedKeys="true" keyProperty="articleId">
         INSERT INTO articles(
         user_id,
         created_at,
-        updated_at,
         title,
         content,
         qiita_article_id,
         state_flag)
         VALUES (
-        #{userId},
+        #{postedUser.userId},
         NOW(),
-        #{updatedAt},
         #{title},
         #{content},
         #{qiitaArticleId},
@@ -28,8 +26,7 @@
 
     <update id="updateArticle">
         UPDATE articles
-        SET user_id          = #{userId},
-            created_at       = #{createdAt},
+        SET user_id          = #{postedUser.userId},
             updated_at       = NOW(),
             title            = #{title},
             content          = #{content},

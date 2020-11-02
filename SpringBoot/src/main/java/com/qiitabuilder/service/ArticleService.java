@@ -40,39 +40,62 @@ public class ArticleService {
         //idがないtagをインサートして、自動裁判されたIdを取得しセット
         article.getTags().stream()
                 .filter(tag -> isNull(tag.getTagId()))
-                .forEach(tag -> tag.setTagId(tagMapper.insertTag(tag)));
+                .forEach(tag -> tagMapper.insertTag(tag));
+
 
         // articleId で 更新、追加を分岐
         if (isNull(article.getArticleId())) {
             //裁判されたarticleIdをセット
-            article.setArticleId(articleMapper.insertArticle(article));
+            articleMapper.insertArticle(article);
 
             //articles_tags_relationsに情報をInsert
-            tagMapper.insertArticleTag(article);
+            article.getTags().forEach(tag -> {
+                tagMapper.insertArticleTag(
+                        loginUser.getUser().getUserId(),
+                        tag.getTagId(),
+                        article.getArticleId()
+                );
+            });
 
         } else {
             //入力された記事を更新
             articleMapper.updateArticle(article);
 
+            //入力されたtagのIDのList
+            List<Integer> tagIdsInPostedArticle
+                    = article.getTags().stream().map(Tag::getTagId).collect(Collectors.toList());
+
             //DBに存在するarticleが持つtagsのtag_idのlist
-            List<Integer> tagIdsInDB = tagMapper.findAll().stream().map(Tag::getTagId).collect(Collectors.toList());
+            List<Integer> tagIdsInDB
+                    = tagMapper.findAllArticleTag(loginUser.getUser().getUserId(), article.getArticleId());
 
-            //DBに存在しないIDのtagのList
-            List<Tag> tagsNotExistInDB = article
-                    .getTags()
+            // -------------------insert-------------------t
+            //DBに存在しない記事が持つタグを追加
+            article.getTags()
                     .stream()
+                    //DBに存在しているかを判別
                     .filter(tag -> tagIdsInDB.contains(tag.getTagId()))
-                    .collect(Collectors.toList());
+                    .map(Tag::getTagId)
+                    .forEach(tagId ->
+                            tagMapper.insertArticleTag(
+                                    loginUser.getUser().getUserId(),
+                                    tagId,
+                                    article.getArticleId()
+                            )
+                    );
 
+            // -------------------delete-------------------t
             //DBに存在するが、入力されたタグに存在しないtagのList
-            List<Tag> tagForDelete = article
-                    .getTags()
-                    .stream()
-                    .filter(tag -> !tagIdsInDB.contains(tag.getTagId()))
-                    .collect(Collectors.toList());
-
-
-
+            //Deleteするために使用
+            tagIdsInDB.stream()
+                    .filter(tagId -> !tagIdsInPostedArticle.contains(tagId))
+                    .forEach(tagId ->
+                            tagMapper.deleteArticleTag(
+                                    loginUser.getUser().getUserId(),
+                                    tagId,
+                                    article.getArticleId()
+                            )
+                    );
         }
     }
 }

@@ -3,6 +3,7 @@ package com.qiitabuilder.controller;
 import com.qiitabuilder.domain.Article;
 import com.qiitabuilder.mapper.TagMapper;
 import com.qiitabuilder.service.ArticleService;
+import com.qiitabuilder.service.QiitaAPIService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -47,7 +48,6 @@ public class ArticleController {
     @ResponseStatus(HttpStatus.OK)
     public Article editArticle(@RequestBody Article article) {
         articleService.saveArticle(article);
-
         return article;
     }
 
@@ -56,6 +56,12 @@ public class ArticleController {
     /////////////////////////////
 
 
+    @Autowired
+    private QiitaAPIService qiitaAPIService;
 
+    @RequestMapping(value = "/test",method = RequestMethod.GET)
+    public void test(){
+        qiitaAPIService.restTemplateTest();
+    }
 
 }
