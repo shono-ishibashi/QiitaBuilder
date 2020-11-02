@@ -14,14 +14,13 @@ public class MyArticleService {
     private MyArticleMapper myArticleMapper;
 
     /**
-     * 引数に一致するレコードのmyArticleIdを取得する
+     * 引数に一致するレコードを取得する
      *
      * @param articleId
      * @param registerUserId
      * @return
      */
     public MyArticle fetchMyArticle(Integer articleId, Integer registerUserId) {
-        MyArticle result = myArticleMapper.findByArticleIdAndRegisterUserId(articleId, registerUserId);
         return myArticleMapper.findByArticleIdAndRegisterUserId(articleId, registerUserId);
     }
 
