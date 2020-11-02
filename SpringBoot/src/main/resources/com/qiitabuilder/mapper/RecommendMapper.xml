@@ -89,6 +89,23 @@
         ) AS b;
     </select>
 
+    <select id="findByArticleIdAndRecommendUserId" resultMap="findByArticleIdAndRecommendUserIdResult">
+        SELECT
+        *
+        FROM
+        qiita_recommends
+        WHERE
+        article_id = #{articleId}
+        AND
+        recommend_user_id = #{recommendUserId};
+    </select>
+    <resultMap id="findByArticleIdAndRecommendUserIdResult" type="com.qiitabuilder.domain.Recommend">
+        <id property="recommendId" column="recommend_id"/>
+        <result property="articleId" column="article_id"/>
+        <result property="postedUserId" column="posted_user_id"/>
+        <result property="recommendUserId" column="recommend_user_id"/>
+    </resultMap>
+
     <insert id="insert" parameterType="com.qiitabuilder.domain.Recommend">
         INSERT INTO
         qiita_recommends(article_id, posted_user_id, recommend_user_id)
@@ -98,5 +115,13 @@
     <select id="getAutoIncrementKey" resultType="int">
         SELECT LAST_INSERT_ID();
     </select>
+
+    <delete id="delete">
+        DELETE
+        FROM
+        qiita_recommends
+        WHERE
+        recommend_id = #{recommendId};
+    </delete>
 
 </mapper>

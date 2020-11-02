@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Feedback {
     private Integer feedbackId;
-    private Integer userId;
+    private Integer articleId;
+    private User postedUser;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String content;
