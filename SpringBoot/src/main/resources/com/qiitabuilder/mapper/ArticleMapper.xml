@@ -177,12 +177,12 @@
                                  ON art_count_rank.user_id = users.user_id;
     </select>
 
-    <select id="getCountByUserId" resultType="Integer">
-        SELECT count(*)
-        FROM articles
-        WHERE user_id = #{userId}
-          AND (state_flag = 1 OR state_flag = 2);
-    </select>
+<!--    <select id="getCountByUserId" resultType="Integer">-->
+<!--        SELECT count(*)-->
+<!--        FROM articles-->
+<!--        WHERE user_id = #{userId}-->
+<!--          AND (state_flag = 1 OR state_flag = 2);-->
+<!--    </select>-->
 
     <select id="findUser" resultMap="userResultMap">
         SELECT user_id,
