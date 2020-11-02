@@ -4,18 +4,59 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qiitabuilder.mapper.RecommendMapper">
 
-    <select id="getQiitaRecommendedRank" resultType="Integer">
-        SELECT posted_user_id
-        FROM qiita_recommends
-        GROUP BY posted_user_id
-        ORDER BY count(*) DESC;
+    <resultMap id="findByArticleIdAndRecommendUserIdResult" type="com.qiitabuilder.domain.Recommend">
+        <id property="recommendId" column="recommend_id"/>
+        <result property="articleId" column="article_id"/>
+        <result property="postedUserId" column="posted_user_id"/>
+        <result property="recommendUserId" column="recommend_user_id"/>
+    </resultMap>
+
+    <resultMap id="rankingUserResultMap" type="com.qiitabuilder.domain.RankingUser">
+        <association property="user" javaType="com.qiitabuilder.domain.User">
+            <id column="userId" property="userId"/>
+            <result property="userId" column="user_id"/>
+            <result property="displayName" column="display_name"/>
+            <result property="photoUrl" column="photo_url"/>
+            <result property="feedbackCount" column="fb_count"/>
+            <result property="postedArticleCount" column="post_art_count"/>
+            <result property="qiitaRecommendedAllCount" column="qiita_rec_all_count"/>
+        </association>
+    </resultMap>
+
+    <!-- ****** SELECT ****** -->
+    <select id="getQiitaRecommendedRank" resultMap="rankingUserResultMap">
+        SELECT users.user_id,
+               users.display_name,
+               users.photo_url,
+               (
+                   SELECT count(*)
+                   FROM articles AS art
+                   WHERE art.user_id = qiita_count.posted_user_id
+                     AND (art.state_flag = 1 OR art.state_flag = 2)
+               )               AS fb_count,
+               (
+                   SELECT count(*)
+                   FROM articles AS art
+                   WHERE art.user_id = qiita_count.posted_user_id
+                     AND (art.state_flag = 1 OR art.state_flag = 2)
+               )               AS post_art_count,
+               qiita_count.cnt AS qiita_rec_all_count
+        FROM (
+                 SELECT posted_user_id,
+                        count(*) AS cnt
+                 FROM qiita_recommends
+                 GROUP BY posted_user_id
+                 ORDER BY count(*) DESC
+             ) AS qiita_count
+                 LEFT OUTER JOIN users
+                                 ON qiita_count.posted_user_id = users.user_id;
     </select>
 
-    <select id="getAllCountByUserId" resultType="Integer">
-        SELECT count(*)
-        FROM qiita_recommends
-        WHERE posted_user_id = #{postedUserId};
-    </select>
+    <!--    <select id="getAllCountByUserId" resultType="Integer">-->
+    <!--        SELECT count(*)-->
+    <!--        FROM qiita_recommends-->
+    <!--        WHERE posted_user_id = #{postedUserId};-->
+    <!--    </select>-->
 
     <select id="getMostRecommendedArticleId" resultType="Integer">
         # sortId =
@@ -53,7 +94,7 @@
         </choose>
         )
         group by qr.article_id
-        having count(*) = max(b.cnt)
+        having count(*) = max(result.cnt)
         ) AS max_count_article_id
         FROM (
         SELECT article_id,
@@ -86,42 +127,32 @@
         </choose>
         )
         GROUP BY article_id
-        ) AS b;
+        ) AS result;
     </select>
 
     <select id="findByArticleIdAndRecommendUserId" resultMap="findByArticleIdAndRecommendUserIdResult">
-        SELECT
-        *
-        FROM
-        qiita_recommends
-        WHERE
-        article_id = #{articleId}
-        AND
-        recommend_user_id = #{recommendUserId};
+        SELECT *
+        FROM qiita_recommends
+        WHERE article_id = #{articleId}
+          AND recommend_user_id = #{recommendUserId};
     </select>
-    <resultMap id="findByArticleIdAndRecommendUserIdResult" type="com.qiitabuilder.domain.Recommend">
-        <id property="recommendId" column="recommend_id"/>
-        <result property="articleId" column="article_id"/>
-        <result property="postedUserId" column="posted_user_id"/>
-        <result property="recommendUserId" column="recommend_user_id"/>
-    </resultMap>
-
-    <insert id="insert" parameterType="com.qiitabuilder.domain.Recommend">
-        INSERT INTO
-        qiita_recommends(article_id, posted_user_id, recommend_user_id)
-        VALUES( #{articleId}, #{postedUserId}, #{recommendUserId} );
-    </insert>
 
     <select id="getAutoIncrementKey" resultType="int">
         SELECT LAST_INSERT_ID();
     </select>
 
+    <!-- ****** INSERT ****** -->
+    <insert id="insert" parameterType="com.qiitabuilder.domain.Recommend">
+        INSERT INTO qiita_recommends(article_id, posted_user_id, recommend_user_id)
+        VALUES (#{articleId}, #{postedUserId}, #{recommendUserId});
+    </insert>
+
+
+    <!-- ****** DELETE ****** -->
     <delete id="delete">
         DELETE
-        FROM
-        qiita_recommends
-        WHERE
-        recommend_id = #{recommendId};
+        FROM qiita_recommends
+        WHERE recommend_id = #{recommendId};
     </delete>
 
 </mapper>
