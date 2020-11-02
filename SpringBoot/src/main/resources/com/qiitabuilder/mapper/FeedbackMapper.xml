@@ -4,6 +4,18 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qiitabuilder.mapper.FeedbackMapper">
 
+    <resultMap id="rankingUserResultMap" type="com.qiitabuilder.domain.RankingUser">
+        <association property="user" javaType="com.qiitabuilder.domain.User">
+            <id column="userId" property="userId"/>
+            <result property="userId" column="user_id"/>
+            <result property="displayName" column="display_name"/>
+            <result property="photoUrl" column="photo_url"/>
+            <result property="feedbackCount" column="fb_count"/>
+            <result property="postedArticleCount" column="post_art_count"/>
+            <result property="qiitaRecommendedAllCount" column="qiita_rec_all_count"/>
+        </association>
+    </resultMap>
+
     <!-- ****** SELECT ****** -->
     <select id="getCount" resultType="Integer">
         SELECT count(*)
@@ -13,11 +25,31 @@
         </where>
     </select>
 
-    <select id="getFBRank" resultType="Integer">
-        SELECT user_id
-        FROM feedbacks
-        GROUP BY user_id
-        ORDER BY count(*) DESC;
+    <select id="getFBRank" resultMap="rankingUserResultMap">
+        SELECT users.user_id,
+               users.display_name,
+               users.photo_url,
+               fbrank.cnt AS fb_count,
+               (
+                   SELECT count(*)
+                   FROM articles AS art
+                   WHERE art.user_id = fbrank.user_id
+                     AND (art.state_flag = 1 OR art.state_flag = 2)
+               )          AS post_art_count,
+               (
+                   SELECT count(*)
+                   FROM qiita_recommends AS rec
+                   WHERE rec.posted_user_id = fbrank.user_id
+               )          AS qiita_rec_all_count
+        FROM (
+                 SELECT user_id,
+                        count(*) AS cnt
+                 FROM feedbacks
+                 GROUP BY user_id
+                 ORDER BY count(*) DESC
+             ) AS fbrank
+                 LEFT OUTER JOIN users
+                                 ON fbrank.user_id = users.user_id;
     </select>
 
     <select id="getArticleIdByUserId" resultType="Integer">
