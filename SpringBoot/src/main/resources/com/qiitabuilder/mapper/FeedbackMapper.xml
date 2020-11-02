@@ -4,12 +4,38 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qiitabuilder.mapper.FeedbackMapper">
 
+    <!-- ****** SELECT ****** -->
     <select id="getCount" resultType="Integer">
-        SELECT count(*) FROM feedbacks
+        SELECT count(*)
+        FROM feedbacks
         <where>
             user_id = #{userId};
         </where>
     </select>
+
+    <select id="getFBRank" resultType="Integer">
+        SELECT user_id
+        FROM feedbacks
+        GROUP BY user_id
+        ORDER BY count(*) DESC;
+    </select>
+
+    <select id="getArticleIdByUserId" resultType="Integer">
+        SELECT fb.article_id
+        FROM feedbacks AS fb
+        WHERE fb.user_id = #{userId}
+          AND fb.article_id IN (
+            SELECT art.article_id
+            FROM articles AS art
+            WHERE art.state_flag = 1
+               OR art.state_flag = 2
+        )
+        order by fb.created_at DESC;
+    </select>
+
+    <!-- ****** INSERT ****** -->
+
+    <!-- ****** UPDATE ****** -->
 
 </mapper>
 
