@@ -3,6 +3,61 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qiitabuilder.mapper.ArticleMapper">
+
+    <resultMap id="articlesMap" type="com.qiitabuilder.domain.Article">
+        <id column="articleId" property="articleId"/>
+        <result column="title" property="title"/>
+        <result column="createdAt" property="createdAt"/>
+        <result column="updatedAt" property="updatedAt"/>
+        <result column="feedCnt" property="feedbackCount"/>
+        <result column="myCnt" property="registeredMyArticleCount"/>
+        <result column="recommendCnt" property="qiitaRecommendPoint"/>
+        <association property="postedUser" javaType="com.qiitabuilder.domain.User">
+            <id column="userId" property="userId"/>
+            <result column="displayName" property="displayName"/>
+            <result column="photoUrl" property="photoUrl"/>
+        </association>
+        <collection property="tags" ofType="com.qiitabuilder.domain.Tag">
+            <result column="tagId" property="tagId"/>
+            <result column="tagName" property="tagName"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="rankingUserResultMap" type="com.qiitabuilder.domain.RankingUser">
+        <association property="user" javaType="com.qiitabuilder.domain.User">
+            <id column="userId" property="userId"/>
+            <result property="userId" column="user_id"/>
+            <result property="displayName" column="display_name"/>
+            <result property="photoUrl" column="photo_url"/>
+            <result property="feedbackCount" column="fb_count"/>
+            <result property="postedArticleCount" column="post_art_count"/>
+            <result property="qiitaRecommendedAllCount" column="qiita_rec_all_count"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="articleResultMap" type="com.qiitabuilder.domain.Article">
+        <id property="articleId" column="article_id"/>
+        <result property="title" column="title"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="qiitaRecommendPoint" column="rec_count"/>
+        <result property="registeredMyArticleCount" column="my_count"/>
+        <result property="feedbackCount" column="fb_count"/>
+        <association property="postedUser" column="user_id" javaType="com.qiitabuilder.domain.User"
+                     select="findUser"/>
+        <collection property="tags" ofType="com.qiitabuilder.domain.Tag">
+            <result property="tagId" column="tag_id"/>
+            <result property="tagName" column="tag_name"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="userResultMap" type="com.qiitabuilder.domain.User">
+        <id property="userId" column="user_id"/>
+        <result property="displayName" column="display_name"/>
+        <result property="photoUrl" column="photo_url"/>
+    </resultMap>
+
+    <!-- ****** SELECT ****** -->
     <select id="searchArticles" resultMap="articlesMap">
         select art.article_id as articleId,
         art.title as title,
@@ -93,25 +148,90 @@
         </where>
     </select>
 
-    <resultMap id="articlesMap" type="com.qiitabuilder.domain.Article">
-        <id column="articleId" property="articleId"/>
-        <result column="title" property="title"/>
-        <result column="createdAt" property="createdAt"/>
-        <result column="updatedAt" property="updatedAt"/>
-        <result column="feedCnt" property="feedbackCount"/>
-        <result column="myCnt" property="registeredMyArticleCount"/>
-        <result column="recommendCnt" property="qiitaRecommendPoint"/>
-        <association property="postedUser" javaType="com.qiitabuilder.domain.User">
-            <id column="userId" property="userId"/>
-            <result column="displayName" property="displayName"/>
-            <result column="photoUrl" property="photoUrl"/>
-        </association>
-        <collection property="tags" ofType="com.qiitabuilder.domain.Tag">
-            <result column="tagId" property="tagId"/>
-            <result column="tagName" property="tagName"/>
-        </collection>
-    </resultMap>
+    <select id="getPostedArticleCountRank" resultMap="rankingUserResultMap">
+        SELECT users.user_id,
+               users.display_name,
+               users.photo_url,
+               (
+                   SELECT count(*)
+                   FROM articles AS art
+                   WHERE art.user_id = art_count_rank.user_id
+                     AND (art.state_flag = 1 OR art.state_flag = 2)
+               )                  AS fb_count,
+               art_count_rank.cnt AS post_art_count,
+               (
+                   SELECT count(*)
+                   FROM qiita_recommends AS rec
+                   WHERE rec.posted_user_id = art_count_rank.user_id
+               )                  AS qiita_rec_all_count
+        FROM (
+                 SELECT user_id,
+                        count(*) AS cnt
+                 FROM articles
+                 WHERE state_flag = 1
+                    OR state_flag = 2
+                 GROUP BY user_id
+                 ORDER BY count(*) DESC
+             ) AS art_count_rank
+                 LEFT OUTER JOIN users
+                                 ON art_count_rank.user_id = users.user_id;
+    </select>
 
+    <select id="getCountByUserId" resultType="Integer">
+        SELECT count(*)
+        FROM articles
+        WHERE user_id = #{userId}
+          AND (state_flag = 1 OR state_flag = 2);
+    </select>
+
+    <select id="findUser" resultMap="userResultMap">
+        SELECT user_id,
+               display_name,
+               photo_url
+        FROM users
+        WHERE user_id = #{user_id}
+    </select>
+
+    <select id="findArticleById" resultMap="articleResultMap">
+        SELECT art.article_id,
+               art.user_id,
+               art.created_at,
+               art.updated_at,
+               art.title,
+               art.state_flag,
+               (
+                   SELECT count(*)
+                   FROM feedbacks AS fb
+                   WHERE fb.article_id = #{articleId}
+               ) AS fb_count,
+               (
+                   SELECT count(*)
+                   FROM qiita_recommends AS rec
+                   WHERE rec.article_id = #{articleId}
+               ) AS rec_count,
+               (
+                   SELECT count(*)
+                   FROM my_articles AS my
+                   WHERE my.article_id = #{articleId}
+               ) AS my_count,
+               tags.tag_id,
+               tags.tag_name
+        FROM articles AS art
+                 LEFT OUTER JOIN articles_tags_relations AS rel
+                                 ON art.article_id = rel.article_id
+                 LEFT OUTER JOIN tags ON rel.tag_id = tags.tag_id
+        WHERE art.article_id = #{articleId};
+    </select>
+
+    <select id="getArticleIdListByUserId" resultType="Integer">
+        SELECT article_id
+        FROM articles
+        WHERE user_id = #{userId}
+          AND (state_flag = 1 OR state_flag = 2)
+        ORDER BY created_at DESC;
+    </select>
+
+    <!-- ****** INSERT ****** -->
     <insert id="insertArticle" useGeneratedKeys="true" keyProperty="articleId">
         INSERT INTO articles(
         user_id,
@@ -127,12 +247,13 @@
         #{content},
         #{qiitaArticleId},
         #{stateFlag})
-      
-      <selectKey resultType="Integer" keyProperty="articleId" order="AFTER">
+
+        <selectKey resultType="Integer" keyProperty="articleId" order="AFTER">
             select @@IDENTITY
         </selectKey>
     </insert>
-  
+
+    <!-- ****** UPDATE ****** -->
     <update id="updateArticle">
         UPDATE articles
         SET user_id          = #{postedUser.userId},
@@ -144,20 +265,6 @@
         WHERE article_id = #{articleId}
     </update>
 
-    <select id="getPostedArticleCountRank" resultType="Integer">
-        SELECT user_id
-        FROM articles
-        WHERE state_flag = 1 OR state_flag = 2
-        GROUP BY user_id
-        ORDER BY count(*) DESC;
-    </select>
-
-    <select id="getCountByUserId" resultType="Integer">
-        SELECT count(*)
-        FROM articles
-        WHERE user_id = #{userId}
-          AND (state_flag = 1 OR state_flag = 2);
-    </select>
 
 </mapper>
 
