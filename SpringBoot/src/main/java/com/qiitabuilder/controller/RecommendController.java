@@ -1,5 +1,6 @@
 package com.qiitabuilder.controller;
 
+import com.qiitabuilder.domain.MyArticle;
 import com.qiitabuilder.domain.Recommend;
 import com.qiitabuilder.service.RecommendService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,11 @@ public class RecommendController {
     /////////////////////////////
     //// GET
     /////////////////////////////
+    @GetMapping("")
+    @ResponseStatus(HttpStatus.OK)
+    public Recommend fetchRecommend(Integer articleId, Integer recommendUserId) {
+        return recommendService.fetchRecommend(articleId, recommendUserId);
+    }
 
     /////////////////////////////
     //// POST
