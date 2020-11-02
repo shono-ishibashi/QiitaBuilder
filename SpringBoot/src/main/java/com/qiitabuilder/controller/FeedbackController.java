@@ -13,17 +13,14 @@ public class FeedbackController {
     @Autowired
     private FeedbackService feedbackService;
 
-    @RequestMapping("")
     public Feedback postFeedback(Feedback feedback){
         return null;
     }
 
-    @RequestMapping("")
     public Feedback updateFeedback(Feedback feedback){
         return null;
     }
 
-    @RequestMapping("")
     public void deleteFeedback(Feedback feedback){
 
     }

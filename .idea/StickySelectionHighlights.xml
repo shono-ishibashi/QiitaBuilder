@@ -13,12 +13,42 @@
             <PaintGroupHighlightMap />
           </value>
         </entry>
+        <entry key="$APPLICATION_CONFIG_DIR$/consoles/db/5269771c-d080-40f6-b1ce-67baf2ad0f3f/console.sql">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
         <entry key="$APPLICATION_CONFIG_DIR$/consoles/db/55751cff-a763-4c31-9819-f94a68b15829/console.sql">
           <value>
             <PaintGroupHighlightMap />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/pom.xml">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/QiitaBuilderApplication.java">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/config/MybatisConfig.java">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/controller/ArticleController.java">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/controller/FeedbackController.java">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/controller/TagController.java">
           <value>
             <PaintGroupHighlightMap />
           </value>
@@ -53,12 +83,67 @@
             <PaintGroupHighlightMap />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/mapper/ArticleMapper.java">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/mapper/FeedbackMapper.java">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/mapper/TagMapper.java">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/mapper/UserMapper.java">
           <value>
             <PaintGroupHighlightMap />
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/security/SecurityConfig.java">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/security/SimpleAuthenticationFailureHandler.java">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/security/SimpleAuthenticationSuccessHandler.java">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/security/SimpleLoginUser.java">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/security/SimpleTokenFilter.java">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/security/SimpleUserDetailsService.java">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/service/ArticleService.java">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/service/FeedbackService.java">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/java/com/qiitabuilder/service/QiitaAPIService.java">
           <value>
             <PaintGroupHighlightMap />
           </value>
@@ -74,6 +159,16 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/SpringBoot/src/main/resources/application.yml">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/resources/com/qiitabuilder/mapper/ArticleMapper.xml">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/SpringBoot/src/main/resources/com/qiitabuilder/mapper/TagMapper.xml">
           <value>
             <PaintGroupHighlightMap />
           </value>
