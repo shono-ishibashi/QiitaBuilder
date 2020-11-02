@@ -33,23 +33,23 @@ public class ArticleService {
      * @param searchArticleForm
      * @return
      */
-    public List<Article> fetchArticle(SearchArticleForm searchArticleForm){
+    public List<Article> fetchArticle(SearchArticleForm searchArticleForm) {
 
 //        sortNumの値ごとに並び替える条件を設定
-        if(searchArticleForm.getSortNum()==0){
+        if (searchArticleForm.getSortNum() == 0) {
             searchArticleForm.setSort("createdAt");
-        }else if(searchArticleForm.getSortNum()==1){
+        } else if (searchArticleForm.getSortNum() == 1) {
             searchArticleForm.setSort("updatedAt");
-        }else if(searchArticleForm.getSortNum()==2){
+        } else if (searchArticleForm.getSortNum() == 2) {
             searchArticleForm.setSort("recommendCnt");
-        }else if(searchArticleForm.getSortNum()==3){
+        } else if (searchArticleForm.getSortNum() == 3) {
             searchArticleForm.setSort("myCnt");
         }
 //        表示ページ数、現在ページ数を元にoffsetの値を定義
-        if(searchArticleForm.getCurrentPage()==1){
+        if (searchArticleForm.getCurrentPage() == 1) {
             searchArticleForm.setOffset(0);
-        }else{
-            Integer offset=(searchArticleForm.getPageSize()*(searchArticleForm.getCurrentPage()-1)+1);
+        } else {
+            Integer offset = (searchArticleForm.getPageSize() * (searchArticleForm.getCurrentPage() - 1) + 1);
             searchArticleForm.setOffset(offset);
         }
 
@@ -57,7 +57,7 @@ public class ArticleService {
     }
 
     /**
-     *　総ページ数を取得する
+     * 総ページ数を取得する
      *
      * @param searchArticleForm
      * @return
@@ -137,5 +137,9 @@ public class ArticleService {
                             )
                     );
         }
+    }
+
+    public Article getArticle(Integer articleId) {
+        return articleMapper.load(articleId);
     }
 }

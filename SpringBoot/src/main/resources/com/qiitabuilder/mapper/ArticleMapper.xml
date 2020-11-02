@@ -127,20 +127,20 @@
         #{content},
         #{qiitaArticleId},
         #{stateFlag})
-      
-      <selectKey resultType="Integer" keyProperty="articleId" order="AFTER">
+
+        <selectKey resultType="Integer" keyProperty="articleId" order="AFTER">
             select @@IDENTITY
         </selectKey>
     </insert>
-  
+
     <update id="updateArticle">
         UPDATE articles
-        SET user_id          = #{postedUser.userId},
-            updated_at       = NOW(),
-            title            = #{title},
-            content          = #{content},
-            qiita_article_id = #{qiitaArticleId},
-            state_flag       = #{stateFlag}
+        SET user_id = #{postedUser.userId},
+        updated_at = NOW(),
+        title = #{title},
+        content = #{content},
+        qiita_article_id = #{qiitaArticleId},
+        state_flag = #{stateFlag}
         WHERE article_id = #{articleId}
     </update>
 
@@ -156,8 +156,138 @@
         SELECT count(*)
         FROM articles
         WHERE user_id = #{userId}
-          AND (state_flag = 1 OR state_flag = 2);
+        AND (state_flag = 1 OR state_flag = 2);
     </select>
+
+    <select id="load" resultMap="loadResult">
+        SELECT
+        art.article_id as art_article_id,
+        art.title as art_title,
+        art.created_at as art_created_at,
+        art.updated_at as art_updated_at,
+        art.content as art_content,
+        art.state_flag as art_state_flag,
+
+        art_use.user_id as art_use_user_id,
+        art_use.display_name as art_use_display_name,
+        art_use.photo_url as art_use_photo_url,
+
+        fee.feedback_id as fee_feedback_id,
+        fee.article_id as fee_article_id,
+        fee.created_at as fee_created_at,
+        fee.updated_at as fee_updated_at,
+        fee.content as fee_content,
+
+        fee_use.user_id as fee_use_user_id,
+        fee_use.display_name as fee_use_display_name,
+        fee_use.photo_url as fee_use_photo_url,
+
+        tags.tag_id as tag_id,
+        tags.tag_name as tag_name,
+
+        feed_cnt_table.feed_cnt,
+        my_cnt_table.my_cnt,
+        recommend_cnt_table.recommend_cnt
+
+        FROM
+        articles AS art
+
+        LEFT JOIN
+        users as art_use
+        ON art.user_id = art_use.user_id
+
+        LEFT OUTER JOIN
+        feedbacks as fee
+        ON art.article_id = fee.article_id
+
+        LEFT JOIN
+        users as fee_use
+        ON fee.user_id = fee_use.user_id
+
+        LEFT OUTER JOIN
+        articles_tags_relations AS a_t_relation
+        ON art.article_id = a_t_relation.article_id
+
+        LEFT OUTER JOIN
+        tags AS tags
+        ON a_t_relation.tag_id = tags.tag_id
+
+        LEFT OUTER JOIN
+        (
+        SELECT
+        article_id,
+        COUNT(feed.article_id) AS feed_cnt
+        FROM
+        qiita_builder.feedbacks AS feed
+        GROUP BY
+        feed.article_id
+        ) AS feed_cnt_table
+        ON art.article_id = feed_cnt_table.article_id
+
+        LEFT OUTER JOIN
+        (
+        SELECT
+        article_id,
+        COUNT(my.article_id) AS my_cnt
+        FROM
+        qiita_builder.my_articles AS my
+        GROUP BY
+        my.article_id
+        ) AS my_cnt_table
+        ON art.article_id = my_cnt_table.article_id
+
+        LEFT OUTER JOIN
+        (
+        SELECT
+        article_id,
+        COUNT(recommend.article_id) AS recommend_cnt
+        FROM
+        qiita_builder.qiita_recommends AS recommend
+        GROUP BY
+        recommend.article_id
+        ) AS recommend_cnt_table
+        ON art.article_id = recommend_cnt_table.article_id
+
+        WHERE
+        art.article_id = 1
+
+        ORDER BY
+        art.article_id
+        ;
+    </select>
+
+    <resultMap id="loadResult" type="com.qiitabuilder.domain.Article">
+        <id property="articleId" column="art_article_id"/>
+        <result property="title" column="art_title"/>
+        <result property="createdAt" column="art_created_at"/>
+        <result property="updatedAt" column="art_updated_at"/>
+        <result property="content" column="art_content"/>
+        <result property="stateFlag" column="art_state_flag"/>
+        <result column="feed_cnt" property="feedbackCount"/>
+        <result column="my_cnt" property="registeredMyArticleCount"/>
+        <result column="recommend_cnt" property="qiitaRecommendPoint"/>
+        <association property="postedUser" javaType="com.qiitabuilder.domain.User">
+            <id column="art_use_user_id" property="userId"/>
+            <result column="art_use_display_name" property="displayName"/>
+            <result column="art_use_photo_url" property="photoUrl"/>
+        </association>
+        <collection property="feedbacks" ofType="com.qiitabuilder.domain.Feedback">
+            <id column="fee_feedback_id" property="feedbackId"/>
+            <result column="fee_article_id" property="articleId"/>
+            <result column="fee_created_at" property="createdAt"/>
+            <result column="fee_updated_at" property="updatedAt"/>
+            <result column="fee_content" property="content"/>
+            <association property="postedUser" javaType="com.qiitabuilder.domain.User">
+                <id column="fee_use_user_id" property="userId"/>
+                <result column="fee_use_display_name" property="displayName"/>
+                <result column="fee_use_photo_url" property="photoUrl"/>
+            </association>
+        </collection>
+        <collection property="tags" ofType="com.qiitabuilder.domain.Tag">
+            <id column="tag_id" property="tagId"/>
+            <result column="tag_name" property="tagName"/>
+        </collection>
+    </resultMap>
 
 </mapper>
 
