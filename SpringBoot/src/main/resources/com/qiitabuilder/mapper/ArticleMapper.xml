@@ -359,7 +359,7 @@
     </select>
 
     <!-- ****** INSERT ****** -->
-    <insert id="insertArticle" useGeneratedKeys="true" keyProperty="articleId">
+    <insert id="insertArticle">
         INSERT INTO articles(
         user_id,
         created_at,

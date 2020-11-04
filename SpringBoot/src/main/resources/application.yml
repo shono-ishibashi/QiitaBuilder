@@ -10,3 +10,7 @@ server:
   servlet:
     context-path: /qiita_builder
 
+logging:
+  level:
+    org.springframework.web.client.RestTemplate: DEBUG
+
