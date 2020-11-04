@@ -1,5 +1,11 @@
 package com.qiitabuilder.mapper;
 
+import com.qiitabuilder.domain.Article;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
 import com.qiitabuilder.domain.MyArticle;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
@@ -7,7 +13,12 @@ import org.springframework.stereotype.Repository;
 @Mapper
 @Repository
 public interface MyArticleMapper {
-
+    /**
+     * MyArticleに紐づいたArticleのレコードを取得する
+     * @param userId
+     * @return
+     */
+    List<Article> getMyArticlesByUserId(@Param("userId") Integer userId);
     /**
      * 検索条件に一致するレコードを取得する
      *
