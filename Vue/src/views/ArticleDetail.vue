@@ -1,21 +1,21 @@
 <template>
   <div>
     Article Detail
-    <article/>
-    <feedback/>
-    <feedbackEditor/>
+    <Article />
+    <Feedback />
+    <FeedbackEditor />
   </div>
 </template>
 
 <script>
-import article from '../components/Article'
-import feedback from '../components/Feedback'
-import feedbackEditor from '../components/FeedbackEditor'
+import Article from '../components/Article'
+import Feedback from '../components/Feedback'
+import FeedbackEditor from '../components/FeedbackEditor'
 export default {
-  components:{
-    article,
-    feedback,
-    feedbackEditor
+  components: {
+    Article,
+    Feedback,
+    FeedbackEditor
   }
 }
 </script>
