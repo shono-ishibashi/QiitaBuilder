@@ -1,19 +1,35 @@
 package com.qiitabuilder.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.qiitabuilder.domain.Recommend;
+import com.qiitabuilder.service.RecommendService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(value = "/my-article")
+@RequestMapping(value = "/recommend")
 public class RecommendController {
+
+    @Autowired
+    private RecommendService recommendService;
 
     /////////////////////////////
     //// GET
     /////////////////////////////
+    @GetMapping("")
+    @ResponseStatus(HttpStatus.OK)
+    public Recommend fetchRecommend(Integer articleId, Integer recommendUserId) {
+        return recommendService.fetchRecommend(articleId, recommendUserId);
+    }
 
     /////////////////////////////
     //// POST
     /////////////////////////////
+    @PostMapping("")
+    @ResponseStatus(HttpStatus.OK)
+    public Recommend postRecommend(@RequestBody Recommend recommend) {
+        return recommendService.postRecommend(recommend);
+    }
 
     /////////////////////////////
     //// PUT
@@ -23,4 +39,9 @@ public class RecommendController {
     /////////////////////////////
     //// DELETE
     /////////////////////////////
+    @DeleteMapping("/{recommendId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteRecommend(@PathVariable("recommendId") Integer recommendId) {
+        recommendService.deleteRecommend(recommendId);
+    }
 }

@@ -1,33 +1,36 @@
 package com.qiitabuilder.domain;
 
-
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class Article {
-	private Integer articleId;
-	private User postedUser;
+    private Integer articleId;
 
-	private LocalDateTime createdAt;
+    private User postedUser;
 
-	private LocalDateTime updatedAt;
+    private LocalDateTime createdAt;
 
-	private String title;
+    private LocalDateTime updatedAt;
 
-	private String content;
+    private String title;
 
-	private Integer stateFlag;
+    private String content;
 
-	private String qiitaArticleId;
+    private Integer stateFlag;
 
-	private List<Tag> tags;
+    private String qiitaArticleId;
 
-	private List<Feedback> feedbacks;
+    private List<Tag> tags;
 
-	private Integer qiitaRecommendPoint;
+    private List<Feedback> feedbacks;
 
-	private Integer registeredMyArticleCount;
+    private Integer qiitaRecommendPoint;
 
-	private Integer feedbackCount;
+    private Integer registeredMyArticleCount;
+
+    private Integer feedbackCount;
 }

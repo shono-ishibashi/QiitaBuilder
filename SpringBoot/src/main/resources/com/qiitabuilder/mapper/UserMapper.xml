@@ -4,6 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.qiitabuilder.mapper.UserMapper">
+
     <select id="selectTest" resultType="map">
         SELECT *
         FROM users;
@@ -28,7 +29,8 @@
                                   group by feed.user_id) as feed_cnt_table
                                  on u.user_id = feed_cnt_table.user_id
                  left outer join (select user_id, count(art.user_id) as art_qiita_cnt
-                                  from qiita_builder.articles as art where art.state_flag=2
+                                  from qiita_builder.articles as art
+                                  where art.state_flag = 2
                                   group by art.user_id) as art_qiita_cnt_table
                                  on u.user_id = art_qiita_cnt_table.user_id
                  left outer join (select posted_user_id, count(recommend.posted_user_id) as recommend_cnt
@@ -37,6 +39,7 @@
                                  on u.user_id = recommend_cnt_table.posted_user_id
         where u.user_id = #{userId};
     </select>
+
 
     <select id="findByUid" resultMap="userResultMap">
         SELECT user_id      as user_id,
@@ -47,7 +50,6 @@
         FROM users
         WHERE uid = #{uid}
     </select>
-
     <select id="findByUserId">
         SELECT user_id      as user_id,
                uid          as uid,
@@ -59,8 +61,8 @@
     </select>
 
     <insert id="insert">
-        INSERT INTO users(uid,password)
-        VALUES (#{uid},#{password})
+        INSERT INTO users(uid, password)
+        VALUES (#{uid}, #{password})
     </insert>
 
     <resultMap id="userResultMap" type="com.qiitabuilder.domain.User">

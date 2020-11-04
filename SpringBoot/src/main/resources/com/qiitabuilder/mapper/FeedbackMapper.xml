@@ -3,6 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qiitabuilder.mapper.FeedbackMapper">
+
     <select id="getFeedbackedArticlesByUserId" resultMap="feedbackedArticlesResultMap">
         select art.article_id                    as article_id,
                art.title                         as article_title,
@@ -56,4 +57,72 @@
             <result column="tag_name" property="tagName"/>
         </collection>
     </resultMap>
+
+    <resultMap id="rankingUserResultMap" type="com.qiitabuilder.domain.RankingUser">
+        <association property="user" javaType="com.qiitabuilder.domain.User">
+            <id column="userId" property="userId"/>
+            <result property="userId" column="user_id"/>
+            <result property="displayName" column="display_name"/>
+            <result property="photoUrl" column="photo_url"/>
+            <result property="feedbackCount" column="fb_count"/>
+            <result property="postedArticleCount" column="post_art_count"/>
+            <result property="qiitaRecommendedAllCount" column="qiita_rec_all_count"/>
+        </association>
+    </resultMap>
+
+    <!-- ****** SELECT ****** -->
+    <!--    <select id="getCount" resultType="Integer">-->
+    <!--        SELECT count(*)-->
+    <!--        FROM feedbacks-->
+    <!--        <where>-->
+    <!--            user_id = #{userId};-->
+    <!--        </where>-->
+    <!--    </select>-->
+
+    <select id="getFBRank" resultMap="rankingUserResultMap">
+        SELECT users.user_id,
+               users.display_name,
+               users.photo_url,
+               fbrank.cnt AS fb_count,
+               (
+                   SELECT count(*)
+                   FROM articles AS art
+                   WHERE art.user_id = fbrank.user_id
+                     AND (art.state_flag = 1 OR art.state_flag = 2)
+               )          AS post_art_count,
+               (
+                   SELECT count(*)
+                   FROM qiita_recommends AS rec
+                   WHERE rec.posted_user_id = fbrank.user_id
+               )          AS qiita_rec_all_count
+        FROM (
+                 SELECT user_id,
+                        count(*) AS cnt
+                 FROM feedbacks
+                 GROUP BY user_id
+                 ORDER BY count(*) DESC
+             ) AS fbrank
+                 LEFT OUTER JOIN users
+                                 ON fbrank.user_id = users.user_id;
+    </select>
+
+    <select id="getArticleIdByUserId" resultType="Integer">
+        SELECT fb.article_id
+        FROM feedbacks AS fb
+        WHERE fb.user_id = #{userId}
+          AND fb.article_id IN (
+            SELECT art.article_id
+            FROM articles AS art
+            WHERE art.state_flag = 1
+               OR art.state_flag = 2
+        )
+        order by fb.created_at DESC;
+    </select>
+
+    <!-- ****** INSERT ****** -->
+
+    <!-- ****** UPDATE ****** -->
+
 </mapper>
+
+
