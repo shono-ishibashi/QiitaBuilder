@@ -92,10 +92,12 @@
 
     <!-- ****** SELECT ****** -->
     <select id="searchArticles" resultMap="articlesMap">
-        select art.article_id as articleId,
+        select
+        art.article_id as articleId,
         art.title as title,
         art.created_at as createdAt,
         art.updated_at as updatedAt,
+        art.state_flag as stateFlag,
         tags.tag_id as tagId,
         tags.tag_name as tagName,
         feed_cnt_table.feed_cnt as feedCnt,
@@ -180,7 +182,7 @@
             </if>
         </where>
     </select>
-    
+
     <select id="load" resultMap="loadResult">
         SELECT
         art.article_id as art_article_id,
@@ -278,7 +280,8 @@
         ;
     </select>
 
-    <select id="getPostedArticleCountRank" resultMap="rankingUserResultMap">
+    <select id="
+                " resultMap="rankingUserResultMap">
         SELECT users.user_id,
                users.display_name,
                users.photo_url,

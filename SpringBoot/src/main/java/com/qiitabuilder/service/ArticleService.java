@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLSyntaxErrorException;
 import java.util.List;
 
 import java.util.stream.Collectors;
@@ -33,7 +34,7 @@ public class ArticleService {
      * @param searchArticleForm
      * @return
      */
-    public List<Article> fetchArticle(SearchArticleForm searchArticleForm) {
+    public List<Article> searchArticles(SearchArticleForm searchArticleForm) {
 
 //        sortNumの値ごとに並び替える条件を設定
         if (searchArticleForm.getSortNum() == 0) {
