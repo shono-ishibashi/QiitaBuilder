@@ -47,16 +47,16 @@ public class ArticleController {
 
     @GetMapping("/{articleId}")
     @ResponseStatus(HttpStatus.OK)
-    public Article fetchArticle(@PathVariable("articleId") String strArticleId) {
-        Integer articleId;
+    public Article getArticle(@PathVariable("articleId") String articleId) {
+        Integer parsedArticleId;
         // 入力値が正しくない場合はBadRequestExceptionを投げる
         try {
-            articleId = Integer.parseInt(strArticleId);
+            parsedArticleId = Integer.parseInt(articleId);
         } catch (NumberFormatException e) {
             throw new BadRequestException("");
         }
 
-        Article result = articleService.getArticle(articleId);
+        Article result = articleService.getArticle(parsedArticleId);
 
         // 検索結果がない場合はNotFoundExceptionを投げる
         if (Objects.isNull(result)) {
