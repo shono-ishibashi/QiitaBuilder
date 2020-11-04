@@ -8,7 +8,10 @@ import com.qiitabuilder.service.ArticleService;
 import com.qiitabuilder.service.QiitaAPIService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Objects;
@@ -28,8 +31,11 @@ public class ArticleController {
     @RequestMapping(value = "/", method = RequestMethod.GET)
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    public List<Article> fetchArticle(@ModelAttribute SearchArticleForm searchArticleForm) {
-        return articleService.fetchArticle(searchArticleForm);
+    public List<Article> searchArticles(@Validated @ModelAttribute SearchArticleForm searchArticleForm, BindingResult result) {
+        if(result.hasErrors()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+            return articleService.searchArticles(searchArticleForm);
     }
 
     @RequestMapping(value = "/totalPage", method = RequestMethod.GET)
@@ -41,7 +47,7 @@ public class ArticleController {
 
     @GetMapping("/{articleId}")
     @ResponseStatus(HttpStatus.OK)
-    public Article getArticle(@PathVariable("articleId") String strArticleId) {
+    public Article fetchArticle(@PathVariable("articleId") String strArticleId) {
         Integer articleId;
         // 入力値が正しくない場合はBadRequestExceptionを投げる
         try {
