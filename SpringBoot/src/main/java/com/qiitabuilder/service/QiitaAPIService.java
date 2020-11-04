@@ -1,15 +1,21 @@
 package com.qiitabuilder.service;
 
+import com.qiitabuilder.domain.QiitaConfiguration;
+import com.qiitabuilder.domain.User;
+import com.qiitabuilder.mapper.QiitaConfigurationMapper;
+import com.qiitabuilder.mapper.UserMapper;
+import com.qiitabuilder.security.SimpleLoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
+import static java.util.Objects.isNull;
+
 
 /**
  * QiitaAPIと接続し、処理を行うクラス
@@ -18,20 +24,118 @@ import java.util.Map;
 @Service
 public class QiitaAPIService {
 
+
+
     @Autowired
     private RestTemplate restTemplate;
 
-    public static final String URL = "https://qiita.com/api/v2/items";
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private QiitaConfigurationMapper qiitaConfigurationMapper;
+
+
 
     public void restTemplateTest() {
-        Map<String, String> requestBody = new HashMap<String, String>();
-        requestBody.put("body","# テスト");
-        requestBody.put("title","テスト");
+        final String URL = "https://qiita.com/api/v2/items";
 
-        RequestEntity<Map<String, String>> requestEntity = RequestEntity
-                .post(URI.create(URL))
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization","Bearer 21c96b7e4607cf12e6bc9841815a4dd06e8b7ad8")
-                .body(requestBody);
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("body", "# テスト from StringBoot");
+        requestBody.put("title", "テスト from StringBoot");
+        requestBody.put("private", false);
+
+        Map<String, Object> tag1 = new HashMap<>();
+        tag1.put("name", "java");
+        tag1.put("versions", new ArrayList<>());
+
+        List<Map<String, Object>> tags = new ArrayList<>();
+        tags.add(tag1);
+
+        requestBody.put("tags", tags);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        headers.add("Authorization", "Bearer 037eefff6e3c7ad9142fe1134fe78ebc9d0603df");
+
+        // build the request
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<String> response = restTemplate.postForEntity(URL, request, String.class);
+
+        System.out.println(response);
+
+    }
+
+    /**
+     *
+     * 正常なリクエストか判断するためのstateを作成し、Qiita APIの認証画面へ遷移させるURLを作成するメソッド
+     *
+     * @return QiitaAPIの認証画面へのURL
+     */
+    public String generateQiitaAPIAuthenticationURL() {
+
+        final String CLIENT_ID = "59ba99a3357cf730bbcab40fde87bb06f3876124";
+        final String CLIENT_SECRET = "6dde7331beda9a58b7665d9767c9dd6b6241198b";
+        final String SCOPE = "scope=read_qiita+write_qiita";
+
+        final String BASE_URL = "https://qiita.com/api/v2/oauth/authorize";
+
+        String state = UUID.randomUUID().toString();
+
+        String request = BASE_URL + '?' +
+                "client_id=" + CLIENT_ID +
+                "&scope=" + SCOPE  +
+                "&state=" + state;
+
+        QiitaConfiguration qiitaConfiguration = new QiitaConfiguration();
+        //ログイン中のユーザ情報をセット
+        SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        qiitaConfiguration.setUserId(loginUser.getUser().getUserId());
+
+        qiitaConfiguration.setState(state);
+
+        //DBにstateを保存
+        qiitaConfigurationMapper.insertQiitaConfiguration(qiitaConfiguration);
+
+        return request;
+    }
+
+    /**
+     * Qiitaからリダイレクトされてきたstateがデータベースに存在するのかを確認するメソッド
+     *
+     * @return  存在する:true 存在しない:false
+     */
+
+    public boolean existsStateInDB(QiitaConfiguration qiitaConfiguration) {
+        String stateInDB = qiitaConfigurationMapper.getState(qiitaConfiguration.getState());
+        if(isNull(stateInDB)){
+            return false;
+        }else {
+            qiitaConfigurationMapper.updateQiitaConfigurationCode(qiitaConfiguration);
+            return true;
+        }
+    }
+
+    /**
+     *
+     * QiitaAPIのトークンを取得するメソッド
+     *
+     * @return
+     */
+    public String getToken(){
+//        User loginUser = (User)
+//        userMapper.findQiitaAPICodeByUserId();
+
+        return null;
+    }
+
+    public void updateCode(QiitaConfiguration qiitaConfiguration) {
+        qiitaConfigurationMapper.updateQiitaConfigurationCode(qiitaConfiguration);
+    }
+
+    public void deleteByUserId(Integer userId) {
+        qiitaConfigurationMapper.deleteByUserId(userId);
     }
 }
