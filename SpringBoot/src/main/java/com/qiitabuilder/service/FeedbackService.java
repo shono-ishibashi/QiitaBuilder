@@ -22,7 +22,6 @@ public class FeedbackService {
         SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = new User();
         user.setUserId(loginUser.getUser().getUserId());
-
         feedback.setPostedUser(user);
 
         // deleteFlagに0:未削除をセット
@@ -37,7 +36,21 @@ public class FeedbackService {
     }
 
     public Feedback updateFeedback(Feedback feedback) {
-        return null;
+        // ログイン中のユーザ情報をセット
+        SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = new User();
+        user.setUserId(loginUser.getUser().getUserId());
+        feedback.setPostedUser(user);
+        // 作成日時の取得
+        LocalDateTime createdAt = feedbackMapper.load(feedback.getFeedbackId()).getCreatedAt();
+        feedback.setCreatedAt(createdAt);
+
+        // 現在時刻をセット
+        feedback.setUpdatedAt(LocalDateTime.now());
+
+        feedbackMapper.update(feedback);
+
+        return feedback;
     }
 
 }

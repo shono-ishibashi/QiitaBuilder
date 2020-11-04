@@ -19,8 +19,10 @@ public class FeedbackController {
         return feedbackService.postFeedback(feedback);
     }
 
-    public Feedback updateFeedback(Feedback feedback) {
-        return null;
+    @PutMapping("")
+    @ResponseStatus(HttpStatus.OK)
+    public Feedback updateFeedback(@RequestBody Feedback feedback) {
+        return feedbackService.updateFeedback(feedback);
     }
 
     public void deleteFeedback(Feedback feedback) {
