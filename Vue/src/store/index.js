@@ -5,6 +5,7 @@ import articles from './modules/articles'
 import article from './modules/article'
 import users from './modules/users'
 import user from './modules/user'
+import qiitaAPI from './modules/qiitaAPI'
 
 Vue.use(Vuex)
 
@@ -20,6 +21,7 @@ export default new Vuex.Store({
     articles:articles,
     article:article,
     users:users,
-    user:user
+    user:user,
+    qiitaAPI:qiitaAPI
   }
 })
