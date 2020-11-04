@@ -119,14 +119,38 @@
         order by fb.created_at DESC;
     </select>
 
-    <select id="load" resultType="com.qiitabuilder.domain.Feedback">
+    <select id="load" resultMap="feedbackResultMap">
         SELECT
-         *
+        fee.feedback_id as fee_feedback_id,
+        fee.article_id as fee_article_id,
+        fee.created_at as fee_created_at,
+        fee.updated_at as fee_updated_at,
+        fee.content as fee_content,
+        fee.delete_flag as fee_delete_flag,
+        users.user_id as users_user_id,
+        users.display_name as users_display_name,
+        users.photo_url as users_photo_url
         FROM
-        feedbacks
+        feedbacks as fee
+        LEFT JOIN
+        users as users
+        ON fee.user_id = users.user_id
         WHERE
         feedback_id = #{feedbackId}
     </select>
+    <resultMap id="feedbackResultMap" type="com.qiitabuilder.domain.Feedback">
+        <id column="fee_feedback_id" property="feedbackId"/>
+        <result column="fee_article_id" property="articleId"/>
+        <result column="fee_created_at" property="createdAt"/>
+        <result column="fee_updated_at" property="updatedAt"/>
+        <result column="fee_content" property="content"/>
+        <result column="fee_delete_flag" property="deleteFlag"/>
+        <collection property="postedUser" ofType="com.qiitabuilder.domain.User">
+            <id column="users_user_id" property="userId"/>
+            <result column="users_display_name" property="displayName"/>
+            <result column="users_photo_url" property="photoUrl"/>
+        </collection>
+    </resultMap>
 
     <!-- ****** INSERT ****** -->
     <insert id="insert" useGeneratedKeys="true" keyProperty="feedbackId" parameterType="com.qiitabuilder.domain.Feedback">
@@ -145,6 +169,14 @@
     </insert>
 
     <!-- ****** UPDATE ****** -->
+    <update id="update" parameterType="com.qiitabuilder.domain.Feedback">
+        UPDATE feedbacks
+        SET user_id = #{postedUser.userId},
+        updated_at = #{updatedAt},
+        content = #{content},
+        delete_flag = #{deleteFlag}
+        WHERE feedback_id = #{feedbackId}
+    </update>
 
 </mapper>
 

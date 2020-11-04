@@ -23,8 +23,13 @@ public interface FeedbackMapper {
      */
     Integer insert(Feedback feedback);
 
-
-//    void update(Feedback feedback);
+    /**
+     * フィードバックを編集する.
+     *
+     * @param feedback 記事情報
+     * @return update件数
+     */
+    Integer update(Feedback feedback);
 
     /**
      * FBした数ランキング順でユーザー情報を取得する.
