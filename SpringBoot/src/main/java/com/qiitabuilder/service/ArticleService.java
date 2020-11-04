@@ -29,6 +29,7 @@ public class ArticleService {
     private FeedbackMapper feedbackMapper;
     @Autowired
     private MyArticleMapper myArticleMapper;
+
     private ArticleMapper articleMapper;
 
     @Autowired

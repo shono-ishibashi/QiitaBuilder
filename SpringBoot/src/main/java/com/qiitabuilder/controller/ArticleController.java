@@ -33,10 +33,10 @@ public class ArticleController {
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
     public List<Article> searchArticles(@Validated @ModelAttribute SearchArticleForm searchArticleForm, BindingResult result) {
-        if(result.hasErrors()){
+        if (result.hasErrors()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-            return articleService.searchArticles(searchArticleForm);
+        return articleService.searchArticles(searchArticleForm);
     }
 
     @RequestMapping(value = "/totalPage", method = RequestMethod.GET)
@@ -98,10 +98,10 @@ public class ArticleController {
     /**
      * ユーザーがFBした記事の一覧を取得するメソッド
      *
-     * @param userId　取得したいユーザーID
+     * @param userId 　取得したいユーザーID
      * @return　フィードバックした記事の一覧
      */
-    @RequestMapping(value = "/feedbacked",  method = RequestMethod.GET)
+    @RequestMapping(value = "/feedbacked", method = RequestMethod.GET)
     public List<Article> getFeedbackedArticlesByUserId(Integer userId) {
         return articleService.getFeedbackedArticlesByUserId(userId);
     }
@@ -114,7 +114,7 @@ public class ArticleController {
      * @return　My記事登録した記事の一覧
      */
     @RequestMapping(value = "/my-articles", method = RequestMethod.GET)
-    public List<Article> getMyArticlesByUserId(Integer userId){
+    public List<Article> getMyArticlesByUserId(Integer userId) {
         return articleService.getMyArticlesByUserId(userId);
     }
 

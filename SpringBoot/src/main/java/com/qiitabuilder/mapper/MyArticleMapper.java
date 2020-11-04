@@ -13,6 +13,11 @@ import org.springframework.stereotype.Repository;
 @Mapper
 @Repository
 public interface MyArticleMapper {
+    /**
+     * MyArticleに紐づいたArticleのレコードを取得する
+     * @param userId
+     * @return
+     */
     List<Article> getMyArticlesByUserId(@Param("userId") Integer userId);
     /**
      * 検索条件に一致するレコードを取得する

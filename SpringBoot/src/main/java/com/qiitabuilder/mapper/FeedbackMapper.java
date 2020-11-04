@@ -39,5 +39,11 @@ public interface FeedbackMapper {
 //     * @return FBした数
 //     */
 //    Integer getCount(Integer userId);
+
+    /**
+     * FBした記事一覧を取得する
+     * @param userId ユーザーID
+     * @return FBした記事一覧
+     */
     List<Article> getFeedbackedArticlesByUserId(@Param("userId") Integer userId);
 }
