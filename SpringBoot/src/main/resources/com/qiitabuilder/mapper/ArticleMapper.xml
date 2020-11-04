@@ -9,6 +9,7 @@
         <result column="title" property="title"/>
         <result column="createdAt" property="createdAt"/>
         <result column="updatedAt" property="updatedAt"/>
+        <result column="stateFlag" property="stateFlag"/>
         <result column="feedCnt" property="feedbackCount"/>
         <result column="myCnt" property="registeredMyArticleCount"/>
         <result column="recommendCnt" property="qiitaRecommendPoint"/>
