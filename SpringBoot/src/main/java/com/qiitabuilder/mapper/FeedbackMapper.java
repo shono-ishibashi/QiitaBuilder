@@ -13,8 +13,17 @@ import java.util.List;
 @Mapper
 @Repository
 public interface FeedbackMapper {
-//    void insert(Feedback feedback);
-//    Integer getAutoIncrementKey();
+
+    /**
+     * フィードバックを投稿する.
+     * ※feedbackIdプロパティに自動生成キーがセットされる.
+     *
+     * @param feedback 記事情報
+     * @return 挿入件数
+     */
+    Integer insert(Feedback feedback);
+
+
 //    void update(Feedback feedback);
 
     /**
@@ -32,6 +41,14 @@ public interface FeedbackMapper {
      */
     List<Integer> getArticleIdByUserId(Integer userId);
 
+    /**
+     * FBIDが一致するフィードバック情報を返す
+     *
+     * @param feedbackId
+     * @return フィードバック情報
+     */
+    Feedback load(Integer feedbackId);
+
 //    /**
 //     * FBした数を取得する.
 //     *
@@ -42,6 +59,7 @@ public interface FeedbackMapper {
 
     /**
      * FBした記事一覧を取得する
+     *
      * @param userId ユーザーID
      * @return FBした記事一覧
      */
