@@ -16,21 +16,33 @@ public class RankingUserController {
     @Autowired
     private RankingUserService rankingUserService;
 
+    /**
+     * FBした数ランキングを取得する.
+     *
+     * @return ランキングユーザー一覧
+     */
     @GetMapping("/FBCount")
-    public List<RankingUser> fetchFBCountRank(){
-        List<RankingUser> rankList = rankingUserService.fetchFBCountRank();
-        return rankList;
+    public List<RankingUser> fetchFBCountRank() {
+        return rankingUserService.fetchFBCountRank();
     }
 
+    /**
+     * 記事投稿数ランキングを取得する.
+     *
+     * @return ランキングユーザー一覧
+     */
     @GetMapping("/articleCount")
-    public List<RankingUser> fetchArticleCountRank(){
-        List<RankingUser> rankList = rankingUserService.fetchArticleCountRank();
-        return rankList;
+    public List<RankingUser> fetchArticleCountRank() {
+        return rankingUserService.fetchArticleCountRank();
     }
 
+    /**
+     * Qiita推薦累計数ランキングを取得する.
+     *
+     * @return ランキングユーザー一覧
+     */
     @GetMapping("/qiitaRecommendedCount")
-    public List<RankingUser> fetchQiitaCountRank(){
-        List<RankingUser> rankList = rankingUserService.fetchQiitaCountRank();
-        return rankList;
+    public List<RankingUser> fetchQiitaCountRank() {
+        return rankingUserService.fetchQiitaCountRank();
     }
 }
