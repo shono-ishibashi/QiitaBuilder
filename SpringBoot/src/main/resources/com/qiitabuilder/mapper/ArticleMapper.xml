@@ -281,8 +281,7 @@
         ;
     </select>
 
-    <select id="
-                " resultMap="rankingUserResultMap">
+    <select id="getPostedArticleCountRank" resultMap="rankingUserResultMap">
         SELECT users.user_id,
                users.display_name,
                users.photo_url,
