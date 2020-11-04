@@ -35,7 +35,7 @@ public class ArticleController {
         if(result.hasErrors()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-            return articleService.searchArticles(searchArticleForm);
+        return articleService.searchArticles(searchArticleForm);
     }
 
     @RequestMapping(value = "/totalPage", method = RequestMethod.GET)
