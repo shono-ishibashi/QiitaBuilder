@@ -65,7 +65,30 @@
         order by fb.created_at DESC;
     </select>
 
+    <select id="load" resultType="com.qiitabuilder.domain.Feedback">
+        SELECT
+         *
+        FROM
+        feedbacks
+        WHERE
+        feedback_id = #{feedbackId}
+    </select>
+
     <!-- ****** INSERT ****** -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="feedbackId" parameterType="com.qiitabuilder.domain.Feedback">
+        INSERT INTO feedbacks(
+        article_id,
+        user_id,
+        created_at,
+        content,
+        delete_flag)
+        VALUES (
+        #{articleId},
+        #{postedUser.userId},
+        #{createdAt},
+        #{content},
+        #{deleteFlag})
+    </insert>
 
     <!-- ****** UPDATE ****** -->
 

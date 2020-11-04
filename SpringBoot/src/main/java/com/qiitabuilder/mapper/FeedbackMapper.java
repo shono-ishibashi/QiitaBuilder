@@ -1,5 +1,6 @@
 package com.qiitabuilder.mapper;
 
+import com.qiitabuilder.domain.Feedback;
 import com.qiitabuilder.domain.RankingUser;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
@@ -9,8 +10,18 @@ import java.util.List;
 @Mapper
 @Repository
 public interface FeedbackMapper {
-//    void insert(Feedback feedback);
-//    Integer getAutoIncrementKey();
+
+    /**
+     * フィードバックを投稿する.
+     * ※feedbackIdプロパティに自動生成キーがセットされる.
+     *
+     * @param feedback 記事情報
+     * @return 挿入件数
+     */
+    Integer insert(Feedback feedback);
+
+
+
 //    void update(Feedback feedback);
 
     /**
@@ -28,6 +39,13 @@ public interface FeedbackMapper {
      */
     List<Integer> getArticleIdByUserId(Integer userId);
 
+    /**
+     * FBIDが一致するフィードバック情報を返す
+     * @param feedbackId
+     * @return フィードバック情報
+     */
+    Feedback load(Integer feedbackId);
+
 //    /**
 //     * FBした数を取得する.
 //     *
@@ -35,4 +53,6 @@ public interface FeedbackMapper {
 //     * @return FBした数
 //     */
 //    Integer getCount(Integer userId);
+
+
 }
