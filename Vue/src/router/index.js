@@ -1,9 +1,15 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import ArticleList from '../views/ArticleList'
 
 Vue.use(VueRouter)
 
 const routes = [
+  {
+    path:'/articleList',
+    name:'ArticleList',
+    component:ArticleList
+  }
 ]
 
 const router = new VueRouter({
