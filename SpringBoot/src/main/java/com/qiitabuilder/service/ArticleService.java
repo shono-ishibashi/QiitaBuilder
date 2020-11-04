@@ -29,7 +29,7 @@ public class ArticleService {
     private FeedbackMapper feedbackMapper;
     @Autowired
     private MyArticleMapper myArticleMapper;
-
+    @Autowired
     private ArticleMapper articleMapper;
 
     @Autowired
@@ -54,6 +54,7 @@ public class ArticleService {
             searchArticleForm.setSort("myCnt");
         }
 //        表示ページ数、現在ページ数を元にoffsetの値を定義
+//        pageSizeを0にすると全件取得
         if (searchArticleForm.getCurrentPage() == 1) {
             searchArticleForm.setOffset(0);
         } else {
