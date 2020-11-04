@@ -1,39 +1,33 @@
 package com.qiitabuilder.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class Article {
-    private Integer articleId;
-    private User postedUser;
+	private Integer articleId;
+	private User postedUser;
 
-    private LocalDateTime createdAt;
+	private LocalDateTime createdAt;
 
-    private LocalDateTime updatedAt;
+	private LocalDateTime updatedAt;
 
-    private String title;
+	private String title;
 
-    private String content;
+	private String content;
 
-    private Integer stateFlag;
+	private Integer stateFlag;
 
-    private String qiitaArticleId;
+	private String qiitaArticleId;
 
-    private List<Tag> tags;
+	private List<Tag> tags;
 
-    private List<Feedback> feedbacks;
+	private List<Feedback> feedbacks;
 
-    private Integer qiitaRecommendPoint;
+	private Integer qiitaRecommendPoint;
 
-    private Integer registeredMyArticleCount;
+	private Integer registeredMyArticleCount;
 
-    private Integer feedbackCount;
+	private Integer feedbackCount;
 }
