@@ -6,19 +6,20 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+
 import com.qiitabuilder.domain.MyArticle;
-import org.apache.ibatis.annotations.Mapper;
-import org.springframework.stereotype.Repository;
 
 @Mapper
 @Repository
 public interface MyArticleMapper {
     /**
      * MyArticleに紐づいたArticleのレコードを取得する
+     *
      * @param userId
      * @return
      */
     List<Article> getMyArticlesByUserId(@Param("userId") Integer userId);
+
     /**
      * 検索条件に一致するレコードを取得する
      *
@@ -46,7 +47,8 @@ public interface MyArticleMapper {
      * MyArticleを削除する
      *
      * @param myArticleId My記事ID
+     * @return テーブルに１レコード以上の削除があった場合はtrue、１件も無かった場合はfalseを返す
      */
-    void delete(Integer myArticleId);
+    boolean delete(Integer myArticleId);
 
 }
