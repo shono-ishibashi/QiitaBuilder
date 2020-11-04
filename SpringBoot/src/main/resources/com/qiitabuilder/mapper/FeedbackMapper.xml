@@ -4,4 +4,180 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qiitabuilder.mapper.FeedbackMapper">
 
+    <select id="getFeedbackedArticlesByUserId" resultMap="feedbackedArticlesResultMap">
+        select art.article_id                    as article_id,
+               art.title                         as article_title,
+               art.created_at                    as created_at,
+               art.updated_at                    as updated_at,
+               art.state_flag                    as state_flag,
+               tags.tag_id                       as tag_id,
+               tags.tag_name                     as tag_name,
+               feed_cnt_table.feed_cnt           as feedback_count,
+               my_cnt_table.my_cnt               as registered_my_article_count,
+               users.user_id                     as user_id,
+               users.display_name                as display_name,
+               users.photo_url                   as photo_url,
+               recommend_cnt_table.recommend_cnt as qiita_recommend_point
+        from qiita_builder.feedbacks as feedbacked
+                 left join qiita_builder.articles as art on feedbacked.article_id = art.article_id
+                 left outer join qiita_builder.articles_tags_relations as a_t_relation
+                                 on art.article_id = a_t_relation.article_id
+                 left outer join qiita_builder.tags as tags on a_t_relation.tag_id = tags.tag_id
+                 left outer join (select article_id, count(feed.article_id) as feed_cnt
+                                  from qiita_builder.feedbacks as feed
+                                  group by feed.article_id) as feed_cnt_table
+                                 on art.article_id = feed_cnt_table.article_id
+                 left outer join (select article_id, count(my.article_id) as my_cnt
+                                  from qiita_builder.my_articles as my
+                                  group by my.article_id) as my_cnt_table on art.article_id = my_cnt_table.article_id
+                 left outer join (select article_id, count(recommend.article_id) as recommend_cnt
+                                  from qiita_builder.qiita_recommends as recommend
+                                  group by recommend.article_id) as recommend_cnt_table
+                                 on art.article_id = recommend_cnt_table.article_id
+                 left join qiita_builder.users on art.user_id = users.user_id
+        where feedbacked.user_id = #{userId}
+        order by art.created_at DESC;
+    </select>
+    <resultMap id="feedbackedArticlesResultMap" type="com.qiitabuilder.domain.Article">
+        <id column="article_id" property="articleId"/>
+        <result column="article_title" property="title"/>
+        <result column="state_flag" property="stateFlag"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="feedback_count" property="feedbackCount"/>
+        <result column="registered_my_article_count" property="registeredMyArticleCount"/>
+        <result column="qiita_recommend_point" property="qiitaRecommendPoint"/>
+        <collection property="postedUser" ofType="com.qiitabuilder.domain.User">
+            <result column="user_id" property="userId"/>
+            <result column="display_name" property="displayName"/>
+            <result column="photo_url" property="photoUrl"/>
+        </collection>
+        <collection property="tags" ofType="com.qiitabuilder.domain.Tag">
+            <result column="tag_id" property="tagId"/>
+            <result column="tag_name" property="tagName"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="rankingUserResultMap" type="com.qiitabuilder.domain.RankingUser">
+        <association property="user" javaType="com.qiitabuilder.domain.User">
+            <id column="userId" property="userId"/>
+            <result property="userId" column="user_id"/>
+            <result property="displayName" column="display_name"/>
+            <result property="photoUrl" column="photo_url"/>
+            <result property="feedbackCount" column="fb_count"/>
+            <result property="postedArticleCount" column="post_art_count"/>
+            <result property="qiitaRecommendedAllCount" column="qiita_rec_all_count"/>
+        </association>
+    </resultMap>
+
+    <!-- ****** SELECT ****** -->
+    <!--    <select id="getCount" resultType="Integer">-->
+    <!--        SELECT count(*)-->
+    <!--        FROM feedbacks-->
+    <!--        <where>-->
+    <!--            user_id = #{userId};-->
+    <!--        </where>-->
+    <!--    </select>-->
+
+    <select id="getFBRank" resultMap="rankingUserResultMap">
+        SELECT users.user_id,
+               users.display_name,
+               users.photo_url,
+               fbrank.cnt AS fb_count,
+               (
+                   SELECT count(*)
+                   FROM articles AS art
+                   WHERE art.user_id = fbrank.user_id
+                     AND (art.state_flag = 1 OR art.state_flag = 2)
+               )          AS post_art_count,
+               (
+                   SELECT count(*)
+                   FROM qiita_recommends AS rec
+                   WHERE rec.posted_user_id = fbrank.user_id
+               )          AS qiita_rec_all_count
+        FROM (
+                 SELECT user_id,
+                        count(*) AS cnt
+                 FROM feedbacks
+                 GROUP BY user_id
+                 ORDER BY count(*) DESC
+             ) AS fbrank
+                 LEFT OUTER JOIN users
+                                 ON fbrank.user_id = users.user_id;
+    </select>
+
+    <select id="getArticleIdByUserId" resultType="Integer">
+        SELECT fb.article_id
+        FROM feedbacks AS fb
+        WHERE fb.user_id = #{userId}
+          AND fb.article_id IN (
+            SELECT art.article_id
+            FROM articles AS art
+            WHERE art.state_flag = 1
+               OR art.state_flag = 2
+        )
+        order by fb.created_at DESC;
+    </select>
+
+    <select id="load" resultMap="feedbackResultMap">
+        SELECT
+        fee.feedback_id as fee_feedback_id,
+        fee.article_id as fee_article_id,
+        fee.created_at as fee_created_at,
+        fee.updated_at as fee_updated_at,
+        fee.content as fee_content,
+        fee.delete_flag as fee_delete_flag,
+        users.user_id as users_user_id,
+        users.display_name as users_display_name,
+        users.photo_url as users_photo_url
+        FROM
+        feedbacks as fee
+        LEFT JOIN
+        users as users
+        ON fee.user_id = users.user_id
+        WHERE
+        feedback_id = #{feedbackId}
+    </select>
+    <resultMap id="feedbackResultMap" type="com.qiitabuilder.domain.Feedback">
+        <id column="fee_feedback_id" property="feedbackId"/>
+        <result column="fee_article_id" property="articleId"/>
+        <result column="fee_created_at" property="createdAt"/>
+        <result column="fee_updated_at" property="updatedAt"/>
+        <result column="fee_content" property="content"/>
+        <result column="fee_delete_flag" property="deleteFlag"/>
+        <collection property="postedUser" ofType="com.qiitabuilder.domain.User">
+            <id column="users_user_id" property="userId"/>
+            <result column="users_display_name" property="displayName"/>
+            <result column="users_photo_url" property="photoUrl"/>
+        </collection>
+    </resultMap>
+
+    <!-- ****** INSERT ****** -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="feedbackId" parameterType="com.qiitabuilder.domain.Feedback">
+        INSERT INTO feedbacks(
+        article_id,
+        user_id,
+        created_at,
+        content,
+        delete_flag)
+        VALUES (
+        #{articleId},
+        #{postedUser.userId},
+        #{createdAt},
+        #{content},
+        #{deleteFlag})
+    </insert>
+
+    <!-- ****** UPDATE ****** -->
+    <update id="update" parameterType="com.qiitabuilder.domain.Feedback">
+        UPDATE feedbacks
+        SET user_id = #{postedUser.userId},
+        updated_at = #{updatedAt},
+        content = #{content},
+        delete_flag = #{deleteFlag}
+        WHERE feedback_id = #{feedbackId}
+    </update>
+
 </mapper>
+
+

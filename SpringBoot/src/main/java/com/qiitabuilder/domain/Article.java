@@ -1,6 +1,5 @@
 package com.qiitabuilder.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Article {
     private Integer articleId;
+
     private User postedUser;
 
     private LocalDateTime createdAt;

@@ -7,8 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Tag {
-    private Integer tagId;
-    private String tagName;
-    private Integer usedTagCount;
+public class Recommend {
+    private Integer recommendId;
+    private Integer articleId;
+    private Integer postedUserId;
+    private Integer recommendUserId;
 }

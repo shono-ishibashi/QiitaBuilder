@@ -2,6 +2,7 @@ package com.qiitabuilder.mapper;
 
 import com.qiitabuilder.domain.User;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -20,7 +21,11 @@ public interface UserMapper {
 
     void insert(User user);
 
+
     String findQiitaAPICodeByUserId(Integer userId);
 
     String updateQiitaAPICode(String qiitaAPICode,Integer userId);
+
+    User fetchUserDetails(@Param("userId") Integer userId);
+
 }

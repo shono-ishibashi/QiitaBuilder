@@ -1,30 +1,79 @@
 package com.qiitabuilder.service;
 
 import com.qiitabuilder.domain.Article;
-import com.qiitabuilder.domain.Tag;
+import com.qiitabuilder.mapper.FeedbackMapper;
+import com.qiitabuilder.mapper.MyArticleMapper;
+import com.qiitabuilder.form.SearchArticleForm;
 import com.qiitabuilder.mapper.ArticleMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.qiitabuilder.domain.Tag;
 import com.qiitabuilder.mapper.TagMapper;
 import com.qiitabuilder.security.SimpleLoginUser;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.sql.SQLSyntaxErrorException;
 import java.util.List;
+
 import java.util.stream.Collectors;
 
+
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
 
 @Service
+@Transactional
 public class ArticleService {
-
+    @Autowired
+    private FeedbackMapper feedbackMapper;
+    @Autowired
+    private MyArticleMapper myArticleMapper;
     @Autowired
     private ArticleMapper articleMapper;
 
     @Autowired
     private TagMapper tagMapper;
+
+    /**
+     * 条件に合った記事一覧を取得するメソッド
+     *
+     * @param searchArticleForm
+     * @return
+     */
+    public List<Article> searchArticles(SearchArticleForm searchArticleForm) {
+
+//        sortNumの値ごとに並び替える条件を設定
+        if (searchArticleForm.getSortNum() == 0) {
+            searchArticleForm.setSort("createdAt");
+        } else if (searchArticleForm.getSortNum() == 1) {
+            searchArticleForm.setSort("updatedAt");
+        } else if (searchArticleForm.getSortNum() == 2) {
+            searchArticleForm.setSort("recommendCnt");
+        } else if (searchArticleForm.getSortNum() == 3) {
+            searchArticleForm.setSort("myCnt");
+        }
+//        表示ページ数、現在ページ数を元にoffsetの値を定義
+//        pageSizeを0にすると全件取得
+        if (searchArticleForm.getCurrentPage() == 1) {
+            searchArticleForm.setOffset(0);
+        } else {
+            Integer offset = (searchArticleForm.getPageSize() * (searchArticleForm.getCurrentPage() - 1) + 1);
+            searchArticleForm.setOffset(offset);
+        }
+
+        return articleMapper.searchArticles(searchArticleForm);
+    }
+
+    /**
+     * 総ページ数を取得する
+     *
+     * @param searchArticleForm
+     * @return
+     */
+    public Integer getTotalPage(SearchArticleForm searchArticleForm) {
+        return articleMapper.getTotalPage(searchArticleForm);
+    }
 
     /**
      * 記事をDBに更新もしくは追加するメソッド
@@ -97,5 +146,31 @@ public class ArticleService {
                             )
                     );
         }
+    }
+
+    public Article getArticle(Integer articleId) {
+        return articleMapper.load(articleId);
+    }
+
+    /**
+     * ユーザーがFBした記事の一覧を取得するメソッド
+     * 各記事は記事ID、タイトル、作成・更新日時、状態、各カウント、タグリスト、記事作成者のID・名前・写真URL　を持つ
+     *
+     * @param userId 　取得したいユーザーID
+     * @return　フィードバックした記事の一覧
+     */
+    public List<Article> getFeedbackedArticlesByUserId(Integer userId) {
+        return feedbackMapper.getFeedbackedArticlesByUserId(userId);
+    }
+
+    /**
+     * My記事登録した記事の一覧を取得するメソッド
+     * 各記事は記事ID、タイトル、作成・更新日時、状態、各カウント、タグリスト、記事作成者のID・名前・写真URL　を持つ
+     *
+     * @param userId 　取得したいユーザーID
+     * @return　My記事登録した記事の一覧
+     */
+    public List<Article> getMyArticlesByUserId(Integer userId) {
+        return myArticleMapper.getMyArticlesByUserId(userId);
     }
 }
