@@ -4,6 +4,60 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qiitabuilder.mapper.FeedbackMapper">
 
+    <select id="getFeedbackedArticlesByUserId" resultMap="feedbackedArticlesResultMap">
+        select art.article_id                    as article_id,
+               art.title                         as article_title,
+               art.created_at                    as created_at,
+               art.updated_at                    as updated_at,
+               art.state_flag                    as state_flag,
+               tags.tag_id                       as tag_id,
+               tags.tag_name                     as tag_name,
+               feed_cnt_table.feed_cnt           as feedback_count,
+               my_cnt_table.my_cnt               as registered_my_article_count,
+               users.user_id                     as user_id,
+               users.display_name                as display_name,
+               users.photo_url                   as photo_url,
+               recommend_cnt_table.recommend_cnt as qiita_recommend_point
+        from qiita_builder.feedbacks as feedbacked
+                 left join qiita_builder.articles as art on feedbacked.article_id = art.article_id
+                 left outer join qiita_builder.articles_tags_relations as a_t_relation
+                                 on art.article_id = a_t_relation.article_id
+                 left outer join qiita_builder.tags as tags on a_t_relation.tag_id = tags.tag_id
+                 left outer join (select article_id, count(feed.article_id) as feed_cnt
+                                  from qiita_builder.feedbacks as feed
+                                  group by feed.article_id) as feed_cnt_table
+                                 on art.article_id = feed_cnt_table.article_id
+                 left outer join (select article_id, count(my.article_id) as my_cnt
+                                  from qiita_builder.my_articles as my
+                                  group by my.article_id) as my_cnt_table on art.article_id = my_cnt_table.article_id
+                 left outer join (select article_id, count(recommend.article_id) as recommend_cnt
+                                  from qiita_builder.qiita_recommends as recommend
+                                  group by recommend.article_id) as recommend_cnt_table
+                                 on art.article_id = recommend_cnt_table.article_id
+                 left join qiita_builder.users on art.user_id = users.user_id
+        where feedbacked.user_id = #{userId}
+        order by art.created_at DESC;
+    </select>
+    <resultMap id="feedbackedArticlesResultMap" type="com.qiitabuilder.domain.Article">
+        <id column="article_id" property="articleId"/>
+        <result column="article_title" property="title"/>
+        <result column="state_flag" property="stateFlag"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="feedback_count" property="feedbackCount"/>
+        <result column="registered_my_article_count" property="registeredMyArticleCount"/>
+        <result column="qiita_recommend_point" property="qiitaRecommendPoint"/>
+        <collection property="postedUser" ofType="com.qiitabuilder.domain.User">
+            <result column="user_id" property="userId"/>
+            <result column="display_name" property="displayName"/>
+            <result column="photo_url" property="photoUrl"/>
+        </collection>
+        <collection property="tags" ofType="com.qiitabuilder.domain.Tag">
+            <result column="tag_id" property="tagId"/>
+            <result column="tag_name" property="tagName"/>
+        </collection>
+    </resultMap>
+
     <resultMap id="rankingUserResultMap" type="com.qiitabuilder.domain.RankingUser">
         <association property="user" javaType="com.qiitabuilder.domain.User">
             <id column="userId" property="userId"/>
