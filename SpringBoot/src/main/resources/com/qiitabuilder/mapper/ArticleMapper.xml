@@ -108,6 +108,19 @@
         users.display_name as displayName,
         users.photo_url as photoUrl
         from (select * from qiita_builder.articles
+        <where>
+            <if test="search.searchWord !=null">
+                title like CONCAT('%', #{search.searchWord}, '%')
+            </if>
+            <if test="search.period!=null">
+                <if test="search.period==0">
+                    and created_at between NOW() - interval 7 day and NOW()
+                </if>
+                <if test="search.period==1">
+                    and DATE_FORMAT(created_at, '%Y%m') = DATE_FORMAT(NOW(), '%Y%m')
+                </if>
+            </if>
+        </where>
         <if test="search.pageSize != 0">
             limit #{search.pageSize} offset #{search.offset}
         </if>
@@ -128,31 +141,20 @@
         on art.article_id = recommend_cnt_table.article_id
         left join qiita_builder.users on art.user_id = users.user_id
         <where>
-            <if test="search.searchWord !=null">
-                title like CONCAT('%', #{search.searchWord}, '%')
-            </if>
             <if test="search.searchTag!=null">
                 and tags.tag_id in
                 <foreach item="tag" index="index" collection="search.searchTag" open="(" separator="," close=")">
                     #{tag}
                 </foreach>
             </if>
-            <if test="search.period!=null">
-                <if test="search.period==0">
-                    and created_at between NOW() - interval 7 day and NOW()
-                </if>
-                <if test="search.period==1">
-                    and DATE_FORMAT(created_at, '%Y%m') = DATE_FORMAT(NOW(), '%Y%m')
-                </if>
-            </if>
             <if test="search.userId !=null">
                 art.user_id = #{search.userId}
             </if>
         </where>
-        order by ${search.sort}
+        order by ${search.sort} desc
     </select>
 
-    <select id="getTotalPage" resultType="_int">
+    <select id="getArticleNumber" resultType="_int">
         select count(*)
         from qiita_builder.articles as art
         left outer join qiita_builder.articles_tags_relations as a_t_relation

@@ -22,12 +22,12 @@ public interface ArticleMapper {
     List<Article> searchArticles(@Param("search") SearchArticleForm searchArticleForm);
 
     /**
-     * 総ページ数を取得する.
+     * 総記事数を取得する.
      *
      * @param searchArticleForm 　フォーム
-     * @return 総ページ数
+     * @return 総記事数
      */
-    Integer getTotalPage(@Param("search") SearchArticleForm searchArticleForm);
+    Integer getArticleNumber(@Param("search") SearchArticleForm searchArticleForm);
 
     /**
      * 投稿数ランキング順でユーザー情報を取得する.
