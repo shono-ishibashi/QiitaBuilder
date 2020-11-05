@@ -61,8 +61,12 @@ public class ArticleService {
             Integer offset = (searchArticleForm.getPageSize() * (searchArticleForm.getCurrentPage() - 1) + 1);
             searchArticleForm.setOffset(offset);
         }
-        System.out.println(searchArticleForm.getOffset());
-        return articleMapper.searchArticles(searchArticleForm);
+        List<Article> articles = articleMapper.searchArticles(searchArticleForm);
+
+//        qiita推奨数、my記事登録数がnullのものを0に置き換える
+        articles.stream().filter(article -> article.getQiitaRecommendPoint() == null).forEach(article -> article.setQiitaRecommendPoint(0));
+        articles.stream().filter(article -> article.getRegisteredMyArticleCount() == null).forEach(article -> article.setRegisteredMyArticleCount(0));
+        return articles;
     }
 
     /**
@@ -72,12 +76,12 @@ public class ArticleService {
      * @return
      */
     public Integer getTotalPage(SearchArticleForm searchArticleForm) {
-        Integer articleNumber=articleMapper.getArticleNumber(searchArticleForm);
-        int totalPage=articleNumber/searchArticleForm.getPageSize();
-        if((articleNumber%searchArticleForm.getPageSize())!=0){
-            totalPage+=1;
-        }else if(totalPage==0){
-            totalPage=1;
+        Integer articleNumber = articleMapper.getArticleNumber(searchArticleForm);
+        int totalPage = articleNumber / searchArticleForm.getPageSize();
+        if ((articleNumber % searchArticleForm.getPageSize()) != 0) {
+            totalPage += 1;
+        } else if (totalPage == 0) {
+            totalPage = 1;
         }
         return totalPage;
     }
