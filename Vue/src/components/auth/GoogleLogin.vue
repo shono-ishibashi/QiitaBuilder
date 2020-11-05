@@ -28,8 +28,8 @@ export default {
   name: "googleLogin",
   computed: {},
   methods: {
-    login() {
-      this.$store.dispatch('auth/googleLogin');
+    async login() {
+      await this.$store.dispatch('auth/googleLogin');
     }
   }
 }

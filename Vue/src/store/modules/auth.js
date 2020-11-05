@@ -1,4 +1,4 @@
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 import {v4 as uuidv4} from 'uuid';
 import axios from 'axios'
 import router from "@/router";
@@ -51,12 +51,14 @@ export default {
                                 })
                             }
                         })
+
+                //RESTAPI ログイン
                 db.collection('users').doc(loginUser.uid).get()
                     .then(data => {
                         const request = API_URL + 'login?uid=' + loginUser.uid + '&password=' + data.data().password;
-                        axios.post(request,{},{headers:{'Content-Type': 'application/json'}})
+                        axios.post(request, {}, {headers: {'Content-Type': 'application/json'}})
                             .then(response => {
-                                //Vuexにheaderを追加
+                                //Vuexにjwt tokenを追加
                                 commit("setAPIToken", response.headers.authorization);
                                 router.push('/')
                             })
@@ -71,6 +73,14 @@ export default {
                     router.push('/login')
                 })
             })
+        }
+    },
+    getters:{
+        apiToken(state){
+            return state.apiToken;
+        },
+        loginUser(state){
+            return state.loginUser;
         }
     }
 }
