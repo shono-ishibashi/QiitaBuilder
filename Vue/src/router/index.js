@@ -21,10 +21,21 @@ const routes = [
         component: () => import(/* webpackChunkName: "articleDetail" */ '../views/UserDetail.vue')
     },
     {
+        path: '/articleList',
+        name: 'ArticleList',
+        component: ArticleList
+    },
+    {
+        path: '/article/:articleId',
+        name: 'articleDetail',
+        component: () => import(/* webpackChunkName: "articleDetail" */ '../views/ArticleDetail.vue')
+    },
+    {
         path: '/login',
         name: 'login',
         component: () => import(/* webpackChunkName: "login" */ '../views/Login.vue')
     }
+
 ]
 
 const router = new VueRouter({
