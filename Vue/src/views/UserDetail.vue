@@ -52,9 +52,11 @@
     </v-row>
 
     <v-row>
-      <v-col cols=2><v-btn color="secondary">投稿記事</v-btn> </v-col>
+      <v-col cols=2>
+        <v-btn color="secondary">投稿記事</v-btn>
+      </v-col>
     </v-row>
-
+    {{ postedArticles }}
   </v-container>
 </template>
 
