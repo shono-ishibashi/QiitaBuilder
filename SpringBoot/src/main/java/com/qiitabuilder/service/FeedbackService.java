@@ -23,61 +23,34 @@ public class FeedbackService {
     @Autowired
     private ArticleMapper articleMapper;
 
+    public Feedback fetchFeedback(Integer feedbackId) {
+        return feedbackMapper.load(feedbackId);
+    }
+
     public Feedback postFeedback(Feedback feedback) {
         // ログイン中のユーザ情報をセット
         SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = new User();
-        user.setUserId(loginUser.getUser().getUserId());
-        feedback.setPostedUser(user);
-
-        // 削除フラグが0か1でない場合はBadRequestを返す
-        if (!(feedback.getDeleteFlag() == 0 || feedback.getDeleteFlag() == 1)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-
-        // 記事IDが存在しない場合はConflictを返す
-        if (Objects.isNull(articleMapper.load(feedback.getArticleId()))) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT);
-        }
+        feedback.setPostedUser(loginUser.getUser());
 
         // 現在時刻をセット
         feedback.setCreatedAt(LocalDateTime.now());
 
         feedbackMapper.insert(feedback);
 
-        return feedback;
+        return fetchFeedback(feedback.getFeedbackId());
     }
 
     public Feedback updateFeedback(Feedback feedback) {
         // ログイン中のユーザ情報をセット
         SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = new User();
-        user.setUserId(loginUser.getUser().getUserId());
-        feedback.setPostedUser(user);
-
-        // 作成日時の取得
-        Feedback inserted = feedbackMapper.load(feedback.getFeedbackId());
-
-        // 削除フラグが0か1でない場合はBadRequestを返す
-        if (!(feedback.getDeleteFlag() == 0 || feedback.getDeleteFlag() == 1)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-
-        // フィードバックID, 記事IDが存在しない場合はConflictを返す
-        if (Objects.isNull(inserted)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT);
-        } else if (Objects.isNull(articleMapper.load(feedback.getArticleId()))) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT);
-        }
-
-        feedback.setCreatedAt(inserted.getCreatedAt());
+        feedback.setPostedUser(loginUser.getUser());
 
         // 現在時刻をセット
         feedback.setUpdatedAt(LocalDateTime.now());
 
         feedbackMapper.update(feedback);
 
-        return feedback;
+        return fetchFeedback(feedback.getFeedbackId());
     }
 
 }

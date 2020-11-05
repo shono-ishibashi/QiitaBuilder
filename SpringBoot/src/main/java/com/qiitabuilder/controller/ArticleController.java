@@ -44,6 +44,11 @@ public class ArticleController {
         return i;
     }
 
+    /**
+     * 記事詳細情報を取得する
+     * @param articleId
+     * @return
+     */
     @GetMapping("/{articleId}")
     @ResponseStatus(HttpStatus.OK)
     public Article fetchArticle(@PathVariable("articleId") String articleId) {
