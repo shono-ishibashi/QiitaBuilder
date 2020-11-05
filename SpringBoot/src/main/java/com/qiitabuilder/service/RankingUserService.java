@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -82,16 +83,24 @@ public class RankingUserService {
                 .forEach(rankUser -> {
                     Integer userId = rankUser.getUser().getUserId();
                     List<Integer> relationArticleId = recommendMapper.getMostRecommendedArticleId(userId, sortId);
-                    if (relationArticleId.isEmpty()) {
-                        //並び替え項目が増えた時に備え、if文ではなくswitch文で記述.
+
+                    // Qiita推薦された関連記事が無い場合
+                    if (Objects.isNull(relationArticleId.get(0))) {
+                        // 並び替え項目が増えた時に備え、if文ではなくswitch文で記述.
+                        List<Integer> articleIdList;
                         switch (sortId) {
                             case 1:
-                                relationArticleId = feedbackMapper.getArticleIdByUserId(userId);
+                                // FBした数ランキング
+                                // 最新のFBした記事を取得.
+                                articleIdList = feedbackMapper.getArticleIdByUserId(userId);
                                 break;
                             default:
-                                relationArticleId = articleMapper.getArticleIdListByUserId(userId);
+                                // 記事投稿数ランキング
+                                // 最新の投稿記事を取得.
+                                articleIdList = articleMapper.getArticleIdListByUserId(userId);
                                 break;
                         }
+                        relationArticleId.set(0, articleIdList.get(0));
                     }
                     Article relationArticle = articleMapper.findArticleById(relationArticleId.get(0)).get(0);
                     rankUser.setRelationArticle(relationArticle);
