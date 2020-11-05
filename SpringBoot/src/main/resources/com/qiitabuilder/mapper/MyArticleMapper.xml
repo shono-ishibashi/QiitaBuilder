@@ -4,40 +4,6 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qiitabuilder.mapper.MyArticleMapper">
 
-    <select id="getMyArticlesByUserId" resultMap="myArticlesResultMap">
-        select art.article_id                    as article_id,
-               art.title                         as article_title,
-               art.created_at                    as created_at,
-               art.updated_at                    as updated_at,
-               art.state_flag                    as state_flag,
-               tags.tag_id                       as tag_id,
-               tags.tag_name                     as tag_name,
-               feed_cnt_table.feed_cnt           as feedback_count,
-               my_cnt_table.my_cnt               as registered_my_article_count,
-               users.user_id                     as user_id,
-               users.display_name                as display_name,
-               users.photo_url                   as photo_url,
-               recommend_cnt_table.recommend_cnt as qiita_recommend_point
-        from qiita_builder.my_articles as my_art
-                 left join qiita_builder.articles as art on my_art.article_id = art.article_id
-                 left outer join qiita_builder.articles_tags_relations as a_t_relation
-                                 on art.article_id = a_t_relation.article_id
-                 left outer join qiita_builder.tags as tags on a_t_relation.tag_id = tags.tag_id
-                 left outer join (select article_id, count(feed.article_id) as feed_cnt
-                                  from qiita_builder.feedbacks as feed
-                                  group by feed.article_id) as feed_cnt_table
-                                 on art.article_id = feed_cnt_table.article_id
-                 left outer join (select article_id, count(my.article_id) as my_cnt
-                                  from qiita_builder.my_articles as my
-                                  group by my.article_id) as my_cnt_table on art.article_id = my_cnt_table.article_id
-                 left outer join (select article_id, count(recommend.article_id) as recommend_cnt
-                                  from qiita_builder.qiita_recommends as recommend
-                                  group by recommend.article_id) as recommend_cnt_table
-                                 on art.article_id = recommend_cnt_table.article_id
-                 left join qiita_builder.users on art.user_id = users.user_id
-        where my_art.register_user_id = #{userId}
-        order by art.created_at DESC;
-    </select>
     <resultMap id="myArticlesResultMap" type="com.qiitabuilder.domain.Article">
         <id column="article_id" property="articleId"/>
         <result column="article_title" property="title"/>
@@ -57,30 +23,6 @@
             <result column="tag_name" property="tagName"/>
         </collection>
     </resultMap>
-    <select id="findByArticleIdAndRegisterUserId" resultMap="findByArticleIdAndRegisterUserIdResult">
-        SELECT *
-        FROM my_articles
-        WHERE article_id = #{articleId}
-          AND register_user_id = #{registerUserId};
-    </select>
-
-    <insert id="insert" parameterType="com.qiitabuilder.domain.MyArticle">
-        INSERT INTO
-        my_articles(article_id, posted_user_id, register_user_id)
-        VALUES( #{articleId}, #{postedUserId}, #{registerUserId} );
-    </insert>
-
-    <select id="getAutoIncrementKey" resultType="int">
-        SELECT LAST_INSERT_ID();
-    </select>
-
-    <delete id="delete">
-        DELETE
-        FROM
-        my_articles
-        WHERE
-        my_article_id = #{myArticleId};
-    </delete>
 
     <resultMap id="findByArticleIdAndRegisterUserIdResult" type="com.qiitabuilder.domain.MyArticle">
         <id property="myArticleId" column="my_article_id"/>
@@ -88,4 +30,74 @@
         <result property="postedUserId" column="posted_user_id"/>
         <result property="registerUserId" column="register_user_id"/>
     </resultMap>
+
+    <!-- ****** SELECT ****** -->
+    <select id="getMyArticlesByUserId" resultMap="myArticlesResultMap">
+        SELECT art.article_id                    AS article_id,
+               art.title                         AS article_title,
+               art.created_at                    AS created_at,
+               art.updated_at                    AS updated_at,
+               art.state_flag                    AS state_flag,
+               tags.tag_id                       AS tag_id,
+               tags.tag_name                     AS tag_name,
+               feed_cnt_table.feed_cnt           AS feedback_count,
+               my_cnt_table.my_cnt               AS registered_my_article_count,
+               users.user_id                     AS user_id,
+               users.display_name                AS display_name,
+               users.photo_url                   AS photo_url,
+               recommend_cnt_table.recommend_cnt AS qiita_recommend_point
+        FROM qiita_builder.my_articles AS my_art
+                 LEFT JOIN qiita_builder.articles AS art
+                           ON my_art.article_id = art.article_id
+                 LEFT OUTER JOIN qiita_builder.articles_tags_relations AS a_t_relation
+                                 ON art.article_id = a_t_relation.article_id
+                 LEFT OUTER JOIN qiita_builder.tags AS tags
+                                 ON a_t_relation.tag_id = tags.tag_id
+                 LEFT OUTER JOIN (SELECT article_id,
+                                         count(feed.article_id) AS feed_cnt
+                                  FROM qiita_builder.feedbacks AS feed
+                                  GROUP BY feed.article_id) AS feed_cnt_table
+                                 ON art.article_id = feed_cnt_table.article_id
+                 LEFT OUTER JOIN (SELECT article_id,
+                                         count(my.article_id) AS my_cnt
+                                  FROM qiita_builder.my_articles AS my
+                                  GROUP BY my.article_id) AS my_cnt_table
+                                 ON art.article_id = my_cnt_table.article_id
+                 LEFT OUTER JOIN (SELECT article_id,
+                                         count(recommend.article_id) AS recommend_cnt
+                                  FROM qiita_builder.qiita_recommends AS recommend
+                                  GROUP BY recommend.article_id) AS recommend_cnt_table
+                                 ON art.article_id = recommend_cnt_table.article_id
+                 LEFT JOIN qiita_builder.users
+                           ON art.user_id = users.user_id
+        WHERE my_art.register_user_id = #{userId}
+        ORDER BY art.created_at DESC;
+    </select>
+
+    <select id="findByArticleIdAndRegisterUserId" resultMap="findByArticleIdAndRegisterUserIdResult">
+        SELECT *
+        FROM my_articles
+        WHERE article_id = #{articleId}
+          AND register_user_id = #{registerUserId};
+    </select>
+
+    <select id="getAutoIncrementKey" resultType="int">
+        SELECT LAST_INSERT_ID();
+    </select>
+
+
+    <!-- ****** INSERT ****** -->
+    <insert id="insert" parameterType="com.qiitabuilder.domain.MyArticle">
+        INSERT INTO my_articles(article_id, posted_user_id, register_user_id)
+        VALUES (#{articleId}, #{postedUserId}, #{registerUserId});
+    </insert>
+
+
+    <!-- ****** DELETE ****** -->
+    <delete id="delete">
+        DELETE
+        FROM my_articles
+        WHERE my_article_id = #{myArticleId};
+    </delete>
+
 </mapper>

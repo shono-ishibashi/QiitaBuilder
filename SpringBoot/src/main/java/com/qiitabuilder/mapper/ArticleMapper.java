@@ -24,8 +24,8 @@ public interface ArticleMapper {
     /**
      * 総記事数を取得する.
      *
-     * @param searchArticleForm 　フォーム
-     * @return 総記事数
+     * @param searchArticleForm フォーム
+     * @return 総ページ数
      */
     Integer getArticleNumber(@Param("search") SearchArticleForm searchArticleForm);
 
@@ -78,7 +78,7 @@ public interface ArticleMapper {
     /**
      * 記事IDを基に記事情報を取得する
      *
-     * @param articleId
+     * @param articleId 記事ID
      * @return 記事情報
      */
     Article load(Integer articleId);
