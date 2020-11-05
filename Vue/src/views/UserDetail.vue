@@ -56,7 +56,6 @@
         <v-btn color="secondary">投稿記事</v-btn>
       </v-col>
     </v-row>
-    {{ postedArticles }}
   </v-container>
 </template>
 
