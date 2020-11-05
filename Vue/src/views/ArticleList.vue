@@ -116,21 +116,17 @@ export default {
   },
   watch: {
     ['searchCriteria.sortNum']() {
-      console.log(this.searchCriteria.sortNum)
       this.fetchArticles(this.searchCriteria)
     },
     ['searchCriteria.period']() {
-      console.log(this.searchCriteria.period)
       this.fetchArticles(this.searchCriteria)
     },
     ['searchCriteria.pageSize']() {
-      console.log(this.searchCriteria.pageSize)
       this.searchCriteria.currentPage = 1
       this.fetchArticles(this.searchCriteria)
       this.scrollTop()
     },
     ['searchCriteria.currentPage']() {
-      console.log(this.searchCriteria.currentPage)
       this.fetchArticles(this.searchCriteria)
       this.scrollTop()
     }
@@ -138,7 +134,6 @@ export default {
   created() {
     this.fetchArticles(this.searchCriteria)
     this.fetchTags()
-    console.log("connect success")
   },
   computed: {
     ...mapState("articles", ["articles", "tags", "totalPage","searchCriteria"])
@@ -152,7 +147,6 @@ export default {
       this.searchCriteria.period = key
     },
     searchWord() {
-      console.log(this.searchCriteria.period)
       this.fetchArticles(this.searchCriteria)
     },
     scrollTop() {

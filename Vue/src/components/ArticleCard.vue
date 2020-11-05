@@ -52,7 +52,6 @@
                   small
                   dark
                   @click="findByTagId(tag.tagId)"
-                  active="true"
               >
                 {{ tag.tagName }}
               </v-chip>
