@@ -20,6 +20,9 @@ export default {
     },
     mutations: {
         setUserDetail(state, user) {
+            if(!user.postedArticleCount) user.postedArticleCount=0;
+            if(!user.feedbackCount) user.feedbackCount=0;
+            if (!user.qiitaRecommendedAllCount) user.qiitaRecommendedAllCount=0;
             state.userDetail = user;
         },
         setPostedArticles(state, postedArticles) {
