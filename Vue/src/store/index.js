@@ -10,10 +10,14 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    API_URL:"http://localhost:8080/qiita_builder/"
   },
   mutations: {
   },
   actions: {
+  },
+  getters:{
+    API_URL:state=>state.API_URL
   },
   modules: {
     auth:auth,
