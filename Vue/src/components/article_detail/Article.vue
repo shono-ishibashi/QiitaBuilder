@@ -1,6 +1,6 @@
 <template>
   <v-app class="area d-flex">
-    <div>username : @{{ article.postedUser.displayName }}</div>
+    <div>username : @ {{ article.postedUser.displayName }}</div>
     <div>created at :{{ article.createdAt }}</div>
     <h1>title : {{ article.title }}</h1>
     <div>

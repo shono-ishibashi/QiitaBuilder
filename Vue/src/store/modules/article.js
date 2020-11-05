@@ -3,7 +3,9 @@ import axios from "axios";
 export default {
   namespaced: true,
   state: {
-    article: {},
+    article: {
+      postedUser: {},
+    },
   },
   mutations: {
     setArticle(state, article) {
@@ -22,6 +24,5 @@ export default {
         .catch((error) => console.log("Error getting data : ", error));
     },
   },
-  getters: {
-  }
+  getters: {},
 };
