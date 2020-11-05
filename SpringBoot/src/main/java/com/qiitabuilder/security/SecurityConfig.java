@@ -43,7 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 // AUTHORIZE
                 .authorizeRequests()
-                .mvcMatchers("/","/article")
+                .mvcMatchers("/","/article/*","/user/detail")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
