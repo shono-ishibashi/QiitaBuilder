@@ -19,7 +19,6 @@ export default {
         .get(url)
         .then((res) => {
           commit("setArticle", res.data);
-          console.log("Data : ", res.data);
         })
         .catch((error) => console.log("Error getting data : ", error));
     },
