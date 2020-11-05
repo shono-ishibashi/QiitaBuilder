@@ -60,7 +60,7 @@
         WHERE user_id = #{userId}
     </select>
 
-    <select id="findQiitaApiCodeByUserId" >
+    <select id="findQiitaApiCodeByUserId">
         SELECT qiita_api_code
         FROM users
         WHERE user_id = #{userId}
@@ -73,8 +73,8 @@
     </update>
 
     <insert id="insert">
-        INSERT INTO users(uid, password)
-        VALUES (#{uid}, #{password})
+        INSERT INTO users(uid, password, photo_url,display_name)
+        VALUES (#{uid}, #{password}, #{photoUrl}, #{displayName})
     </insert>
 
     <resultMap id="userResultMap" type="com.qiitabuilder.domain.User">
