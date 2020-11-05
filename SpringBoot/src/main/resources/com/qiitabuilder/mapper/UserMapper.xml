@@ -5,66 +5,6 @@
 
 <mapper namespace="com.qiitabuilder.mapper.UserMapper">
 
-    <select id="selectTest" resultType="map">
-        SELECT *
-        FROM users;
-    </select>
-    <select id="fetchUserDetails" resultMap="userDetailsResultMap">
-        select u.user_id                         as user_id,
-               u.display_name                    as display_name,
-               u.photo_url                       as photo_url,
-               tag_cnt_table.tag_cnt             as used_tag_count,
-               tags.tag_name                     as tag_name,
-               feed_cnt_table.feed_cnt           as feedback_count,
-               art_qiita_cnt_table.art_qiita_cnt as posted_article_count,
-               recommend_cnt_table.recommend_cnt as qiita_recommended_all_count
-        from qiita_builder.users as u
-                 left outer join (select tag_id, posted_user_id, count(a_t_relation.tag_id) as tag_cnt
-                                  from qiita_builder.articles_tags_relations as a_t_relation
-                                  group by a_t_relation.tag_id) as tag_cnt_table
-                                 on u.user_id = tag_cnt_table.posted_user_id
-                 left outer join qiita_builder.tags as tags on tag_cnt_table.tag_id = tags.tag_id
-                 left outer join (select user_id, count(feed.user_id) as feed_cnt
-                                  from qiita_builder.feedbacks as feed
-                                  group by feed.user_id) as feed_cnt_table
-                                 on u.user_id = feed_cnt_table.user_id
-                 left outer join (select user_id, count(art.user_id) as art_qiita_cnt
-                                  from qiita_builder.articles as art
-                                  where art.state_flag = 2
-                                  group by art.user_id) as art_qiita_cnt_table
-                                 on u.user_id = art_qiita_cnt_table.user_id
-                 left outer join (select posted_user_id, count(recommend.posted_user_id) as recommend_cnt
-                                  from qiita_builder.qiita_recommends as recommend
-                                  group by recommend.posted_user_id) as recommend_cnt_table
-                                 on u.user_id = recommend_cnt_table.posted_user_id
-        where u.user_id = #{userId};
-    </select>
-
-
-    <select id="findByUid" resultMap="userResultMap">
-        SELECT user_id      as user_id,
-               uid          as uid,
-               photo_url    as photo_url,
-               display_name as display_name,
-               password     as password
-        FROM users
-        WHERE uid = #{uid}
-    </select>
-    <select id="findByUserId">
-        SELECT user_id      as user_id,
-               uid          as uid,
-               photo_url    as photo_url,
-               display_name as display_name,
-               password     as password
-        FROM users
-        WHERE user_id = #{userId}
-    </select>
-
-    <insert id="insert">
-        INSERT INTO users(uid, password)
-        VALUES (#{uid}, #{password})
-    </insert>
-
     <resultMap id="userResultMap" type="com.qiitabuilder.domain.User">
         <id column="user_id" property="userId"/>
         <result column="uid" property="uid"/>
@@ -85,4 +25,83 @@
             <result column="tag_name" property="tagName"/>
         </collection>
     </resultMap>
+
+    <!-- ****** SELECT ****** -->
+    <select id="selectTest" resultType="map">
+        SELECT *
+        FROM users;
+    </select>
+
+    <select id="fetchUserDetails" resultMap="userDetailsResultMap">
+        SELECT u.user_id                         AS user_id,
+               u.display_name                    AS display_name,
+               u.photo_url                       AS photo_url,
+               tag_cnt_table.tag_cnt             AS used_tag_count,
+               tags.tag_name                     AS tag_name,
+               feed_cnt_table.feed_cnt           AS feedback_count,
+               art_qiita_cnt_table.art_qiita_cnt AS posted_article_count,
+               recommend_cnt_table.recommend_cnt AS qiita_recommended_all_count
+        FROM qiita_builder.users AS u
+                 LEFT OUTER JOIN (SELECT tag_id, posted_user_id, count(a_t_relation.tag_id) AS tag_cnt
+                                  FROM qiita_builder.articles_tags_relations AS a_t_relation
+                                  GROUP BY a_t_relation.tag_id) AS tag_cnt_table
+                                 ON u.user_id = tag_cnt_table.posted_user_id
+                 LEFT OUTER JOIN qiita_builder.tags AS tags
+                                 ON tag_cnt_table.tag_id = tags.tag_id
+                 LEFT OUTER JOIN (SELECT user_id, count(feed.user_id) AS feed_cnt
+                                  FROM qiita_builder.feedbacks AS feed
+                                  GROUP BY feed.user_id) AS feed_cnt_table
+                                 ON u.user_id = feed_cnt_table.user_id
+                 LEFT OUTER JOIN (SELECT user_id, count(art.user_id) AS art_qiita_cnt
+                                  FROM qiita_builder.articles AS art
+                                  WHERE art.state_flag = 2
+                                  GROUP BY art.user_id) AS art_qiita_cnt_table
+                                 ON u.user_id = art_qiita_cnt_table.user_id
+                 LEFT OUTER JOIN (SELECT posted_user_id, count(recommend.posted_user_id) AS recommend_cnt
+                                  FROM qiita_builder.qiita_recommends AS recommend
+                                  GROUP BY recommend.posted_user_id) AS recommend_cnt_table
+                                 ON u.user_id = recommend_cnt_table.posted_user_id
+        WHERE u.user_id = #{userId};
+    </select>
+
+    <select id="findByUid" resultMap="userResultMap">
+        SELECT user_id      AS user_id,
+               uid          AS uid,
+               photo_url    AS photo_url,
+               display_name AS display_name,
+               password     AS password
+        FROM users
+        WHERE uid = #{uid}
+    </select>
+
+    <select id="findByUserId">
+        SELECT user_id      AS user_id,
+               uid          AS uid,
+               photo_url    AS photo_url,
+               display_name AS display_name,
+               password     AS password
+        FROM users
+        WHERE user_id = #{userId}
+    </select>
+  
+    <select id="findQiitaApiCodeByUserId">
+        SELECT qiita_api_code
+        FROM users
+        WHERE user_id = #{userId}
+    </select>
+
+    <!-- ****** INSERT ****** -->
+    <insert id="insert">
+        INSERT INTO users(uid, password, photo_url,display_name)
+        VALUES (#{uid}, #{password}, #{photoUrl}, #{displayName})
+    </insert>
+  
+  
+    <!-- ****** UPDATE ****** -->
+    <update id="updateQiitaApiCode">
+        UPDATE users
+        SET qiita_api_code = #{qiitaApiCode}
+        WHERE user_id = #{userId}
+    </update>
+
 </mapper>
