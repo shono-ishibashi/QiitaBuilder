@@ -12,7 +12,7 @@
             </v-col>
             <v-col>
               <v-card-actions>
-                <v-btn @click="searchWord">検索</v-btn>
+                <v-btn @click="search">検索</v-btn>
                 <v-btn @click="reset">リセット</v-btn>
               </v-card-actions>
             </v-col>
@@ -116,9 +116,11 @@ export default {
   },
   watch: {
     ['searchCriteria.sortNum']() {
+      this.searchCriteria.currentPage = 1
       this.fetchArticles(this.searchCriteria)
     },
     ['searchCriteria.period']() {
+      this.searchCriteria.currentPage = 1
       this.fetchArticles(this.searchCriteria)
     },
     ['searchCriteria.pageSize']() {
@@ -146,7 +148,8 @@ export default {
     changePeriod(key) {
       this.searchCriteria.period = key
     },
-    searchWord() {
+    search() {
+      this.searchCriteria.currentPage = 1
       this.fetchArticles(this.searchCriteria)
     },
     scrollTop() {
