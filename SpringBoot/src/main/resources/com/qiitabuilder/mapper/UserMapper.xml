@@ -83,12 +83,25 @@
         FROM users
         WHERE user_id = #{userId}
     </select>
-
+  
+    <select id="findQiitaApiCodeByUserId">
+        SELECT qiita_api_code
+        FROM users
+        WHERE user_id = #{userId}
+    </select>
 
     <!-- ****** INSERT ****** -->
     <insert id="insert">
-        INSERT INTO users(uid, password)
-        VALUES (#{uid}, #{password})
+        INSERT INTO users(uid, password, photo_url,display_name)
+        VALUES (#{uid}, #{password}, #{photoUrl}, #{displayName})
     </insert>
+  
+  
+    <!-- ****** UPDATE ****** -->
+    <update id="updateQiitaApiCode">
+        UPDATE users
+        SET qiita_api_code = #{qiitaApiCode}
+        WHERE user_id = #{userId}
+    </update>
 
 </mapper>

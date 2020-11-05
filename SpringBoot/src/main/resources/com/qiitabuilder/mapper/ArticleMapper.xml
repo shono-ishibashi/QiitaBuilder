@@ -107,54 +107,10 @@
         users.user_id AS userId,
         users.display_name AS displayName,
         users.photo_url AS photoUrl
-        FROM (
-        SELECT *
-        FROM qiita_builder.articles
-        LIMIT #{search.pageSize} OFFSET #{search.offset}
-        ) as art
-
-        LEFT OUTER JOIN qiita_builder.articles_tags_relations AS a_t_relation
-        ON art.article_id = a_t_relation.article_id
-
-        LEFT OUTER JOIN qiita_builder.tags AS tags
-        ON a_t_relation.tag_id = tags.tag_id
-
-        LEFT OUTER JOIN (
-        SELECT
-        article_id,
-        count(feed.article_id) AS feed_cnt
-        FROM qiita_builder.feedbacks AS feed
-        GROUP BY feed.article_id
-        ) AS feed_cnt_table
-        ON art.article_id = feed_cnt_table.article_id
-
-        LEFT OUTER JOIN (
-        SELECT
-        article_id,
-        count(my.article_id) AS my_cnt
-        FROM qiita_builder.my_articles AS my
-        GROUP BY my.article_id
-        ) AS my_cnt_table
-        ON art.article_id = my_cnt_table.article_id
-
-        LEFT OUTER JOIN (
-        SELECT article_id, count(recommend.article_id) AS recommend_cnt
-        FROM qiita_builder.qiita_recommends AS recommend
-        GROUP BY recommend.article_id
-        ) AS recommend_cnt_table
-        ON art.article_id = recommend_cnt_table.article_id
-
-        LEFT JOIN qiita_builder.users
-        ON art.user_id = users.user_id
+        FROM (SELECT * FROM qiita_builder.articles
         <where>
             <if test="search.searchWord !=null">
                 title LIKE CONCAT('%', #{search.searchWord}, '%')
-            </if>
-            <if test="search.searchTag!=null">
-                AND tags.tag_id IN
-                <foreach item="tag" index="index" collection="search.searchTag" open="(" separator="," close=")">
-                    #{tag}
-                </foreach>
             </if>
             <if test="search.period!=null">
                 <if test="search.period==0">
@@ -165,12 +121,10 @@
                 </if>
             </if>
         </where>
-        ORDER BY ${search.sort}
-    </select>
-
-    <select id="getTotalPage" resultType="_int">
-        SELECT count(*)
-        FROM qiita_builder.articles AS art
+        <if test="search.pageSize != 0">
+            LIMIT #{search.pageSize} OFFSET #{search.offset}
+        </if>
+        ) AS art
 
         LEFT OUTER JOIN qiita_builder.articles_tags_relations AS a_t_relation
         ON art.article_id = a_t_relation.article_id
@@ -179,8 +133,7 @@
         ON a_t_relation.tag_id = tags.tag_id
 
         LEFT OUTER JOIN (
-        SELECT
-        article_id,
+        SELECT article_id,
         count(feed.article_id) AS feed_cnt
         FROM qiita_builder.feedbacks AS feed
         GROUP BY feed.article_id
@@ -188,8 +141,7 @@
         ON art.article_id = feed_cnt_table.article_id
 
         LEFT OUTER JOIN (
-        SELECT
-        article_id,
+        SELECT article_id,
         count(my.article_id) AS my_cnt
         FROM qiita_builder.my_articles AS my
         GROUP BY my.article_id
@@ -197,8 +149,54 @@
         ON art.article_id = my_cnt_table.article_id
 
         LEFT OUTER JOIN (
-        SELECT
-        article_id,
+        SELECT article_id,
+        count(recommend.article_id) AS recommend_cnt
+        FROM qiita_builder.qiita_recommends AS recommend
+        GROUP BY recommend.article_id) AS recommend_cnt_table
+        ON art.article_id = recommend_cnt_table.article_id
+
+        LEFT JOIN qiita_builder.users
+        ON art.user_id = users.user_id
+        <where>
+            <if test="search.searchTag!=null">
+                AND tags.tag_id IN
+                <foreach item="tag" index="index" collection="search.searchTag" open="(" separator="," close=")">
+                    #{tag}
+                </foreach>
+            </if>
+            <if test="search.userId !=null">
+                art.user_id = #{search.userId}
+            </if>
+        </where>
+        ORDER BY ${search.sort} DESC
+    </select>
+
+    <select id="getArticleNumber" resultType="_int">
+        SELECT count(*)
+        FROM qiita_builder.articles AS art
+        LEFT OUTER JOIN qiita_builder.articles_tags_relations AS a_t_relation
+        ON art.article_id = a_t_relation.article_id
+
+        LEFT OUTER JOIN qiita_builder.tags AS tags
+        ON a_t_relation.tag_id = tags.tag_id
+        LEFT OUTER JOIN (
+        SELECT article_id,
+        count(feed.article_id) AS feed_cnt
+        FROM qiita_builder.feedbacks AS feed
+        GROUP BY feed.article_id
+        ) AS feed_cnt_table
+        ON art.article_id = feed_cnt_table.article_id
+
+        LEFT OUTER JOIN (
+        SELECT article_id,
+        count(my.article_id) AS my_cnt
+        FROM qiita_builder.my_articles AS my
+        GROUP BY my.article_id
+        ) AS my_cnt_table
+        ON art.article_id = my_cnt_table.article_id
+
+        LEFT OUTER JOIN (
+        SELECT article_id,
         count(recommend.article_id) AS recommend_cnt
         FROM qiita_builder.qiita_recommends AS recommend
         GROUP BY recommend.article_id
@@ -397,7 +395,7 @@
     </select>
 
     <!-- ****** INSERT ****** -->
-    <insert id="insertArticle" useGeneratedKeys="true" keyProperty="articleId">
+    <insert id="insertArticle">
         INSERT INTO articles(
         user_id,
         created_at,
@@ -432,4 +430,3 @@
     </update>
 
 </mapper>
-

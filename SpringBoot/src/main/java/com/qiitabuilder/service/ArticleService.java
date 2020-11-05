@@ -29,7 +29,7 @@ public class ArticleService {
     private FeedbackMapper feedbackMapper;
     @Autowired
     private MyArticleMapper myArticleMapper;
-
+    @Autowired
     private ArticleMapper articleMapper;
 
     @Autowired
@@ -54,13 +54,14 @@ public class ArticleService {
             searchArticleForm.setSort("myCnt");
         }
 //        表示ページ数、現在ページ数を元にoffsetの値を定義
+//        pageSizeを0にすると全件取得
         if (searchArticleForm.getCurrentPage() == 1) {
             searchArticleForm.setOffset(0);
         } else {
             Integer offset = (searchArticleForm.getPageSize() * (searchArticleForm.getCurrentPage() - 1) + 1);
             searchArticleForm.setOffset(offset);
         }
-
+        System.out.println(searchArticleForm.getOffset());
         return articleMapper.searchArticles(searchArticleForm);
     }
 
@@ -71,7 +72,14 @@ public class ArticleService {
      * @return
      */
     public Integer getTotalPage(SearchArticleForm searchArticleForm) {
-        return articleMapper.getTotalPage(searchArticleForm);
+        Integer articleNumber=articleMapper.getArticleNumber(searchArticleForm);
+        int totalPage=articleNumber/searchArticleForm.getPageSize();
+        if((articleNumber%searchArticleForm.getPageSize())!=0){
+            totalPage+=1;
+        }else if(totalPage==0){
+            totalPage=1;
+        }
+        return totalPage;
     }
 
     /**

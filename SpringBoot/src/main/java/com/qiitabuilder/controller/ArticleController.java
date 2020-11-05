@@ -1,8 +1,6 @@
 package com.qiitabuilder.controller;
 
 import com.qiitabuilder.domain.Article;
-import com.qiitabuilder.exception.BadRequestException;
-import com.qiitabuilder.exception.NotFoundException;
 import com.qiitabuilder.form.SearchArticleForm;
 import com.qiitabuilder.service.ArticleService;
 import com.qiitabuilder.service.QiitaAPIService;
@@ -42,26 +40,31 @@ public class ArticleController {
     @RequestMapping(value = "/totalPage", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     public Integer totalPage(@ModelAttribute SearchArticleForm searchArticleForm) {
-        System.out.println(articleService.getTotalPage(searchArticleForm));
-        return articleService.getTotalPage(searchArticleForm);
+        Integer i= articleService.getTotalPage(searchArticleForm);
+        return i;
     }
 
+    /**
+     * 記事詳細情報を取得する
+     * @param articleId
+     * @return
+     */
     @GetMapping("/{articleId}")
     @ResponseStatus(HttpStatus.OK)
-    public Article getArticle(@PathVariable("articleId") String articleId) {
+    public Article fetchArticle(@PathVariable("articleId") String articleId) {
         Integer parsedArticleId;
         // 入力値が正しくない場合はBadRequestExceptionを投げる
         try {
             parsedArticleId = Integer.parseInt(articleId);
         } catch (NumberFormatException e) {
-            throw new BadRequestException("");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
         Article result = articleService.getArticle(parsedArticleId);
 
         // 検索結果がない場合はNotFoundExceptionを投げる
         if (Objects.isNull(result)) {
-            throw new NotFoundException("not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
         return result;
