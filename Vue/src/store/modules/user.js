@@ -20,9 +20,9 @@ export default {
     },
     mutations: {
         setUserDetail(state, user) {
-            if(!user.postedArticleCount) user.postedArticleCount=0;
-            if(!user.feedbackCount) user.feedbackCount=0;
-            if (!user.qiitaRecommendedAllCount) user.qiitaRecommendedAllCount=0;
+            if (!user.postedArticleCount) user.postedArticleCount = 0;
+            if (!user.feedbackCount) user.feedbackCount = 0;
+            if (!user.qiitaRecommendedAllCount) user.qiitaRecommendedAllCount = 0;
             state.userDetail = user;
         },
         setPostedArticles(state, postedArticles) {
@@ -36,15 +36,15 @@ export default {
         },
     },
     actions: {
-        async fetchUserDetail({commit}, userId) {
-            const url = 'http://localhost:8080/qiita_builder/user/detail/';
+        async fetchUserDetail({commit, rootGetters}, userId) {
+            const url = rootGetters.API_URL + 'user/detail/';
 
             await axios.get(url, {params: {userId}}).then(res => {
                 commit("setUserDetail", res.data);
             })
         },
-        async fetchPostedArticles({commit}, userId) {
-            const url = 'http://localhost:8080/qiita_builder/article/'
+        async fetchPostedArticles({commit, rootGetters}, userId) {
+            const url = rootGetters.API_URL + 'article/'
             const params = {
                 sortNum: 1,
                 pageSize: 0,
@@ -58,15 +58,15 @@ export default {
                     commit("setPostedArticles", res.data)
                 })
         },
-        async fetchFeedbackArticles({commit}, userId) {
-            const url = 'http://localhost:8080/qiita_builder/article/feedbacked';
+        async fetchFeedbackArticles({commit, rootGetters}, userId) {
+            const url = rootGetters.API_URL + 'article/feedbacked';
 
             await axios.get(url, {params: {userId}}).then(res => {
                 commit("setFeedbackArticles", res.data);
             })
         },
-        async fetchMyArticles({commit}, userId) {
-            const url = 'http://localhost:8080/qiita_builder/article/my-articles';
+        async fetchMyArticles({commit, rootGetters}, userId) {
+            const url = rootGetters.API_URL + 'article/my-articles';
 
             await axios.get(url, {params: {userId}}).then(res => {
                 commit("setMyArticles", res.data);
