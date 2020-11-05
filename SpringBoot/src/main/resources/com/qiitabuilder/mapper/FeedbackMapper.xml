@@ -172,6 +172,7 @@
     <update id="update" parameterType="com.qiitabuilder.domain.Feedback">
         UPDATE feedbacks
         SET user_id = #{postedUser.userId},
+        article_id = #{articleId},
         updated_at = #{updatedAt},
         content = #{content},
         delete_flag = #{deleteFlag}

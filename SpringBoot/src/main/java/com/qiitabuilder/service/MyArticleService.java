@@ -28,10 +28,12 @@ public class MyArticleService {
      * 引数に一致するレコードを取得する
      *
      * @param articleId
-     * @param registerUserId
      * @return
      */
-    public MyArticle fetchMyArticle(Integer articleId, Integer registerUserId) {
+    public MyArticle fetchMyArticle(Integer articleId) {
+        SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer registerUserId = loginUser.getUser().getUserId();
+
         MyArticle result = myArticleMapper.findByArticleIdAndRegisterUserId(articleId, registerUserId);
         // My記事登録済みでない場合はNotFoundを返す
         if (Objects.isNull(result)) {
