@@ -28,4 +28,5 @@ public class SearchArticleForm {
     private Integer currentPage;
     private Integer offset;
     private String sort;
+    private Integer userId;
 }

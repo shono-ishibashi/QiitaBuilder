@@ -7,8 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Tag {
-    private Integer tagId;
-    private String tagName;
-    private Integer usedTagCount;
+public class QiitaConfiguration {
+    private Integer qiitaConfigurationId;
+    private Integer userId;
+    private String state;
+    private String code;
 }

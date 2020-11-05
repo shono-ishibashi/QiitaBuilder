@@ -63,6 +63,7 @@ public interface RecommendMapper {
      * Recommendを削除する
      *
      * @param recommendId Qiita推薦情報
+     * @return テーブルに１レコード以上の削除があった場合はtrue、１件も無かった場合はfalseを返す
      */
-    void delete(Integer recommendId);
+    boolean delete(Integer recommendId);
 }

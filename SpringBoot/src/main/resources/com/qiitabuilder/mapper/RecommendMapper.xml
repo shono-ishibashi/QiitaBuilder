@@ -149,7 +149,7 @@
 
 
     <!-- ****** DELETE ****** -->
-    <delete id="delete">
+    <delete id="delete" >
         DELETE
         FROM qiita_recommends
         WHERE recommend_id = #{recommendId};
