@@ -5,13 +5,13 @@ export default {
     namespaced:true,
     state: {
         articles:[],
-        searchCriteria:{
-            sortNum:0,
-            period:undefined,
-            searchWord:undefined,
-            searchTag:[],
-            pageSize:10,
-            currentPage:1
+        searchCriteria: {
+            sortNum: 0,
+            period: 0,
+            searchWord: "",
+            searchTag: [],
+            pageSize: 10,
+            currentPage: 1
         },
         totalPage:undefined,
         tags:[]
