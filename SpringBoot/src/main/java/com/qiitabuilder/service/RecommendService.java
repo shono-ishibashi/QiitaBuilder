@@ -26,10 +26,12 @@ public class RecommendService {
      * 引数に一致するレコードを取得する
      *
      * @param articleId
-     * @param recommendUserId
      * @return
      */
-    public Recommend fetchRecommend(Integer articleId, Integer recommendUserId) {
+    public Recommend fetchRecommend(Integer articleId) {
+        SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer recommendUserId = loginUser.getUser().getUserId();
+
         Recommend result = recommendMapper.findByArticleIdAndRecommendUserId(articleId, recommendUserId);
         // Qiita推薦済みでない場合はNotFoundを返す
         if (Objects.isNull(result)) {
@@ -54,7 +56,7 @@ public class RecommendService {
         // 記事IDが存在しない場合はBadRequestを返す
         try {
             recommend.setPostedUserId(article.getPostedUser().getUserId());
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 

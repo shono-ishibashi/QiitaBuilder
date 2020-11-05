@@ -21,13 +21,12 @@ public class MyArticleController {
      * NotFound My記事登録済みでない場合
      *
      * @param articleId
-     * @param registerUserId
      * @return
      */
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
-    public MyArticle fetchMyArticle(Integer articleId, Integer registerUserId) {
-        return myArticleService.fetchMyArticle(articleId, registerUserId);
+    public MyArticle fetchMyArticle(Integer articleId) {
+        return myArticleService.fetchMyArticle(articleId);
     }
 
     /////////////////////////////

@@ -23,13 +23,12 @@ public class RecommendController {
      * NotFound Qiita推薦済みでない場合
      *
      * @param articleId
-     * @param recommendUserId
      * @return
      */
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
-    public Recommend fetchRecommend(Integer articleId, Integer recommendUserId) {
-        return recommendService.fetchRecommend(articleId, recommendUserId);
+    public Recommend fetchRecommend(Integer articleId) {
+        return recommendService.fetchRecommend(articleId);
     }
 
     /////////////////////////////
