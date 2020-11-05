@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row>
-      <v-col>
+      <v-col cols="4">
         <v-select
             :items="sortList"
             item-value="key"
@@ -13,20 +13,17 @@
             background-color="indigo"
             dark
         >
-          <v-tab v-for="period in periodList" :key="period.key">
+          <v-tab v-for="period in periodList" :key="period.key" @click="changePeriod(period.key)">
             {{ period.state }}
           </v-tab>
         </v-tabs>
       </v-col>
-      <v-col>
+      <v-col cols="4"></v-col>
+      <v-col cols="4">
         <v-text-field
             label="記事タイトル,ユーザーネームを入力"
             v-model="searchCriteria.searchWord"
-            type="text"
         >
-          <template v-slot:append>
-              <v-btn>検索</v-btn>
-          </template>
         </v-text-field>
         <v-autocomplete
             v-model="searchCriteria.searchTag"
@@ -38,14 +35,28 @@
             multiple
             small-chips
         >
-
         </v-autocomplete>
+        <v-btn @click="searchWord">検索</v-btn>
       </v-col>
     </v-row>
     <v-row>
       <v-list>
         <ArticleCard v-for="article in articles" :key="article.articleId" :article="article"></ArticleCard>
       </v-list>
+    </v-row>
+    <v-row>
+      <v-col cols="2"></v-col>
+      <v-col cols="2">
+        <v-select :items="pageSizeList" v-model="searchCriteria.pageSize" label="ページ表示数">
+        </v-select>
+      </v-col>
+      <v-col cols="8">
+        <v-pagination
+            v-model="searchCriteria.currentPage"
+            :length="totalPage"
+            circle
+        ></v-pagination>
+      </v-col>
     </v-row>
   </v-container>
 </template>
@@ -72,28 +83,53 @@ export default {
       ],
       searchCriteria: {
         sortNum: 0,
-        period: undefined,
-        searchWord: undefined,
+        period: 0,
+        searchWord: "",
         searchTag: [],
         pageSize: 10,
         currentPage: 1
       }
     }
   },
-  watch: {},
+  watch: {
+    ['searchCriteria.sortNum']() {
+      console.log(this.searchCriteria.sortNum)
+      this.fetchArticles(this.searchCriteria)
+    },
+    ['searchCriteria.period']() {
+      console.log(this.searchCriteria.period)
+      this.fetchArticles(this.searchCriteria)
+    },
+    ['searchCriteria.pageSize']() {
+      console.log(this.searchCriteria.pageSize)
+      this.searchCriteria.currentPage=1
+      this.fetchArticles(this.searchCriteria)
+    },
+    ['searchCriteria.currentPage']() {
+      console.log(this.searchCriteria.currentPage)
+      this.fetchArticles(this.searchCriteria)
+    }
+  },
   created() {
     this.fetchArticles(this.searchCriteria)
     this.fetchTags()
     console.log("connect success")
   },
   computed: {
-    ...mapState("articles", ["articles", "tags"])
+    ...mapState("articles", ["articles", "tags","totalPage"])
   },
   components: {
     ArticleCard
   },
   methods: {
-    ...mapActions("articles", ["fetchArticles","fetchTags"])
+    ...mapActions("articles", ["fetchArticles", "fetchTags"]),
+    changePeriod(key) {
+      this.searchCriteria.period = key
+    },
+    searchWord(){
+      console.log(this.searchCriteria.period)
+      this.fetchArticles(this.searchCriteria)
+    }
   }
 }
 </script>

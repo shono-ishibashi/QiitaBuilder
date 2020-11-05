@@ -35,14 +35,17 @@ public class ArticleController {
         if(result.hasErrors()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        return articleService.searchArticles(searchArticleForm);
+        System.out.println(searchArticleForm);
+        List<Article>  articles= articleService.searchArticles(searchArticleForm);
+        System.out.println(articles);
+        return articles;
     }
 
     @RequestMapping(value = "/totalPage", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     public Integer totalPage(@ModelAttribute SearchArticleForm searchArticleForm) {
-        System.out.println(articleService.getTotalPage(searchArticleForm));
-        return articleService.getTotalPage(searchArticleForm);
+        Integer i= articleService.getTotalPage(searchArticleForm);
+        return i;
     }
 
     @GetMapping("/{articleId}")

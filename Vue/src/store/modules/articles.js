@@ -13,6 +13,7 @@ export default {
             pageSize:10,
             currentPage:1
         },
+        totalPage:undefined,
         tags:[]
     },
     mutations: {
@@ -21,11 +22,16 @@ export default {
         },
         setTags(state,tags){
             state.tags = tags
+        },
+        setTotalPage(state,totalPage){
+            state.totalPage = totalPage
+            console.log(totalPage)
         }
     },
     actions: {
         async fetchArticles({commit},newSearchCriteria){
-            const url='http://localhost:8080/qiita_builder/article/'
+            const fetchArticlesUrl='http://localhost:8080/qiita_builder/article/'
+            const fetchTotalPageUrl='http://localhost:8080/qiita_builder/article/totalPage'
             const params={
                 sortNum:newSearchCriteria.sortNum,
                 pageSize:newSearchCriteria.pageSize,
@@ -36,10 +42,15 @@ export default {
             }
             const paramsSerializer = (params) => qs.stringify(params);
 
-            await axios.get(url,{params,paramsSerializer})
+            await axios.get(fetchArticlesUrl,{params,paramsSerializer})
                 .then(res=>{
                     console.log(res.data)
                     commit("setArticles",res.data)
+                })
+            await axios.get(fetchTotalPageUrl,{params,paramsSerializer})
+                .then(res=>{
+                    console.log(res.data)
+                    commit("setTotalPage",res.data)
                 })
         },
         async fetchTags({commit}){
