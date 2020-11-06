@@ -118,8 +118,8 @@ export default {
   async created() {
     await this.fetchUserDetail(this.$route.query.userId);
     //DBに存在しないユーザーIDが渡された場合記事一覧に戻る
-    if (isNaN(this.userId)) {
-      this.$router.push({path: 'articleList'})
+    if (this.userId==0) {
+      this.$router.push({path: '/articleList'})
     }
 
     this.fetchFeedbackArticles(this.$route.query.userId);
