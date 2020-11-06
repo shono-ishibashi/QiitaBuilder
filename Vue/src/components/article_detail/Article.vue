@@ -8,14 +8,11 @@
           </v-avatar>
         </v-col>
         <v-col class="" cols="2" sm="2" md="2">
-          <strong>@dddddd{{ article.postedUser.displayName }}</strong>
+          <strong>@{{ article.postedUser.displayName }}</strong>
         </v-col>
         <!-- 投稿日または更新日 -->
         <v-col class="hidden-xs-only" sm="4" md="4">
-          <span v-if="article.updatedAt">
-            {{ article.updatedAt | date }}に更新
-          </span>
-          <span v-else> {{ article.createdAt | date }}に作成 </span>
+          {{ lastEditAt.time | date }}{{ lastEditAt.text }}
         </v-col>
         <v-col class="" sm="3" md="3">
           <v-menu offset-y>
@@ -26,16 +23,21 @@
                 class="white"
                 style="text-transform: none;"
               >
-                {{ article.stateFlag | namestatus }}
+                {{ article.stateFlag | naming }}
               </v-btn>
             </template>
             <v-list>
-              <v-list-item v-for="item in qiitaMenus" :key="item" link>
-                <v-list-item-title v-text="item"></v-list-item-title>
+              <v-list-item
+                v-for="(item, index) in qiitaMenus"
+                :key="index"
+                @click="item.action"
+              >
+                <v-list-item-title v-text="item.name"></v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
         </v-col>
+
         <v-col class="" sm="2" md="2">
           <v-menu offset-y>
             <template v-slot:activator="{ attrs, on }">
@@ -43,10 +45,13 @@
                 <v-icon>mdi-format-list-bulleted</v-icon>
               </v-btn>
             </template>
-
             <v-list>
-              <v-list-item v-for="item in menus" :key="item" link>
-                <v-list-item-title v-text="item"></v-list-item-title>
+              <v-list-item
+                v-for="(item, index) in menus"
+                :key="index"
+                @click="item.action"
+              >
+                <v-list-item-title v-text="item.name"></v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
@@ -96,23 +101,51 @@
 export default {
   data() {
     return {
-      menus: ["記事を編集する", "記事を削除する"],
-      qiitaMenus: ["Qiitaに投稿する", "Qiitaを更新する"],
+      menus: [
+        { name: "記事を編集する", action: this.toEdit },
+        { name: "記事を削除する", action: this.deleteArticle },
+      ],
+      dateFormat: ["年", "月", "日"],
     };
+  },
+  computed: {
+    lastEditAt() {
+      if (this.article.updatedAt) {
+        return { time: this.article.updatedAt, text: "に更新" };
+      }
+      return { time: this.article.createdAt, text: "に作成" };
+    },
+    qiitaMenus() {
+      if (this.article.stateFlag == 2)
+        return [{ name: "Qiitaを更新する", action: this.updateQiita }];
+      return [{ name: "Qiitaに投稿する", action: this.postQiita }];
+    },
   },
   props: ["article"],
   filters: {
-    namestatus: function(value) {
-      if (value == 2) {
-        return "Qiitaに投稿済み";
-      }
+    naming: function(value) {
+      if (value == 2) return "Qiitaに投稿済み";
       return "Qiitaに未投稿";
     },
     date: function(value) {
       if (!value) return "";
-      var date = value.split("T")[0];
-      var ymd = date.split("-");
+      var ymd = value.split("T")[0].split("-");
       return ymd[0] + "年" + ymd[1] + "月" + ymd[2] + "日";
+    },
+  },
+  methods: {
+    toEdit() {
+      // this.$router.push({ name: "articleEdit" });
+      console.log("toEdit");
+    },
+    deleteArticle() {
+      console.log("deleteArticle");
+    },
+    updateQiita() {
+      console.log("updateQiita");
+    },
+    postQiita() {
+      console.log("postQiita");
     },
   },
 };
