@@ -13,13 +13,12 @@ export default {
     },
   },
   actions: {
-    fetchArticle({ commit }, articleId) {
-      const url = "http://localhost:8080/qiita_builder/article/" + articleId;
+    fetchArticle({ commit, rootGetters }, articleId) {
+      const url = rootGetters.API_URL + "article/" + articleId;
       axios
         .get(url)
         .then((res) => {
           commit("setArticle", res.data);
-          console.log("Data : ", res.data);
         })
         .catch((error) => console.log("Error getting data : ", error));
     },
