@@ -38,14 +38,14 @@ const router = new VueRouter({
 
 const API_URL = 'http://localhost:8080/qiita_builder/';
 
-router.beforeResolve((to, from, next) => {
+router.beforeResolve(async (to, from, next) => {
   if (to.path === '/login') {
     next()
   } else {
     //ログイン中の処理
-    firebase.auth().onAuthStateChanged(user => {
+    await firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        store.commit('setLoginUser',firebase.auth().currentUser);
+        store.commit('auth/setLoginUser',firebase.auth().currentUser);
         const uid = firebase.auth().currentUser.uid;
         firebase.firestore().collection("users").doc(uid).get()
             .then(data => {
@@ -61,6 +61,7 @@ router.beforeResolve((to, from, next) => {
         } else {
           next();
         }
+      //ログイン中でないならログアウト処理を行う
       } else {
         store.commit('setAPIToken',null);
         store.dispatch('auth/logout');

@@ -21,10 +21,10 @@ export default {
 
     },
     actions: {
-        googleLogin({commit}) {
+        async googleLogin({commit}) {
             //firebase google authログイン
-            const provider = new firebase.auth.GoogleAuthProvider();
-            firebase.auth().signInWithPopup(provider).then(() => {
+            const provider = await new firebase.auth.GoogleAuthProvider();
+            await firebase.auth().signInWithPopup(provider).then(() => {
                     const loginUser = firebase.auth().currentUser;
                     const db = firebase.firestore();
 
@@ -52,19 +52,24 @@ export default {
                             }
                         })
 
-                //RESTAPI ログイン
-                db.collection('users').doc(loginUser.uid).get()
-                    .then(data => {
-                        const request = API_URL + 'login?uid=' + loginUser.uid + '&password=' + data.data().password;
-                        axios.post(request, {}, {headers: {'Content-Type': 'application/json'}})
-                            .then(response => {
-                                //Vuexにjwt tokenを追加
-                                commit("setAPIToken", response.headers.authorization);
-                                router.push('/')
-                            })
-                    })
+
                 },
             )
+        },
+        async loginRESTAPI({commit}, loginUser) {
+            //RESTAPI ログイン
+            const db = await firebase.firestore();
+            await db.collection('users').doc(loginUser.uid).get()
+                .then(data => {
+                    const request = API_URL + 'login?uid=' + loginUser.uid + '&password=' + data.data().password;
+                    console.log(data.data());
+                    axios.post(request, {}, {headers: {'Content-Type': 'application/json'}})
+                        .then(response => {
+                            //Vuexにjwt tokenを追加
+                            commit("setAPIToken", response.headers.authorization);
+                            router.push('/')
+                        })
+                })
         },
         logout({commit}) {
             firebase.auth().signOut().then(function () {
@@ -75,11 +80,11 @@ export default {
             })
         }
     },
-    getters:{
-        apiToken(state){
+    getters: {
+        apiToken(state) {
             return state.apiToken;
         },
-        loginUser(state){
+        loginUser(state) {
             return state.loginUser;
         }
     }
