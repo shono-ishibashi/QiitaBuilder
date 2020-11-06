@@ -14,7 +14,7 @@
           <v-col>
             <v-sheet min-height="70vh" rounded="lg" sm="12" md="10">
               <Article :article="article" />
-              <Feedback :feedbacks="feedbacks" />
+              <Feedbacks :feedbacks="feedbacks" />
             </v-sheet>
           </v-col>
         </v-row>
@@ -27,13 +27,13 @@
 <script>
 import { mapActions } from "vuex";
 import Article from "../components/article_detail/Article";
-import Feedback from "../components/article_detail/Feedback";
+import Feedbacks from "../components/article_detail/Feedbacks";
 import FeedbackEditor from "../components/article_detail/FeedbackEditor";
 
 export default {
   components: {
     Article,
-    Feedback,
+    Feedbacks,
     FeedbackEditor,
   },
   computed: {
