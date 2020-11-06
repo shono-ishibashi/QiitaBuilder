@@ -10,7 +10,7 @@ public interface QiitaConfigurationMapper{
 
     String getCode(Integer userId);
     String getState(String state);
-    String getStateByUserId(String userId);
+    String getStateByUserId(Integer userId);
     void insertQiitaConfiguration(QiitaConfiguration qiitaConfiguration);
     void updateQiitaConfigurationCode(QiitaConfiguration qiitaConfiguration);
 

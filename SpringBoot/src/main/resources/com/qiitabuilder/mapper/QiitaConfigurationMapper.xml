@@ -16,7 +16,7 @@
         WHERE user_id = #{userId}
     </select>
 
-    <select id="getCode" resultType="String">
+    <select id="getCodeByUserId" resultType="String">
         SELECT code
         FROM qiita_configurations
         WHERE user_id = #{userId}

@@ -228,6 +228,11 @@
             <PaintGroupHighlightMap />
           </value>
         </entry>
+        <entry key="5269771c-d080-40f6-b1ce-67baf2ad0f3f/schema/qiita_builder/table/qiita_configurations.sql">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
       </map>
     </option>
   </component>
