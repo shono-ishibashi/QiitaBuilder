@@ -17,11 +17,13 @@ export default {
         myArticles: [],
         feedbackArticles: []
     },
-    getters:{
-        userId(state) {return state.userDetail.userId},
+    getters: {
+        userId(state) {
+            return state.userDetail.userId
+        },
     },
     mutations: {
-         setUserDetail(state, user) {
+        setUserDetail(state, user) {
             if (!user.postedArticleCount) user.postedArticleCount = 0;
             if (!user.feedbackCount) user.feedbackCount = 0;
             if (!user.qiitaRecommendedAllCount) user.qiitaRecommendedAllCount = 0;
@@ -58,7 +60,7 @@ export default {
             await axios.get(url, {params, paramsSerializer})
                 .then(res => {
                     commit("setPostedArticles", res.data)
-                }).catch((error)=>{
+                }).catch((error) => {
                     console.log(error)
                 })
         },
