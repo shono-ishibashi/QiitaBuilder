@@ -1,14 +1,14 @@
 <template>
-  <v-app class="green lighten-3 d-flex">
+  <v-app class="white d-flex">
     <v-container class="area">
       <v-row align="center" class="spacer">
-        <v-col cols="4" sm="1" md="1">
-          <v-avatar size="36px">
+        <v-col cols="1" sm="1" md="1">
+          <v-avatar size="42px">
             <img src="https://cdn.vuetifyjs.com/images/john.jpg" alt="John" />
           </v-avatar>
         </v-col>
-        <v-col class="" cols="8" sm="2" md="2">
-          <strong>@{{ article.postedUser.displayName }}</strong>
+        <v-col class="" cols="2" sm="2" md="2">
+          <strong>@dddddd{{ article.postedUser.displayName }}</strong>
         </v-col>
         <!-- 投稿日または更新日 -->
         <v-col class="hidden-xs-only" sm="4" md="4">
@@ -17,35 +17,35 @@
           </span>
           <span v-else> {{ article.createdAt | date }}に作成 </span>
         </v-col>
-        <v-col class="" sm="6" md="3">
+        <v-col class="" sm="3" md="3">
           <v-menu offset-y>
             <template v-slot:activator="{ attrs, on }">
               <v-btn
                 v-bind="attrs"
                 v-on="on"
-                class="green lighten-3"
+                class="white"
                 style="text-transform: none;"
               >
                 {{ article.stateFlag | namestatus }}
               </v-btn>
             </template>
             <v-list>
-              <v-list-item v-for="item in items" :key="item" link>
+              <v-list-item v-for="item in qiitaMenus" :key="item" link>
                 <v-list-item-title v-text="item"></v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
         </v-col>
-        <v-col class="" sm="6" md="2">
+        <v-col class="" sm="2" md="2">
           <v-menu offset-y>
             <template v-slot:activator="{ attrs, on }">
-              <v-btn v-bind="attrs" v-on="on" class="green lighten-3">
-                メニュー
+              <v-btn icon v-bind="attrs" v-on="on" class="">
+                <v-icon>mdi-format-list-bulleted</v-icon>
               </v-btn>
             </template>
 
             <v-list>
-              <v-list-item v-for="item in items" :key="item" link>
+              <v-list-item v-for="item in menus" :key="item" link>
                 <v-list-item-title v-text="item"></v-list-item-title>
               </v-list-item>
             </v-list>
@@ -96,18 +96,17 @@
 export default {
   data() {
     return {
-      items: ["a", "b"],
+      menus: ["記事を編集する", "記事を削除する"],
+      qiitaMenus: ["Qiitaに投稿する", "Qiitaを更新する"],
     };
   },
   props: ["article"],
   filters: {
     namestatus: function(value) {
-      if (value == 1) {
-        return "Qiitaに未投稿";
-      } else if (value == 2) {
+      if (value == 2) {
         return "Qiitaに投稿済み";
       }
-      return "";
+      return "Qiitaに未投稿";
     },
     date: function(value) {
       if (!value) return "";
