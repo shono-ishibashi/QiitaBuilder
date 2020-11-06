@@ -15,6 +15,8 @@ export default new Vuex.Store({
   },
   actions: {
   },
+  getters: {
+  },
   modules: {
     auth:auth,
     articles:articles,

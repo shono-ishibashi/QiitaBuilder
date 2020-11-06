@@ -103,18 +103,21 @@ public class QiitaAPIService {
     }
 
     /**
-     * Qiitaからリダイレクトされてきたstateがデータベースに存在するのかを確認するメソッド
+     * Qiitaからリダイレクトされてきたstateがデータベースに存在するstateが同じかをを確認し、同じだったらcodeをデータベースに追加する
      *
-     * @return  存在する:true 存在しない:false
+     * @return 同じする:true 違う:false
      */
 
-    public boolean existsStateInDB(QiitaConfiguration qiitaConfiguration) {
-        String stateInDB = qiitaConfigurationMapper.getState(qiitaConfiguration.getState());
-        if(isNull(stateInDB)){
-            return false;
-        }else {
+    public boolean isAuthenticated(QiitaConfiguration qiitaConfiguration) {
+        //DB 内のstate
+        String stateInDB = qiitaConfigurationMapper.getStateByUserId(qiitaConfiguration.getUserId());
+
+        if(Objects.equals(qiitaConfiguration.getState(), stateInDB)){
             qiitaConfigurationMapper.updateQiitaConfigurationCode(qiitaConfiguration);
             return true;
+        } else {
+            qiitaConfigurationMapper.deleteByUserId(qiitaConfiguration.getUserId());
+            return false;
         }
     }
 
