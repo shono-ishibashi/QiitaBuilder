@@ -13,7 +13,7 @@
       </v-toolbar>
       <v-card-text>
         <v-card-actions class="justify-center">
-          <v-btn text-align @click="login">
+          <v-btn text-align @click.stop="login">
             <v-icon>mdi-google</v-icon>
             Google login
           </v-btn>
@@ -30,6 +30,7 @@ export default {
   methods: {
     async login() {
       await this.$store.dispatch('auth/googleLogin');
+      await this.$store.dispatch('auth/loginRESTAPI',this.$store.getters["auth/loginUser"]);
     }
   }
 }
