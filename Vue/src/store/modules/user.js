@@ -4,7 +4,6 @@ import qs from 'qs';
 export default {
     namespaced: true,
     state: {
-        userId: 0,
         userDetail: {
             userId: 0,
             displayName: "",
@@ -18,8 +17,11 @@ export default {
         myArticles: [],
         feedbackArticles: []
     },
+    getters:{
+        userId(state) {return state.userDetail.userId},
+    },
     mutations: {
-        setUserDetail(state, user) {
+         setUserDetail(state, user) {
             if (!user.postedArticleCount) user.postedArticleCount = 0;
             if (!user.feedbackCount) user.feedbackCount = 0;
             if (!user.qiitaRecommendedAllCount) user.qiitaRecommendedAllCount = 0;
@@ -56,6 +58,8 @@ export default {
             await axios.get(url, {params, paramsSerializer})
                 .then(res => {
                     commit("setPostedArticles", res.data)
+                }).catch((error)=>{
+                    console.log(error)
                 })
         },
         async fetchFeedbackArticles({commit, rootGetters}, userId) {
