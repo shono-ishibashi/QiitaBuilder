@@ -40,8 +40,7 @@ public class ArticleController {
     @RequestMapping(value = "/totalPage", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     public Integer totalPage(@ModelAttribute SearchArticleForm searchArticleForm) {
-        Integer i= articleService.getTotalPage(searchArticleForm);
-        return i;
+        return articleService.getTotalPage(searchArticleForm);
     }
 
     /**

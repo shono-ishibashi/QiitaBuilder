@@ -93,56 +93,73 @@
 
     <!-- ****** SELECT ****** -->
     <select id="searchArticles" resultMap="articlesMap">
-        select
-        art.article_id as articleId,
-        art.title as title,
-        art.created_at as createdAt,
-        art.updated_at as updatedAt,
-        art.state_flag as stateFlag,
-        tags.tag_id as tagId,
-        tags.tag_name as tagName,
-        feed_cnt_table.feed_cnt as feedCnt,
-        my_cnt_table.my_cnt as myCnt,
-        recommend_cnt_table.recommend_cnt as recommendCnt,
-        users.user_id as userId,
-        users.display_name as displayName,
-        users.photo_url as photoUrl
-        from (select * from qiita_builder.articles
+        SELECT
+        art.article_id AS articleId,
+        art.title AS title,
+        art.created_at AS createdAt,
+        art.updated_at AS updatedAt,
+        art.state_flag AS stateFlag,
+        tags.tag_id AS tagId,
+        tags.tag_name AS tagName,
+        feed_cnt_table.feed_cnt AS feedCnt,
+        my_cnt_table.my_cnt AS myCnt,
+        recommend_cnt_table.recommend_cnt AS recommendCnt,
+        users.user_id AS userId,
+        users.display_name AS displayName,
+        users.photo_url AS photoUrl
+        FROM (SELECT * FROM qiita_builder.articles
         <where>
             <if test="search.searchWord !=null">
-                title like CONCAT('%', #{search.searchWord}, '%')
+                title LIKE CONCAT('%', #{search.searchWord}, '%')
             </if>
             <if test="search.period!=null">
                 <if test="search.period==0">
-                    and created_at between NOW() - interval 7 day and NOW()
+                    AND created_at BETWEEN NOW() - INTERVAL 7 DAY AND NOW()
                 </if>
                 <if test="search.period==1">
-                    and DATE_FORMAT(created_at, '%Y%m') = DATE_FORMAT(NOW(), '%Y%m')
+                    AND DATE_FORMAT(created_at, '%Y%m') = DATE_FORMAT(NOW(), '%Y%m')
                 </if>
             </if>
         </where>
         <if test="search.pageSize != 0">
-            limit #{search.pageSize} offset #{search.offset}
+            LIMIT #{search.pageSize} OFFSET #{search.offset}
         </if>
-        ) as art
-        left outer join qiita_builder.articles_tags_relations as a_t_relation
-        on art.article_id = a_t_relation.article_id
-        left outer join qiita_builder.tags as tags on a_t_relation.tag_id = tags.tag_id
-        left outer join (select article_id, count(feed.article_id) as feed_cnt
-        from qiita_builder.feedbacks as feed
-        group by feed.article_id) as feed_cnt_table
-        on art.article_id = feed_cnt_table.article_id
-        left outer join (select article_id, count(my.article_id) as my_cnt
-        from qiita_builder.my_articles as my
-        group by my.article_id) as my_cnt_table on art.article_id = my_cnt_table.article_id
-        left outer join (select article_id, count(recommend.article_id) as recommend_cnt
-        from qiita_builder.qiita_recommends as recommend
-        group by recommend.article_id) as recommend_cnt_table
-        on art.article_id = recommend_cnt_table.article_id
-        left join qiita_builder.users on art.user_id = users.user_id
+        ) AS art
+
+        LEFT OUTER JOIN qiita_builder.articles_tags_relations AS a_t_relation
+        ON art.article_id = a_t_relation.article_id
+
+        LEFT OUTER JOIN qiita_builder.tags AS tags
+        ON a_t_relation.tag_id = tags.tag_id
+
+        LEFT OUTER JOIN (
+        SELECT article_id,
+        count(feed.article_id) AS feed_cnt
+        FROM qiita_builder.feedbacks AS feed
+        GROUP BY feed.article_id
+        ) AS feed_cnt_table
+        ON art.article_id = feed_cnt_table.article_id
+
+        LEFT OUTER JOIN (
+        SELECT article_id,
+        count(my.article_id) AS my_cnt
+        FROM qiita_builder.my_articles AS my
+        GROUP BY my.article_id
+        ) AS my_cnt_table
+        ON art.article_id = my_cnt_table.article_id
+
+        LEFT OUTER JOIN (
+        SELECT article_id,
+        count(recommend.article_id) AS recommend_cnt
+        FROM qiita_builder.qiita_recommends AS recommend
+        GROUP BY recommend.article_id) AS recommend_cnt_table
+        ON art.article_id = recommend_cnt_table.article_id
+
+        LEFT JOIN qiita_builder.users
+        ON art.user_id = users.user_id
         <where>
             <if test="search.searchTag!=null">
-                and tags.tag_id in
+                AND tags.tag_id IN
                 <foreach item="tag" index="index" collection="search.searchTag" open="(" separator="," close=")">
                     #{tag}
                 </foreach>
@@ -151,72 +168,88 @@
                 art.user_id = #{search.userId}
             </if>
         </where>
-        order by ${search.sort} desc
+        ORDER BY ${search.sort} DESC
     </select>
 
     <select id="getArticleNumber" resultType="_int">
-        select count(*)
-        from qiita_builder.articles as art
-        left outer join qiita_builder.articles_tags_relations as a_t_relation
-        on art.article_id = a_t_relation.article_id
-        left outer join qiita_builder.tags as tags on a_t_relation.tag_id = tags.tag_id
-        left outer join (select article_id, count(feed.article_id) as feed_cnt
-        from qiita_builder.feedbacks as feed
-        group by feed.article_id) as feed_cnt_table
-        on art.article_id = feed_cnt_table.article_id
-        left outer join (select article_id, count(my.article_id) as my_cnt
-        from qiita_builder.my_articles as my
-        group by my.article_id) as my_cnt_table on art.article_id = my_cnt_table.article_id
-        left outer join (select article_id, count(recommend.article_id) as recommend_cnt
-        from qiita_builder.qiita_recommends as recommend
-        group by recommend.article_id) as recommend_cnt_table
-        on art.article_id = recommend_cnt_table.article_id
-        left join qiita_builder.users on art.user_id = users.user_id
+        SELECT count(*)
+        FROM qiita_builder.articles AS art
+        LEFT OUTER JOIN qiita_builder.articles_tags_relations AS a_t_relation
+        ON art.article_id = a_t_relation.article_id
+
+        LEFT OUTER JOIN qiita_builder.tags AS tags
+        ON a_t_relation.tag_id = tags.tag_id
+        LEFT OUTER JOIN (
+        SELECT article_id,
+        count(feed.article_id) AS feed_cnt
+        FROM qiita_builder.feedbacks AS feed
+        GROUP BY feed.article_id
+        ) AS feed_cnt_table
+        ON art.article_id = feed_cnt_table.article_id
+
+        LEFT OUTER JOIN (
+        SELECT article_id,
+        count(my.article_id) AS my_cnt
+        FROM qiita_builder.my_articles AS my
+        GROUP BY my.article_id
+        ) AS my_cnt_table
+        ON art.article_id = my_cnt_table.article_id
+
+        LEFT OUTER JOIN (
+        SELECT article_id,
+        count(recommend.article_id) AS recommend_cnt
+        FROM qiita_builder.qiita_recommends AS recommend
+        GROUP BY recommend.article_id
+        ) AS recommend_cnt_table
+        ON art.article_id = recommend_cnt_table.article_id
+
+        LEFT JOIN qiita_builder.users
+        ON art.user_id = users.user_id
         <where>
             <if test="search.searchWord !=null">
-                title like CONCAT('%', #{search.searchWord}, '%')
+                title LIKE CONCAT('%', #{search.searchWord}, '%')
             </if>
             <if test="search.searchTag!=null">
-                and tags.tag_id in
+                AND tags.tag_id IN
                 <foreach item="tag" index="index" collection="search.searchTag" open="(" separator="," close=")">
                     #{tag}
                 </foreach>
             </if>
             <if test="search.period!=null">
                 <if test="search.period==0">
-                    and created_at between NOW() - interval 7 day and NOW()
+                    AND created_at BETWEEN NOW() - INTERVAL 7 DAY AND NOW()
                 </if>
                 <if test="search.period==1">
-                    and DATE_FORMAT(created_at, '%Y%m') = DATE_FORMAT(NOW(), '%Y%m')
+                    AND DATE_FORMAT(created_at, '%Y%m') = DATE_FORMAT(NOW(), '%Y%m')
                 </if>
             </if>
         </where>
     </select>
 
     <select id="load" resultMap="loadResult">
-        SELECT art.article_id       as art_article_id,
-               art.title            as art_title,
-               art.created_at       as art_created_at,
-               art.updated_at       as art_updated_at,
-               art.content          as art_content,
-               art.state_flag       as art_state_flag,
+        SELECT art.article_id       AS art_article_id,
+               art.title            AS art_title,
+               art.created_at       AS art_created_at,
+               art.updated_at       AS art_updated_at,
+               art.content          AS art_content,
+               art.state_flag       AS art_state_flag,
 
-               art_use.user_id      as art_use_user_id,
-               art_use.display_name as art_use_display_name,
-               art_use.photo_url    as art_use_photo_url,
+               art_use.user_id      AS art_use_user_id,
+               art_use.display_name AS art_use_display_name,
+               art_use.photo_url    AS art_use_photo_url,
 
-               fee.feedback_id      as fee_feedback_id,
-               fee.article_id       as fee_article_id,
-               fee.created_at       as fee_created_at,
-               fee.updated_at       as fee_updated_at,
-               fee.content          as fee_content,
+               fee.feedback_id      AS fee_feedback_id,
+               fee.article_id       AS fee_article_id,
+               fee.created_at       AS fee_created_at,
+               fee.updated_at       AS fee_updated_at,
+               fee.content          AS fee_content,
 
-               fee_use.user_id      as fee_use_user_id,
-               fee_use.display_name as fee_use_display_name,
-               fee_use.photo_url    as fee_use_photo_url,
+               fee_use.user_id      AS fee_use_user_id,
+               fee_use.display_name AS fee_use_display_name,
+               fee_use.photo_url    AS fee_use_photo_url,
 
-               tags.tag_id          as tag_id,
-               tags.tag_name        as tag_name,
+               tags.tag_id          AS tag_id,
+               tags.tag_name        AS tag_name,
 
                feed_cnt_table.feed_cnt,
                my_cnt_table.my_cnt,
@@ -225,15 +258,15 @@
         FROM articles AS art
 
                  LEFT JOIN
-             users as art_use
+             users AS art_use
              ON art.user_id = art_use.user_id
 
                  LEFT OUTER JOIN
-             feedbacks as fee
+             feedbacks AS fee
              ON art.article_id = fee.article_id
 
                  LEFT JOIN
-             users as fee_use
+             users AS fee_use
              ON fee.user_id = fee_use.user_id
 
                  LEFT OUTER JOIN
@@ -241,7 +274,7 @@
              ON art.article_id = a_t_relation.article_id
 
                  LEFT OUTER JOIN
-             tags AS tags
+             tags
              ON a_t_relation.tag_id = tags.tag_id
 
                  LEFT OUTER JOIN
@@ -283,9 +316,9 @@
                users.photo_url,
                (
                    SELECT count(*)
-                   FROM articles AS art
-                   WHERE art.user_id = art_count_rank.user_id
-                     AND (art.state_flag = 1 OR art.state_flag = 2)
+                   FROM feedbacks AS fb
+                   WHERE fb.user_id = art_count_rank.user_id
+                     AND fb.delete_flag = 0
                )                  AS fb_count,
                art_count_rank.cnt AS post_art_count,
                (
@@ -332,6 +365,7 @@
                    SELECT count(*)
                    FROM feedbacks AS fb
                    WHERE fb.article_id = #{articleId}
+                     AND fb.delete_flag = 0
                ) AS fb_count,
                (
                    SELECT count(*)
@@ -386,14 +420,13 @@
     <!-- ****** UPDATE ****** -->
     <update id="updateArticle">
         UPDATE articles
-        SET user_id = #{postedUser.userId},
-        updated_at = NOW(),
-        title = #{title},
-        content = #{content},
-        qiita_article_id = #{qiitaArticleId},
-        state_flag = #{stateFlag}
+        SET user_id          = #{postedUser.userId},
+            updated_at       = NOW(),
+            title            = #{title},
+            content          = #{content},
+            qiita_article_id = #{qiitaArticleId},
+            state_flag       = #{stateFlag}
         WHERE article_id = #{articleId}
     </update>
 
 </mapper>
-

@@ -1,47 +1,73 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="4">
-        <v-select
-            :items="sortList"
-            item-value="key"
-            item-text="state"
-            v-model="searchCriteria.sortNum">
-        </v-select>
-        <v-tabs
-            fixed-tabs
-            background-color="indigo"
-            dark
-        >
-          <v-tab v-for="period in periodList" :key="period.key" @click="changePeriod(period.key)">
-            {{ period.state }}
-          </v-tab>
-        </v-tabs>
+      <v-col cols="3"></v-col>
+      <v-col cols="6">
+        <v-card class="searchForm">
+          <v-row>
+            <v-col>
+              <v-card-title style="padding-left: 40px">
+                検索フォーム
+              </v-card-title>
+            </v-col>
+            <v-col>
+              <v-card-actions>
+                <v-btn @click="search">検索</v-btn>
+                <v-btn @click="reset">リセット</v-btn>
+              </v-card-actions>
+            </v-col>
+          </v-row>
+          <v-card-text>
+            <v-row>
+              <v-col>
+                <v-text-field
+                    label="記事タイトル,ユーザーネームを入力"
+                    v-model="searchCriteria.searchWord"
+                >
+                </v-text-field>
+              </v-col>
+              <v-col>
+                <v-autocomplete
+                    v-model="searchCriteria.searchTag"
+                    :items="tags"
+                    item-value="tagId"
+                    item-text="tagName"
+                    label="タグを選択"
+                    chips
+                    deletable-chips
+                    multiple
+                    small-chips
+                >
+                </v-autocomplete>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
       </v-col>
-      <v-col cols="4"></v-col>
-      <v-col cols="4">
-        <v-text-field
-            label="記事タイトル,ユーザーネームを入力"
-            v-model="searchCriteria.searchWord"
-        >
-        </v-text-field>
-        <v-autocomplete
-            v-model="searchCriteria.searchTag"
-            :items="tags"
-            item-value="tagId"
-            item-text="tagName"
-            chips
-            deletable-chips
-            multiple
-            small-chips
-        >
-        </v-autocomplete>
-        <v-btn @click="searchWord">検索</v-btn>
-      </v-col>
+      <v-col cols="3"></v-col>
     </v-row>
-    <v-row>
-      <v-list>
-        <ArticleCard v-for="article in articles" :key="article.articleId" :article="article"></ArticleCard>
+    <v-row aline="center" justify="center">
+      <v-list class="list">
+        <v-subheader>
+          <v-tabs
+              fixed-tabs
+              color="#5bc8ac"
+          >
+            <v-tab v-for="period in periodList" :key="period.key" @click="changePeriod(period.key)">
+              {{ period.state }}
+            </v-tab>
+          </v-tabs>
+          <v-spacer></v-spacer>
+          <v-select
+              :items="sortList"
+              item-value="key"
+              item-text="state"
+              color="#5bc8ac"
+              v-model="searchCriteria.sortNum">
+          </v-select>
+        </v-subheader>
+        <ArticleCard v-for="(article,index) in articles" :key="article.articleId" :article="article"
+                     :index="index"></ArticleCard>
       </v-list>
     </v-row>
     <v-row>
@@ -58,6 +84,11 @@
         ></v-pagination>
       </v-col>
     </v-row>
+    <div class="Page-Btn" @click="scrollTop">
+      <i class="fas fa-chevron-up Page-Btn-Icon">
+        <v-icon dark>mdi-arrow-up</v-icon>
+      </i>
+    </div>
   </v-container>
 </template>
 
@@ -81,42 +112,33 @@ export default {
         {key: 1, state: "月間"},
         {key: null, state: "全て"},
       ],
-      searchCriteria: {
-        sortNum: 0,
-        period: 0,
-        searchWord: "",
-        searchTag: [],
-        pageSize: 10,
-        currentPage: 1
-      }
     }
   },
   watch: {
     ['searchCriteria.sortNum']() {
-      console.log(this.searchCriteria.sortNum)
+      this.searchCriteria.currentPage = 1
       this.fetchArticles(this.searchCriteria)
     },
     ['searchCriteria.period']() {
-      console.log(this.searchCriteria.period)
+      this.searchCriteria.currentPage = 1
       this.fetchArticles(this.searchCriteria)
     },
     ['searchCriteria.pageSize']() {
-      console.log(this.searchCriteria.pageSize)
-      this.searchCriteria.currentPage=1
+      this.searchCriteria.currentPage = 1
       this.fetchArticles(this.searchCriteria)
+      this.scrollTop()
     },
     ['searchCriteria.currentPage']() {
-      console.log(this.searchCriteria.currentPage)
       this.fetchArticles(this.searchCriteria)
+      this.scrollTop()
     }
   },
   created() {
     this.fetchArticles(this.searchCriteria)
     this.fetchTags()
-    console.log("connect success")
   },
   computed: {
-    ...mapState("articles", ["articles", "tags","totalPage"])
+    ...mapState("articles", ["articles", "tags", "totalPage","searchCriteria"])
   },
   components: {
     ArticleCard
@@ -126,8 +148,19 @@ export default {
     changePeriod(key) {
       this.searchCriteria.period = key
     },
-    searchWord(){
-      console.log(this.searchCriteria.period)
+    search() {
+      this.searchCriteria.currentPage = 1
+      this.fetchArticles(this.searchCriteria)
+    },
+    scrollTop() {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    },
+    reset(){
+      this.searchCriteria.searchWord=""
+      this.searchCriteria.searchTag=[]
       this.fetchArticles(this.searchCriteria)
     }
   }
@@ -135,5 +168,21 @@ export default {
 </script>
 
 <style scoped>
-
+.Page-Btn {
+  position: fixed;
+  right: 200px;
+  bottom: 100px;
+  width: 45px;
+  height: 45px;
+  line-height: 45px;
+  text-align: center;
+  border-radius: 50%;
+  background: #5bc8ac;
+}
+.list {
+  width: 800px;
+  padding-top:100px;
+}
+.searchForm{
+}
 </style>
