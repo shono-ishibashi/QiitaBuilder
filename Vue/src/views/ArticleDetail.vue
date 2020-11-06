@@ -3,12 +3,16 @@
     <v-main class="grey lighten-3">
       <v-container>
         <v-row>
-          <v-col cols="2">
-            <v-btn elevation="2" id="qiita_btn">Qiita</v-btn>
-            <v-btn elevation="2" id="my_btn">My記事登録</v-btn>
+          <v-col class="hidden-xs-only hidden-sm-only" md="2">
+            <v-btn elevation="2" id="qiita_btn" style="text-transform: none"
+              >Qiita</v-btn
+            >
+            <v-btn elevation="2" id="my_btn" style="text-transform: none"
+              >My記事登録</v-btn
+            >
           </v-col>
           <v-col>
-            <v-sheet min-height="70vh" rounded="lg">
+            <v-sheet min-height="70vh" rounded="lg" sm="12" md="10">
               <Article :article="article" />
               <Feedback :feedbacks="feedbacks" />
             </v-sheet>
