@@ -120,14 +120,4 @@ public class ArticleController {
     public List<Article> getMyArticlesByUserId(Integer userId) {
         return articleService.getMyArticlesByUserId(userId);
     }
-
-
-    @Autowired
-    private QiitaAPIService qiitaAPIService;
-
-    @RequestMapping(value = "/test", method = RequestMethod.GET)
-    public void test() {
-        qiitaAPIService.restTemplateTest();
-    }
-
 }
