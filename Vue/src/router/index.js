@@ -6,7 +6,7 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path:'/articleList',
+    path:'/article',
     name:'ArticleList',
     component:ArticleList
   },
