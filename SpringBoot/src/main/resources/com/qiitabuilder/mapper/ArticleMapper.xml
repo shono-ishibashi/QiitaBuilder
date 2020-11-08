@@ -93,7 +93,7 @@
 
     <!-- ****** SELECT ****** -->
     <select id="searchArticles" resultMap="articlesMap">
-        select
+        SELECT DISTINCT
         art.article_id as articleId,
         art.title as title,
         art.created_at as createdAt,
@@ -107,91 +107,97 @@
         users.user_id as userId,
         users.display_name as displayName,
         users.photo_url as photoUrl
-        from (select * from qiita_builder.articles
+        FROM articles as art
+        LEFT OUTER JOIN qiita_builder.articles_tags_relations as a_t_relation
+        ON art.article_id = a_t_relation.article_id
+        LEFT OUTER JOIN qiita_builder.tags as tags
+        ON a_t_relation.tag_id = tags.tag_id
+        LEFT OUTER JOIN (SELECT article_id, count(feed.article_id) as feed_cnt
+        FROM qiita_builder.feedbacks as feed
+        GROUP BY feed.article_id) as feed_cnt_table
+        ON art.article_id = feed_cnt_table.article_id
+        LEFT OUTER JOIN (SELECT article_id, count(my.article_id) as my_cnt
+        FROM qiita_builder.my_articles as my
+        GROUP BY my.article_id) as my_cnt_table
+        ON art.article_id = my_cnt_table.article_id
+        LEFT OUTER JOIN (SELECT article_id, count(recommend.article_id) as recommend_cnt
+        FROM qiita_builder.qiita_recommends as recommend
+        GROUP BY recommend.article_id) as recommend_cnt_table
+        ON art.article_id = recommend_cnt_table.article_id
+        LEFT OUTER JOIN qiita_builder.users as users
+        ON art.user_id = users.user_id
+        WHERE art.article_id in
+        <foreach item="articleId" index="index" collection="search.articlesIdList" open="(" separator="," close=")">
+            #{articleId}
+        </foreach>
+        ORDER BY ${search.sort} DESC
+    </select>
+
+    <select id="searchArticlesId" resultType="_int">
+        SELECT
+        art.article_id,
+        created_at as createdAt,
+        updated_at as updatedAt,
+        feed_cnt_table.feed_cnt as feedCnt,
+        my_cnt_table.my_cnt as myCnt,
+        recommend_cnt_table.recommend_cnt as recommendCnt
+        FROM articles as art
+        <if test="search.searchTag!=null">
+            JOIN (SELECT article_id as atArticleId
+            FROM qiita_builder.articles_tags_relations
+            where
+            tag_id IN
+            <foreach item="tag" index="index" collection="search.searchTag" open="(" separator="," close=")">
+                #{tag}
+            </foreach>
+            GROUP BY atArticleId
+            ) as a_t_relation
+            ON art.article_id = a_t_relation.atArticleId
+        </if>
+        <if test="search.searchWord !=null or search.userId !=null">
+            JOIN (SELECT user_id
+            FROM qiita_builder.users
+            <where>
+                <if test="search.searchWord !=null and search.toggleSearchWord==1">
+                    display_name LIKE CONCAT('%', #{search.searchWord}, '%')
+                </if>
+                <if test="search.userId !=null">
+                    AND userId = #{search.userId}
+                </if>
+            </where>
+            ) as users
+            ON art.user_id = users.user_id
+        </if>
+        LEFT OUTER JOIN (SELECT article_id, COUNT(feed.article_id) as feed_cnt
+        FROM qiita_builder.feedbacks as feed
+        GROUP BY feed.article_id) as feed_cnt_table
+        ON art.article_id = feed_cnt_table.article_id
+        LEFT OUTER JOIN (SELECT article_id, COUNT(my.article_id) as my_cnt
+        FROM qiita_builder.my_articles as my
+        GROUP BY my.article_id) as my_cnt_table on art.article_id = my_cnt_table.article_id
+        LEFT OUTER JOIN (SELECT article_id, COUNT(recommend.article_id) as recommend_cnt
+        FROM qiita_builder.qiita_recommends as recommend
+        GROUP BY recommend.article_id) as recommend_cnt_table
+        ON art.article_id = recommend_cnt_table.article_id
         <where>
-            <if test="search.searchWord !=null">
-                title like CONCAT('%', #{search.searchWord}, '%')
+            <if test="search.searchWord !=null and search.toggleSearchWord==0">
+                title LIKE CONCAT('%', #{search.searchWord}, '%')
             </if>
             <if test="search.period!=null">
                 <if test="search.period==0">
-                    and created_at between NOW() - interval 7 day and NOW()
+                    AND created_at between NOW() - interval 7 day and NOW()
                 </if>
                 <if test="search.period==1">
-                    and DATE_FORMAT(created_at, '%Y%m') = DATE_FORMAT(NOW(), '%Y%m')
+                    AND DATE_FORMAT(created_at, '%Y%m') = DATE_FORMAT(NOW(), '%Y%m')
                 </if>
-            </if>
-        </where>
-        <if test="search.pageSize != 0">
-            limit #{search.pageSize} offset #{search.offset}
-        </if>
-        ) as art
-        left outer join qiita_builder.articles_tags_relations as a_t_relation
-        on art.article_id = a_t_relation.article_id
-        left outer join qiita_builder.tags as tags on a_t_relation.tag_id = tags.tag_id
-        left outer join (select article_id, count(feed.article_id) as feed_cnt
-        from qiita_builder.feedbacks as feed
-        group by feed.article_id) as feed_cnt_table
-        on art.article_id = feed_cnt_table.article_id
-        left outer join (select article_id, count(my.article_id) as my_cnt
-        from qiita_builder.my_articles as my
-        group by my.article_id) as my_cnt_table on art.article_id = my_cnt_table.article_id
-        left outer join (select article_id, count(recommend.article_id) as recommend_cnt
-        from qiita_builder.qiita_recommends as recommend
-        group by recommend.article_id) as recommend_cnt_table
-        on art.article_id = recommend_cnt_table.article_id
-        left join qiita_builder.users on art.user_id = users.user_id
-        <where>
-            <if test="search.searchTag!=null">
-                and tags.tag_id in
-                <foreach item="tag" index="index" collection="search.searchTag" open="(" separator="," close=")">
-                    #{tag}
-                </foreach>
-            </if>
-            <if test="search.userId !=null">
-                art.user_id = #{search.userId}
             </if>
         </where>
         order by ${search.sort} desc
+        <if test="search.pageSize != 0">
+            LIMIT #{search.pageSize} OFFSET #{search.offset}
+        </if>
     </select>
 
-    <select id="getArticleNumber" resultType="_int">
-        select count(*)
-        from qiita_builder.articles as art
-        left outer join qiita_builder.articles_tags_relations as a_t_relation
-        on art.article_id = a_t_relation.article_id
-        left outer join qiita_builder.tags as tags on a_t_relation.tag_id = tags.tag_id
-        left outer join (select article_id, count(feed.article_id) as feed_cnt
-        from qiita_builder.feedbacks as feed
-        group by feed.article_id) as feed_cnt_table
-        on art.article_id = feed_cnt_table.article_id
-        left outer join (select article_id, count(my.article_id) as my_cnt
-        from qiita_builder.my_articles as my
-        group by my.article_id) as my_cnt_table on art.article_id = my_cnt_table.article_id
-        left outer join (select article_id, count(recommend.article_id) as recommend_cnt
-        from qiita_builder.qiita_recommends as recommend
-        group by recommend.article_id) as recommend_cnt_table
-        on art.article_id = recommend_cnt_table.article_id
-        left join qiita_builder.users on art.user_id = users.user_id
-        <where>
-            <if test="search.searchWord !=null">
-                title like CONCAT('%', #{search.searchWord}, '%')
-            </if>
-            <if test="search.searchTag!=null">
-                and tags.tag_id in
-                <foreach item="tag" index="index" collection="search.searchTag" open="(" separator="," close=")">
-                    #{tag}
-                </foreach>
-            </if>
-            <if test="search.period!=null">
-                <if test="search.period==0">
-                    and created_at between NOW() - interval 7 day and NOW()
-                </if>
-                <if test="search.period==1">
-                    and DATE_FORMAT(created_at, '%Y%m') = DATE_FORMAT(NOW(), '%Y%m')
-                </if>
-            </if>
-        </where>
-    </select>
 
     <select id="load" resultMap="loadResult">
         SELECT art.article_id       as art_article_id,

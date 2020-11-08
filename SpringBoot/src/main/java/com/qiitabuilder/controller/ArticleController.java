@@ -39,7 +39,10 @@ public class ArticleController {
 
     @RequestMapping(value = "/totalPage", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    public Integer totalPage(@ModelAttribute SearchArticleForm searchArticleForm) {
+    public Integer totalPage(@Validated @ModelAttribute SearchArticleForm searchArticleForm, BindingResult result) {
+        if (result.hasErrors()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
         return articleService.getTotalPage(searchArticleForm);
     }
 
