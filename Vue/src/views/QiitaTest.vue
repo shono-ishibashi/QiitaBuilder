@@ -55,7 +55,6 @@ export default {
       axios.get(API_URL + 'qiita/to-qiita-api-authentication',{
         headers: {
           Authorization: this.$store.getters["auth/apiToken"],
-          'Access-Control-Allow-Origin':'*'
         }
       }).then((response) => {
         location.href = response.data;
@@ -64,10 +63,6 @@ export default {
     toggleIsLoading() {
       this.isLoading = !this.isLoading;
     }
-  },
-  mounted() {
-    console.log("mounted");
-
   },
   computed:{
     apiToken : function(){
