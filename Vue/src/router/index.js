@@ -14,9 +14,9 @@ const routes = [
     component:ArticleList
   },
 
-  {	
-    path: '/article/:articleId',	
-    name: 'articleDetail',	
+  {
+    path: '/article/:articleId',
+    name: 'articleDetail',
     component: () => import(/* webpackChunkName: "articleDetail" */ '../views/ArticleDetail.vue')
   },
   {
