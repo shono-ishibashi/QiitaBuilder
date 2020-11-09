@@ -21,6 +21,12 @@ export default {
         userId(state) {
             return state.userDetail.userId
         },
+        postedQiitaArticles(state) {
+            return state.postedArticles.filter((art) => art.stateFlag === 2)
+        },
+        notPostedQiitaArticles(state) {
+            return state.postedArticles.filter((art) => art.stateFlag === 1)
+        },
     },
     mutations: {
         setUserDetail(state, user) {
