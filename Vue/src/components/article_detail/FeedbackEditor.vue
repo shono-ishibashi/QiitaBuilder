@@ -1,12 +1,12 @@
 <template>
-  <v-card outlined class="sticky">
+  <v-card outlined>
     <!-- ヘッダー -->
     <v-toolbar elevation="0">
       <v-icon>mdi-message-text-outline</v-icon>
       <v-spacer></v-spacer>
       <v-toolbar-title>コメントを投稿する</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn color="" icon>
+      <v-btn color="" icon @click="closeEditor">
         <v-icon>mdi-close</v-icon>
       </v-btn>
     </v-toolbar>
@@ -76,13 +76,12 @@ export default {
     preview() {
       return "コメント: " + this.feedback + " をプレビュー";
     },
+
+  },
+  methods: {
+    closeEditor() {
+      this.$emit("toggleEditor");
+    },
   },
 };
 </script>
-
-<style scoped>
-.sticky {
-  position: sticky;
-  top: 5%;
-}
-</style>
