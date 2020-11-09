@@ -6,8 +6,12 @@
         <v-avatar class="grey lighten-1" dark>
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <span v-bind="attrs" v-on.stop="on" class="white--text headline">
-                人
+              <span
+                  v-bind="attrs"
+                  v-on.stop="on"
+                  class="white--text headline"
+              >
+                <img :src="article.postedUser.photoUrl"/>
               </span>
             </template>
             <span>{{ article.postedUser.displayName }}</span>
@@ -116,8 +120,8 @@
 </template>
 
 <script>
-import moment from "moment";
-import { mapState, mapActions } from "vuex";
+import moment from 'moment'
+import {mapState,mapGetters, mapActions} from "vuex"
 
 export default {
   name: "ArticleCard",
@@ -136,6 +140,7 @@ export default {
   },
   computed: {
     ...mapState("articles", ["searchCriteria"]),
+    ...mapGetters("auth",["loginUser"])
   },
   filters: {
     moment(value) {
