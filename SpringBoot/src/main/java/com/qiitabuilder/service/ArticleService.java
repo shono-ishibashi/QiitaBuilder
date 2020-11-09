@@ -31,7 +31,6 @@ public class ArticleService {
     private MyArticleMapper myArticleMapper;
     @Autowired
     private ArticleMapper articleMapper;
-
     @Autowired
     private TagMapper tagMapper;
 
@@ -43,29 +42,22 @@ public class ArticleService {
      */
     public List<Article> searchArticles(SearchArticleForm searchArticleForm) {
 
-//        sortNumの値ごとに並び替える条件を設定
-        if (searchArticleForm.getSortNum() == 0) {
-            searchArticleForm.setSort("createdAt");
-        } else if (searchArticleForm.getSortNum() == 1) {
-            searchArticleForm.setSort("updatedAt");
-        } else if (searchArticleForm.getSortNum() == 2) {
-            searchArticleForm.setSort("recommendCnt");
-        } else if (searchArticleForm.getSortNum() == 3) {
-            searchArticleForm.setSort("myCnt");
+        SearchArticleForm processedSearchArticleForm =searchCriteriaProcessing(searchArticleForm);
+
+//        検索条件に一致する記事をlistで取得
+        List<Integer> articlesIdList = articleMapper.searchArticlesId(processedSearchArticleForm);
+        if(articlesIdList.size()!=0) {
+            searchArticleForm.setArticlesIdList(articlesIdList);
+        }else{
+            return null;
         }
-//        表示ページ数、現在ページ数を元にoffsetの値を定義
-//        pageSizeを0にすると全件取得
-        if (searchArticleForm.getCurrentPage() == 1) {
-            searchArticleForm.setOffset(0);
-        } else {
-            Integer offset = (searchArticleForm.getPageSize() * (searchArticleForm.getCurrentPage() - 1) + 1);
-            searchArticleForm.setOffset(offset);
-        }
-        List<Article> articles = articleMapper.searchArticles(searchArticleForm);
+        List<Article> articles=articleMapper.searchArticles(searchArticleForm);
 
 //        qiita推奨数、my記事登録数がnullのものを0に置き換える
         articles.stream().filter(article -> article.getQiitaRecommendPoint() == null).forEach(article -> article.setQiitaRecommendPoint(0));
         articles.stream().filter(article -> article.getRegisteredMyArticleCount() == null).forEach(article -> article.setRegisteredMyArticleCount(0));
+        articles.stream().filter(article -> article.getFeedbackCount() == null).forEach(article -> article.setFeedbackCount(0));
+
         return articles;
     }
 
@@ -76,14 +68,49 @@ public class ArticleService {
      * @return
      */
     public Integer getTotalPage(SearchArticleForm searchArticleForm) {
-        Integer articleNumber = articleMapper.getArticleNumber(searchArticleForm);
-        int totalPage = articleNumber / searchArticleForm.getPageSize();
-        if ((articleNumber % searchArticleForm.getPageSize()) != 0) {
+        SearchArticleForm processedSearchArticleForm =searchCriteriaProcessing(searchArticleForm);
+        Integer pageSize=searchArticleForm.getPageSize();
+        processedSearchArticleForm.setPageSize(0);
+        List<Integer> articlesIdList = articleMapper.searchArticlesId(processedSearchArticleForm);
+        Integer articleNumber = articlesIdList.size();
+
+//        総ページ数を計算する
+        int totalPage = articleNumber / pageSize;
+        if ((articleNumber % pageSize) != 0) {
             totalPage += 1;
         } else if (totalPage == 0) {
             totalPage = 1;
         }
         return totalPage;
+    }
+
+    /**
+     * 検索条件(sortNum->sort,currentPage->offset)を加工するメソッド
+     *
+     * @param searchArticleForm
+     * @return
+     */
+    public SearchArticleForm searchCriteriaProcessing(SearchArticleForm searchArticleForm){
+//        sortNumの値ごとに並び替える条件を設定
+        if (searchArticleForm.getSortNum() == 0) {
+            searchArticleForm.setSort("createdAt");
+        } else if (searchArticleForm.getSortNum() == 1) {
+            searchArticleForm.setSort("updatedAt");
+        } else if (searchArticleForm.getSortNum() == 2) {
+            searchArticleForm.setSort("recommendCnt");
+        } else if (searchArticleForm.getSortNum() == 3) {
+            searchArticleForm.setSort("myCnt");
+        }
+
+//        表示ページ数、現在ページ数を元にoffsetの値を定義
+//        pageSizeを0にすると全件取得
+        if (searchArticleForm.getCurrentPage() == 1) {
+            searchArticleForm.setOffset(0);
+        } else {
+            Integer offset = (searchArticleForm.getPageSize() * (searchArticleForm.getCurrentPage() - 1));
+            searchArticleForm.setOffset(offset);
+        }
+        return searchArticleForm;
     }
 
     /**

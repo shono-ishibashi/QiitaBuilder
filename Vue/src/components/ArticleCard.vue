@@ -62,16 +62,59 @@
           <v-list-item-subtitle class="subtitle-field">
             <!--            ここfilter使って表示の仕方変えてもいいかも-->
             <v-row>
-              <v-col>
-                最終更新日：{{ article.updatedAt|moment() }}
+              <v-col cols="3">
+                投稿日時：{{ article.createdAt|moment() }}
               </v-col>
-              <v-col>
-                <v-icon class="qiita-icon" dark>Q</v-icon>
-                {{ article.qiitaRecommendPoint }}
+              <v-col cols="3">
+                最終更新日時：{{ article.updatedAt|moment() }}
               </v-col>
-              <v-col>
-                <v-icon class="my-icon" dark>M</v-icon>
-                {{ article.registeredMyArticleCount }}
+              <v-col cols="2"></v-col>
+              <v-col cols="1">
+                <v-tooltip top>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon
+                        class="qiita-icon"
+                        dark
+                        color="#5bc8ac"
+                        v-bind="attrs"
+                        v-on.stop="on"
+                    >Q
+                    </v-icon>
+                    {{ article.qiitaRecommendPoint }}
+                  </template>
+                  <span>Qiita推奨数</span>
+                </v-tooltip>
+              </v-col>
+              <v-col cols="1">
+                <v-tooltip top>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon
+                        class="my-icon"
+                        dark
+                        color="red"
+                        v-bind="attrs"
+                        v-on.stop="on"
+                    >mdi-heart
+                    </v-icon>
+                    {{ article.registeredMyArticleCount }}
+                  </template>
+                  <span>My記事登録数</span>
+                </v-tooltip>
+              </v-col>
+              <v-col cols="1">
+                <v-tooltip top>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon
+                        class="feed-icon"
+                        color="blue"
+                        v-bind="attrs"
+                        v-on.stop="on"
+                    >mdi-message-processing-outline
+                    </v-icon>
+                    {{ article.feedbackCount }}
+                  </template>
+                  <span>コメント数</span>
+                </v-tooltip>
               </v-col>
             </v-row>
           </v-list-item-subtitle>
@@ -88,8 +131,7 @@ import {mapState, mapActions} from "vuex"
 export default {
   name: "ArticleCard",
   data() {
-    return {
-    }
+    return {}
   },
   props: {
     article: {
@@ -125,8 +167,7 @@ export default {
 }
 
 .title-field {
-  /*background-color: #EEEEEE;*/
-  margin-bottom: 20px;
+  margin-top: 15px;
   height: 70px;
 }
 
@@ -143,18 +184,8 @@ export default {
 }
 
 .subtitle-field {
-  height: 30px;
+  height: 35px;
+  margin-bottom: 10px;
 }
 
-.qiita-icon {
-  background-color: #5bc8ac;
-}
-
-.my-icon {
-  background-color: red;
-}
-
-.qiita-post-check {
-  background-color: blue;
-}
 </style>
