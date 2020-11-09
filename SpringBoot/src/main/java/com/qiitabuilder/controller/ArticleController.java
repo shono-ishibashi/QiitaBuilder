@@ -46,6 +46,11 @@ public class ArticleController {
         return articleService.getTotalPage(searchArticleForm);
     }
 
+    /**
+     * 記事詳細情報を取得する
+     * @param articleId
+     * @return
+     */
     @GetMapping("/{articleId}")
     @ResponseStatus(HttpStatus.OK)
     public Article fetchArticle(@PathVariable("articleId") String articleId) {
@@ -117,14 +122,4 @@ public class ArticleController {
     public List<Article> getMyArticlesByUserId(Integer userId) {
         return articleService.getMyArticlesByUserId(userId);
     }
-
-
-    @Autowired
-    private QiitaAPIService qiitaAPIService;
-
-    @RequestMapping(value = "/test", method = RequestMethod.GET)
-    public void test() {
-        qiitaAPIService.restTemplateTest();
-    }
-
 }

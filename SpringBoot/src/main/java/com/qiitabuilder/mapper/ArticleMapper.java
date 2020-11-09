@@ -80,7 +80,7 @@ public interface ArticleMapper {
     /**
      * 記事IDを基に記事情報を取得する
      *
-     * @param articleId
+     * @param articleId 記事ID
      * @return 記事情報
      */
     Article load(Integer articleId);

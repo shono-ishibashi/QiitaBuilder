@@ -200,29 +200,29 @@
 
 
     <select id="load" resultMap="loadResult">
-        SELECT art.article_id       as art_article_id,
-               art.title            as art_title,
-               art.created_at       as art_created_at,
-               art.updated_at       as art_updated_at,
-               art.content          as art_content,
-               art.state_flag       as art_state_flag,
+        SELECT art.article_id       AS art_article_id,
+               art.title            AS art_title,
+               art.created_at       AS art_created_at,
+               art.updated_at       AS art_updated_at,
+               art.content          AS art_content,
+               art.state_flag       AS art_state_flag,
 
-               art_use.user_id      as art_use_user_id,
-               art_use.display_name as art_use_display_name,
-               art_use.photo_url    as art_use_photo_url,
+               art_use.user_id      AS art_use_user_id,
+               art_use.display_name AS art_use_display_name,
+               art_use.photo_url    AS art_use_photo_url,
 
-               fee.feedback_id      as fee_feedback_id,
-               fee.article_id       as fee_article_id,
-               fee.created_at       as fee_created_at,
-               fee.updated_at       as fee_updated_at,
-               fee.content          as fee_content,
+               fee.feedback_id      AS fee_feedback_id,
+               fee.article_id       AS fee_article_id,
+               fee.created_at       AS fee_created_at,
+               fee.updated_at       AS fee_updated_at,
+               fee.content          AS fee_content,
 
-               fee_use.user_id      as fee_use_user_id,
-               fee_use.display_name as fee_use_display_name,
-               fee_use.photo_url    as fee_use_photo_url,
+               fee_use.user_id      AS fee_use_user_id,
+               fee_use.display_name AS fee_use_display_name,
+               fee_use.photo_url    AS fee_use_photo_url,
 
-               tags.tag_id          as tag_id,
-               tags.tag_name        as tag_name,
+               tags.tag_id          AS tag_id,
+               tags.tag_name        AS tag_name,
 
                feed_cnt_table.feed_cnt,
                my_cnt_table.my_cnt,
@@ -231,15 +231,15 @@
         FROM articles AS art
 
                  LEFT JOIN
-             users as art_use
+             users AS art_use
              ON art.user_id = art_use.user_id
 
                  LEFT OUTER JOIN
-             feedbacks as fee
+             feedbacks AS fee
              ON art.article_id = fee.article_id
 
                  LEFT JOIN
-             users as fee_use
+             users AS fee_use
              ON fee.user_id = fee_use.user_id
 
                  LEFT OUTER JOIN
@@ -247,7 +247,7 @@
              ON art.article_id = a_t_relation.article_id
 
                  LEFT OUTER JOIN
-             tags AS tags
+             tags
              ON a_t_relation.tag_id = tags.tag_id
 
                  LEFT OUTER JOIN
@@ -289,9 +289,9 @@
                users.photo_url,
                (
                    SELECT count(*)
-                   FROM articles AS art
-                   WHERE art.user_id = art_count_rank.user_id
-                     AND (art.state_flag = 1 OR art.state_flag = 2)
+                   FROM feedbacks AS fb
+                   WHERE fb.user_id = art_count_rank.user_id
+                     AND fb.delete_flag = 0
                )                  AS fb_count,
                art_count_rank.cnt AS post_art_count,
                (
@@ -338,6 +338,7 @@
                    SELECT count(*)
                    FROM feedbacks AS fb
                    WHERE fb.article_id = #{articleId}
+                     AND fb.delete_flag = 0
                ) AS fb_count,
                (
                    SELECT count(*)
@@ -392,14 +393,13 @@
     <!-- ****** UPDATE ****** -->
     <update id="updateArticle">
         UPDATE articles
-        SET user_id = #{postedUser.userId},
-        updated_at = NOW(),
-        title = #{title},
-        content = #{content},
-        qiita_article_id = #{qiitaArticleId},
-        state_flag = #{stateFlag}
+        SET user_id          = #{postedUser.userId},
+            updated_at       = NOW(),
+            title            = #{title},
+            content          = #{content},
+            qiita_article_id = #{qiitaArticleId},
+            state_flag       = #{stateFlag}
         WHERE article_id = #{articleId}
     </update>
 
 </mapper>
-

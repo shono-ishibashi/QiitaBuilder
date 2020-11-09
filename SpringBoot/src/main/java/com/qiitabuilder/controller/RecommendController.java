@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Objects;
+
 @RestController
 @RequestMapping(value = "/recommend")
 public class RecommendController {
@@ -20,16 +22,22 @@ public class RecommendController {
 
     /**
      * Qiita推薦情報を取得する
-     * NotFound Qiita推薦済みでない場合
+     * <p>
+     * Httpステータス
+     * OK
+     * BadRequest 入力値エラーの場合
+     * NotFound Qiita推薦登録済みでない場合
      *
      * @param articleId
-     * @param recommendUserId
      * @return
      */
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
-    public Recommend fetchRecommend(Integer articleId, Integer recommendUserId) {
-        return recommendService.fetchRecommend(articleId, recommendUserId);
+    public Recommend fetchRecommend(Integer articleId) {
+        if (Objects.isNull(articleId)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        return recommendService.fetchRecommend(articleId);
     }
 
     /////////////////////////////
@@ -38,7 +46,11 @@ public class RecommendController {
 
     /**
      * Qiita推薦への登録処理を行う
-     * BadRequest 入力値エラーの場合&記事IDが存在しない場合, Conflict DBに登録済みの場合
+     * <p>
+     * Httpステータス
+     * OK
+     * BadRequest 入力値エラーの場合 & 記事IDが存在しない場合
+     * Conflict DBに登録済みの場合
      *
      * @param recommend
      * @return
@@ -46,6 +58,9 @@ public class RecommendController {
     @PostMapping("")
     @ResponseStatus(HttpStatus.OK)
     public Recommend postRecommend(@RequestBody Recommend recommend) {
+        if (Objects.isNull(recommend.getArticleId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
         return recommendService.postRecommend(recommend);
     }
 
@@ -60,7 +75,11 @@ public class RecommendController {
 
     /**
      * Qiita推薦からの物理削除を行う
-     * BadRequest 入力値エラーの場合, Conflict DBに登録されていない場合
+     * <p>
+     * Httpステータス
+     * OK
+     * BadRequest 入力値エラーの場合
+     * Conflict DBに登録されていない場合
      *
      * @param recommendId
      */
