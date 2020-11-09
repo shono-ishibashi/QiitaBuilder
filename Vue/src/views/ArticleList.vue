@@ -23,11 +23,14 @@
               <v-col>
                 <v-row>
                     <v-icon @click="toggleSearchWordBox">mdi-sync-circle</v-icon>
+                  <v-form ref="search_form">
                     <v-text-field
                         v-if="this.searchCriteria.toggleSearchWord===0"
                         label="記事タイトルを検索"
                         color="#5bc8ac"
                         v-model="searchCriteria.searchWord"
+                        :rules="[title_limit_length]"
+                        counter="100"
                     >
                     </v-text-field>
                     <v-text-field
@@ -35,8 +38,11 @@
                         label="ユーザーネームを検索"
                         color="#5bc8ac"
                         v-model="searchCriteria.searchWord"
+                        :rules="[user_limit_length]"
+                        counter="30"
                     >
                     </v-text-field>
+                  </v-form>
                 </v-row>
               </v-col>
               <v-col>
@@ -45,6 +51,7 @@
                       :items="tags"
                       item-value="tagId"
                       item-text="tagName"
+                      item-color="green"
                       label="タグを選択"
                       color="#5bc8ac"
                       chips
@@ -76,6 +83,7 @@
               :items="sortList"
               item-value="key"
               item-text="state"
+              item-color="green"
               color="#5bc8ac"
               v-model="searchCriteria.sortNum">
           </v-select>
@@ -99,6 +107,7 @@
             v-model="searchCriteria.pageSize"
             label="ページ表示数"
             color="#5bc8ac"
+            item-color="green"
         >
         </v-select>
       </v-col>
@@ -139,6 +148,8 @@ export default {
         {key: 1, state: "月間"},
         {key: null, state: "全て"},
       ],
+      title_limit_length: value => value.length <= 100 || "100文字以内で入力してください",
+      user_limit_length: value => value.length <= 30 || "30文字以内で入力してください",
     }
   },
   watch: {
@@ -176,8 +187,10 @@ export default {
       this.searchCriteria.period = key
     },
     search() {
-      this.searchCriteria.currentPage = 1
-      this.fetchArticles(this.searchCriteria)
+      if(this.$refs.search_form.validate()){
+        this.searchCriteria.currentPage = 1
+        this.fetchArticles(this.searchCriteria)
+      }
     },
     scrollTop() {
       window.scrollTo({
