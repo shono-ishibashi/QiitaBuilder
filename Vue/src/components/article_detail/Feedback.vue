@@ -3,8 +3,15 @@
     <v-card elevation="10" outlined class="card">
       <v-row align="center" class="spacer">
         <v-col cols="1" sm="1" md="1">
-          <v-avatar size="36px">
-            <img src="https://cdn.vuetifyjs.com/images/john.jpg" alt="John" />
+          <v-avatar size="36px" color="green">
+            <img
+              v-if="feedback.postedUser.photoURL"
+              :src="feedback.postedUser.photoURL"
+              alt="user-icon"
+            />
+            <v-icon v-else dark size="36px">
+              mdi-account-circle
+            </v-icon>
           </v-avatar>
         </v-col>
         <v-col class="" cols="2" sm="2" md="2">

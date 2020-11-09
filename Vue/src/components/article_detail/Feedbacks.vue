@@ -21,7 +21,7 @@ export default {
 
 <style scoped>
 .area {
-  background-color: rgb(165, 188, 218);
+  background-color: #5bc8ac;
   padding: 20px;
 }
 </style>

@@ -3,8 +3,15 @@
     <v-container class="area">
       <v-row align="center" class="spacer">
         <v-col cols="1" sm="1" md="1">
-          <v-avatar size="42px">
-            <img src="https://cdn.vuetifyjs.com/images/john.jpg" alt="John" />
+          <v-avatar size="42px" color="green">
+            <img
+              v-if="article.postedUser.photoURL"
+              :src="article.postedUser.photoURL"
+              alt="user-icon"
+            />
+            <v-icon v-else dark size="42px">
+              mdi-account-circle
+            </v-icon>
           </v-avatar>
         </v-col>
         <v-col class="" cols="2" sm="2" md="2">
