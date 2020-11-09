@@ -2,12 +2,14 @@
   <v-app class="grey lighten-3 area">
     <v-row>
       <v-col class="hidden-xs-only hidden-sm-only" :md="mdPlacement.buttons">
-        <v-btn elevation="2" id="qiita_btn" style="text-transform: none"
-          >Qiita</v-btn
-        >
-        <v-btn elevation="2" id="my_btn" style="text-transform: none"
-          >My記事登録</v-btn
-        >
+        <v-row id="qiita_btn">
+          <v-col cols="12">
+            <v-btn elevation="2" style="text-transform: none">Qiita</v-btn>
+          </v-col>
+          <v-col cols="12">
+            <v-btn elevation="2" style="text-transform: none">My記事</v-btn>
+          </v-col>
+        </v-row>
       </v-col>
       <v-col cols="12" sm="12" :md="mdPlacement.article">
         <v-sheet min-height="70vh" rounded="lg">
@@ -64,7 +66,7 @@ export default {
     },
     mdPlacement() {
       if (this.EditorIsOpen) return { buttons: 1, article: 7, editor: 4 };
-      return { buttons: 1, article: 9, editor: 2 };
+      return { buttons: 2, article: 8, editor: 2 };
     },
   },
   created() {
@@ -93,10 +95,6 @@ export default {
 }
 #qiita_btn {
   position: sticky;
-  top: 35%;
-}
-#my_btn {
-  position: sticky;
-  top: 45%;
+  top: 30%;
 }
 </style>

@@ -86,14 +86,16 @@
       </v-row>
 
       <h1>{{ article.title }}</h1>
-      <div>
-        tags :
-        <ul>
-          <li v-for="tag in article.tags" :key="tag.tagId">
-            {{ tag.tagName }}
-          </li>
-        </ul>
-      </div>
+      <v-chip-group active-class="primary--text">
+        <v-chip
+          v-for="tag in article.tags"
+          :key="tag.tagId"
+          color="#5bc8ac"
+          dark
+        >
+          {{ tag.tagName }}
+        </v-chip>
+      </v-chip-group>
     </v-container>
     <v-container>
       <v-main>
