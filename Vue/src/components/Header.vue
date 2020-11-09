@@ -31,11 +31,6 @@
           ランキング
         </v-btn>
 
-        <v-btn class="header-btn" color="#008b8b" v-if="loginUser==null">
-          <v-icon>mdi-login</v-icon>
-          ログイン
-        </v-btn>
-
         <v-menu
             open-on-hover
             left

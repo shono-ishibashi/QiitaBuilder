@@ -33,11 +33,10 @@
       <v-list-item-content>
         <div class="title-field">
           <v-list-item-title
-            v-text="article.title"
             class="title"
             style="cursor: pointer;"
             @click="toDetail(article.articleId)"
-          ></v-list-item-title>
+          >{{article.title|truncate}}</v-list-item-title>
           <v-list-item-subtitle class="tag-field">
             <v-chip-group active-class="primary--text">
               <v-chip
@@ -146,6 +145,14 @@ export default {
     moment(value) {
       return moment(value).format("MM/DD hh:mm");
     },
+    truncate(value) {
+      var length = 28;
+      var ommision = "...";
+      if (value.length <= length) {
+        return value;
+      }
+      return value.substring(0, length) + ommision;
+    }
   },
   methods: {
     ...mapActions("articles", ["fetchArticles"]),
