@@ -45,7 +45,7 @@
       <v-container v-show="tab == 1">
         <v-row>
           <v-col cols="12" md="12">
-            {{ preview }}
+            <span v-html="compiledFeedback"></span>
           </v-col>
         </v-row>
       </v-container>
@@ -60,12 +60,14 @@
 </template>
 
 <script>
+import marked from 'marked';
+
 export default {
   data() {
     return {
       login_user: null,
       feedback: "",
-      tab: null,
+      tab: 0,
       tabs: ["編集", "プレビュー"],
     };
   },
@@ -73,8 +75,8 @@ export default {
     this.login_user = this.$store.state.auth.login_user;
   },
   computed: {
-    preview() {
-      return "コメント: " + this.feedback + " をプレビュー";
+    compiledFeedback() {
+      return marked(this.feedback)
     },
 
   },
