@@ -5,6 +5,7 @@ export default {
   state: {
     article: {
       postedUser: {},
+      feedbacks: [],
     },
   },
   mutations: {

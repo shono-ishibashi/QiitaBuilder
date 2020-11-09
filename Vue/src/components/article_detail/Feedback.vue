@@ -2,20 +2,33 @@
   <v-container>
     <v-card elevation="10" outlined class="card">
       <v-row align="center" class="spacer">
-        <v-col cols="1" sm="1" md="1">
-          <v-avatar size="36px">
-            <img src="https://cdn.vuetifyjs.com/images/john.jpg" alt="John" />
+        <v-col cols="auto">
+          <v-avatar size="30px" color="green">
+            <img
+              v-if="feedback.postedUser.photoURL"
+              :src="feedback.postedUser.photoURL"
+              alt="user-icon"
+            />
+            <v-icon v-else dark size="30px">
+              mdi-account-circle
+            </v-icon>
           </v-avatar>
         </v-col>
-        <v-col class="" cols="2" sm="2" md="2">
-          <strong>@{{ feedback.postedUser.displayName }}</strong>
+        <v-col cols="auto">
+          <v-card-subtitle
+            >@{{ feedback.postedUser.displayName }}</v-card-subtitle
+          >
         </v-col>
         <!-- 投稿日または更新日 -->
-        <v-col class="" cols="7" sm="7" md="7">
-          {{ lastEditAt.time | date }}{{ lastEditAt.text }}
+        <v-col cols="auto">
+          <v-card-subtitle
+            >{{ lastEditAt.time | date }}{{ lastEditAt.text }}</v-card-subtitle
+          >
         </v-col>
+        <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
         <!-- メニューボタン -->
-        <v-col class="" cols="2" sm="2" md="2">
+        <v-col cols="auto">
           <v-menu offset-y>
             <template v-slot:activator="{ attrs, on }">
               <v-btn icon v-bind="attrs" v-on="on" class="">
@@ -33,11 +46,13 @@
             </v-list>
           </v-menu>
         </v-col>
+        <v-spacer></v-spacer>
       </v-row>
-      <div>
-        content :
-        {{ feedback.content }}
-      </div>
+      <v-row>
+        <v-col cols="auto">
+          <v-card-text>{{ feedback.content }}</v-card-text>
+        </v-col>
+      </v-row>
     </v-card>
   </v-container>
 </template>
