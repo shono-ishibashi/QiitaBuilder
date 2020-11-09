@@ -20,6 +20,7 @@ export default {
     mutations: {
         setArticles(state,articles){
             state.articles = articles
+            console.log(state.articles)
         },
         setTags(state,tags){
             state.tags = tags

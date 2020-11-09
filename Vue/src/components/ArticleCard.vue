@@ -14,7 +14,7 @@
                   v-on.stop="on"
                   class="white--text headline"
               >
-                人
+                <img :src="article.postedUser.photoUrl"/>
               </span>
             </template>
             <span>{{ article.postedUser.displayName }}</span>
@@ -126,7 +126,7 @@
 
 <script>
 import moment from 'moment'
-import {mapState, mapActions} from "vuex"
+import {mapState,mapGetters, mapActions} from "vuex"
 
 export default {
   name: "ArticleCard",
@@ -144,7 +144,8 @@ export default {
     }
   },
   computed: {
-    ...mapState("articles", ["searchCriteria"])
+    ...mapState("articles", ["searchCriteria"]),
+    ...mapGetters("auth",["loginUser"])
   },
   filters: {
     moment(value) {
