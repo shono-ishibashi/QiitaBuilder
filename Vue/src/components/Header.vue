@@ -87,7 +87,7 @@ export default {
   methods:{
     ...mapActions("auth",["logout"]),
     toArticleList(){
-      this.$router.push('article')
+      this.$router.push('/article')
     }
   }
 }
