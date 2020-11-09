@@ -31,6 +31,7 @@
           <v-list-item-title
             v-text="article.title"
             class="title"
+            style="cursor: pointer;"
             @click="toDetail(article.articleId)"
           ></v-list-item-title>
           <v-list-item-subtitle class="tag-field">
