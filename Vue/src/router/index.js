@@ -28,7 +28,12 @@ const routes = [
     path: '/qiitatest',
     name: 'qiitatest',
     component: () => import(/* webpackChunkName: "login" */ '../views/QiitaTest.vue')
-  }
+  },
+  {
+    path: '/user/ranking',
+    name: 'ranking',
+    component: () => import(/* webpackChunkName: "ranking" */ '../views/Ranking.vue')
+  },
 ]
 
 const router = new VueRouter({
