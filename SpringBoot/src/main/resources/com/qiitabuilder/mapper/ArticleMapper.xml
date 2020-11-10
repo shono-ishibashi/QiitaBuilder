@@ -180,8 +180,12 @@
         GROUP BY recommend.article_id) as recommend_cnt_table
         ON art.article_id = recommend_cnt_table.article_id
         <where>
+            state_flag IN
+            <foreach item="stateFlag" index="index" collection="search.stateFlagList" open="(" separator="," close=")">
+                #{stateFlag}
+            </foreach>
             <if test="search.searchWord !=null and search.toggleSearchWord==0">
-                title LIKE CONCAT('%', #{search.searchWord}, '%')
+                AND title LIKE CONCAT('%', #{search.searchWord}, '%')
             </if>
             <if test="search.period!=null">
                 <if test="search.period==0">

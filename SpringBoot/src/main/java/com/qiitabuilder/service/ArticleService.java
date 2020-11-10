@@ -161,7 +161,7 @@ public class ArticleService {
             article.getTags()
                     .stream()
                     //DBに存在しているかを判別
-                    .filter(tag -> tagIdsInDB.contains(tag.getTagId()))
+                    .filter(tag -> !tagIdsInDB.contains(tag.getTagId()))
                     .map(Tag::getTagId)
                     .forEach(tagId ->
                             tagMapper.insertArticleTag(
