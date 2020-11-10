@@ -28,6 +28,9 @@ export default {
         notPostedQiitaArticles(state) {
             return state.postedArticles.filter((art) => art.stateFlag === 1)
         },
+        draftArticles(state) {
+            return state.postedArticles.filter((art) => art.stateFlag === 0)
+        },
     },
     mutations: {
         setUserDetail(state, user) {
@@ -75,9 +78,9 @@ export default {
             //let paramsSerializer = (params) => qs.stringify(params);
 
             await axios.get(url, {
-                params: {searchArticleForm},
+                params: searchArticleForm,
                 paramsSerializer: params => {
-                    return qs.stringify(params, {allowDots: true})
+                    return qs.stringify(params)
                 },
                 headers: {
                     Authorization: apiToken,
@@ -95,7 +98,7 @@ export default {
 
 
             await axios.get(url, {
-                params: {userId},
+                params: userId,
                 headers: {
                     Authorization: apiToken,
                 },
@@ -108,7 +111,7 @@ export default {
             let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
 
             await axios.get(url, {
-                params: {userId},
+                params: userId,
                 headers: {
                     Authorization: apiToken,
                 },

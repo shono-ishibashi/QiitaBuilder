@@ -51,14 +51,17 @@
       <v-col cols="4">
         <v-btn color="#5bc8ac" @click="changeList(3)">My記事</v-btn>
       </v-col>
-      <v-col cols="4" v-if="userDetail.isLoginUser">
-        <v-btn color="#5bc8ac" @click="changeList(3)">下書き記事</v-btn>
-      </v-col>
 
       <v-col cols="12" v-if="displayListNum===1||displayListNum===11||displayListNum===12">
         <v-btn color="#5bc8ac" @click="changeList(1)">全記事</v-btn>
         <v-btn color="#5bc8ac" @click="changeList(11)">Qiita 未投稿記事</v-btn>
         <v-btn color="#5bc8ac" @click="changeList(12)">Qiita 投稿済み記事</v-btn>
+        <v-btn
+            v-if="userDetail.isLoginUser"
+            color="#5bc8ac"
+            @click="changeList(13)">
+          下書き記事
+        </v-btn>
       </v-col>
 
       <v-col cols="5">
@@ -141,7 +144,7 @@ export default {
       articles: [],//画面表示用記事リスト
       usedTags: [],//タグ検索オートコンプリート用リスト
       component: null,//コンポーネント表示切替用真偽値
-      displayListNum: 1,//1:posted, 2:feedback, 3:my, 11:notPostedQiita, 12:postedQiita
+      displayListNum: 1,//1:posted, 2:feedback, 3:my, 11:notPostedQiita, 12:postedQiita, 13:draft
       conditions: {
         title: "",
         conditionTags: []
@@ -187,7 +190,7 @@ export default {
       set() {
       },
     },
-    ...mapGetters("user", ["userId", "notPostedQiitaArticles", "postedQiitaArticles"]),
+    ...mapGetters("user", ["userId", "notPostedQiitaArticles", "postedQiitaArticles", "draftArticles"]),
     ...mapState("user", ["userDetail", "postedArticles", "feedbackArticles", "myArticles"])
   },
   watch: {
@@ -233,6 +236,8 @@ export default {
         articlesFromVuex = this.notPostedQiitaArticles;
       } else if (listNum === 12) {
         articlesFromVuex = this.postedQiitaArticles;
+      } else if (listNum === 13 && this.userDetail.isLoginUser) {
+        articlesFromVuex = this.draftArticles;
       } else {
         console.log("予期せぬ値 listNum:" + listNum);
       }
@@ -263,6 +268,9 @@ export default {
       }
       if (this.displayListNum === 12) {
         this.articles = this.postedQiitaArticles
+      }
+      if (this.displayListNum === 13 && this.userDetail.isLoginUser) {
+        this.articles = this.draftArticles
       }
       this.articles = this.articles.filter(article => {
         return article.title.includes(this.conditions.title)
