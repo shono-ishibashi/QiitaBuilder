@@ -9,7 +9,7 @@ export default {
       title:undefined,
       content:'## Java で hello world を出力させる方法\n```java\npublic static void main(String[] args){\n    System.out.println("hello world");\n}\n```',
       stateFlag:undefined,
-      tags: []
+      tags: [],
       feedbacks: [],
     },
   },

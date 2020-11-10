@@ -85,9 +85,10 @@ export default {
     toArticleList(){
       this.$router.push('/article')
     },
-    toArticleNew(){
+    toArticleNew() {
       this.resetArticle()
       this.$router.push('/article/new')
+    },
     toRanking(){
       this.$router.push({name:'ranking'})
     }
