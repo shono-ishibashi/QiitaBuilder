@@ -37,13 +37,23 @@ const routes = [
     path: '/qiitatest',
     name: 'qiitatest',
     component: () => import(/* webpackChunkName: "login" */ '../views/QiitaTest.vue')
-  }
+  },
+  {
+    path: '/user/ranking',
+    name: 'ranking',
+    component: () => import(/* webpackChunkName: "ranking" */ '../views/Ranking.vue')
+  },
+  {
+    path: '/user/:userId',
+    name: 'userDetail',
+    component: () => import(/* webpackChunkName: "articleDetail" */ '../views/UserDetail.vue')
+  },
 ]
 
 const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
-  routes
+    mode: 'history',
+    base: process.env.BASE_URL,
+    routes
 })
 
 const API_URL = 'http://localhost:8080/qiita_builder/';

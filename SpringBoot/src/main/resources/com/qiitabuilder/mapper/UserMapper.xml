@@ -44,6 +44,7 @@
         FROM qiita_builder.users AS u
                  LEFT OUTER JOIN (SELECT tag_id, posted_user_id, count(a_t_relation.tag_id) AS tag_cnt
                                   FROM qiita_builder.articles_tags_relations AS a_t_relation
+                                  WHERE posted_user_id = #{userId}
                                   GROUP BY a_t_relation.tag_id) AS tag_cnt_table
                                  ON u.user_id = tag_cnt_table.posted_user_id
                  LEFT OUTER JOIN qiita_builder.tags AS tags
@@ -83,7 +84,7 @@
         FROM users
         WHERE user_id = #{userId}
     </select>
-  
+
     <select id="findQiitaApiCodeByUserId">
         SELECT qiita_api_code
         FROM users
@@ -95,8 +96,8 @@
         INSERT INTO users(uid, password, photo_url,display_name)
         VALUES (#{uid}, #{password}, #{photoUrl}, #{displayName})
     </insert>
-  
-  
+
+
     <!-- ****** UPDATE ****** -->
     <update id="updateQiitaApiCode">
         UPDATE users

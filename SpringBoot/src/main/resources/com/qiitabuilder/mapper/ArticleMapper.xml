@@ -155,14 +155,14 @@
             ON art.article_id = a_t_relation.atArticleId
         </if>
         <if test="search.searchWord !=null or search.userId !=null">
-            JOIN (SELECT user_id
+            JOIN (SELECT users.user_id
             FROM qiita_builder.users
             <where>
                 <if test="search.searchWord !=null and search.toggleSearchWord==1">
                     display_name LIKE CONCAT('%', #{search.searchWord}, '%')
                 </if>
                 <if test="search.userId !=null">
-                    AND userId = #{search.userId}
+                    AND user_id = #{search.userId}
                 </if>
             </where>
             ) as users
