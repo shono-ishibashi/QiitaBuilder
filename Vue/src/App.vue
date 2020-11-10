@@ -11,6 +11,7 @@
 <script>
 import Header from './components/Header'
 import Footer from './components/Footer'
+import {mapActions} from 'vuex'
 
 export default {
   name: 'App',
@@ -18,7 +19,12 @@ export default {
   components: {
     Header,Footer
   },
-
+  created(){
+    this.fetchTags()
+  },
+  methods: {
+    ...mapActions("articles",["fetchTags"])
+  },
   data: () => ({
     //
   }),

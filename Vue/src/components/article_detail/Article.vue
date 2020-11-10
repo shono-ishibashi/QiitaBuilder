@@ -135,7 +135,7 @@ export default {
   },
   methods: {
     toEdit() {
-      // this.$router.push({ name: "articleEdit" });
+      this.$router.push({ name: "articleEdit" });
       console.log("toEdit");
     },
     deleteArticle() {
