@@ -56,13 +56,13 @@
           <v-list-item-subtitle class="subtitle-field">
             <!--            ここfilter使って表示の仕方変えてもいいかも-->
             <v-row>
-              <v-col cols="3">
+              <v-col cols="4">
                 投稿日時：{{ article.createdAt | moment() }}
               </v-col>
-              <v-col cols="3">
+              <v-col cols="4">
                 最終更新日時：{{ article.updatedAt | moment() }}
               </v-col>
-              <v-col cols="2"></v-col>
+
               <v-col cols="1">
                 <v-tooltip top>
                   <template v-slot:activator="{ on, attrs }">

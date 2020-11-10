@@ -48,15 +48,21 @@ export default {
         },
     },
     actions: {
-        async fetchUserDetail({commit, rootGetters}, userId) {
+        async fetchUserDetail({commit, rootGetters, rootState}, userId) {
             const url = rootGetters.API_URL + 'user/detail/';
+            let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
 
-            await axios.get(url, {params: {userId}}).then(res => {
+            await axios.get(url, {params: {userId}}, {
+                headers: {
+                    Authorization: apiToken,
+                },
+            }).then(res => {
                 commit("setUserDetail", res.data);
             })
         },
-        async fetchPostedArticles({commit, rootGetters}, userId) {
+        async fetchPostedArticles({commit, rootGetters, rootState}, userId) {
             const url = rootGetters.API_URL + 'article/'
+            let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
             const params = {
                 sortNum: 1,
                 pageSize: 0,
@@ -65,24 +71,39 @@ export default {
             }
             const paramsSerializer = (params) => qs.stringify(params);
 
-            await axios.get(url, {params, paramsSerializer})
+            await axios.get(url, {params, paramsSerializer}, {
+                headers: {
+                    Authorization: apiToken,
+                },
+            })
                 .then(res => {
                     commit("setPostedArticles", res.data)
                 }).catch((error) => {
                     console.log(error)
                 })
         },
-        async fetchFeedbackArticles({commit, rootGetters}, userId) {
+        async fetchFeedbackArticles({commit, rootGetters, rootState}, userId) {
             const url = rootGetters.API_URL + 'article/feedbacked';
+            let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
 
-            await axios.get(url, {params: {userId}}).then(res => {
+
+            await axios.get(url, {params: {userId}}, {
+                headers: {
+                    Authorization: apiToken,
+                },
+            }).then(res => {
                 commit("setFeedbackArticles", res.data);
             })
         },
-        async fetchMyArticles({commit, rootGetters}, userId) {
+        async fetchMyArticles({commit, rootGetters, rootState}, userId) {
             const url = rootGetters.API_URL + 'article/my-articles';
+            let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
 
-            await axios.get(url, {params: {userId}}).then(res => {
+            await axios.get(url, {params: {userId}}, {
+                headers: {
+                    Authorization: apiToken,
+                },
+            }).then(res => {
                 commit("setMyArticles", res.data);
             })
         },

@@ -30,7 +30,7 @@ const routes = [
     component: () => import(/* webpackChunkName: "login" */ '../views/QiitaTest.vue')
   },
     {
-        path: '/user/detail',
+        path: '/user/:userId',
         name: 'userDetail',
         component: () => import(/* webpackChunkName: "articleDetail" */ '../views/UserDetail.vue')
     },

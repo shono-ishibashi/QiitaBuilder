@@ -1,7 +1,7 @@
 <template>
   <v-container>
-    <v-row style="height: 150px;" justify="center">
-      <v-col cols=5>{{ userDetail.photoUrl }}</v-col>
+    <v-row justify="center">
+      <v-col cols=5><img :src="userDetail.photoUrl" alt=""/></v-col>
       <v-col cols=5>
         <v-data-table
             :headers="tagsHeaders"
@@ -13,7 +13,7 @@
 
       <v-col cols=5>{{ userDetail.displayName }}</v-col>
       <v-col cols=4>
-        <v-btn color="secondary" elevation="2">Qiita連携</v-btn>
+        <v-btn color="#5bc8ac" elevation="2">Qiita連携</v-btn>
       </v-col>
 
       <v-col cols=4>
@@ -42,21 +42,20 @@
         </v-card>
       </v-col>
 
-      <v-col cols="2">
-        <v-btn color="secondary" @click="changeList(1)">投稿記事</v-btn>
+      <v-col cols="4">
+        <v-btn color="#5bc8ac" @click="changeList(1)">投稿記事</v-btn>
       </v-col>
-      <v-col cols="2">
-        <v-btn color="secondary" @click="changeList(2)">FB記事</v-btn>
+      <v-col cols="4">
+        <v-btn color="#5bc8ac" @click="changeList(2)">FB記事</v-btn>
       </v-col>
-      <v-col cols="2">
-        <v-btn color="secondary" @click="changeList(3)">My記事</v-btn>
+      <v-col cols="4">
+        <v-btn color="#5bc8ac" @click="changeList(3)">My記事</v-btn>
       </v-col>
-      <v-col cols="6"></v-col>
 
       <v-col cols="12" v-if="displayListNum===1||displayListNum===11||displayListNum===12">
-        <v-btn color="secondary" @click="changeList(1)">全記事</v-btn>
-        <v-btn color="secondary" @click="changeList(11)">Qiita 未投稿記事</v-btn>
-        <v-btn color="secondary" @click="changeList(12)">Qiita 投稿済み記事</v-btn>
+        <v-btn color="#5bc8ac" @click="changeList(1)">全記事</v-btn>
+        <v-btn color="#5bc8ac" @click="changeList(11)">Qiita 未投稿記事</v-btn>
+        <v-btn color="#5bc8ac" @click="changeList(12)">Qiita 投稿済み記事</v-btn>
       </v-col>
 
       <v-col cols="5">
@@ -78,7 +77,7 @@
         </v-autocomplete>
       </v-col>
       <v-col cols="2">
-        <v-btn @click="searchWithConditions" color="secondary" elevation="2">検索</v-btn>
+        <v-btn @click="searchWithConditions" color="#5bc8ac" elevation="2">検索</v-btn>
       </v-col>
       <v-col cols="4">
         <v-select
@@ -95,6 +94,9 @@
         <ArticleCard v-for="(article,index) in sortedArticles" :key="article.articleId" :article="article"
                      :is="component" :index="index">
         </ArticleCard>
+        <div v-if="articles.length===0">
+          該当する記事がありません
+        </div>
         <v-pagination
             v-model="page"
             :length="length"
@@ -102,12 +104,7 @@
             next-icon="mdi-menu-right"
             dark
         ></v-pagination>
-        <v-container
-            v-if="articles.length===0"
-            class="no-article-field"
-        >
-          該当する記事がありません
-        </v-container>
+
       </v-col>
 
     </v-row>
@@ -149,6 +146,9 @@ export default {
     };
   },
   computed: {
+    apiToken() {
+      return this.$store.getters["auth/apiToken"];
+    },
     length: {
       get() {
         return Math.ceil(this.articles.length / this.pageSize);
@@ -190,7 +190,21 @@ export default {
   watch: {
     sortNum() {
       this.page = 1;//sort変更時computedによる並び替え変更が行われるのでページが変更されないため、ここで1pに変えている
-    }
+    },
+    apiToken: async function () {
+      await this.fetchUserDetail(this.$route.params['userId']);
+      //DBに存在しないユーザーIDが渡された場合記事一覧に戻る
+      if (this.userId === 0) {
+        await this.$router.push({path: '/article'})
+      }
+
+      this.fetchFeedbackArticles(this.$route.params['userId']);
+      this.fetchMyArticles(this.$route.params['userId']);
+
+      await this.fetchPostedArticles(this.$route.params['userId']);
+      this.changeList(1);
+      this.component = ArticleCard;
+    },
   },
   methods: {
     /**
@@ -260,26 +274,15 @@ export default {
     },
     ...mapActions("user", ["fetchUserDetail", "fetchPostedArticles", "fetchFeedbackArticles", "fetchMyArticles"]),
   },
-  async created() {
-    await this.fetchUserDetail(this.$route.query.userId);
-    //DBに存在しないユーザーIDが渡された場合記事一覧に戻る
-    if (this.userId === 0) {
-      await this.$router.push({path: '/articleList'})
-    }
+  created() {
 
-    this.fetchFeedbackArticles(this.$route.query.userId);
-    this.fetchMyArticles(this.$route.query.userId);
-
-    await this.fetchPostedArticles(this.$route.query.userId);
-    this.changeList(1);
-    this.component = ArticleCard;
   },
   beforeRouteEnter(to, from, next) {
     //URLのparam(userId)に数値以外が入力された際に記事一覧に戻る
-    if (!isNaN(to.query.userId)) {
+    if (!isNaN(to.params['userId'])) {
       next();
     } else {
-      next({path: 'articleList'})
+      next({path: '/article'})
     }
   }
 }
