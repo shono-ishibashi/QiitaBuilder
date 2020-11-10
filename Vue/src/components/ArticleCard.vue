@@ -3,10 +3,7 @@
     <v-divider inset :key="`div-${index}`"></v-divider>
     <v-list-item class="articleCard">
       <v-list-item-avatar>
-        <v-avatar
-            class="grey lighten-1"
-            dark
-        >
+        <v-avatar class="grey lighten-1" dark>
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <span
@@ -14,7 +11,7 @@
                   v-on.stop="on"
                   class="white--text headline"
               >
-                人
+                <img :src="article.postedUser.photoUrl"/>
               </span>
             </template>
             <span>{{ article.postedUser.displayName }}</span>
@@ -22,17 +19,10 @@
         </v-avatar>
       </v-list-item-avatar>
       <v-list-item-avatar>
-        <v-avatar
-            v-show="article.stateFlag===2"
-            size="25"
-            color="primary"
-        >
+        <v-avatar v-show="article.stateFlag === 2" size="25" color="primary">
           <v-tooltip top>
             <template v-slot:activator="{ on, attrs }">
-              <v-icon
-                  dark
-                  v-bind="attrs"
-                  v-on.stop="on">
+              <v-icon dark v-bind="attrs" v-on.stop="on">
                 mdi-check
               </v-icon>
             </template>
@@ -42,16 +32,20 @@
       </v-list-item-avatar>
       <v-list-item-content>
         <div class="title-field">
-          <v-list-item-title v-text="article.title" class="title"></v-list-item-title>
+          <v-list-item-title
+            class="title"
+            style="cursor: pointer;"
+            @click="toDetail(article.articleId)"
+          >{{article.title|truncate}}</v-list-item-title>
           <v-list-item-subtitle class="tag-field">
             <v-chip-group active-class="primary--text">
               <v-chip
-                  v-for="tag in article.tags"
-                  :key="tag.tagId"
-                  color="#5bc8ac"
-                  small
-                  dark
-                  @click="findByTagId(tag.tagId)"
+                v-for="tag in article.tags"
+                :key="tag.tagId"
+                color="#5bc8ac"
+                small
+                dark
+                @click="findByTagId(tag.tagId)"
               >
                 {{ tag.tagName }}
               </v-chip>
@@ -62,16 +56,59 @@
           <v-list-item-subtitle class="subtitle-field">
             <!--            ここfilter使って表示の仕方変えてもいいかも-->
             <v-row>
-              <v-col>
-                最終更新日：{{ article.updatedAt|moment() }}
+              <v-col cols="3">
+                投稿日時：{{ article.createdAt | moment() }}
               </v-col>
-              <v-col>
-                <v-icon class="qiita-icon" dark>Q</v-icon>
-                {{ article.qiitaRecommendPoint }}
+              <v-col cols="3">
+                最終更新日時：{{ article.updatedAt | moment() }}
               </v-col>
-              <v-col>
-                <v-icon class="my-icon" dark>M</v-icon>
-                {{ article.registeredMyArticleCount }}
+              <v-col cols="2"></v-col>
+              <v-col cols="1">
+                <v-tooltip top>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon
+                      class="qiita-icon"
+                      dark
+                      color="#5bc8ac"
+                      v-bind="attrs"
+                      v-on.stop="on"
+                      >Q
+                    </v-icon>
+                    {{ article.qiitaRecommendPoint }}
+                  </template>
+                  <span>Qiita推奨数</span>
+                </v-tooltip>
+              </v-col>
+              <v-col cols="1">
+                <v-tooltip top>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon
+                      class="my-icon"
+                      dark
+                      color="red"
+                      v-bind="attrs"
+                      v-on.stop="on"
+                      >mdi-heart
+                    </v-icon>
+                    {{ article.registeredMyArticleCount }}
+                  </template>
+                  <span>My記事登録数</span>
+                </v-tooltip>
+              </v-col>
+              <v-col cols="1">
+                <v-tooltip top>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon
+                      class="feed-icon"
+                      color="blue"
+                      v-bind="attrs"
+                      v-on.stop="on"
+                      >mdi-message-processing-outline
+                    </v-icon>
+                    {{ article.feedbackCount }}
+                  </template>
+                  <span>コメント数</span>
+                </v-tooltip>
               </v-col>
             </v-row>
           </v-list-item-subtitle>
@@ -83,40 +120,54 @@
 
 <script>
 import moment from 'moment'
-import {mapState, mapActions} from "vuex"
+import {mapState,mapGetters, mapActions} from "vuex"
 
 export default {
   name: "ArticleCard",
   data() {
-    return {
-    }
+    return {};
   },
   props: {
     article: {
       type: Object,
-      required: true
+      required: true,
     },
     index: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
   },
   computed: {
-    ...mapState("articles", ["searchCriteria"])
+    ...mapState("articles", ["searchCriteria"]),
+    ...mapGetters("auth",["loginUser"])
   },
   filters: {
     moment(value) {
       return moment(value).format("MM/DD hh:mm");
+    },
+    truncate(value) {
+      var length = 28;
+      var ommision = "...";
+      if (value.length <= length) {
+        return value;
+      }
+      return value.substring(0, length) + ommision;
     }
   },
   methods: {
     ...mapActions("articles", ["fetchArticles"]),
     findByTagId(tagId) {
       this.searchCriteria.searchTag = [tagId];
-      this.fetchArticles(this.searchCriteria)
-    }
-  }
-}
+      this.fetchArticles(this.searchCriteria);
+    },
+    toDetail(articleId) {
+      this.$router.push({
+        name: "articleDetail",
+        params: { articleId },
+      });
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -125,8 +176,7 @@ export default {
 }
 
 .title-field {
-  /*background-color: #EEEEEE;*/
-  margin-bottom: 20px;
+  margin-top: 15px;
   height: 70px;
 }
 
@@ -143,18 +193,7 @@ export default {
 }
 
 .subtitle-field {
-  height: 30px;
-}
-
-.qiita-icon {
-  background-color: #5bc8ac;
-}
-
-.my-icon {
-  background-color: red;
-}
-
-.qiita-post-check {
-  background-color: blue;
+  height: 35px;
+  margin-bottom: 10px;
 }
 </style>

@@ -9,6 +9,7 @@ export default {
             sortNum: 0,
             period: 0,
             searchWord: "",
+            toggleSearchWord:0,
             searchTag: [],
             pageSize: 10,
             currentPage: 1
@@ -19,6 +20,7 @@ export default {
     mutations: {
         setArticles(state,articles){
             state.articles = articles
+            console.log(state.articles)
         },
         setTags(state,tags){
             state.tags = tags
@@ -36,6 +38,7 @@ export default {
                 pageSize:newSearchCriteria.pageSize,
                 currentPage:newSearchCriteria.currentPage,
                 searchWord:newSearchCriteria.searchWord,
+                toggleSearchWord:newSearchCriteria.toggleSearchWord,
                 searchTag:newSearchCriteria.searchTag,
                 period:newSearchCriteria.period
             }
@@ -43,6 +46,7 @@ export default {
 
             await axios.get(fetchArticlesUrl,{params,paramsSerializer})
                 .then(res=>{
+                    console.log(params)
                     commit("setArticles",res.data)
                 })
             await axios.get(fetchTotalPageUrl,{params,paramsSerializer})

@@ -21,31 +21,4 @@ public class QiitaAPIController {
     public String test() {
         return "redirect:https://www.google.com/";
     }
-
-    @RequestMapping(value = "/to-qiita-api-authentication", method = RequestMethod.GET)
-    public String toQiitaAPIAuthentication() {
-
-
-        String request = qiitaAPIService.generateQiitaAPIAuthenticationURL();
-
-        return "redirect:" + request;
-    }
-
-    @RequestMapping(value = "/check-qiita-api-authentication", method = RequestMethod.GET)
-    public String checkQiitaAPIAuthentication(QiitaConfiguration qiitaConfiguration) {
-
-
-        if (qiitaAPIService.existsStateInDB(qiitaConfiguration)) {
-
-            qiitaAPIService.updateCode(qiitaConfiguration);
-            //マイページ画面へ遷移させて、完了メッセージを出力
-            return "redirect:https://www.google.com/";
-        }
-
-        qiitaAPIService.deleteByUserId(qiitaConfiguration.getUserId());
-        //マイページ画面へ遷移させて、エラーメッセージを取得
-        return "redirect:https://www.google.com/";
-    }
-
-
 }

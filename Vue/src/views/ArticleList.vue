@@ -1,44 +1,65 @@
 <template>
-  <v-container>
+  <v-container class="articleList">
     <v-row>
       <v-col cols="3"></v-col>
       <v-col cols="6">
-        <v-card class="searchForm">
+        <v-card class="searchForm" outline-color="#008b8b">
           <v-row>
             <v-col>
               <v-card-title style="padding-left: 40px">
+                <v-icon>mdi-magnify</v-icon>
                 検索フォーム
               </v-card-title>
             </v-col>
             <v-col>
               <v-card-actions>
-                <v-btn @click="search">検索</v-btn>
-                <v-btn @click="reset">リセット</v-btn>
+                <v-btn @click="search" dark color="#5bc8ac">検索</v-btn>
+                <v-btn @click="reset" dark color="#ff6347">リセット</v-btn>
               </v-card-actions>
             </v-col>
           </v-row>
           <v-card-text>
             <v-row>
               <v-col>
-                <v-text-field
-                    label="記事タイトル,ユーザーネームを入力"
-                    v-model="searchCriteria.searchWord"
-                >
-                </v-text-field>
+                <v-row>
+                    <v-icon @click="toggleSearchWordBox">mdi-sync-circle</v-icon>
+                  <v-form ref="search_form">
+                    <v-text-field
+                        v-if="this.searchCriteria.toggleSearchWord===0"
+                        label="記事タイトルを検索"
+                        color="#5bc8ac"
+                        v-model="searchCriteria.searchWord"
+                        :rules="[title_limit_length]"
+                        counter="100"
+                    >
+                    </v-text-field>
+                    <v-text-field
+                        v-if="this.searchCriteria.toggleSearchWord===1"
+                        label="ユーザーネームを検索"
+                        color="#5bc8ac"
+                        v-model="searchCriteria.searchWord"
+                        :rules="[user_limit_length]"
+                        counter="30"
+                    >
+                    </v-text-field>
+                  </v-form>
+                </v-row>
               </v-col>
               <v-col>
-                <v-autocomplete
-                    v-model="searchCriteria.searchTag"
-                    :items="tags"
-                    item-value="tagId"
-                    item-text="tagName"
-                    label="タグを選択"
-                    chips
-                    deletable-chips
-                    multiple
-                    small-chips
-                >
-                </v-autocomplete>
+                  <v-autocomplete
+                      v-model="searchCriteria.searchTag"
+                      :items="tags"
+                      item-value="tagId"
+                      item-text="tagName"
+                      item-color="green"
+                      label="タグを選択"
+                      color="#5bc8ac"
+                      chips
+                      deletable-chips
+                      multiple
+                      small-chips
+                  >
+                  </v-autocomplete>
               </v-col>
             </v-row>
           </v-card-text>
@@ -62,10 +83,18 @@
               :items="sortList"
               item-value="key"
               item-text="state"
+              item-color="green"
               color="#5bc8ac"
               v-model="searchCriteria.sortNum">
           </v-select>
         </v-subheader>
+        <v-container
+            v-if="articles.length===0"
+            class="no-article-field"
+        >
+          記事が見つかりませんでした<br>
+          再度検索してください
+        </v-container>
         <ArticleCard v-for="(article,index) in articles" :key="article.articleId" :article="article"
                      :index="index"></ArticleCard>
       </v-list>
@@ -73,13 +102,20 @@
     <v-row>
       <v-col cols="2"></v-col>
       <v-col cols="2">
-        <v-select :items="pageSizeList" v-model="searchCriteria.pageSize" label="ページ表示数">
+        <v-select
+            :items="pageSizeList"
+            v-model="searchCriteria.pageSize"
+            label="ページ表示数"
+            color="#5bc8ac"
+            item-color="green"
+        >
         </v-select>
       </v-col>
       <v-col cols="8">
         <v-pagination
             v-model="searchCriteria.currentPage"
             :length="totalPage"
+            color="#5bc8ac"
             circle
         ></v-pagination>
       </v-col>
@@ -112,6 +148,8 @@ export default {
         {key: 1, state: "月間"},
         {key: null, state: "全て"},
       ],
+      title_limit_length: value => value.length <= 100 || "100文字以内で入力してください",
+      user_limit_length: value => value.length <= 30 || "30文字以内で入力してください",
     }
   },
   watch: {
@@ -149,8 +187,10 @@ export default {
       this.searchCriteria.period = key
     },
     search() {
-      this.searchCriteria.currentPage = 1
-      this.fetchArticles(this.searchCriteria)
+      if(this.$refs.search_form.validate()){
+        this.searchCriteria.currentPage = 1
+        this.fetchArticles(this.searchCriteria)
+      }
     },
     scrollTop() {
       window.scrollTo({
@@ -162,6 +202,13 @@ export default {
       this.searchCriteria.searchWord=""
       this.searchCriteria.searchTag=[]
       this.fetchArticles(this.searchCriteria)
+    },
+    toggleSearchWordBox(){
+      if(this.searchCriteria.toggleSearchWord===0){
+        this.searchCriteria.toggleSearchWord=1
+      }else{
+        this.searchCriteria.toggleSearchWord=0
+      }
     }
   }
 }
@@ -177,12 +224,24 @@ export default {
   line-height: 45px;
   text-align: center;
   border-radius: 50%;
-  background: #5bc8ac;
+  background-color:#008b8b;
 }
 .list {
   width: 800px;
   padding-top:100px;
+  margin-bottom:70px;
 }
 .searchForm{
+  margin-top:70px;
+}
+.no-article-field{
+  text-align: center;
+  height:200px;
+  margin-top:100px;
+  font-weight:bold;
+  font-size:16px;
+}
+.articleList{
+  margin-bottom:40px;
 }
 </style>

@@ -1,4 +1,4 @@
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 import {v4 as uuidv4} from 'uuid';
 import axios from 'axios'
 import router from "@/router";
@@ -21,13 +21,12 @@ export default {
 
     },
     actions: {
-        googleLogin({commit}) {
+        async googleLogin({commit}) {
             //firebase google authログイン
-            const provider = new firebase.auth.GoogleAuthProvider();
-            firebase.auth().signInWithPopup(provider).then(() => {
+            const provider = await new firebase.auth.GoogleAuthProvider();
+            await firebase.auth().signInWithPopup(provider).then(() => {
                     const loginUser = firebase.auth().currentUser;
                     const db = firebase.firestore();
-
                     commit('setLoginUser', loginUser);
 
                     db.collection('users').doc(loginUser.uid).get()
@@ -51,26 +50,41 @@ export default {
                                 })
                             }
                         })
-                db.collection('users').doc(loginUser.uid).get()
-                    .then(data => {
-                        const request = API_URL + 'login?uid=' + loginUser.uid + '&password=' + data.data().password;
-                        axios.post(request,{},{headers:{'Content-Type': 'application/json'}})
-                            .then(response => {
-                                //Vuexにheaderを追加
-                                commit("setAPIToken", response.headers.authorization);
-                                router.push('/')
-                            })
-                    })
+
+
                 },
             )
+        },
+        async loginRESTAPI({commit}, loginUser) {
+            //RESTAPI ログイン
+            const db = await firebase.firestore();
+            await db.collection('users').doc(loginUser.uid).get()
+                .then(data => {
+                    const request = API_URL + 'login?uid=' + loginUser.uid + '&password=' + data.data().password;
+                    console.log(data.data());
+                    axios.post(request, {}, {headers: {'Content-Type': 'application/json'}})
+                        .then(response => {
+                            //Vuexにjwt tokenを追加
+                            commit("setAPIToken", response.headers.authorization);
+                            router.push('/')
+                        })
+                })
         },
         logout({commit}) {
             firebase.auth().signOut().then(function () {
                 commit('setLoginUser', null);
                 axios.post(API_URL + 'logout').then(() => {
-                    router.push('/login')
+                    router.push('/login',() => {})
                 })
             })
+        }
+    },
+    getters: {
+        apiToken(state) {
+            return state.apiToken;
+        },
+        loginUser(state) {
+            return state.loginUser;
         }
     }
 }
