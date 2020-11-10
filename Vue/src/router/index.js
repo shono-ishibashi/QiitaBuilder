@@ -29,11 +29,16 @@ const routes = [
     name: 'qiitatest',
     component: () => import(/* webpackChunkName: "login" */ '../views/QiitaTest.vue')
   },
-    {
-        path: '/user/:userId',
-        name: 'userDetail',
-        component: () => import(/* webpackChunkName: "articleDetail" */ '../views/UserDetail.vue')
-    },
+  {
+    path: '/user/ranking',
+    name: 'ranking',
+    component: () => import(/* webpackChunkName: "ranking" */ '../views/Ranking.vue')
+  },
+  {
+    path: '/user/:userId',
+    name: 'userDetail',
+    component: () => import(/* webpackChunkName: "articleDetail" */ '../views/UserDetail.vue')
+  },
 ]
 
 const router = new VueRouter({
