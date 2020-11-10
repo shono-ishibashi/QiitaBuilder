@@ -95,6 +95,13 @@
         <ArticleCard v-for="(article,index) in sortedArticles" :key="article.articleId" :article="article"
                      :is="component" :index="index">
         </ArticleCard>
+        <v-pagination
+            v-model="page"
+            :length="length"
+            prev-icon="mdi-menu-left"
+            next-icon="mdi-menu-right"
+            dark
+        ></v-pagination>
         <v-container
             v-if="articles.length===0"
             class="no-article-field"
@@ -120,51 +127,70 @@ export default {
       tagsHeaders: [
         {text: "タグ名", value: "tagName"},
         {text: "使用回数", value: "usedTagCount"}
-      ],
+      ],//tagテーブル用ヘッダー
       sortList: [
         {key: 0, state: "新着順"},
         {key: 1, state: "更新順"},
         {key: 2, state: "Qiita推奨数順"},
         {key: 3, state: "My記事登録数順"}
-      ],
-      sortNum: 0,
+      ],//並び替え選択用リスト
+      sortNum: 0,//現在のソートkey
+      page: 1,//現在のページ
+      //length: 0,//最大ページ数
+      pageSize: 10,//ページ当たりの記事数
       articles: [],//画面表示用記事リスト
       usedTags: [],//タグ検索オートコンプリート用リスト
-      component: null,
+      component: null,//コンポーネント表示切替用真偽値
       displayListNum: 1,//1:posted, 2:feedback, 3:my, 11:notPostedQiita, 12:postedQiita
       conditions: {
         title: "",
         conditionTags: []
-      },
+      },//検索条件
     };
   },
   computed: {
-    sortedArticles: function () {
-      var art = this.articles;
-      if (this.sortNum === 0) {
-        return art.sort((a, b) => {
-          return (a.createdAt < b.createdAt) ? 1 : (a.createdAt > b.createdAt) ? -1 : 0;
-        })
-      }
-      if (this.sortNum === 1) {
-        return art.sort((a, b) => {
-          return (a.updatedAt < b.updatedAt) ? 1 : (a.updatedAt > b.updatedAt) ? -1 : 0;
-        })
-      }
-      if (this.sortNum === 2) {
-        return art.sort((a, b) => {
-          return (a.qiitaRecommendPoint < b.qiitaRecommendPoint) ? 1 : (a.qiitaRecommendPoint > b.qiitaRecommendPoint) ? -1 : 0;
-        })
-      }
-      if (this.sortNum === 3) {
-        return art.sort((a, b) => {
-          return (a.registeredMyArticleCount < b.registeredMyArticleCount) ? 1 : (a.registeredMyArticleCount > b.registeredMyArticleCount) ? -1 : 0;
-        })
-      }
-      return 0;
+    length: {
+      get() {
+        return Math.ceil(this.articles.length / this.pageSize);
+      },
+      set() {
+      },
+    },
+    sortedArticles: {
+      get() {
+        let art = this.articles;
+        if (this.sortNum === 0) {
+          art = art.sort((a, b) => {
+            return (a.createdAt < b.createdAt) ? 1 : (a.createdAt > b.createdAt) ? -1 : 0;
+          })
+        }
+        if (this.sortNum === 1) {
+          art = art.sort((a, b) => {
+            return (a.updatedAt < b.updatedAt) ? 1 : (a.updatedAt > b.updatedAt) ? -1 : 0;
+          })
+        }
+        if (this.sortNum === 2) {
+          art = art.sort((a, b) => {
+            return (a.qiitaRecommendPoint < b.qiitaRecommendPoint) ? 1 : (a.qiitaRecommendPoint > b.qiitaRecommendPoint) ? -1 : 0;
+          })
+        }
+        if (this.sortNum === 3) {
+          art = art.sort((a, b) => {
+            return (a.registeredMyArticleCount < b.registeredMyArticleCount) ? 1 : (a.registeredMyArticleCount > b.registeredMyArticleCount) ? -1 : 0;
+          })
+        }
+        return art.slice(this.pageSize * (this.page - 1), this.pageSize * (this.page));
+      },
+      set() {
+      },
     },
     ...mapGetters("user", ["userId", "notPostedQiitaArticles", "postedQiitaArticles"]),
     ...mapState("user", ["userDetail", "postedArticles", "feedbackArticles", "myArticles"])
+  },
+  watch: {
+    sortNum() {
+      this.page = 1;//sort変更時computedによる並び替え変更が行われるのでページが変更されないため、ここで1pに変えている
+    }
   },
   methods: {
     /**
@@ -198,7 +224,12 @@ export default {
         value.tags.forEach(function (tag) {
           this.usedTags.push(tag);
         }, this)
-      }, this)
+      }, this);
+      if (articlesFromVuex.length === 0) {
+        this.sortedArticles.length = 0;
+      }
+      this.page = 1;
+      this.length = Math.ceil(this.articles.length / this.pageSize);
     },
     searchWithConditions() {
       if (this.displayListNum === 1) {
@@ -224,6 +255,8 @@ export default {
           return value.tags.find(artTag => artTag.tagId === conTag)
         })
       }
+      this.page = 1;
+      this.length = Math.ceil(this.articles.length / this.pageSize);
     },
     ...mapActions("user", ["fetchUserDetail", "fetchPostedArticles", "fetchFeedbackArticles", "fetchMyArticles"]),
   },
@@ -238,12 +271,8 @@ export default {
     this.fetchMyArticles(this.$route.query.userId);
 
     await this.fetchPostedArticles(this.$route.query.userId);
-    //投稿記事が0件じゃない場合ArticleCardコンポーネント表示
-    if (this.postedArticles.length !== 0) {
-      this.changeList(1);
-      this.component = ArticleCard;
-    }
-    //else で記事が無いとき投稿画面に遷移などのボタン用コンポーネント用意してもいいかも
+    this.changeList(1);
+    this.component = ArticleCard;
   },
   beforeRouteEnter(to, from, next) {
     //URLのparam(userId)に数値以外が入力された際に記事一覧に戻る
