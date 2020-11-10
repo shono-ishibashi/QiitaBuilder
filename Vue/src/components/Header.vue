@@ -16,24 +16,19 @@
 
       <v-spacer></v-spacer>
       <div class="header-action-field">
-        <v-btn class="header-btn" color="#008b8b" @click="toArticleList">
+        <v-btn class="header-btn" color="#008b8b" @click="toArticleList" v-if="loginUser!=null">
           <v-icon>mdi-format-list-bulleted-type</v-icon>
           記事一覧
         </v-btn>
 
-        <v-btn class="header-btn" color="#008b8b">
+        <v-btn class="header-btn" color="#008b8b" v-if="loginUser!=null">
           <v-icon>mdi-square-edit-outline</v-icon>
           記事投稿
         </v-btn>
 
-        <v-btn class="header-btn" color="#008b8b" @click="toRanking">
+        <v-btn class="header-btn" color="#008b8b" v-if="loginUser!=null" @click="toRanking">
           <v-icon>mdi-chess-king</v-icon>
           ランキング
-        </v-btn>
-
-        <v-btn class="header-btn" color="#008b8b">
-          <v-icon>mdi-login</v-icon>
-          ログイン
         </v-btn>
 
         <v-menu
@@ -41,6 +36,7 @@
             left
             bottom
             offset-y
+            v-if="loginUser!=null"
         >
           <template v-slot:activator="{ on, attrs }">
             <v-btn
@@ -63,7 +59,7 @@
               <v-list-item-title>下書き一覧</v-list-item-title>
             </v-list-item>
             <v-divider></v-divider>
-            <v-list-item link>
+            <v-list-item @click="logout">
               <v-icon>mdi-logout</v-icon>
               <v-list-item-title>ログアウト</v-list-item-title>
             </v-list-item>
@@ -76,11 +72,17 @@
 </template>
 
 <script>
+import {mapGetters,mapActions} from 'vuex'
+
 export default {
   name: "Header",
+  computed: {
+    ...mapGetters("auth",["loginUser"])
+  },
   methods:{
+    ...mapActions("auth",["logout"]),
     toArticleList(){
-      this.$router.push('article')
+      this.$router.push('/article')
     },
     toRanking(){
       this.$router.push({name:'ranking'})

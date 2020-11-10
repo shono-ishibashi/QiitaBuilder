@@ -27,7 +27,6 @@ export default {
             await firebase.auth().signInWithPopup(provider).then(() => {
                     const loginUser = firebase.auth().currentUser;
                     const db = firebase.firestore();
-
                     commit('setLoginUser', loginUser);
 
                     db.collection('users').doc(loginUser.uid).get()
@@ -75,7 +74,7 @@ export default {
             firebase.auth().signOut().then(function () {
                 commit('setLoginUser', null);
                 axios.post(API_URL + 'logout').then(() => {
-                    router.push('/login')
+                    router.push('/login',() => {})
                 })
             })
         }
