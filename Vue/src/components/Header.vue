@@ -26,7 +26,7 @@
           記事投稿
         </v-btn>
 
-        <v-btn class="header-btn" color="#008b8b">
+        <v-btn class="header-btn" color="#008b8b" @click="toRanking">
           <v-icon>mdi-chess-king</v-icon>
           ランキング
         </v-btn>
@@ -81,6 +81,9 @@ export default {
   methods:{
     toArticleList(){
       this.$router.push('article')
+    },
+    toRanking(){
+      this.$router.push({name:'ranking'})
     }
   }
 }
