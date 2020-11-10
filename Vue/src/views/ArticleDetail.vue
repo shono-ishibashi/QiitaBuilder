@@ -68,9 +68,14 @@ export default {
       if (this.EditorIsOpen) return { buttons: 1, article: 7, editor: 4 };
       return { buttons: 2, article: 8, editor: 2 };
     },
+    apiToken() {
+      return this.$store.getters["auth/apiToken"];
+    },
   },
-  created() {
-    this.fetchArticle(this.slug);
+  watch: {
+    apiToken: function() {
+      this.fetchArticle(this.slug);
+    },
   },
   methods: {
     toggleEditor() {

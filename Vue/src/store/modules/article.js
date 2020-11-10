@@ -14,10 +14,16 @@ export default {
     },
   },
   actions: {
-    fetchArticle({ commit, rootGetters }, articleId) {
+    fetchArticle({ commit, rootGetters , rootState}, articleId) {
       const url = rootGetters.API_URL + "article/" + articleId;
+      var apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
+
       axios
-        .get(url)
+        .get(url, {
+          headers: {
+            Authorization: apiToken,
+          },
+        })
         .then((res) => {
           commit("setArticle", res.data);
         })
