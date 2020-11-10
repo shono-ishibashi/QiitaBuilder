@@ -13,11 +13,20 @@ const routes = [
     name:'ArticleList',
     component:ArticleList
   },
-
+  {
+    path:'/article/new',
+    name:'articleNew',
+    component:()=>import(/* webpackChunkName: "articleEdit" */'../views/ArticleEdit')
+  },
   {
     path: '/article/:articleId',
     name: 'articleDetail',
     component: () => import(/* webpackChunkName: "articleDetail" */ '../views/ArticleDetail.vue')
+  },
+  {
+    path:'/article/:articleId/edit',
+    name:'articleEdit',
+    component:()=>import(/* webpackChunkName: "articleEdit" */'../views/ArticleEdit')
   },
   {
     path: '/login',
