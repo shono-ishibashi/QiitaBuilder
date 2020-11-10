@@ -51,6 +51,9 @@
       <v-col cols="4">
         <v-btn color="#5bc8ac" @click="changeList(3)">My記事</v-btn>
       </v-col>
+      <v-col cols="4" v-if="userDetail.isLoginUser">
+        <v-btn color="#5bc8ac" @click="changeList(3)">下書き記事</v-btn>
+      </v-col>
 
       <v-col cols="12" v-if="displayListNum===1||displayListNum===11||displayListNum===12">
         <v-btn color="#5bc8ac" @click="changeList(1)">全記事</v-btn>

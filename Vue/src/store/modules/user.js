@@ -12,6 +12,7 @@ export default {
             feedbackCount: 0,
             qiitaRecommendedAllCount: 0,
             postedArticleCount: 0,
+            isLoginUser: false,
         },
         postedArticles: [],
         myArticles: [],
@@ -52,7 +53,8 @@ export default {
             const url = rootGetters.API_URL + 'user/detail/';
             let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
 
-            await axios.get(url, {params: {userId}}, {
+            await axios.get(url, {
+                params: {userId},
                 headers: {
                     Authorization: apiToken,
                 },
@@ -63,15 +65,20 @@ export default {
         async fetchPostedArticles({commit, rootGetters, rootState}, userId) {
             const url = rootGetters.API_URL + 'article/'
             let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
-            const params = {
+            let searchArticleForm = {
                 sortNum: 1,
                 pageSize: 0,
                 currentPage: 0,
                 userId: userId,
+                //stateFlagList: [10],
             }
-            const paramsSerializer = (params) => qs.stringify(params);
+            //let paramsSerializer = (params) => qs.stringify(params);
 
-            await axios.get(url, {params, paramsSerializer}, {
+            await axios.get(url, {
+                params: {searchArticleForm},
+                paramsSerializer: params => {
+                    return qs.stringify(params, {allowDots: true})
+                },
                 headers: {
                     Authorization: apiToken,
                 },
@@ -87,7 +94,8 @@ export default {
             let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
 
 
-            await axios.get(url, {params: {userId}}, {
+            await axios.get(url, {
+                params: {userId},
                 headers: {
                     Authorization: apiToken,
                 },
@@ -99,7 +107,8 @@ export default {
             const url = rootGetters.API_URL + 'article/my-articles';
             let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
 
-            await axios.get(url, {params: {userId}}, {
+            await axios.get(url, {
+                params: {userId},
                 headers: {
                     Authorization: apiToken,
                 },
