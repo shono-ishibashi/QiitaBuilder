@@ -43,7 +43,7 @@
             background-color="grey lighten-2"
             color="green darken-2"
             solo
-            v-model="feedback"
+            v-model="content"
             label="テキストを入力"
           ></v-textarea>
         </v-container>
@@ -51,7 +51,7 @@
       <v-container v-show="tab == 1">
         <v-row>
           <v-col cols="12" md="12">
-            <span v-html="compiledFeedback"></span>
+            <span v-html="compiledContent"></span>
           </v-col>
         </v-row>
       </v-container>
@@ -72,7 +72,7 @@ export default {
   data() {
     return {
       loginUser: null,
-      feedback: "",
+      content: "",
       tab: 0,
       tabs: ["編集", "プレビュー"],
     };
@@ -81,8 +81,8 @@ export default {
     this.loginUser = this.$store.state.auth.loginUser;
   },
   computed: {
-    compiledFeedback() {
-      return marked(this.feedback);
+    compiledContent() {
+      return marked(this.content);
     },
   },
   methods: {
@@ -90,7 +90,7 @@ export default {
       this.$emit("toggleEditor");
     },
     postFeedback() {
-      console.log("postFeedback");
+      this.$emit("postFeedback", this.content)
     },
   },
 };
