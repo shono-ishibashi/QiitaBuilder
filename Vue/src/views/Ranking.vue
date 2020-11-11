@@ -14,9 +14,20 @@
                 label="ランキング項目"
             ></v-select>
           </v-col>
+          <v-col cols="2">
+            <v-select
+                :items="displayCountList"
+                item-text="item + '件'"
+                item-value="item"
+                v-model="selectDisplayCount"
+                color="#5bc8ac"
+                label="表示件数"
+            >
+            </v-select>
+          </v-col>
         </v-row>
         <v-row>
-          <UserList :rank-users="users" :select-rank-item-id="selectRankItemId"></UserList>
+          <UserList :rank-users="users" :select-rank-item-id="selectRankItemId" :display-count="selectDisplayCount"></UserList>
         </v-row>
       </v-col>
       <v-col cols="6">
@@ -64,7 +75,13 @@ export default {
       ],
 
       //選択されているランキング項目
-      selectRankItemId: 1
+      selectRankItemId: 1,
+
+      //表示件数リスト
+      displayCountList: [10, 20, 30],
+
+      //選択されている表示件数
+      selectDisplayCount: 10
     }
   },
 
@@ -85,7 +102,6 @@ export default {
       this.fetchRankingUser(this.selectRankItemId);
     }
   },
-
 
   methods: {
     ...mapActions("users", ["fetchRankingUser"])
