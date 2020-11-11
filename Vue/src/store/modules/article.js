@@ -32,8 +32,15 @@ export default {
         tags: [],
       };
     },
+    // feedback
     addFeedback(state, feedback) {
       state.article.feedbacks.push(feedback);
+    },
+    updateFeedback(state, feedback) {
+      const targetIndex = state.article.feedbacks.findIndex(
+        (elem) => elem.feedbackId == feedback.feedbackId
+      );
+      state.article.feedbacks.splice(targetIndex, 1, feedback);
     },
     removeFeedback(state, feedbackId) {
       const targetIndex = state.article.feedbacks.findIndex(
@@ -115,6 +122,22 @@ export default {
         const res = await axios.post(url, feedback, requestConfig);
         const item = res.data;
         commit("addFeedback", item);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async updateFeedback({ commit, rootGetters }, feedback) {
+      const url = rootGetters.API_URL + "feedback";
+      const apiToken = rootGetters["auth/apiToken"];
+      const requestConfig = {
+        headers: {
+          Authorization: apiToken,
+        },
+      };
+
+      try {
+        const res = await axios.put(url, feedback, requestConfig);
+        commit("updateFeedback", res.data);
       } catch (error) {
         console.log(error);
       }

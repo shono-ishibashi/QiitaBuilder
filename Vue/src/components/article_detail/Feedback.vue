@@ -75,9 +75,9 @@ export default {
       }
       return { time: this.feedback.createdAt, text: "に作成" };
     },
-    loginUser(){
+    loginUser() {
       return this.$store.state.auth.loginUser;
-    }
+    },
   },
   filters: {
     date: function(value) {
@@ -88,9 +88,7 @@ export default {
   },
   methods: {
     editFeedback() {
-      console.log(
-        "editFeedback (feedbackId : " + this.feedback.feedbackId + ")"
-      );
+      this.$emit("editFeedback", this.feedback);
     },
     deleteFeedback() {
       this.$store.dispatch("article/deleteFeedback", this.feedback);
