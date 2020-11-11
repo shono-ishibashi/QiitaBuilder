@@ -119,18 +119,20 @@ export default {
         console.log(error);
       }
     },
-    async deleteFeedback({ commit, rootGetters }, feedbackId) {
-      const url = rootGetters.API_URL + "feedback/" + feedbackId;
+    async deleteFeedback({ commit, rootGetters }, feedback) {
+      const url = rootGetters.API_URL + "feedback";
       const apiToken = rootGetters["auth/apiToken"];
       const requestConfig = {
         headers: {
           Authorization: apiToken,
         },
       };
+      // 削除フラグ
+      feedback.deleteFlag = 1;
 
       try {
-        await axios.delete(url, requestConfig);
-        commit("removeFeedback", feedbackId);
+        await axios.put(url, feedback, requestConfig);
+        commit("removeFeedback", feedback.feedbackId);
       } catch (error) {
         console.log(error);
       }

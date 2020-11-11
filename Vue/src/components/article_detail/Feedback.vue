@@ -93,6 +93,7 @@ export default {
       console.log(
         "deleteFeedback (feedbackId : " + this.feedback.feedbackId + ")"
       );
+      this.$store.dispatch("article/deleteFeedback", this.feedback);
     },
   },
 };
