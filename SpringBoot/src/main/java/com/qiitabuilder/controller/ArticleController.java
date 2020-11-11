@@ -87,8 +87,7 @@ public class ArticleController {
     public Article postArticle(@RequestBody Article article) {
         System.out.println("insert");
         System.out.println(article);
-        articleService.saveArticle(article);
-        return null;
+        return articleService.saveArticle(article);
     }
 
     /////////////////////////////
@@ -101,8 +100,7 @@ public class ArticleController {
     public Article editArticle(@RequestBody Article article) {
         System.out.println("update");
         System.out.println(article);
-        articleService.saveArticle(article);
-        return article;
+        return articleService.saveArticle(article);
     }
 
     /////////////////////////////

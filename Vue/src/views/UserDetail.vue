@@ -13,7 +13,7 @@
 
       <v-col cols=5>{{ userDetail.displayName }}</v-col>
       <v-col cols=4>
-        <v-btn color="#5bc8ac" elevation="2">Qiita連携</v-btn>
+        <v-btn @click="toQiitaAPIAuthentication" color="#5bc8ac" elevation="2">Qiita連携</v-btn>
       </v-col>
 
       <v-col cols=4>
@@ -115,6 +115,7 @@
 <script>
 import {mapState, mapActions, mapGetters} from "vuex"
 import ArticleCard from "../components/ArticleCard";
+import axios from "axios";
 
 export default {
   name: "userDetail",
@@ -271,6 +272,21 @@ export default {
       }
       this.page = 1;
       this.length = Math.ceil(this.articles.length / this.pageSize);
+    },
+
+    /**
+     *
+     * Qiitaの認証画面を表示
+     *
+     */
+    toQiitaAPIAuthentication() {
+      axios.get(this.$store.getters.API_URL + 'qiita/to-qiita-api-authentication', {
+        headers: {
+          Authorization: this.$store.getters["auth/apiToken"]
+        }
+      }).then((response) => {
+        location.href = response.data;
+      })
     },
     ...mapActions("user", ["fetchUserDetail", "fetchPostedArticles", "fetchFeedbackArticles", "fetchMyArticles"]),
   },
