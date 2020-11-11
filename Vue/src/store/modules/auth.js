@@ -26,11 +26,8 @@ export default {
                     const loginUser = await firebase.auth().currentUser;
                     const db = await firebase.firestore();
 
-                    await console.log('loginUser');
-                    await console.log(loginUser);
-                    await console.log('loginUser');
-
                     await commit('setLoginUser', loginUser);
+
 
                     await db.collection('users').doc(loginUser.uid).get()
                         .then(async data => {

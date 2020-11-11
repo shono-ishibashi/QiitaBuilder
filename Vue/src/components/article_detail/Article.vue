@@ -3,8 +3,15 @@
     <v-container class="area">
       <v-row align="center" class="spacer">
         <v-col cols="1" sm="1" md="1">
-          <v-avatar size="42px">
-            <img src="https://cdn.vuetifyjs.com/images/john.jpg" alt="John" />
+          <v-avatar size="42px" color="green">
+            <img
+              v-if="article.postedUser.photoURL"
+              :src="article.postedUser.photoURL"
+              alt="user-icon"
+            />
+            <v-icon v-else dark size="42px">
+              mdi-account-circle
+            </v-icon>
           </v-avatar>
         </v-col>
         <v-col class="" cols="2" sm="2" md="2">
@@ -79,14 +86,16 @@
       </v-row>
 
       <h1>{{ article.title }}</h1>
-      <div>
-        tags :
-        <ul>
-          <li v-for="tag in article.tags" :key="tag.tagId">
-            {{ tag.tagName }}
-          </li>
-        </ul>
-      </div>
+      <v-chip-group active-class="primary--text">
+        <v-chip
+          v-for="tag in article.tags"
+          :key="tag.tagId"
+          color="#5bc8ac"
+          dark
+        >
+          {{ tag.tagName }}
+        </v-chip>
+      </v-chip-group>
     </v-container>
     <v-container>
       <v-main>
@@ -135,7 +144,7 @@ export default {
   },
   methods: {
     toEdit() {
-      // this.$router.push({ name: "articleEdit" });
+      this.$router.push({ name: "articleEdit" });
       console.log("toEdit");
     },
     deleteArticle() {

@@ -8,27 +8,47 @@ import axios from "axios";
 Vue.use(VueRouter)
 
 const routes = [
-    {
-        path: '/articleList',
-        name: 'ArticleList',
-        component: ArticleList
-    },
 
-    {
-        path: '/article/:articleId',
-        name: 'articleDetail',
-        component: () => import(/* webpackChunkName: "articleDetail" */ '../views/ArticleDetail.vue')
-    },
-    {
-        path: '/login',
-        name: 'login',
-        component: () => import(/* webpackChunkName: "login" */ '../views/Login.vue')
-    },
-    {
-        path: '/qiitatest',
-        name: 'qiitatest',
-        component: () => import(/* webpackChunkName: "login" */ '../views/QiitaTest.vue')
-    }
+  {
+    path:'/article',
+    name:'ArticleList',
+    component:ArticleList
+  },
+  {
+    path:'/article/new',
+    name:'articleNew',
+    component:()=>import(/* webpackChunkName: "articleEdit" */'../views/ArticleEdit')
+  },
+  {
+    path: '/article/:articleId',
+    name: 'articleDetail',
+    component: () => import(/* webpackChunkName: "articleDetail" */ '../views/ArticleDetail.vue')
+  },
+  {
+    path:'/article/:articleId/edit',
+    name:'articleEdit',
+    component:()=>import(/* webpackChunkName: "articleEdit" */'../views/ArticleEdit')
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import(/* webpackChunkName: "login" */ '../views/Login.vue')
+  },
+  {
+    path: '/qiitatest',
+    name: 'qiitatest',
+    component: () => import(/* webpackChunkName: "login" */ '../views/QiitaTest.vue')
+  },
+  {
+    path: '/user/ranking',
+    name: 'ranking',
+    component: () => import(/* webpackChunkName: "ranking" */ '../views/Ranking.vue')
+  },
+  {
+    path: '/user/:userId',
+    name: 'userDetail',
+    component: () => import(/* webpackChunkName: "articleDetail" */ '../views/UserDetail.vue')
+  },
 ]
 
 const router = new VueRouter({

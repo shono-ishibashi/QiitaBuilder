@@ -14,7 +14,7 @@ import java.util.List;
 public interface ArticleMapper {
 
     /**
-     * 検索条件に一致する記事一覧を取得.
+     * 記事のIDを元に表示する記事の一覧を取得.
      *
      * @param searchArticleForm フォーム
      * @return 記事情報一覧
@@ -22,12 +22,14 @@ public interface ArticleMapper {
     List<Article> searchArticles(@Param("search") SearchArticleForm searchArticleForm);
 
     /**
-     * 総記事数を取得する.
+     * 検索条件に一致する記事のIDを取得
      *
-     * @param searchArticleForm フォーム
-     * @return 総ページ数
+     * @param searchArticleForm
+     * @return
      */
-    Integer getArticleNumber(@Param("search") SearchArticleForm searchArticleForm);
+
+    List<Integer> searchArticlesId(@Param("search") SearchArticleForm searchArticleForm);
+
 
     /**
      * 投稿数ランキング順でユーザー情報を取得する.

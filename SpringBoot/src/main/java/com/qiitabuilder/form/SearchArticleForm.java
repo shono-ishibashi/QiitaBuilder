@@ -21,6 +21,7 @@ public class SearchArticleForm {
     @Max(1)
     private Integer period;
     private String searchWord;
+    private Integer toggleSearchWord;
     private List<Integer> searchTag;
     @NotNull
     private Integer pageSize;
@@ -29,4 +30,6 @@ public class SearchArticleForm {
     private Integer offset;
     private String sort;
     private Integer userId;
+    private List<Integer> articlesIdList;
+    private List<Integer> stateFlagList;
 }
