@@ -8,11 +8,15 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface QiitaConfigurationMapper{
 
-    String getCode(Integer userId);
-    String getState(String state);
+    String getCodeByUserId(Integer userId);
     String getStateByUserId(Integer userId);
+    String getTokenByUserId(Integer userId);
+
     void insertQiitaConfiguration(QiitaConfiguration qiitaConfiguration);
-    void updateQiitaConfigurationCode(QiitaConfiguration qiitaConfiguration);
 
     void deleteByUserId(Integer userId);
+
+    void updateQiitaConfigurationCode(QiitaConfiguration qiitaConfiguration);
+    void updateState(QiitaConfiguration qiitaConfiguration);
+    void saveToken(String token, Integer userId);
 }

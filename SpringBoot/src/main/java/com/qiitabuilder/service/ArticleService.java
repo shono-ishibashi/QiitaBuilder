@@ -13,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.SQLSyntaxErrorException;
 import java.util.List;
 
 import java.util.stream.Collectors;
@@ -160,7 +159,7 @@ public class ArticleService {
     }
 
     public Article getArticle(Integer articleId) {
-        return articleMapper.load(articleId);
+        return articleMapper.getArticleAndFeedback(articleId);
     }
 
     /**
