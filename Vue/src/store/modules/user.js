@@ -125,7 +125,7 @@ export default {
                 pageSize: 0,
                 currentPage: 0,
                 userId: userId,
-                //stateFlagList: [10],
+                stateFlagList: [10],
             }
             //let paramsSerializer = (params) => qs.stringify(params);
 
