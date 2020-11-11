@@ -28,7 +28,7 @@ public class SimpleAuthenticationSuccessHandler implements AuthenticationSuccess
     this.algorithm = Algorithm.HMAC512(secretKey);
   }
 
-  private static final Long EXPIRATION_TIME = TimeUnit.MINUTES.toMillis(60L);
+  private static final Long EXPIRATION_TIME = TimeUnit.MINUTES.toMillis(10L);
 
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request,
