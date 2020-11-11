@@ -31,4 +31,5 @@ public class SearchArticleForm {
     private String sort;
     private Integer userId;
     private List<Integer> articlesIdList;
+    private List<Integer> stateFlagList;
 }

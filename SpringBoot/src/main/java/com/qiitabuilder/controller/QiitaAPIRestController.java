@@ -6,10 +6,7 @@ import com.qiitabuilder.service.QiitaAPIService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
@@ -21,12 +18,12 @@ public class QiitaAPIRestController {
 
     //
     @RequestMapping(value = "/check-qiita-api-authentication", method = RequestMethod.POST)
-    public String checkQiitaAPIAuthentication(@RequestBody QiitaConfiguration qiitaConfiguration) {
+    public void checkQiitaAPIAuthentication(@RequestBody QiitaConfiguration qiitaConfiguration) {
         SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         qiitaConfiguration.setUserId(loginUser.getUser().getUserId());
 
         if(qiitaAPIService.isAuthenticated(qiitaConfiguration)){
-            return "aaa";
+            qiitaAPIService.saveToken();
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
@@ -38,4 +35,16 @@ public class QiitaAPIRestController {
         return qiitaAPIService.generateQiitaAPIAuthenticationURL();
     }
 
+    @RequestMapping(value = "/save-article-to-qiita/{articleId}",method = RequestMethod.POST)
+    public void saveArticleToQiita(@PathVariable("articleId") String articleId) {
+        Integer integerArticleId;
+
+        try {
+            integerArticleId = Integer.parseInt(articleId);
+        } catch (NumberFormatException e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
+        qiitaAPIService.saveArticleToQiita(integerArticleId);
+    }
 }

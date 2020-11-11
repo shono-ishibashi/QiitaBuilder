@@ -11,9 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 
 @RestController
@@ -34,6 +32,12 @@ public class ArticleController {
         if (result.hasErrors()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
+        if(Objects.isNull(searchArticleForm.getStateFlagList())){
+            searchArticleForm.setStateFlagList(Arrays.asList(1,2));
+        }else if(searchArticleForm.getStateFlagList().get(0)==10){
+            searchArticleForm.setStateFlagList(Arrays.asList(0,1,2));
+        }
+        System.out.println(searchArticleForm.getStateFlagList());
         return articleService.searchArticles(searchArticleForm);
     }
 
@@ -43,6 +47,7 @@ public class ArticleController {
         if (result.hasErrors()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
+        searchArticleForm.setStateFlagList(Arrays.asList(1,2));
         return articleService.getTotalPage(searchArticleForm);
     }
 
@@ -80,6 +85,8 @@ public class ArticleController {
     @RequestMapping(value = "/", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public Article postArticle(@RequestBody Article article) {
+        System.out.println("insert");
+        System.out.println(article);
         articleService.saveArticle(article);
         return null;
     }
@@ -92,6 +99,8 @@ public class ArticleController {
     @RequestMapping(value = "/", method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.OK)
     public Article editArticle(@RequestBody Article article) {
+        System.out.println("update");
+        System.out.println(article);
         articleService.saveArticle(article);
         return article;
     }

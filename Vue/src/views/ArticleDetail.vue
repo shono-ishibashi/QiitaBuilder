@@ -14,19 +14,24 @@
       <v-col cols="12" sm="12" :md="mdPlacement.article">
         <v-sheet min-height="70vh" rounded="lg">
           <Article :article="article" />
-          <Feedbacks :feedbacks="feedbacks" />
+          <Feedbacks :feedbacks="feedbacks" @editFeedback="editFeedback" />
         </v-sheet>
       </v-col>
       <v-col cols="12" sm="12" :md="mdPlacement.editor">
         <span v-show="EditorIsOpen">
-          <FeedbackEditor class="sticky" @toggleEditor="toggleEditor" />
+          <FeedbackEditor
+            class="sticky"
+            @closeEditor="closeEditor"
+            @postFeedback="postFeedback"
+            :feedback="propsFeedback"
+          />
         </span>
         <span v-show="!EditorIsOpen">
           <v-btn
             color="gray"
             icon
             large
-            @click="toggleEditor"
+            @click="openNewEditor"
             class="toggle_editor_btn"
           >
             <v-icon>mdi-comment-plus</v-icon>
@@ -52,6 +57,18 @@ export default {
   data() {
     return {
       EditorIsOpen: false,
+      // 状態保存のためのForUpdateとForNewPost
+      feedbackForUpdate: {
+        feedbackId: null,
+        content: "",
+      },
+      feedbackForNewPost: {
+        articleId: null,
+        feedbackId: null,
+        content: "",
+        deleteFlag: 0,
+      },
+      propsFeedback: {},
     };
   },
   computed: {
@@ -77,9 +94,35 @@ export default {
       this.fetchArticle(this.slug);
     },
   },
+  created() {
+    this.propsFeedback = this.feedbackForNewPost;
+  },
   methods: {
-    toggleEditor() {
+    closeEditor() {
+      if (!this.propsFeedback.feedbackId) {
+        this.feedbackForNewPost = this.propsFeedback;
+      } else {
+        this.feedbackForUpdate = this.propsFeedback;
+      }
+
       this.EditorIsOpen = !this.EditorIsOpen;
+    },
+    openNewEditor() {
+      this.propsFeedback = this.feedbackForNewPost;
+      this.EditorIsOpen = true;
+    },
+    postFeedback() {
+      if (!this.propsFeedback.feedbackId) {
+        this.propsFeedback.articleId = this.article.articleId;
+        this.$store.dispatch("article/postFeedback", this.propsFeedback);
+      } else {
+        this.$store.dispatch("article/updateFeedback", this.propsFeedback);
+      }
+    },
+    async editFeedback(feedback) {
+      this.feedbackForUpdate = feedback;
+      this.propsFeedback = await this.feedbackForUpdate;
+      this.EditorIsOpen = true;
     },
     ...mapActions("article", ["fetchArticle"]),
   },

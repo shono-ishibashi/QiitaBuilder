@@ -20,17 +20,20 @@
         </v-card-actions>
       </v-card-text>
     </v-card>
+    <v-btn @click="$store.dispatch('auth/logout')">logout</v-btn>
   </v-app>
 </template>
 
 <script>
+import router from "@/router";
+
 export default {
   name: "googleLogin",
   computed: {},
   methods: {
     async login() {
       await this.$store.dispatch('auth/googleLogin');
-      await this.$store.dispatch('auth/loginRESTAPI',this.$store.getters["auth/loginUser"]);
+      await router.push('/articleList');
     }
   }
 }

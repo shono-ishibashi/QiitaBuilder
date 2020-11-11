@@ -21,12 +21,12 @@
           記事一覧
         </v-btn>
 
-        <v-btn class="header-btn" color="#008b8b" v-if="loginUser!=null">
+        <v-btn class="header-btn" color="#008b8b" @click="toArticleNew" v-if="loginUser!=null">
           <v-icon>mdi-square-edit-outline</v-icon>
           記事投稿
         </v-btn>
 
-        <v-btn class="header-btn" color="#008b8b" v-if="loginUser!=null">
+        <v-btn class="header-btn" color="#008b8b" v-if="loginUser!=null" @click="toRanking">
           <v-icon>mdi-chess-king</v-icon>
           ランキング
         </v-btn>
@@ -81,8 +81,16 @@ export default {
   },
   methods:{
     ...mapActions("auth",["logout"]),
+    ...mapActions("article",["resetArticle"]),
     toArticleList(){
       this.$router.push('/article')
+    },
+    toArticleNew() {
+      this.resetArticle()
+      this.$router.push('/article/new')
+    },
+    toRanking(){
+      this.$router.push({name:'ranking'})
     }
   }
 }

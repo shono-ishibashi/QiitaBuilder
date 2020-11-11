@@ -24,7 +24,7 @@
         </collection>
     </resultMap>
 
-    <resultMap id="loadResult" type="com.qiitabuilder.domain.Article">
+    <resultMap id="getArticleAndFeedbackResult" type="com.qiitabuilder.domain.Article">
         <id property="articleId" column="art_article_id"/>
         <result property="title" column="art_title"/>
         <result property="createdAt" column="art_created_at"/>
@@ -35,7 +35,7 @@
         <result column="my_cnt" property="registeredMyArticleCount"/>
         <result column="recommend_cnt" property="qiitaRecommendPoint"/>
         <association property="postedUser" javaType="com.qiitabuilder.domain.User">
-            <id column="art_use_user_id" property="userId"/>
+            <id column="art_use_uid" property="uid"/>
             <result column="art_use_display_name" property="displayName"/>
             <result column="art_use_photo_url" property="photoUrl"/>
         </association>
@@ -45,8 +45,9 @@
             <result column="fee_created_at" property="createdAt"/>
             <result column="fee_updated_at" property="updatedAt"/>
             <result column="fee_content" property="content"/>
+            <result column="fee_delete_flag" property="deleteFlag"/>
             <association property="postedUser" javaType="com.qiitabuilder.domain.User">
-                <id column="fee_use_user_id" property="userId"/>
+                <id column="fee_use_uid" property="uid"/>
                 <result column="fee_use_display_name" property="displayName"/>
                 <result column="fee_use_photo_url" property="photoUrl"/>
             </association>
@@ -79,6 +80,21 @@
         <result property="feedbackCount" column="fb_count"/>
         <association property="postedUser" column="user_id" javaType="com.qiitabuilder.domain.User"
                      select="findUser"/>
+        <collection property="tags" ofType="com.qiitabuilder.domain.Tag">
+            <result property="tagId" column="tag_id"/>
+            <result property="tagName" column="tag_name"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="loadResultMap" type="com.qiitabuilder.domain.Article">
+        <id property="articleId" column="article_id"/>
+        <result property="title" column="title"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="content" column="content"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="feedbackCount" column="fb_count"/>
+        <result property="qiitaArticleId" column="qiita_article_id"/>
+
         <collection property="tags" ofType="com.qiitabuilder.domain.Tag">
             <result property="tagId" column="tag_id"/>
             <result property="tagName" column="tag_name"/>
@@ -180,8 +196,12 @@
         GROUP BY recommend.article_id) as recommend_cnt_table
         ON art.article_id = recommend_cnt_table.article_id
         <where>
+            state_flag IN
+            <foreach item="stateFlag" index="index" collection="search.stateFlagList" open="(" separator="," close=")">
+                #{stateFlag}
+            </foreach>
             <if test="search.searchWord !=null and search.toggleSearchWord==0">
-                title LIKE CONCAT('%', #{search.searchWord}, '%')
+                AND title LIKE CONCAT('%', #{search.searchWord}, '%')
             </if>
             <if test="search.period!=null">
                 <if test="search.period==0">
@@ -198,8 +218,8 @@
         </if>
     </select>
 
+    <select id="getArticleAndFeedback" resultMap="getArticleAndFeedbackResult">
 
-    <select id="load" resultMap="loadResult">
         SELECT art.article_id       AS art_article_id,
                art.title            AS art_title,
                art.created_at       AS art_created_at,
@@ -207,7 +227,7 @@
                art.content          AS art_content,
                art.state_flag       AS art_state_flag,
 
-               art_use.user_id      AS art_use_user_id,
+               art_use.uid          AS art_use_uid,
                art_use.display_name AS art_use_display_name,
                art_use.photo_url    AS art_use_photo_url,
 
@@ -216,8 +236,9 @@
                fee.created_at       AS fee_created_at,
                fee.updated_at       AS fee_updated_at,
                fee.content          AS fee_content,
+               fee.delete_flag      AS fee_delete_flag,
 
-               fee_use.user_id      AS fee_use_user_id,
+               fee_use.uid          AS fee_use_uid,
                fee_use.display_name AS fee_use_display_name,
                fee_use.photo_url    AS fee_use_photo_url,
 
@@ -278,6 +299,7 @@
              ON art.article_id = recommend_cnt_table.article_id
 
         WHERE art.article_id = #{articleId}
+            AND fee.delete_flag = 0
 
         ORDER BY art.article_id
         ;
@@ -367,6 +389,29 @@
         ORDER BY created_at DESC;
     </select>
 
+    <select id="load" resultType="com.qiitabuilder.domain.Article" resultMap="loadResultMap">
+        SELECT
+               articles.article_id as article_id,
+               articles.user_id as user_id,
+               articles.content as content,
+               articles.created_at as created_at,
+               articles.updated_at as updated_at,
+               articles.title as title,
+               articles.content as content,
+               articles.qiita_article_id as qiita_article_id,
+               articles.state_flag as state_flag,
+
+               tags.tag_id as tag_id,
+               tags.tag_name as tag_name
+
+        FROM articles
+        LEFT JOIN articles_tags_relations as atr
+        ON articles.article_id = atr.article_id
+        LEFT JOIN tags
+        ON tags.tag_id = atr.tag_id
+        WHERE articles.article_id = #{articleId};
+    </select>
+
     <!-- ****** INSERT ****** -->
     <insert id="insertArticle">
         INSERT INTO articles(
@@ -398,7 +443,8 @@
             title            = #{title},
             content          = #{content},
             qiita_article_id = #{qiitaArticleId},
-            state_flag       = #{stateFlag}
+            state_flag       = #{stateFlag},
+            qiita_article_id = #{qiitaArticleId}
         WHERE article_id = #{articleId}
     </update>
 

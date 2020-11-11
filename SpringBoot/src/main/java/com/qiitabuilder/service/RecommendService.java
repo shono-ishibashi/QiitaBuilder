@@ -52,7 +52,7 @@ public class RecommendService {
         recommend.setRecommendUserId(loginUser.getUser().getUserId());
 
         // 記事の投稿者をpostedUserIdにセット
-        Article article = articleMapper.load(recommend.getArticleId());
+        Article article = articleMapper.getArticleAndFeedback(recommend.getArticleId());
         // 記事IDが存在しない場合はBadRequestを返す
         try {
             recommend.setPostedUserId(article.getPostedUser().getUserId());
