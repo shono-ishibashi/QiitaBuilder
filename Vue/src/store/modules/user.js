@@ -19,6 +19,8 @@ export default {
         feedbackArticles: [],
         displayArticles: [],
         usedTags: [],
+        chartDisplay: null,
+        articleCardDisplay: null,
     },
     getters: {
         userId(state) {
@@ -39,6 +41,12 @@ export default {
         usedTags(state) {
             return state.usedTags;
         },
+        articleCardDisplay(state) {
+            return state.articleCardDisplay;
+        },
+        chartDisplay(state) {
+            return state.chartDisplay;
+        }
     },
     mutations: {
         setUserDetail(state, user) {
@@ -75,6 +83,12 @@ export default {
         },
         clearUsedTag(state) {
             state.usedTags.length = 0;
+        },
+        setArticleCardDisplay(state, articleCard) {
+            state.articleCardDisplay = articleCard;
+        },
+        setChartDisplay(state, chartDiaplay) {
+            state.chartDisplay = chartDiaplay;
         }
     },
     actions: {
@@ -83,6 +97,12 @@ export default {
             await commit("setDisplayArticles", articles);
             await commit("clearUsedTag");
             await articles.forEach((art) => commit("setUsedTags", art.tags));
+        },
+        setArticleCardDisplay({commit}, articleCard) {
+            commit("setArticleCardDisplay", articleCard)
+        },
+        setChartDisplay({commit}, chartDiaplay) {
+            commit("setChartDisplay", chartDiaplay)
         },
         async fetchUserDetail({commit, rootGetters, rootState}, userId) {
             const url = rootGetters.API_URL + 'user/detail/';

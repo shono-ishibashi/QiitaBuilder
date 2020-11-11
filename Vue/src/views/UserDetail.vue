@@ -3,7 +3,7 @@
     <v-row justify="center">
       <v-col cols=5><img :src="userDetail.photoUrl" alt=""/></v-col>
       <v-col cols=5>
-        <Pie class="chart" :chart-data="chartDisplayData" :options="chartOptions"/>
+        <Pie class="chart" :chart-data="chartDisplay" :options="chartOptions"/>
       </v-col>
 
       <v-col cols=5>{{ userDetail.displayName }}</v-col>
@@ -115,7 +115,8 @@
 <script>
 import {mapState, mapActions, mapGetters} from "vuex";
 import ArticleCard from "../components/ArticleCard";
-import Pie from "@/components/chart/Pie";
+import Pie from "@/components/user_detail/Pie";
+import * as palette from "google-palette";
 
 export default {
   name: "userDetail",
@@ -127,17 +128,17 @@ export default {
         datasets: [
           {
             data: [],
-            backgroundColor: []
+            backgroundColor: [],
           },
         ]
       },
       chartOptions: {
         responsive: true,
         legend: {
-          position: 'right' // ★この行追加
+          position: 'right'
         }
       },
-      chartDisplayData: null,//コンポーネント表示切替用真偽値
+      //chartDisplayData: null,//コンポーネント表示切替用真偽値
       sortList: [
         {key: 0, state: "新着順"},
         {key: 1, state: "更新順"},
@@ -148,7 +149,7 @@ export default {
       page: 1,//現在のページ
       pageSize: 10,//ページ当たりの記事数
       articles: [],//データ整理用list
-      articleCardDisplay: ArticleCard,//コンポーネント表示切替用真偽値
+      //articleCardDisplay: ArticleCard,//コンポーネント表示切替用真偽値
       displayListNum: 1,//1:posted, 2:feedback, 3:my, 11:notPostedQiita, 12:postedQiita, 13:draft
       conditions: {
         title: "",
@@ -195,7 +196,15 @@ export default {
       set() {
       },
     },
-    ...mapGetters("user", ["userId", "notPostedQiitaArticles", "postedQiitaArticles", "draftArticles","displayArticles","usedTags",]),
+    ...mapGetters("user", [
+      "userId",
+      "notPostedQiitaArticles",
+      "postedQiitaArticles",
+      "draftArticles",
+      "displayArticles", "" +
+      "usedTags",
+      "articleCardDisplay",
+      "chartDisplay",]),
     ...mapState("user", ["userDetail", "postedArticles", "feedbackArticles", "myArticles"])
   },
   watch: {
@@ -214,13 +223,18 @@ export default {
 
       await this.fetchPostedArticles(this.$route.params['userId']);
       this.changeList(1);
-      this.articleCardDisplay = ArticleCard;
+      this.setArticleCardDisplay(ArticleCard);
 
       await this.userDetail.usedTags.forEach(function (tag) {
         this.chartData.labels.push(tag.tagName);
         this.chartData.datasets[0].data.push(tag.usedTagCount);
       }, this);
-      this.chartDisplayData = this.chartData;
+      this.chartData.datasets[0].backgroundColor = palette('cb-YlGn', this.userDetail.usedTags.length).map(
+          function (hex) {
+            return '#' + hex
+          }
+      )
+      this.setChartDisplay(this.chartData);
     },
   },
   methods: {
@@ -290,7 +304,14 @@ export default {
       this.page = 1;
       this.length = Math.ceil(this.displayArticles.length / this.pageSize);
     },
-    ...mapActions("user", ["setArticlesAndTags","fetchUserDetail", "fetchPostedArticles", "fetchFeedbackArticles", "fetchMyArticles"]),
+    ...mapActions("user", [
+      "setArticlesAndTags",
+      "setArticleCardDisplay",
+      "setChartDisplay",
+      "fetchUserDetail",
+      "fetchPostedArticles",
+      "fetchFeedbackArticles",
+      "fetchMyArticles"]),
   },
   created() {
   },
