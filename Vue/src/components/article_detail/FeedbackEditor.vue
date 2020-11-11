@@ -4,7 +4,9 @@
     <v-toolbar elevation="0">
       <v-icon>mdi-message-text-outline</v-icon>
       <v-spacer></v-spacer>
-      <v-toolbar-title>コメントを投稿する</v-toolbar-title>
+      <v-toolbar-title
+        >コメントを{{ feedback.feedbackId | postOrEdit }}する</v-toolbar-title
+      >
       <v-spacer></v-spacer>
       <v-btn color="" icon @click="closeEditor">
         <v-icon>mdi-close</v-icon>
@@ -43,7 +45,7 @@
             background-color="grey lighten-2"
             color="green darken-2"
             solo
-            v-model="content"
+            v-model="feedback.content"
             label="テキストを入力"
           ></v-textarea>
         </v-container>
@@ -57,8 +59,8 @@
       </v-container>
       <!-- 投稿ボタン -->
       <v-card-actions>
-        <v-btn dark color="green" @click="postFeedback">
-          投稿する
+        <v-btn dark color="green" @click="saveFeedback">
+          {{ feedback.feedbackId | postOrEdit }}する
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -72,25 +74,40 @@ export default {
   data() {
     return {
       loginUser: null,
-      content: "",
       tab: 0,
       tabs: ["編集", "プレビュー"],
+      // compiledContent: null,
     };
   },
+  props: ["feedback"],
   created() {
     this.loginUser = this.$store.state.auth.loginUser;
   },
   computed: {
     compiledContent() {
-      return marked(this.content);
+      return marked(this.feedback.content);
+    },
+  },
+  // watch: {
+  //   feedback: {
+  //     immediate: true,
+  //     handler: function() {
+  //       this.compiledContent = marked(this.feedback.content);
+  //     },
+  //   },
+  // },
+  filters: {
+    postOrEdit: function(value) {
+      if (!value) return "投稿";
+      return "更新";
     },
   },
   methods: {
     closeEditor() {
-      this.$emit("toggleEditor");
+      this.$emit("closeEditor");
     },
-    postFeedback() {
-      this.$emit("postFeedback", this.content)
+    saveFeedback() {
+      this.$emit("postFeedback");
     },
   },
 };
