@@ -28,7 +28,7 @@
         <v-spacer></v-spacer>
         <v-spacer></v-spacer>
         <!-- メニューボタン -->
-        <v-col cols="auto">
+        <v-col cols="auto" v-if="loginUser.uid == feedback.postedUser.uid">
           <v-menu offset-y>
             <template v-slot:activator="{ attrs, on }">
               <v-btn icon v-bind="attrs" v-on="on" class="">
@@ -75,6 +75,9 @@ export default {
       }
       return { time: this.feedback.createdAt, text: "に作成" };
     },
+    loginUser(){
+      return this.$store.state.auth.loginUser;
+    }
   },
   filters: {
     date: function(value) {
@@ -90,9 +93,6 @@ export default {
       );
     },
     deleteFeedback() {
-      console.log(
-        "deleteFeedback (feedbackId : " + this.feedback.feedbackId + ")"
-      );
       this.$store.dispatch("article/deleteFeedback", this.feedback);
     },
   },
