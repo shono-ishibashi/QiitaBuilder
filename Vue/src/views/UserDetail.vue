@@ -3,12 +3,7 @@
     <v-row justify="center">
       <v-col cols=5><img :src="userDetail.photoUrl" alt=""/></v-col>
       <v-col cols=5>
-        <v-data-table
-            :headers="tagsHeaders"
-            :items="userDetail.usedTags"
-            style="background-color: lightgray"
-            hide-default-footer
-            disable-pagination></v-data-table>
+        <Pie class="chart" :chart-data="chartDisplayData" :options="chartOptions"/>
       </v-col>
 
       <v-col cols=5>{{ userDetail.displayName }}</v-col>
@@ -52,7 +47,7 @@
         <v-btn color="#5bc8ac" @click="changeList(3)">My記事</v-btn>
       </v-col>
 
-      <v-col cols="12" v-if="displayListNum===1||displayListNum===11||displayListNum===12">
+      <v-col cols="12" v-if="displayListNum===1||displayListNum===11||displayListNum===12||displayListNum===13">
         <v-btn color="#5bc8ac" @click="changeList(1)">全記事</v-btn>
         <v-btn color="#5bc8ac" @click="changeList(11)">Qiita 未投稿記事</v-btn>
         <v-btn color="#5bc8ac" @click="changeList(12)">Qiita 投稿済み記事</v-btn>
@@ -98,9 +93,9 @@
       </v-col>
       <v-col cols="10">
         <ArticleCard v-for="(article,index) in sortedArticles" :key="article.articleId" :article="article"
-                     :is="component" :index="index">
+                     :is="articleCardDisplay" :index="index">
         </ArticleCard>
-        <div v-if="articles.length===0">
+        <div v-if="displayArticles.length===0">
           該当する記事がありません
         </div>
         <v-pagination
@@ -112,25 +107,37 @@
         ></v-pagination>
 
       </v-col>
-
     </v-row>
 
   </v-container>
 </template>
 
 <script>
-import {mapState, mapActions, mapGetters} from "vuex"
+import {mapState, mapActions, mapGetters} from "vuex";
 import ArticleCard from "../components/ArticleCard";
+import Pie from "@/components/chart/Pie";
 
 export default {
   name: "userDetail",
-  components: {ArticleCard},
+  components: {ArticleCard, Pie},
   data() {
     return {
-      tagsHeaders: [
-        {text: "タグ名", value: "tagName"},
-        {text: "使用回数", value: "usedTagCount"}
-      ],//tagテーブル用ヘッダー
+      chartData: {
+        labels: [],
+        datasets: [
+          {
+            data: [],
+            backgroundColor: []
+          },
+        ]
+      },
+      chartOptions: {
+        responsive: true,
+        legend: {
+          position: 'right' // ★この行追加
+        }
+      },
+      chartDisplayData: null,//コンポーネント表示切替用真偽値
       sortList: [
         {key: 0, state: "新着順"},
         {key: 1, state: "更新順"},
@@ -139,11 +146,9 @@ export default {
       ],//並び替え選択用リスト
       sortNum: 0,//現在のソートkey
       page: 1,//現在のページ
-      //length: 0,//最大ページ数
       pageSize: 10,//ページ当たりの記事数
-      articles: [],//画面表示用記事リスト
-      usedTags: [],//タグ検索オートコンプリート用リスト
-      component: null,//コンポーネント表示切替用真偽値
+      articles: [],//データ整理用list
+      articleCardDisplay: ArticleCard,//コンポーネント表示切替用真偽値
       displayListNum: 1,//1:posted, 2:feedback, 3:my, 11:notPostedQiita, 12:postedQiita, 13:draft
       conditions: {
         title: "",
@@ -157,14 +162,14 @@ export default {
     },
     length: {
       get() {
-        return Math.ceil(this.articles.length / this.pageSize);
+        return Math.ceil(this.displayArticles.length / this.pageSize);
       },
       set() {
       },
     },
     sortedArticles: {
       get() {
-        let art = this.articles;
+        let art = this.displayArticles;
         if (this.sortNum === 0) {
           art = art.sort((a, b) => {
             return (a.createdAt < b.createdAt) ? 1 : (a.createdAt > b.createdAt) ? -1 : 0;
@@ -190,7 +195,7 @@ export default {
       set() {
       },
     },
-    ...mapGetters("user", ["userId", "notPostedQiitaArticles", "postedQiitaArticles", "draftArticles"]),
+    ...mapGetters("user", ["userId", "notPostedQiitaArticles", "postedQiitaArticles", "draftArticles","displayArticles","usedTags",]),
     ...mapState("user", ["userDetail", "postedArticles", "feedbackArticles", "myArticles"])
   },
   watch: {
@@ -204,12 +209,18 @@ export default {
         await this.$router.push({path: '/article'})
       }
 
-      this.fetchFeedbackArticles(this.$route.params['userId']);
-      this.fetchMyArticles(this.$route.params['userId']);
+      await this.fetchFeedbackArticles(this.$route.params['userId']);
+      await this.fetchMyArticles(this.$route.params['userId']);
 
       await this.fetchPostedArticles(this.$route.params['userId']);
       this.changeList(1);
-      this.component = ArticleCard;
+      this.articleCardDisplay = ArticleCard;
+
+      await this.userDetail.usedTags.forEach(function (tag) {
+        this.chartData.labels.push(tag.tagName);
+        this.chartData.datasets[0].data.push(tag.usedTagCount);
+      }, this);
+      this.chartDisplayData = this.chartData;
     },
   },
   methods: {
@@ -218,8 +229,8 @@ export default {
      * @param listNum (1:投稿記事), (2:FB記事), (3:My記事)
      */
     changeList(listNum) {
-      this.articles.length = 0;
-      this.usedTags.length = 0;
+      this.setArticlesAndTags([]);
+      //this.usedTags.length = 0;
       this.conditions.title = "";
       this.conditions.conditionTags = [];
       this.displayListNum = listNum;
@@ -241,17 +252,12 @@ export default {
       } else {
         console.log("予期せぬ値 listNum:" + listNum);
       }
-      articlesFromVuex.forEach(function (value) {
-        this.articles.push(value);
-        value.tags.forEach(function (tag) {
-          this.usedTags.push(tag);
-        }, this)
-      }, this);
+      this.setArticlesAndTags(articlesFromVuex);
       if (articlesFromVuex.length === 0) {
         this.sortedArticles.length = 0;
       }
       this.page = 1;
-      this.length = Math.ceil(this.articles.length / this.pageSize);
+      this.length = Math.ceil(this.displayArticles.length / this.pageSize);
     },
     searchWithConditions() {
       if (this.displayListNum === 1) {
@@ -280,13 +286,13 @@ export default {
           return value.tags.find(artTag => artTag.tagId === conTag)
         })
       }
+      this.setArticlesAndTags(this.articles);
       this.page = 1;
-      this.length = Math.ceil(this.articles.length / this.pageSize);
+      this.length = Math.ceil(this.displayArticles.length / this.pageSize);
     },
-    ...mapActions("user", ["fetchUserDetail", "fetchPostedArticles", "fetchFeedbackArticles", "fetchMyArticles"]),
+    ...mapActions("user", ["setArticlesAndTags","fetchUserDetail", "fetchPostedArticles", "fetchFeedbackArticles", "fetchMyArticles"]),
   },
   created() {
-
   },
   beforeRouteEnter(to, from, next) {
     //URLのparam(userId)に数値以外が入力された際に記事一覧に戻る
