@@ -24,7 +24,7 @@
         </collection>
     </resultMap>
 
-    <resultMap id="loadResult" type="com.qiitabuilder.domain.Article">
+    <resultMap id="getArticleAndFeedbackResult" type="com.qiitabuilder.domain.Article">
         <id property="articleId" column="art_article_id"/>
         <result property="title" column="art_title"/>
         <result property="createdAt" column="art_created_at"/>
@@ -79,6 +79,21 @@
         <result property="feedbackCount" column="fb_count"/>
         <association property="postedUser" column="user_id" javaType="com.qiitabuilder.domain.User"
                      select="findUser"/>
+        <collection property="tags" ofType="com.qiitabuilder.domain.Tag">
+            <result property="tagId" column="tag_id"/>
+            <result property="tagName" column="tag_name"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="loadResultMap" type="com.qiitabuilder.domain.Article">
+        <id property="articleId" column="article_id"/>
+        <result property="title" column="title"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="content" column="content"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="feedbackCount" column="fb_count"/>
+        <result property="qiitaArticleId" column="qiita_article_id"/>
+
         <collection property="tags" ofType="com.qiitabuilder.domain.Tag">
             <result property="tagId" column="tag_id"/>
             <result property="tagName" column="tag_name"/>
@@ -226,7 +241,7 @@
         </where>
     </select>
 
-    <select id="load" resultMap="loadResult">
+    <select id="getArticleAndFeedback" resultMap="getArticleAndFeedbackResult">
         SELECT art.article_id       AS art_article_id,
                art.title            AS art_title,
                art.created_at       AS art_created_at,
@@ -394,6 +409,29 @@
         ORDER BY created_at DESC;
     </select>
 
+    <select id="load" resultType="com.qiitabuilder.domain.Article" resultMap="loadResultMap">
+        SELECT
+               articles.article_id as article_id,
+               articles.user_id as user_id,
+               articles.content as content,
+               articles.created_at as created_at,
+               articles.updated_at as updated_at,
+               articles.title as title,
+               articles.content as content,
+               articles.qiita_article_id as qiita_article_id,
+               articles.state_flag as state_flag,
+
+               tags.tag_id as tag_id,
+               tags.tag_name as tag_name
+
+        FROM articles
+        LEFT JOIN articles_tags_relations as atr
+        ON articles.article_id = atr.article_id
+        LEFT JOIN tags
+        ON tags.tag_id = atr.tag_id
+        WHERE articles.article_id = #{articleId};
+    </select>
+
     <!-- ****** INSERT ****** -->
     <insert id="insertArticle">
         INSERT INTO articles(
@@ -425,7 +463,8 @@
             title            = #{title},
             content          = #{content},
             qiita_article_id = #{qiitaArticleId},
-            state_flag       = #{stateFlag}
+            state_flag       = #{stateFlag},
+            qiita_article_id = #{qiitaArticleId}
         WHERE article_id = #{articleId}
     </update>
 
