@@ -13,6 +13,8 @@ export default {
       tags: [],
       feedbacks: [],
     },
+    myArticleId: null,
+    recommendId: null,
   },
   mutations: {
     setArticle(state, article) {
@@ -47,6 +49,10 @@ export default {
         (feedback) => feedback.feedbackId == feedbackId
       );
       state.article.feedbacks.splice(targetIndex, 1);
+    },
+    // MyArticle
+    setMyArticleId(state, myArticleId) {
+      state.myArticleId = myArticleId;
     },
   },
   actions: {
@@ -156,6 +162,54 @@ export default {
       try {
         await axios.put(url, feedback, requestConfig);
         commit("removeFeedback", feedback.feedbackId);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async fetchMyArticle({ commit, rootGetters }, articleId) {
+      const url = rootGetters.API_URL + "my-article?articleId=" + articleId;
+      const apiToken = rootGetters["auth/apiToken"];
+      const requestConfig = {
+        headers: {
+          Authorization: apiToken,
+        },
+      };
+      try {
+        const res = await axios.get(url, requestConfig);
+        commit("setMyArticleId", res.data.myArticleId);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async registerMyArticle({ commit, rootGetters }, articleId) {
+      const url = rootGetters.API_URL + "my-article";
+      const requestBody = {
+        articleId: articleId,
+      };
+      const apiToken = rootGetters["auth/apiToken"];
+      const requestConfig = {
+        headers: {
+          Authorization: apiToken,
+        },
+      };
+      try {
+        const res = await axios.post(url, requestBody, requestConfig);
+        commit("setMyArticleId", res.data.myArticleId);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async deleteMyArticle({ commit, rootGetters }, myArticleId) {
+      const url = rootGetters.API_URL + "my-article/" + myArticleId;
+      const apiToken = rootGetters["auth/apiToken"];
+      const requestConfig = {
+        headers: {
+          Authorization: apiToken,
+        },
+      };
+      try {
+        await axios.delete(url, requestConfig);
+        commit("setMyArticleId", null);
       } catch (error) {
         console.log(error);
       }
