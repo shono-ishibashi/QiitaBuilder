@@ -54,7 +54,7 @@ public class MyArticleService {
         myArticle.setRegisterUserId(loginUser.getUser().getUserId());
 
         // 記事の投稿者をpostedUserIdにセット
-        Article article = articleMapper.load(myArticle.getArticleId());
+        Article article = articleMapper.getArticleAndFeedback(myArticle.getArticleId());
         // 記事IDが存在しない場合はBadRequestを返す
         try {
             myArticle.setPostedUserId(article.getPostedUser().getUserId());
