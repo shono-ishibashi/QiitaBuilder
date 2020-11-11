@@ -81,7 +81,7 @@
 
                  LEFT JOIN qiita_builder.users
                            ON art.user_id = users.user_id
-        WHERE feedbacked.user_id = #{userId}
+        WHERE feedbacked.user_id = #{userId} AND art.state_flag != 9
         ORDER BY art.created_at DESC;
     </select>
 
@@ -143,7 +143,7 @@
         fee.updated_at as fee_updated_at,
         fee.content as fee_content,
         fee.delete_flag as fee_delete_flag,
-        users.user_id as users_user_id,
+        users.uid as users_uid,
         users.display_name as users_display_name,
         users.photo_url as users_photo_url
         FROM
@@ -162,7 +162,7 @@
         <result column="fee_content" property="content"/>
         <result column="fee_delete_flag" property="deleteFlag"/>
         <collection property="postedUser" ofType="com.qiitabuilder.domain.User">
-            <id column="users_user_id" property="userId"/>
+            <id column="users_uid" property="uid"/>
             <result column="users_display_name" property="displayName"/>
             <result column="users_photo_url" property="photoUrl"/>
         </collection>

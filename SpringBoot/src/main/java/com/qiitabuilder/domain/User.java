@@ -22,4 +22,5 @@ public class User {
     private Integer postedArticleCount;
     private Integer qiitaRecommendedAllCount;
     private List<Tag> usedTags;
+    private Boolean isLoginUser;
 }

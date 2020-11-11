@@ -13,6 +13,7 @@
       v-for="feedback in feedbacks"
       :feedback="feedback"
       :key="feedback.feedbackId"
+      @editFeedback="editFeedback"
     ></Feedback>
   </v-container>
 </template>
@@ -25,6 +26,11 @@ export default {
     Feedback,
   },
   props: ["feedbacks"],
+  methods: {
+    editFeedback(feedback) {
+      this.$emit("editFeedback", feedback);
+    },
+  },
 };
 </script>
 

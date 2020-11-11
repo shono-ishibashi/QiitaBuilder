@@ -35,9 +35,9 @@ public class MyArticleService {
         Integer registerUserId = loginUser.getUser().getUserId();
 
         MyArticle result = myArticleMapper.findByArticleIdAndRegisterUserId(articleId, registerUserId);
-        // My記事登録済みでない場合はNotFoundを返す
+        // My記事登録済みでない場合はNoContentを返す
         if (Objects.isNull(result)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT);
         }
         return result;
     }

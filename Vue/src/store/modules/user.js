@@ -12,10 +12,15 @@ export default {
             feedbackCount: 0,
             qiitaRecommendedAllCount: 0,
             postedArticleCount: 0,
+            isLoginUser: false,
         },
         postedArticles: [],
         myArticles: [],
-        feedbackArticles: []
+        feedbackArticles: [],
+        displayArticles: [],
+        usedTags: [],
+        chartDisplay: null,
+        articleCardDisplay: null,
     },
     getters: {
         userId(state) {
@@ -27,6 +32,21 @@ export default {
         notPostedQiitaArticles(state) {
             return state.postedArticles.filter((art) => art.stateFlag === 1)
         },
+        draftArticles(state) {
+            return state.postedArticles.filter((art) => art.stateFlag === 0)
+        },
+        displayArticles(state) {
+            return state.displayArticles.filter((art) => art.stateFlag !== 9)
+        },
+        usedTags(state) {
+            return state.usedTags;
+        },
+        articleCardDisplay(state) {
+            return state.articleCardDisplay;
+        },
+        chartDisplay(state) {
+            return state.chartDisplay;
+        }
     },
     mutations: {
         setUserDetail(state, user) {
@@ -46,13 +66,50 @@ export default {
         setFeedbackArticles(state, feedbackArticles) {
             state.feedbackArticles = feedbackArticles;
         },
+        setDisplayArticles(state, articles) {
+            if (articles.length === 0) state.displayArticles.length = 0;
+            articles.forEach((art) => {
+                state.displayArticles.push(art)
+            })
+        },
+        setUsedTags(state, tags) {
+            if (tags.length === 0) state.usedTags.length = 0;
+            tags.forEach((tag) => {
+                state.usedTags.push(tag)
+            })
+        },
+        clearDisplayArticles(state) {
+            state.displayArticles.length = 0;
+        },
+        clearUsedTag(state) {
+            state.usedTags.length = 0;
+        },
+        setArticleCardDisplay(state, articleCard) {
+            state.articleCardDisplay = articleCard;
+        },
+        setChartDisplay(state, chartDiaplay) {
+            state.chartDisplay = chartDiaplay;
+        }
     },
     actions: {
+        async setArticlesAndTags({commit}, articles) {
+            await commit("clearDisplayArticles");
+            await commit("setDisplayArticles", articles);
+            await commit("clearUsedTag");
+            await articles.forEach((art) => commit("setUsedTags", art.tags));
+        },
+        setArticleCardDisplay({commit}, articleCard) {
+            commit("setArticleCardDisplay", articleCard)
+        },
+        setChartDisplay({commit}, chartDiaplay) {
+            commit("setChartDisplay", chartDiaplay)
+        },
         async fetchUserDetail({commit, rootGetters, rootState}, userId) {
             const url = rootGetters.API_URL + 'user/detail/';
             let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
 
-            await axios.get(url, {params: {userId}}, {
+            await axios.get(url, {
+                params: {userId},
                 headers: {
                     Authorization: apiToken,
                 },
@@ -63,15 +120,20 @@ export default {
         async fetchPostedArticles({commit, rootGetters, rootState}, userId) {
             const url = rootGetters.API_URL + 'article/'
             let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
-            const params = {
+            let searchArticleForm = {
                 sortNum: 1,
                 pageSize: 0,
                 currentPage: 0,
                 userId: userId,
+                stateFlagList: [10],
             }
-            const paramsSerializer = (params) => qs.stringify(params);
+            //let paramsSerializer = (params) => qs.stringify(params);
 
-            await axios.get(url, {params, paramsSerializer}, {
+            await axios.get(url, {
+                params: searchArticleForm,
+                paramsSerializer: params => {
+                    return qs.stringify(params)
+                },
                 headers: {
                     Authorization: apiToken,
                 },
@@ -87,7 +149,8 @@ export default {
             let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
 
 
-            await axios.get(url, {params: {userId}}, {
+            await axios.get(url, {
+                params: userId,
                 headers: {
                     Authorization: apiToken,
                 },
@@ -99,7 +162,8 @@ export default {
             const url = rootGetters.API_URL + 'article/my-articles';
             let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
 
-            await axios.get(url, {params: {userId}}, {
+            await axios.get(url, {
+                params: userId,
                 headers: {
                     Authorization: apiToken,
                 },

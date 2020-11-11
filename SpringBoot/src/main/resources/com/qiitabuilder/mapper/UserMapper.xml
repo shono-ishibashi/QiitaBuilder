@@ -15,6 +15,7 @@
 
     <resultMap id="userDetailsResultMap" type="com.qiitabuilder.domain.User">
         <id column="user_id" property="userId"/>
+        <result column="u_id" property="uid"/>
         <result column="photo_url" property="photoUrl"/>
         <result column="display_name" property="displayName"/>
         <result column="feedback_count" property="feedbackCount"/>
@@ -34,6 +35,7 @@
 
     <select id="fetchUserDetails" resultMap="userDetailsResultMap">
         SELECT u.user_id                         AS user_id,
+               u.uid                             AS u_id,
                u.display_name                    AS display_name,
                u.photo_url                       AS photo_url,
                tag_cnt_table.tag_cnt             AS used_tag_count,

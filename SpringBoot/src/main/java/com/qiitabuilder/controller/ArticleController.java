@@ -13,6 +13,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
+import static java.util.Objects.isNull;
+
 
 @RestController
 @RequestMapping(value = "/article")
@@ -32,10 +34,10 @@ public class ArticleController {
         if (result.hasErrors()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        if(Objects.isNull(searchArticleForm.getStateFlagList())){
-            searchArticleForm.setStateFlagList(Arrays.asList(1,2));
-        }else if(searchArticleForm.getStateFlagList().get(0)==10){
-            searchArticleForm.setStateFlagList(Arrays.asList(0,1,2));
+        if (isNull(searchArticleForm.getStateFlagList())) {
+            searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+        } else if (searchArticleForm.getStateFlagList().get(0) == 10) {
+            searchArticleForm.setStateFlagList(Arrays.asList(0, 1, 2));
         }
         System.out.println(searchArticleForm.getStateFlagList());
         return articleService.searchArticles(searchArticleForm);
@@ -47,12 +49,13 @@ public class ArticleController {
         if (result.hasErrors()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        searchArticleForm.setStateFlagList(Arrays.asList(1,2));
+        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
         return articleService.getTotalPage(searchArticleForm);
     }
 
     /**
      * 記事詳細情報を取得する
+     *
      * @param articleId
      * @return
      */
@@ -64,13 +67,13 @@ public class ArticleController {
         try {
             parsedArticleId = Integer.parseInt(articleId);
         } catch (NumberFormatException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "不正なリクエストです。再度お試しください。");
         }
 
         Article result = articleService.getArticle(parsedArticleId);
 
         // 検索結果がない場合はNotFoundExceptionを投げる
-        if (Objects.isNull(result)) {
+        if (isNull(result)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
@@ -85,6 +88,17 @@ public class ArticleController {
     @RequestMapping(value = "/", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public Article postArticle(@RequestBody Article article) {
+        if (
+                article.getTags().size() <= 0 ||
+                        article.getTags().size() > 5 ||
+                        article.getTitle().isEmpty() ||
+                        isNull(article.getTitle()) ||
+                        article.getContent().isEmpty() ||
+                        isNull(article.getContent())
+        ) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
+        }
         System.out.println("insert");
         System.out.println(article);
         return articleService.saveArticle(article);
@@ -98,8 +112,18 @@ public class ArticleController {
     @RequestMapping(value = "/", method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.OK)
     public Article editArticle(@RequestBody Article article) {
-        System.out.println("update");
-        System.out.println(article);
+        if (
+                isNull(article.getArticleId()) ||
+                        article.getTags().size() <= 0 ||
+                        article.getTags().size() > 5 ||
+                        article.getTitle().isEmpty() ||
+                        isNull(article.getTitle()) ||
+                        article.getContent().isEmpty() ||
+                        isNull(article.getContent())
+        ) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
+        }
         return articleService.saveArticle(article);
     }
 
