@@ -3,6 +3,7 @@ package com.qiitabuilder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
@@ -13,8 +14,9 @@ public class QiitaBuilderApplication {
 	}
 
 	@Bean
-	public RestTemplate restTemplate() {
-		return new RestTemplate();
+	RestTemplate restTemplate() {
+		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+		return new RestTemplate(factory);
 	}
 
 }
