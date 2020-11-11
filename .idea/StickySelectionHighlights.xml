@@ -223,7 +223,17 @@
             <PaintGroupHighlightMap />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/Vue/src/store/modules/article.js">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/Vue/src/store/modules/auth.js">
+          <value>
+            <PaintGroupHighlightMap />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/Vue/src/store/modules/user.js">
           <value>
             <PaintGroupHighlightMap />
           </value>
