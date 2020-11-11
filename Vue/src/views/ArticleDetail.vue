@@ -7,7 +7,25 @@
             <v-btn elevation="2" style="text-transform: none">Qiita</v-btn>
           </v-col>
           <v-col cols="12">
-            <v-btn elevation="2" style="text-transform: none">My記事</v-btn>
+            <!-- 登録済み -->
+            <v-btn
+              v-if="myArticleId"
+              class="mx-2"
+              fab
+              dark
+              color="pink"
+              @click="toggleMyArticle"
+            >
+              <v-icon large dark>
+                mdi-heart
+              </v-icon>
+            </v-btn>
+            <!-- 未登録 -->
+            <v-btn v-if="!myArticleId" class="mx-2" fab @click="toggleMyArticle">
+              <v-icon large color="blue-grey">
+                mdi-heart
+              </v-icon>
+            </v-btn>
           </v-col>
         </v-row>
       </v-col>
@@ -88,10 +106,14 @@ export default {
     apiToken() {
       return this.$store.getters["auth/apiToken"];
     },
+    myArticleId() {
+      return this.$store.state.article.myArticleId;
+    },
   },
   watch: {
     apiToken: function() {
       this.fetchArticle(this.slug);
+      this.fetchMyArticle(this.slug);
     },
   },
   created() {
@@ -124,7 +146,14 @@ export default {
       this.propsFeedback = await this.feedbackForUpdate;
       this.EditorIsOpen = true;
     },
-    ...mapActions("article", ["fetchArticle"]),
+    toggleMyArticle() {
+      if (this.myArticleId) {
+        this.$store.dispatch("article/deleteMyArticle", this.myArticleId);
+      } else {
+        this.$store.dispatch("article/registerMyArticle", this.article.articleId);
+      }
+    },
+    ...mapActions("article", ["fetchArticle", "fetchMyArticle"]),
   },
 };
 </script>
