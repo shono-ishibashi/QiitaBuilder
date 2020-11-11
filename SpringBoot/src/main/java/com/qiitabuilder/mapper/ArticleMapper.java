@@ -81,5 +81,7 @@ public interface ArticleMapper {
      * @param articleId 記事ID
      * @return 記事情報
      */
+    Article getArticleAndFeedback(Integer articleId);
+
     Article load(Integer articleId);
 }
