@@ -44,7 +44,12 @@
                 v-bind="attrs"
                 v-on="on"
             >
-              <v-icon>mdi-account</v-icon>
+              <v-avatar>
+                <img
+                    :src="$store.getters['auth/loginUser'].photoURL"
+                    :alt="$store.getters['auth/loginUser'].displayName"
+                >
+              </v-avatar>
             </v-btn>
           </template>
 
@@ -58,8 +63,11 @@
             <v-list-item link>
               <v-list-item-title>下書き一覧</v-list-item-title>
             </v-list-item>
+            <v-list-item link @click="toQiitaAPIAuthentication">
+              <v-list-item-title>Qiitaと連携</v-list-item-title>
+            </v-list-item>
             <v-divider></v-divider>
-            <v-list-item @click="logout">
+            <v-list-item @click="$store.dispatch('auth/logout')">
               <v-icon>mdi-logout</v-icon>
               <v-list-item-title>ログアウト</v-list-item-title>
             </v-list-item>
@@ -73,6 +81,7 @@
 
 <script>
 import {mapGetters,mapActions} from 'vuex'
+import axios from "axios";
 
 export default {
   name: "Header",
@@ -91,7 +100,16 @@ export default {
     },
     toRanking(){
       this.$router.push({name:'ranking'})
-    }
+    },
+    toQiitaAPIAuthentication() {
+      axios.get(this.$store.getters.API_URL + 'qiita/to-qiita-api-authentication', {
+        headers: {
+          Authorization: this.$store.getters["auth/apiToken"]
+        }
+      }).then((response) => {
+        location.href = response.data;
+      })
+    },
   }
 }
 </script>

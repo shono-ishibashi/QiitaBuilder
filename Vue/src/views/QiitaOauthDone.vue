@@ -1,15 +1,15 @@
 <template>
   <v-app>
-    <div v-if="isLoading">
-      <h1>認証中</h1>
-      <VueLoading
-          type="spiningDubbles"
-          color="green"
-          :size="{ width: '100px', height: '100px' }"
-      />
-    </div>
-    <v-btn @click="toQiitaAPIAuthentication">toQiita</v-btn>
-    <v-btn @click="postQiitaTest">post test</v-btn>
+    <v-container v-if="isLoading">
+      <v-row>
+        <h1>Qiitaと連携中</h1>
+        <VueLoading
+            type="spin"
+            color="green"
+            :size="{ width: '100px', height: '100px' }"
+        />
+      </v-row>
+    </v-container>
   </v-app>
 </template>
 
@@ -17,18 +17,27 @@
 import {VueLoading} from 'vue-loading-template';
 import axios from 'axios';
 import {mapGetters} from 'vuex';
+import router from "@/router";
 
 export default {
-  name: "QiitaTest.vue",
   components: {
     VueLoading
   },
   data() {
     return {
-      isLoading: false,
+      isLoading: true,
     }
   },
   methods: {
+    sleep(msec) {
+      return new Promise(function (resolve) {
+
+        setTimeout(function () {
+          resolve()
+        }, msec);
+
+      })
+    },
     async authenticateQiitaAPI() {
       this.isLoading = true;
       const apiToken = await this.$store.getters["auth/apiToken"];
@@ -43,14 +52,19 @@ export default {
           "Content-Type": "application/json"
         }
       })
-          .then(() => {
-            this.toggleIsLoading();
+          .then(async () => {
+            await this.sleep(2000);
+            await this.toggleIsLoading();
           })
           .catch(function () {
             this.toggleIsLoading();
             alert('Qiitaとの連携に失敗しました。再度お試しください');
           })
     },
+
+    /**
+     * Qiitaの認証画面へ遷移させるメソッド
+     */
     toQiitaAPIAuthentication() {
       axios.get(this.API_URL + 'qiita/to-qiita-api-authentication', {
         headers: {
@@ -60,8 +74,9 @@ export default {
         location.href = response.data;
       })
     },
+
     async postQiitaTest() {
-      await axios.post(this.API_URL + 'qiita/save-article-to-qiita', {},{
+      await axios.post(this.API_URL + 'qiita/save-article-to-qiita', {}, {
         headers: {
           Authorization: await this.$store.getters["auth/apiToken"],
         }
@@ -82,12 +97,14 @@ export default {
     ...mapGetters({API_URL: "API_URL"})
   },
   watch: {
-    apiToken() {
-      if (this.$route.query.state) {
-        this.authenticateQiitaAPI();
+    async apiToken() {
+      //リダイレクトでstate,code が存在するなら
+      if (await this.$route.query.state && await this.$route.query.code) {
+        await this.authenticateQiitaAPI();
+        await router.push('/articleList');
       }
     }
-  }
+  },
 }
 </script>
 

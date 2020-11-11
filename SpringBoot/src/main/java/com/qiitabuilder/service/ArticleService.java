@@ -117,7 +117,7 @@ public class ArticleService {
      *
      * @param article 更新もしくは追加するデータ
      */
-    public void saveArticle(Article article) {
+    public Article saveArticle(Article article) {
 
         //ログイン中のユーザ情報をセット
         SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -183,6 +183,7 @@ public class ArticleService {
                             )
                     );
         }
+        return article;
     }
 
     public Article getArticle(Integer articleId) {
