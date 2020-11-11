@@ -44,15 +44,14 @@ export default {
                     }
                 })
                 .then(rankingUserList => {
-
                     commit("resetRankingUsers");
-
                     commit("setRankingUsers", rankingUserList.data);
                 }).catch(err => console.log("エラーだよ", err));
         }
     },
 
     getters: {
+        //ランキングユーザー
         users: (state) => {
             const users = [];
             state.rankingUsers.forEach(rankUser => {
@@ -60,6 +59,8 @@ export default {
             })
             return users;
         },
+
+        //関連記事
         relationArticles: (state) => {
             const relationArticles = [];
             state.rankingUsers.forEach(rankUser => {

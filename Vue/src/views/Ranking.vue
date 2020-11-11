@@ -21,7 +21,7 @@
       </v-col>
       <v-col cols="6">
         <v-row>
-          <ChartArea :select-rank-item-id="selectRankItemId"></ChartArea>
+          <ChartArea :select-rank-item-id="selectRankItemId" :rank-users="users"></ChartArea>
         </v-row>
         <v-row>
           <RelationArticles :rel-articles="relationArticles"></RelationArticles>
@@ -36,6 +36,7 @@ import ChartArea from "../components/ranking/ChartArea.vue";
 import UserList from "../components/ranking/UserList.vue";
 import RelationArticles from "../components/ranking/RelationArticles.vue";
 import {mapActions, mapGetters} from "vuex";
+
 
 export default {
   name: "RankingComponent",
