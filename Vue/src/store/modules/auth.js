@@ -3,8 +3,6 @@ import {v4 as uuidv4} from 'uuid';
 import axios from 'axios'
 import router from "@/router";
 
-const API_URL = 'http://localhost:8080/qiita_builder/';
-
 export default {
     namespaced: true,
     state: {
@@ -21,26 +19,31 @@ export default {
 
     },
     actions: {
-        async googleLogin({commit}) {
+        async googleLogin({commit, rootGetters}) {
             //firebase google authログイン
             const provider = await new firebase.auth.GoogleAuthProvider();
-            await firebase.auth().signInWithPopup(provider).then(() => {
-                    const loginUser = firebase.auth().currentUser;
-                    const db = firebase.firestore();
+            await firebase.auth().signInWithPopup(provider).then(async () => {
+                    const loginUser = await firebase.auth().currentUser;
+                    const db = await firebase.firestore();
 
-                    commit('setLoginUser', loginUser);
+                    await console.log('loginUser');
+                    await console.log(loginUser);
+                    await console.log('loginUser');
 
-                    db.collection('users').doc(loginUser.uid).get()
-                        .then(data => {
+                    await commit('setLoginUser', loginUser);
+
+                    await db.collection('users').doc(loginUser.uid).get()
+                        .then(async data => {
                             //firestore にユーザーのデータが存在するのかを確認
                             //--あれば、そのデータを用いてRESTAPIにログイン処理を行う
                             //--なければ、ユーザーデータをfirestoreに追加して、RESTAPIにも追加する
 
                             if (!data.exists) {
-                                const password = uuidv4();
-                                db.collection('users').doc(loginUser.uid)
+                                let password = await uuidv4();
+
+                                await db.collection('users').doc(loginUser.uid)
                                     .set({password: password}).then(() => {
-                                    axios.post(API_URL, {
+                                    axios.post(rootGetters.API_URL, {
                                         uid: loginUser.uid,
                                         password: password,
                                         photoUrl: loginUser.photoURL,
@@ -51,30 +54,33 @@ export default {
                                 })
                             }
                         })
-
-
                 },
             )
         },
-        async loginRESTAPI({commit}, loginUser) {
+        async loginRESTAPI({commit, rootGetters}, loginUser) {
             //RESTAPI ログイン
+            console.log('loginRESTAPI');
             const db = await firebase.firestore();
             await db.collection('users').doc(loginUser.uid).get()
-                .then(data => {
-                    const request = API_URL + 'login?uid=' + loginUser.uid + '&password=' + data.data().password;
-                    console.log(data.data());
-                    axios.post(request, {}, {headers: {'Content-Type': 'application/json'}})
+                .then(async data => {
+                    await console.log(data);
+                    await console.log(data.data());
+                    const request = rootGetters.API_URL + 'login?uid=' + await loginUser.uid + '&password=' + await data.data().password;
+                    await console.log(data.data());
+                    await axios.post(request, {}, {headers: {'Content-Type': 'application/json'}})
                         .then(response => {
                             //Vuexにjwt tokenを追加
                             commit("setAPIToken", response.headers.authorization);
-                            router.push('/')
-                        })
+                        }).catch(error =>
+                            console.log(error.status)
+                        )
                 })
         },
-        logout({commit}) {
+        logout({commit, rootGetters}) {
             firebase.auth().signOut().then(function () {
                 commit('setLoginUser', null);
-                axios.post(API_URL + 'logout').then(() => {
+                commit('setAPIToken', null);
+                axios.post(rootGetters.API_URL + 'logout').then(() => {
                     router.push('/login')
                 })
             })
