@@ -2,7 +2,9 @@ package com.qiitabuilder.service;
 
 import com.qiitabuilder.domain.User;
 import com.qiitabuilder.mapper.UserMapper;
+import com.qiitabuilder.security.SimpleLoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,6 +19,13 @@ public class UserDetailService {
      * @return　取得したいユーザー情報
      */
     public User fetchUserDetails(Integer userId) {
-        return userMapper.fetchUserDetails(userId);
+        User user=userMapper.fetchUserDetails(userId);
+        SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (user.getUid().equals(loginUser.getUser().getUid())){
+            user.setIsLoginUser(true);
+        }else {
+            user.setIsLoginUser(false);
+        }
+        return user;
     }
 }

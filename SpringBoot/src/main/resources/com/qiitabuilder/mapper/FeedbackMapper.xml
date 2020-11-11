@@ -81,7 +81,7 @@
 
                  LEFT JOIN qiita_builder.users
                            ON art.user_id = users.user_id
-        WHERE feedbacked.user_id = #{userId}
+        WHERE feedbacked.user_id = #{userId} AND art.state_flag != 9
         ORDER BY art.created_at DESC;
     </select>
 
