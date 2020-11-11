@@ -282,6 +282,7 @@
              ON art.article_id = recommend_cnt_table.article_id
 
         WHERE art.article_id = #{articleId}
+            AND fee.delete_flag = 0
 
         ORDER BY art.article_id
         ;

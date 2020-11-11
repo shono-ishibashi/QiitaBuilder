@@ -19,7 +19,11 @@
       </v-col>
       <v-col cols="12" sm="12" :md="mdPlacement.editor">
         <span v-show="EditorIsOpen">
-          <FeedbackEditor class="sticky" @toggleEditor="toggleEditor" />
+          <FeedbackEditor
+            class="sticky"
+            @toggleEditor="toggleEditor"
+            @postFeedback="postFeedback"
+          />
         </span>
         <span v-show="!EditorIsOpen">
           <v-btn
@@ -80,6 +84,14 @@ export default {
   methods: {
     toggleEditor() {
       this.EditorIsOpen = !this.EditorIsOpen;
+    },
+    postFeedback(content) {
+      const item = {
+        articleId: this.article.articleId,
+        content: content,
+        deleteFlag: 0,
+      };
+      this.$store.dispatch("article/postFeedback", item);
     },
     ...mapActions("article", ["fetchArticle"]),
   },
