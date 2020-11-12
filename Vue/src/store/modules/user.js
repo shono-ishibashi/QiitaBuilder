@@ -26,6 +26,9 @@ export default {
         userId(state) {
             return state.userDetail.userId
         },
+        postedArticles(state) {
+            return (state.userDetail.isLoginUser) ? state.postedArticles : state.postedArticles.filter((art) => art.stateFlag !== 0);
+        },
         postedQiitaArticles(state) {
             return state.postedArticles.filter((art) => art.stateFlag === 2)
         },
@@ -67,22 +70,20 @@ export default {
             state.feedbackArticles = feedbackArticles;
         },
         setDisplayArticles(state, articles) {
-            if (articles.length === 0) state.displayArticles.length = 0;
             articles.forEach((art) => {
                 state.displayArticles.push(art)
             })
         },
         setUsedTags(state, tags) {
-            if (tags.length === 0) state.usedTags.length = 0;
             tags.forEach((tag) => {
                 state.usedTags.push(tag)
             })
         },
         clearDisplayArticles(state) {
-            state.displayArticles.length = 0;
+            state.displayArticles.splice(0);
         },
         clearUsedTag(state) {
-            state.usedTags.length = 0;
+            state.usedTags.splice(0);
         },
         setArticleCardDisplay(state, articleCard) {
             state.articleCardDisplay = articleCard;
@@ -94,9 +95,17 @@ export default {
     actions: {
         async setArticlesAndTags({commit}, articles) {
             await commit("clearDisplayArticles");
-            await commit("setDisplayArticles", articles);
             await commit("clearUsedTag");
-            await articles.forEach((art) => commit("setUsedTags", art.tags));
+            if (articles.length !== 0) {
+                await commit("setDisplayArticles", articles);
+                await articles.forEach((art) => commit("setUsedTags", art.tags));
+            }
+        },
+        async setArticles({commit}, articles) {
+            await commit("clearDisplayArticles");
+            if (articles.length !== 0) {
+                await commit("setDisplayArticles", articles);
+            }
         },
         setArticleCardDisplay({commit}, articleCard) {
             commit("setArticleCardDisplay", articleCard)
