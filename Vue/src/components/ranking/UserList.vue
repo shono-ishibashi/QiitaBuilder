@@ -1,7 +1,8 @@
 <template>
   <v-container>
-    <UserCard class="control-margin" v-for="(rankUser, index) in controlledRankUsers" :key="rankUser.userId" :rank-user="rankUser"
-              :rank-item-id="selectRankItemId" :rank-num="index + 1"></UserCard>
+    <UserCard class="control-margin" v-for="rankUser in controlledRankUsers" :key="rankUser.userId"
+              :rank-user="rankUser"
+              :rank-item-id="selectRankItemId" :rank-num="rankUser.rank"></UserCard>
     <v-pagination
         v-model="currentPage"
         :length="totalPage"
@@ -38,7 +39,7 @@ export default {
     }
   },
   watch: {
-    displayCount(){
+    displayCount() {
       this.currentPage = 1;
     }
   },

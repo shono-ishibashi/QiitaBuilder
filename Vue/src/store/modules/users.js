@@ -55,6 +55,7 @@ export default {
         users: (state) => {
             const users = [];
             state.rankingUsers.forEach(rankUser => {
+                rankUser.user.rank = rankUser.rank;
                 users.push(rankUser.user);
             })
             return users;
