@@ -198,6 +198,19 @@ public class QiitaAPIService {
         } else {
             Map<String, Object> response = restTemplate.patchForObject(URL + '/' + article.getQiitaArticleId(), request, Map.class);
         }
+    }
+
+    public boolean isLinkedToQiita(){
+        SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        String code = qiitaConfigurationMapper.getTokenByUserId(loginUser.getUser().getUserId());
+
+        if (isNull(code)) {
+            return false;
+        } else {
+            return true;
+        }
+
 
     }
 }
