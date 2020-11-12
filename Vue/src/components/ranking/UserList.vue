@@ -1,5 +1,11 @@
 <template>
   <v-container>
+    <v-pagination
+        v-model="currentPage"
+        :length="totalPage"
+        color="#5bc8ac"
+        circle
+    ></v-pagination>
     <UserCard class="control-margin" v-for="rankUser in controlledRankUsers" :key="rankUser.userId"
               :rank-user="rankUser"
               :rank-item-id="selectRankItemId" :rank-num="rankUser.rank"></UserCard>
@@ -41,6 +47,9 @@ export default {
   watch: {
     displayCount() {
       this.currentPage = 1;
+    },
+    currentPage() {
+      this.$vuetify.goTo(0);
     }
   },
   computed: {
