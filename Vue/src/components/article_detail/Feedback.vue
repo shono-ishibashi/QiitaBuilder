@@ -59,6 +59,8 @@
 
 <script>
 import marked from "marked";
+import hljs from "highlight.js";
+import "highlight.js/styles/github.css";
 
 export default {
   name: "Feedback",
@@ -85,6 +87,16 @@ export default {
       return marked(this.feedback.content);
     },
   },
+  created() {
+    marked.setOptions({
+      // code要素にdefaultで付くlangage-を削除
+      langPrefix: "",
+      // highlightjsを使用したハイライト処理を追加
+      highlight: function(code, lang) {
+        return hljs.highlightAuto(code, [lang]).value;
+      },
+    });
+  },
   filters: {
     date: function(value) {
       if (!value) return "";
@@ -110,3 +122,4 @@ export default {
   padding: 10px;
 }
 </style>
+<style src="highlight.js/styles/github.css"></style>

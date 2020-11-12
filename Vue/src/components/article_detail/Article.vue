@@ -124,6 +124,8 @@
 
 <script>
 import marked from "marked";
+import hljs from "highlight.js";
+import "highlight.js/styles/github-gist.css";
 
 export default {
   data() {
@@ -153,6 +155,16 @@ export default {
     },
   },
   props: ["article"],
+  created() {
+    marked.setOptions({
+      // code要素にdefaultで付くlangage-を削除
+      langPrefix: "",
+      // highlightjsを使用したハイライト処理を追加
+      highlight: function(code, lang) {
+        return hljs.highlightAuto(code, [lang]).value;
+      },
+    });
+  },
   filters: {
     naming: function(value) {
       if (value == 2) return "Qiitaに投稿済み";
@@ -187,6 +199,7 @@ export default {
 };
 </script>
 
+<style src="highlight.js/styles/github-gist.css"></style>
 <style scoped>
 .area {
   padding: 20px;
