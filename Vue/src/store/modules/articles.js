@@ -1,22 +1,22 @@
-import axios from 'axios';
-import qs from 'qs';
+import axios from "axios";
+import qs from "qs";
 
 export default {
-    namespaced:true,
-    state: {
-        articles:[],
-        searchCriteria: {
-            sortNum: 0,
-            period: 0,
-            searchWord: "",
-            toggleSearchWord:0,
-            searchTag: [],
-            pageSize: 10,
-            currentPage: 1
-        },
-        totalPage:undefined,
-        tags:[]
+  namespaced: true,
+  state: {
+    articles: [],
+    searchCriteria: {
+      sortNum: 0,
+      period: 0,
+      searchWord: "",
+      toggleSearchWord: 0,
+      searchTag: [],
+      pageSize: 10,
+      currentPage: 1,
     },
+    totalPage: undefined,
+    tags: [],
+  },
     mutations: {
         setArticles(state,articles){
             state.articles = articles
@@ -82,3 +82,4 @@ export default {
         }
     }
 }
+};

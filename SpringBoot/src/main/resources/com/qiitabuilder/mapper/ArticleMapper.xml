@@ -260,7 +260,12 @@
              ON art.user_id = art_use.user_id
 
                  LEFT OUTER JOIN
-             feedbacks AS fee
+            (
+            SELECT *
+            FROM feedbacks
+            WHERE delete_flag = 0
+            )
+              AS fee
              ON art.article_id = fee.article_id
 
                  LEFT JOIN
@@ -303,7 +308,6 @@
              ON art.article_id = recommend_cnt_table.article_id
 
         WHERE art.article_id = #{articleId}
-            AND fee.delete_flag = 0
 
         ORDER BY art.article_id
         ;
