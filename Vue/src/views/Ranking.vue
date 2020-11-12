@@ -17,8 +17,8 @@
           <v-col cols="2">
             <v-select
                 :items="displayCountList"
-                item-text="item + '件'"
-                item-value="item"
+                item-text="text"
+                item-value="value"
                 v-model="selectDisplayCount"
                 color="#5bc8ac"
                 label="表示件数"
@@ -27,7 +27,8 @@
           </v-col>
         </v-row>
         <v-row>
-          <UserList :rank-users="users" :select-rank-item-id="selectRankItemId" :display-count="selectDisplayCount"></UserList>
+          <UserList :rank-users="users" :select-rank-item-id="selectRankItemId"
+                    :display-count="selectDisplayCount"></UserList>
         </v-row>
       </v-col>
       <v-col cols="6">
@@ -78,7 +79,17 @@ export default {
       selectRankItemId: 1,
 
       //表示件数リスト
-      displayCountList: [10, 20, 30],
+      displayCountList: [
+        {
+          text: '10件',
+          value: 10
+        }, {
+          text: '20件',
+          value: 20
+        }, {
+          text: '30件',
+          value: 30
+        }],
 
       //選択されている表示件数
       selectDisplayCount: 10
@@ -86,7 +97,7 @@ export default {
   },
 
   computed: {
-    apiToken(){
+    apiToken() {
       return this.$store.getters["auth/apiToken"];
     },
     ...mapGetters("users", ["users", "relationArticles"])
@@ -98,7 +109,7 @@ export default {
         this.fetchRankingUser(this.selectRankItemId);
       }
     },
-    apiToken: function(){
+    apiToken: function () {
       this.fetchRankingUser(this.selectRankItemId);
     }
   },
