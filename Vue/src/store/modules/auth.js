@@ -19,9 +19,12 @@ export default {
 
     },
     actions: {
-        async googleLogin({commit, rootGetters}) {
+        async googleLoginPartners({commit, rootGetters}) {
             //firebase google authログイン
             const provider = await new firebase.auth.GoogleAuthProvider();
+            provider.setCustomParameters({
+                hd: 'rakus-partners.co.jp'
+            });
             await firebase.auth().signInWithPopup(provider).then(async () => {
                     const loginUser = await firebase.auth().currentUser;
                     const db = await firebase.firestore();
@@ -49,6 +52,44 @@ export default {
                                         console.log(result);
                                     })
                                 })
+                            }
+                        })
+                },
+            )
+        },
+        async googleLoginRakus({commit, rootGetters}) {
+            //firebase google authログイン
+            const provider = await new firebase.auth.GoogleAuthProvider();
+            provider.setCustomParameters({
+                hd: 'rakus.co.jp'
+            });
+            await firebase.auth().signInWithPopup(provider).then(async () => {
+                    const loginUser = await firebase.auth().currentUser;
+                    const db = await firebase.firestore();
+
+                    await commit('setLoginUser', loginUser);
+
+
+                    await db.collection('users').doc(loginUser.uid).get()
+                        .then(async data => {
+                            //firestore にユーザーのデータが存在するのかを確認
+                            //--あれば、そのデータを用いてRESTAPIにログイン処理を行う
+                            //--なければ、ユーザーデータをfirestoreに追加して、RESTAPIにも追加する
+
+                            if (!data.exists) {
+                                let password = await uuidv4();
+
+                                await db.collection('users').doc(loginUser.uid)
+                                    .set({password: password}).then(() => {
+                                        axios.post(rootGetters.API_URL, {
+                                            uid: loginUser.uid,
+                                            password: password,
+                                            photoUrl: loginUser.photoURL,
+                                            displayName: loginUser.displayName
+                                        }).then((result) => {
+                                            console.log(result);
+                                        })
+                                    })
                             }
                         })
                 },
