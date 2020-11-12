@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.*;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 
 /**
@@ -205,12 +206,6 @@ public class QiitaAPIService {
 
         String code = qiitaConfigurationMapper.getTokenByUserId(loginUser.getUser().getUserId());
 
-        if (isNull(code)) {
-            return false;
-        } else {
-            return true;
-        }
-
-
+        return nonNull(code);
     }
 }
