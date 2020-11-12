@@ -12,6 +12,7 @@ export default {
       stateFlag: undefined,
       tags: [],
       feedbacks: [],
+      qiitaRecommendPoint: null,
     },
     myArticleId: null,
     recommendId: null,
@@ -53,6 +54,16 @@ export default {
     // MyArticle
     setMyArticleId(state, myArticleId) {
       state.myArticleId = myArticleId;
+    },
+    // Recommend
+    setRecommendId(state, recommendId) {
+      state.recommendId = recommendId;
+    },
+    incrementQiitaRecommendPoint(state) {
+      state.article.qiitaRecommendPoint++;
+    },
+    decrementQiitaRecommendPoint(state) {
+      state.article.qiitaRecommendPoint--;
     },
   },
   actions: {
@@ -166,6 +177,7 @@ export default {
         console.log(error);
       }
     },
+    // MyArticle
     async fetchMyArticle({ commit, rootGetters }, articleId) {
       const url = rootGetters.API_URL + "my-article?articleId=" + articleId;
       const apiToken = rootGetters["auth/apiToken"];
@@ -210,6 +222,57 @@ export default {
       try {
         await axios.delete(url, requestConfig);
         commit("setMyArticleId", null);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // Recommend
+    async fetchRecommend({ commit, rootGetters }, articleId) {
+      const url = rootGetters.API_URL + "recommend?articleId=" + articleId;
+      const apiToken = rootGetters["auth/apiToken"];
+      const requestConfig = {
+        headers: {
+          Authorization: apiToken,
+        },
+      };
+      try {
+        const res = await axios.get(url, requestConfig);
+        commit("setRecommendId", res.data.recommendId);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async registerRecommend({ commit, rootGetters }, articleId) {
+      const url = rootGetters.API_URL + "recommend";
+      const requestBody = {
+        articleId: articleId,
+      };
+      const apiToken = rootGetters["auth/apiToken"];
+      const requestConfig = {
+        headers: {
+          Authorization: apiToken,
+        },
+      };
+      try {
+        const res = await axios.post(url, requestBody, requestConfig);
+        commit("setRecommendId", res.data.recommendId);
+        commit("incrementQiitaRecommendPoint");
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async deleteRecommend({ commit, rootGetters }, recommendId) {
+      const url = rootGetters.API_URL + "recommend/" + recommendId;
+      const apiToken = rootGetters["auth/apiToken"];
+      const requestConfig = {
+        headers: {
+          Authorization: apiToken,
+        },
+      };
+      try {
+        await axios.delete(url, requestConfig);
+        commit("setRecommendId", null);
+        commit("decrementQiitaRecommendPoint");
       } catch (error) {
         console.log(error);
       }
