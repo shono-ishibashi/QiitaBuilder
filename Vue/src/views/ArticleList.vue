@@ -169,14 +169,19 @@ export default {
     ['searchCriteria.currentPage']() {
       this.fetchArticles(this.searchCriteria)
       this.scrollTop()
+    },
+    apiToken(){
+      this.fetchArticles(this.searchCriteria)
+      this.fetchTags()
     }
   },
   created() {
-    this.fetchArticles(this.searchCriteria)
-    this.fetchTags()
   },
   computed: {
-    ...mapState("articles", ["articles", "tags", "totalPage","searchCriteria"])
+    ...mapState("articles", ["articles", "tags", "totalPage","searchCriteria"]),
+    apiToken(){
+      return this.$store.getters["auth/apiToken"];
+    }
   },
   components: {
     ArticleCard
