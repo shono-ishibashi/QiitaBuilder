@@ -4,7 +4,11 @@
       <v-col class="hidden-xs-only hidden-sm-only" :md="mdPlacement.buttons">
         <v-row id="qiita_btn">
           <!-- Qiitaボタン -->
-          <v-col cols="12" style="text-align: center; padding: 0" class="green--text">
+          <v-col
+            cols="12"
+            style="text-align: center; padding: 0"
+            class="green--text"
+          >
             {{ article.qiitaRecommendPoint }}
           </v-col>
           <v-col cols="12" style="text-align: center;">
@@ -17,7 +21,7 @@
               color="green"
               @click="toggleRecommend"
             >
-              <v-icon large dark >
+              <v-icon large dark>
                 mdi-thumb-up
               </v-icon>
             </v-btn>
@@ -158,8 +162,15 @@ export default {
   },
   created() {
     this.propsFeedback = this.feedbackForNewPost;
+    this.scrollTop();
   },
   methods: {
+    scrollTop() {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    },
     closeEditor() {
       if (!this.propsFeedback.feedbackId) {
         this.feedbackForNewPost = this.propsFeedback;
