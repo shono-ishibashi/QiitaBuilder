@@ -12,6 +12,7 @@ export default {
       stateFlag: undefined,
       tags: [],
       feedbacks: [],
+      qiitaRecommendPoint: null,
     },
     myArticleId: null,
     recommendId: null,
@@ -54,9 +55,15 @@ export default {
     setMyArticleId(state, myArticleId) {
       state.myArticleId = myArticleId;
     },
-    // MyArticle
+    // Recommend
     setRecommendId(state, recommendId) {
       state.recommendId = recommendId;
+    },
+    incrementQiitaRecommendPoint(state) {
+      state.article.qiitaRecommendPoint++;
+    },
+    decrementQiitaRecommendPoint(state) {
+      state.article.qiitaRecommendPoint--;
     },
   },
   actions: {
@@ -249,6 +256,7 @@ export default {
       try {
         const res = await axios.post(url, requestBody, requestConfig);
         commit("setRecommendId", res.data.recommendId);
+        commit("incrementQiitaRecommendPoint");
       } catch (error) {
         console.log(error);
       }
@@ -264,6 +272,7 @@ export default {
       try {
         await axios.delete(url, requestConfig);
         commit("setRecommendId", null);
+        commit("decrementQiitaRecommendPoint");
       } catch (error) {
         console.log(error);
       }
