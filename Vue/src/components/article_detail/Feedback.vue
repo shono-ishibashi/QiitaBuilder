@@ -28,7 +28,7 @@
         <v-spacer></v-spacer>
         <v-spacer></v-spacer>
         <!-- メニューボタン -->
-        <v-col cols="auto">
+        <v-col cols="auto" v-if="loginUser.uid == feedback.postedUser.uid">
           <v-menu offset-y>
             <template v-slot:activator="{ attrs, on }">
               <v-btn icon v-bind="attrs" v-on="on" class="">
@@ -72,28 +72,29 @@ export default {
   computed: {
     lastEditAt() {
       if (this.feedback.updatedAt) {
-        return { time: this.feedback.updatedAt, text: "に更新" };
+        return { time: this.feedback.updatedAt, text: " (編集済み)" };
       }
-      return { time: this.feedback.createdAt, text: "に作成" };
+      return { time: this.feedback.createdAt, text: "" };
+    },
+    loginUser() {
+      return this.$store.state.auth.loginUser;
     },
   },
   filters: {
     date: function(value) {
       if (!value) return "";
-      var ymd = value.split("T")[0].split("-");
-      return ymd[0] + "年" + ymd[1] + "月" + ymd[2] + "日";
+      var dateAndTime = value.split("T");
+      var ymd = dateAndTime[0];
+      var hms = dateAndTime[1].split(":");
+      return ymd+ " " + hms[0] + ":" + hms[1];
     },
   },
   methods: {
     editFeedback() {
-      console.log(
-        "editFeedback (feedbackId : " + this.feedback.feedbackId + ")"
-      );
+      this.$emit("editFeedback", this.feedback);
     },
     deleteFeedback() {
-      console.log(
-        "deleteFeedback (feedbackId : " + this.feedback.feedbackId + ")"
-      );
+      this.$store.dispatch("article/deleteFeedback", this.feedback);
     },
   },
 };

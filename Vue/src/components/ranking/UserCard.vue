@@ -17,31 +17,37 @@
       </v-col>
       <v-col cols="10">
         <v-list-item class="control-margin">
-          <v-list-item-avatar size="70" class="control-margin">
+          <v-list-item-avatar size="70" class="avatar control-margin">
             <v-avatar
                 color="orange"
                 size="70"
+                @click="toUserDetail(rankUser.userId)"
             >
               <v-img :src="rankUser.photoUrl"></v-img>
             </v-avatar>
           </v-list-item-avatar>
           <v-list-item-content class="control-margin">
             <div>
-              <v-list-item-title class="name">{{ rankUser.displayName }}</v-list-item-title>
+              <v-list-item-title class="name control-margin">
+                <v-btn
+                    @click="toUserDetail(rankUser.userId)"
+                    text><span class="name">{{ rankUser.displayName }}</span>
+                </v-btn>
+              </v-list-item-title>
             </div>
             <div>
               <v-list-item-subtitle>
                 <v-row class="control-margin">
-                  <v-col cols="4" align="center">
+                  <v-col cols="4" align="center" :class="[{box : (rankItemId === 1)}]">
                     FBした数
                     <div :class="[{count : true}, {select : (rankItemId === 1)}]">{{ rankUser.feedbackCount }}</div>
                   </v-col>
-                  <v-col cols="4" align="center">
+                  <v-col cols="4" align="center" :class="[{box : (rankItemId === 2)}]">
                     記事投稿数
                     <div :class="[{count : true}, {select : (rankItemId === 2)}]">{{ rankUser.postedArticleCount }}
                     </div>
                   </v-col>
-                  <v-col cols="4" align="center">
+                  <v-col cols="4" align="center" :class="[{box : (rankItemId === 3)}]">
                     Qiita推薦累計数
                     <div :class="[{count : true}, {select : (rankItemId === 3)}]">{{
                         rankUser.qiitaRecommendedAllCount
@@ -75,17 +81,29 @@ export default {
       type: Number,
       required: true
     }
+  },
+  methods: {
+    toUserDetail(userId) {
+      this.$router.push({name: 'userDetail', params: {userId: userId}});
+    }
   }
 }
 </script>
 
 <style scoped>
 .name {
-  font-size: 20px;
+  font-size: 150%;
+  font-weight: bold;
 }
 
 .count {
   font-size: 16px;
+}
+
+.box {
+  background: #f0f7ff;
+  border: dashed 2px #5bc8ac;
+  border-radius: 10px;
 }
 
 .select {
@@ -102,8 +120,12 @@ export default {
   align-items: center;
 }
 
+.avatar {
+  cursor: pointer;
+}
+
 .control-margin {
-  margin: 0px;
-  padding: 0px;
+  margin: 0;
+  padding: 0;
 }
 </style>

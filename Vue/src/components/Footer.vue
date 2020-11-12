@@ -35,8 +35,8 @@
           justify="center"
           class="lighten-2 py-4 text-center white--text"
       >
-        <v-btn :href="rakusUrl" color="white" text>ラクスパートナーズ</v-btn>
-        <v-btn :href="qiitaUrl" color="white" text>Qiita</v-btn>
+        <v-btn :href="rakusUrl" target="_blank" color="white" text>ラクスパートナーズ</v-btn>
+        <v-btn :href="qiitaUrl" target="_blank" color="white" text>Qiita</v-btn>
       </v-row>
     </v-container>
   </v-footer>

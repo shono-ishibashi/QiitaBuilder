@@ -35,9 +35,9 @@ public class MyArticleService {
         Integer registerUserId = loginUser.getUser().getUserId();
 
         MyArticle result = myArticleMapper.findByArticleIdAndRegisterUserId(articleId, registerUserId);
-        // My記事登録済みでない場合はNotFoundを返す
+        // My記事登録済みでない場合はNoContentを返す
         if (Objects.isNull(result)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT);
         }
         return result;
     }
@@ -54,7 +54,7 @@ public class MyArticleService {
         myArticle.setRegisterUserId(loginUser.getUser().getUserId());
 
         // 記事の投稿者をpostedUserIdにセット
-        Article article = articleMapper.load(myArticle.getArticleId());
+        Article article = articleMapper.getArticleAndFeedback(myArticle.getArticleId());
         // 記事IDが存在しない場合はBadRequestを返す
         try {
             myArticle.setPostedUserId(article.getPostedUser().getUserId());

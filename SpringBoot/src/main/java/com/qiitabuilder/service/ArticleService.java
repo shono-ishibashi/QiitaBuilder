@@ -13,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.SQLSyntaxErrorException;
 import java.util.List;
 
 import java.util.stream.Collectors;
@@ -118,7 +117,7 @@ public class ArticleService {
      *
      * @param article 更新もしくは追加するデータ
      */
-    public void saveArticle(Article article) {
+    public Article saveArticle(Article article) {
 
         //ログイン中のユーザ情報をセット
         SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -184,10 +183,11 @@ public class ArticleService {
                             )
                     );
         }
+        return article;
     }
 
     public Article getArticle(Integer articleId) {
-        return articleMapper.load(articleId);
+        return articleMapper.getArticleAndFeedback(articleId);
     }
 
     /**

@@ -70,7 +70,7 @@
                                  ON art.article_id = recommend_cnt_table.article_id
                  LEFT JOIN qiita_builder.users
                            ON art.user_id = users.user_id
-        WHERE my_art.register_user_id = #{userId}
+        WHERE my_art.register_user_id = #{userId} AND art.state_flag != 9
         ORDER BY art.created_at DESC;
     </select>
 

@@ -33,9 +33,9 @@ public class RecommendService {
         Integer recommendUserId = loginUser.getUser().getUserId();
 
         Recommend result = recommendMapper.findByArticleIdAndRecommendUserId(articleId, recommendUserId);
-        // Qiita推薦済みでない場合はNotFoundを返す
+        // Qiita推薦済みでない場合はNoContentを返す
         if (Objects.isNull(result)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT);
         }
         return result;
     }
@@ -52,7 +52,7 @@ public class RecommendService {
         recommend.setRecommendUserId(loginUser.getUser().getUserId());
 
         // 記事の投稿者をpostedUserIdにセット
-        Article article = articleMapper.load(recommend.getArticleId());
+        Article article = articleMapper.getArticleAndFeedback(recommend.getArticleId());
         // 記事IDが存在しない場合はBadRequestを返す
         try {
             recommend.setPostedUserId(article.getPostedUser().getUserId());

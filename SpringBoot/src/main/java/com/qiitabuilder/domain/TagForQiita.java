@@ -4,11 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class RankingUser {
-    private User user;
-    private Article relationArticle;
-    private Integer rank;
+@NoArgsConstructor
+public class TagForQiita {
+    private String name;
+    private List<Object> versions;
 }
