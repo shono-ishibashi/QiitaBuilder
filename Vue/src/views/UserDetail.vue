@@ -46,27 +46,21 @@
     </v-row>
 
     <v-container>
-      <v-tabs>
-        <v-tab @click="changeList(1)">投稿記事</v-tab>
-        <v-tab @click="changeList(2)">FB記事</v-tab>
-        <v-tab @click="changeList(3)">My記事</v-tab>
+      <v-tabs v-model="activeListTab">
+        <v-tab v-for="tab of listTabs" :key="tab.id" @click="changeList(tab.id)">{{ tab.name }}</v-tab>
       </v-tabs>
 
       <v-card outlined>
         <v-container>
           <v-row>
-            <v-col cols="12" v-if="displayListNum===1||displayListNum===11||displayListNum===12||displayListNum===13">
-              <v-tabs>
-                <v-tab @click="changeList(1)">全記事</v-tab>
-                <v-tab @click="changeList(11)">Qiita 未投稿記事</v-tab>
-                <v-tab @click="changeList(12)">Qiita 投稿済み記事</v-tab>
-                <v-tab
-                    v-if="userDetail.isLoginUser"
-                    @click="changeList(13)">
-                  下書き記事
-                </v-tab>
-              </v-tabs>
-            </v-col>
+            <v-tabs v-model="activeStateTab">
+              <v-tab v-for="tab of stateTabs" :key="tab.id" @click="changeListState(tab.id)">{{ tab.name }}</v-tab>
+              <v-tab
+                  v-if="userDetail.isLoginUser"
+                  @click="changeListState(0)">
+                下書き記事
+              </v-tab>
+            </v-tabs>
 
             <v-col cols="5">
               <v-text-field v-model="conditions.title"
@@ -145,13 +139,13 @@ export default {
             backgroundColor: [],
           },
         ]
-      },
+      },//Pieコンポーネントに渡してグラフを表示するためのデータ。DBからタグ使用率を取り次第dataとcolor指定
       chartOptions: {
         responsive: true,
         legend: {
           position: 'right'
         }
-      },
+      },//Pieコンポーネントのグラフ表示用オプション
       sortList: [
         {key: 0, state: "新着順"},
         {key: 1, state: "更新順"},
@@ -162,12 +156,25 @@ export default {
       page: 1,//現在のページ
       pageSize: 10,//ページ当たりの記事数
       displayListNum: 1,//1:posted, 2:feedback, 3:my, 11:notPostedQiita, 12:postedQiita, 13:draft
+      displayListState: 10,//10:all, 0:draft, 1:notPostedQiita, 2:postedQiita
       conditions: {
         title: "",
         conditionTags: []
       },//検索条件
-      windowWidth: window.innerWidth,
-      windowWidthClass: false,
+      windowWidth: window.innerWidth,//画面横幅
+      windowWidthClass: false,//画面横幅に応じて付与するクラスの切り替え用boolean
+      activeListTab: 0,//記事Tabの選択されているタブのインデックス
+      activeStateTab: 0,//記事StateTabの選択されているタブのインデックス
+      listTabs: [
+        {id: 1, name: '投稿記事'},
+        {id: 2, name: 'FB記事'},
+        {id: 3, name: 'My記事'}
+      ],//記事タブ表示用リスト
+      stateTabs: [
+        {id: 10, name: '全記事'},
+        {id: 1, name: 'Qiita未投稿記事'},
+        {id: 2, name: 'Qiita投稿済み記事'},
+      ],//記事stateタブ表示用リスト
     };
   },
   computed: {
@@ -211,15 +218,14 @@ export default {
     },
     ...mapGetters("user", [
       "postedArticles",
+      "feedbackArticles",
+      "myArticles",
       "userId",
-      "notPostedQiitaArticles",
-      "postedQiitaArticles",
-      "draftArticles",
       "displayArticles",
       "usedTags",
       "articleCardDisplay",
       "chartDisplay",]),
-    ...mapState("user", ["userDetail", "feedbackArticles", "myArticles"])
+    ...mapState("user", ["userDetail",])
   },
   watch: {
     sortNum() {
@@ -260,23 +266,48 @@ export default {
       this.conditions.title = "";
       this.conditions.conditionTags = [];
       this.displayListNum = listNum;
+      this.displayListState = 10;
       this.sortNum = 0;
+      this.activeListTab = listNum - 1;
+      this.activeStateTab = 0;
       let articlesFromVuex = [];
 
-      if (listNum === 1) {
-        articlesFromVuex = this.postedArticles;
-      } else if (listNum === 2) {
-        articlesFromVuex = this.feedbackArticles;
-      } else if (listNum === 3) {
-        articlesFromVuex = this.myArticles;
-      } else if (listNum === 11) {
-        articlesFromVuex = this.notPostedQiitaArticles;
-      } else if (listNum === 12) {
-        articlesFromVuex = this.postedQiitaArticles;
-      } else if (listNum === 13 && this.userDetail.isLoginUser) {
-        articlesFromVuex = this.draftArticles;
-      } else {
-        console.log("予期せぬ値 listNum:" + listNum);
+      if (listNum === 1) articlesFromVuex = this.postedArticles;
+      if (listNum === 2) articlesFromVuex = this.feedbackArticles;
+      if (listNum === 3) articlesFromVuex = this.myArticles;
+      this.setArticlesAndTags(articlesFromVuex);
+      if (articlesFromVuex.length === 0) {
+        this.sortedArticles.length = 0;
+      }
+      this.page = 1;
+      this.length = Math.ceil(this.displayArticles.length / this.pageSize);
+    },
+    /**
+     * 表示したい記事に対応する数値を渡して、表示する記事一覧を変更する
+     * @param listSate (10:全記事), (1:Qiita未投稿記事), (2:Qiita投稿済み記事), (3:下書き記事)
+     */
+    changeListState(listSate) {
+      this.conditions.title = "";
+      this.conditions.conditionTags = [];
+      this.displayListState = listSate;
+      this.sortNum = 0;
+
+      let articlesFromVuex = [];
+      if (listSate === 10) {
+        if (this.displayListNum === 1) articlesFromVuex = this.postedArticles;
+        if (this.displayListNum === 2) articlesFromVuex = this.feedbackArticles;
+        if (this.displayListNum === 3) articlesFromVuex = this.myArticles;
+      }
+      if (listSate !== 10) {
+        if (this.displayListNum === 1) articlesFromVuex = this.postedArticles.filter((art) => {
+          return art.stateFlag === listSate
+        });
+        if (this.displayListNum === 2) articlesFromVuex = this.feedbackArticles.filter((art) => {
+          return art.stateFlag === listSate
+        });
+        if (this.displayListNum === 3) articlesFromVuex = this.myArticles.filter((art) => {
+          return art.stateFlag === listSate
+        });
       }
       this.setArticlesAndTags(articlesFromVuex);
       if (articlesFromVuex.length === 0) {
@@ -285,26 +316,28 @@ export default {
       this.page = 1;
       this.length = Math.ceil(this.displayArticles.length / this.pageSize);
     },
+    /**
+     * 入力された検索条件とタグ条件に応じた記事を検索する
+     */
     searchWithConditions() {
       let articlesFromVuex = [];
-      if (this.displayListNum === 1) {
-        articlesFromVuex = this.postedArticles
+      if (this.displayListState === 10) {
+        if (this.displayListNum === 1) articlesFromVuex = this.postedArticles;
+        if (this.displayListNum === 2) articlesFromVuex = this.feedbackArticles;
+        if (this.displayListNum === 3) articlesFromVuex = this.myArticles;
       }
-      if (this.displayListNum === 2) {
-        articlesFromVuex = this.feedbackArticles
+      if (this.displayListState !== 10) {
+        if (this.displayListNum === 1) articlesFromVuex = this.postedArticles.filter((art) => {
+          return art.stateFlag === this.displayListState
+        });
+        if (this.displayListNum === 2) articlesFromVuex = this.feedbackArticles.filter((art) => {
+          return art.stateFlag === this.displayListState
+        });
+        if (this.displayListNum === 3) articlesFromVuex = this.myArticles.filter((art) => {
+          return art.stateFlag === this.displayListState
+        });
       }
-      if (this.displayListNum === 3) {
-        articlesFromVuex = this.myArticles
-      }
-      if (this.displayListNum === 11) {
-        articlesFromVuex = this.notPostedQiitaArticles
-      }
-      if (this.displayListNum === 12) {
-        articlesFromVuex = this.postedQiitaArticles
-      }
-      if (this.displayListNum === 13 && this.userDetail.isLoginUser) {
-        articlesFromVuex = this.draftArticles
-      }
+
       articlesFromVuex = articlesFromVuex.filter(article => {
         return article.title.includes(this.conditions.title)
       })
@@ -328,9 +361,11 @@ export default {
       "fetchMyArticles"]),
   },
   created() {
+    //画面横幅が960px以上であればwindowWidthClassをtrueに変え画面を記事一覧を横に配置
     (this.windowWidth >= 960) ? this.windowWidthClass = true : this.windowWidthClass = false;
   },
   mounted() {
+    //画面の横幅が変わるが度に960px以上かを判定
     window.onresize = () => {
       this.windowWidth = window.innerWidth;
       (this.windowWidth >= 960) ? this.windowWidthClass = true : this.windowWidthClass = false;

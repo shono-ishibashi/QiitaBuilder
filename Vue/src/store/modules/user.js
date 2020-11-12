@@ -29,14 +29,11 @@ export default {
         postedArticles(state) {
             return (state.userDetail.isLoginUser) ? state.postedArticles : state.postedArticles.filter((art) => art.stateFlag !== 0);
         },
-        postedQiitaArticles(state) {
-            return state.postedArticles.filter((art) => art.stateFlag === 2)
+        feedbackArticles(state) {
+            return (state.userDetail.isLoginUser) ? state.feedbackArticles : state.feedbackArticles.filter((art) => art.stateFlag !== 0);
         },
-        notPostedQiitaArticles(state) {
-            return state.postedArticles.filter((art) => art.stateFlag === 1)
-        },
-        draftArticles(state) {
-            return state.postedArticles.filter((art) => art.stateFlag === 0)
+        myArticles(state) {
+            return (state.userDetail.isLoginUser) ? state.myArticles : state.myArticles.filter((art) => art.stateFlag !== 0);
         },
         displayArticles(state) {
             return state.displayArticles.filter((art) => art.stateFlag !== 9)
@@ -49,7 +46,7 @@ export default {
         },
         chartDisplay(state) {
             return state.chartDisplay;
-        }
+        },
     },
     mutations: {
         setUserDetail(state, user) {
