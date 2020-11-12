@@ -3,9 +3,34 @@
     <v-row>
       <v-col class="hidden-xs-only hidden-sm-only" :md="mdPlacement.buttons">
         <v-row id="qiita_btn">
+          <!-- Qiitaボタン -->
           <v-col cols="12">
-            <v-btn elevation="2" style="text-transform: none">Qiita</v-btn>
+            <!-- 登録済み -->
+            <v-btn
+              v-if="recommendId"
+              class="mx-2"
+              fab
+              dark
+              color="green"
+              @click="toggleRecommend"
+            >
+              <v-icon large dark>
+                mdi-thumb-up
+              </v-icon>
+            </v-btn>
+            <!-- 未登録 -->
+            <v-btn
+              v-if="!recommendId"
+              class="mx-2"
+              fab
+              @click="toggleRecommend"
+            >
+              <v-icon large color="blue-grey">
+                mdi-thumb-up
+              </v-icon>
+            </v-btn>
           </v-col>
+          <!-- My記事ボタン -->
           <v-col cols="12">
             <!-- 登録済み -->
             <v-btn
@@ -21,7 +46,12 @@
               </v-icon>
             </v-btn>
             <!-- 未登録 -->
-            <v-btn v-if="!myArticleId" class="mx-2" fab @click="toggleMyArticle">
+            <v-btn
+              v-if="!myArticleId"
+              class="mx-2"
+              fab
+              @click="toggleMyArticle"
+            >
               <v-icon large color="blue-grey">
                 mdi-heart
               </v-icon>
@@ -109,11 +139,15 @@ export default {
     myArticleId() {
       return this.$store.state.article.myArticleId;
     },
+    recommendId() {
+      return this.$store.state.article.recommendId;
+    },
   },
   watch: {
     apiToken: function() {
       this.fetchArticle(this.slug);
       this.fetchMyArticle(this.slug);
+      this.fetchRecommend(this.slug);
     },
   },
   created() {
@@ -150,10 +184,27 @@ export default {
       if (this.myArticleId) {
         this.$store.dispatch("article/deleteMyArticle", this.myArticleId);
       } else {
-        this.$store.dispatch("article/registerMyArticle", this.article.articleId);
+        this.$store.dispatch(
+          "article/registerMyArticle",
+          this.article.articleId
+        );
       }
     },
-    ...mapActions("article", ["fetchArticle", "fetchMyArticle"]),
+    toggleRecommend() {
+      if (this.recommendId) {
+        this.$store.dispatch("article/deleteRecommend", this.recommendId);
+      } else {
+        this.$store.dispatch(
+          "article/registerRecommend",
+          this.article.articleId
+        );
+      }
+    },
+    ...mapActions("article", [
+      "fetchArticle",
+      "fetchMyArticle",
+      "fetchRecommend",
+    ]),
   },
 };
 </script>
