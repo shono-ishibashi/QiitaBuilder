@@ -5,8 +5,8 @@
         <v-col cols="auto">
           <v-avatar size="30px" color="green">
             <img
-              v-if="feedback.postedUser.photoURL"
-              :src="feedback.postedUser.photoURL"
+              v-if="feedback.postedUser.photoUrl"
+              :src="feedback.postedUser.photoUrl"
               alt="user-icon"
             />
             <v-icon v-else dark size="30px">
