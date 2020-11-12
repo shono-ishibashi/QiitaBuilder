@@ -3,11 +3,69 @@
     <v-row>
       <v-col class="hidden-xs-only hidden-sm-only" :md="mdPlacement.buttons">
         <v-row id="qiita_btn">
-          <v-col cols="12">
-            <v-btn elevation="2" style="text-transform: none">Qiita</v-btn>
+          <!-- Qiitaボタン -->
+          <v-col
+            cols="12"
+            style="text-align: center; padding: 0"
+            class="green--text"
+          >
+            {{ article.qiitaRecommendPoint }}
           </v-col>
-          <v-col cols="12">
-            <v-btn elevation="2" style="text-transform: none">My記事</v-btn>
+          <v-col cols="12" style="text-align: center;">
+            <!-- 登録済み -->
+            <v-btn
+              v-if="recommendId"
+              class="mx-2"
+              fab
+              dark
+              color="green"
+              @click="toggleRecommend"
+            >
+              <v-icon large dark>
+                mdi-thumb-up
+              </v-icon>
+            </v-btn>
+            <!-- 未登録 -->
+            <v-btn
+              v-if="!recommendId"
+              class="mx-2"
+              fab
+              outlined
+              color="green"
+              @click="toggleRecommend"
+            >
+              <v-icon large color="green">
+                mdi-thumb-up
+              </v-icon>
+            </v-btn>
+          </v-col>
+
+          <!-- My記事ボタン -->
+          <v-col cols="12" style="text-align: center;">
+            <!-- 登録済み -->
+            <v-btn
+              v-if="myArticleId"
+              class="mx-2"
+              fab
+              dark
+              color="pink"
+              @click="toggleMyArticle"
+            >
+              <v-icon large dark>
+                mdi-heart
+              </v-icon>
+            </v-btn>
+            <!-- 未登録 -->
+            <v-btn
+              v-if="!myArticleId"
+              class="mx-2"
+              fab
+              @click="toggleMyArticle"
+            >
+              <v-icon large color="blue-grey">
+                mdi-heart
+              </v-icon>
+            </v-btn>
           </v-col>
         </v-row>
       </v-col>
@@ -88,16 +146,32 @@ export default {
     apiToken() {
       return this.$store.getters["auth/apiToken"];
     },
+    myArticleId() {
+      return this.$store.state.article.myArticleId;
+    },
+    recommendId() {
+      return this.$store.state.article.recommendId;
+    },
   },
   watch: {
     apiToken: function() {
       this.fetchArticle(this.slug);
+      this.fetchMyArticle(this.slug);
+      this.fetchRecommend(this.slug);
+      this.$store.dispatch("auth/checkIsLinkedToQiita");
     },
   },
   created() {
     this.propsFeedback = this.feedbackForNewPost;
+    this.scrollTop();
   },
   methods: {
+    scrollTop() {
+      window.scrollTo({
+        top: 0,
+        behavior: "auto",
+      });
+    },
     closeEditor() {
       if (!this.propsFeedback.feedbackId) {
         this.feedbackForNewPost = this.propsFeedback;
@@ -124,7 +198,31 @@ export default {
       this.propsFeedback = await this.feedbackForUpdate;
       this.EditorIsOpen = true;
     },
-    ...mapActions("article", ["fetchArticle"]),
+    toggleMyArticle() {
+      if (this.myArticleId) {
+        this.$store.dispatch("article/deleteMyArticle", this.myArticleId);
+      } else {
+        this.$store.dispatch(
+          "article/registerMyArticle",
+          this.article.articleId
+        );
+      }
+    },
+    toggleRecommend() {
+      if (this.recommendId) {
+        this.$store.dispatch("article/deleteRecommend", this.recommendId);
+      } else {
+        this.$store.dispatch(
+          "article/registerRecommend",
+          this.article.articleId
+        );
+      }
+    },
+    ...mapActions("article", [
+      "fetchArticle",
+      "fetchMyArticle",
+      "fetchRecommend",
+    ]),
   },
 };
 </script>

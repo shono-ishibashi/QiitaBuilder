@@ -25,8 +25,8 @@ public class RecommendController {
      * <p>
      * Httpステータス
      * OK
+     * NoContent Qiita推薦登録済みでない場合
      * BadRequest 入力値エラーの場合
-     * NotFound Qiita推薦登録済みでない場合
      *
      * @param articleId
      * @return

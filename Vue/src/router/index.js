@@ -35,9 +35,9 @@ const routes = [
     component: () => import(/* webpackChunkName: "login" */ '../views/Login.vue')
   },
   {
-    path: '/qiitatest',
-    name: 'qiitatest',
-    component: () => import(/* webpackChunkName: "login" */ '../views/QiitaTest.vue')
+    path: '/qiita-0auth-done',
+    name: 'qiita-0auth-done',
+    component: () => import(/* webpackChunkName: "login" */ '../views/QiitaOauthDone.vue')
   },
   {
     path: '/user/ranking',

@@ -14,7 +14,7 @@
       <v-col cols="6" style="font-size: large" class="contentWrap"><span
           style="font-weight: bold">{{ userDetail.displayName }}</span></v-col>
       <v-col cols="6" class="contentWrap">
-        <v-btn color="#5bc8ac" elevation="2" style="font-weight: bold">Qiita連携</v-btn>
+        <v-btn @click="toQiitaAPIAuthentication" color="#5bc8ac" elevation="2" style="font-weight: bold">Qiita連携</v-btn>
       </v-col>
 
 
@@ -123,6 +123,7 @@
 <script>
 import {mapState, mapActions, mapGetters} from "vuex";
 import ArticleCard from "../components/ArticleCard";
+import axios from "axios";
 import Pie from "@/components/user_detail/Pie";
 import * as palette from "google-palette";
 
@@ -350,6 +351,22 @@ export default {
       this.page = 1;
       this.length = Math.ceil(this.displayArticles.length / this.pageSize);
     },
+
+
+    /**
+     *
+     * Qiitaの認証画面を表示
+     *
+     */
+    toQiitaAPIAuthentication() {
+      axios.get(this.$store.getters.API_URL + 'qiita/to-qiita-api-authentication', {
+        headers: {
+          Authorization: this.$store.getters["auth/apiToken"]
+        }
+      }).then((response) => {
+        location.href = response.data;
+      })
+    },
     ...mapActions("user", [
       "setArticlesAndTags",
       "setArticles",
@@ -359,6 +376,8 @@ export default {
       "fetchPostedArticles",
       "fetchFeedbackArticles",
       "fetchMyArticles"]),
+
+
   },
   created() {
     //画面横幅が960px以上であればwindowWidthClassをtrueに変え画面を記事一覧を横に配置

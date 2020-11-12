@@ -141,10 +141,7 @@ export default {
             ticks: {
               suggestedMax: suggestedMax(),
               suggestedMin: suggestedMin(),
-              stepSize: 10,
-              callback: function (value) {
-                return value + '回'
-              }
+              stepSize: 5
             }
           }]
         }

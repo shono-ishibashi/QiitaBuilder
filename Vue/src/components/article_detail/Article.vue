@@ -5,8 +5,8 @@
         <v-col cols="1" sm="1" md="1">
           <v-avatar size="42px" color="green">
             <img
-              v-if="article.postedUser.photoURL"
-              :src="article.postedUser.photoURL"
+              v-if="article.postedUser.photoUrl"
+              :src="article.postedUser.photoUrl"
               alt="user-icon"
             />
             <v-icon v-else dark size="42px">
@@ -21,31 +21,47 @@
         <v-col class="hidden-xs-only" sm="4" md="4">
           {{ lastEditAt.time | date }}{{ lastEditAt.text }}
         </v-col>
+        <!-- Qiita投稿状況 -->
         <v-col class="" sm="3" md="3">
-          <v-menu offset-y>
+          <v-menu offset-y v-if="loginUser.uid == article.postedUser.uid">
             <template v-slot:activator="{ attrs, on }">
               <v-btn
                 v-bind="attrs"
                 v-on="on"
-                class="white"
+                color="green"
+                outlined
                 style="text-transform: none;"
               >
-                {{ article.stateFlag | naming }}
+                {{ article.stateFlag | naming }} ▼
               </v-btn>
             </template>
             <v-list>
               <v-list-item
                 v-for="(item, index) in qiitaMenus"
                 :key="index"
-                @click="item.action"
+                @click.stop="item.action"
               >
                 <v-list-item-title v-text="item.name"></v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
+          <v-btn
+            v-if="loginUser.uid != article.postedUser.uid"
+            color="green"
+            outlined
+            style="text-transform: none; cursor: default;"
+          >
+            {{ article.stateFlag | naming }}
+          </v-btn>
         </v-col>
 
-        <v-col class="" sm="2" md="2">
+        <!-- 記事メニュー -->
+        <v-col
+          class=""
+          sm="2"
+          md="2"
+          v-if="loginUser.uid == article.postedUser.uid"
+        >
           <v-menu offset-y>
             <template v-slot:activator="{ attrs, on }">
               <v-btn icon v-bind="attrs" v-on="on" class="">
@@ -98,23 +114,44 @@
       </v-chip-group>
     </v-container>
     <v-container>
-      <v-main>
-        content :
-        {{ article.content }}
-      </v-main>
+      <span v-html="compiledContent"></span>
     </v-container>
+    <v-dialog v-model="dialog" max-width="290">
+      <v-card>
+        <v-card-title class="headline">
+          削除しますか？
+        </v-card-title>
+        <v-card-text>
+          投稿「{{ article.title }}」を削除しようとしています
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="grey" text @click="dialog = false">
+            キャンセル
+          </v-btn>
+          <v-btn color="green darken-1" text @click="deleteArticle">
+            削除する
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>
 
 <script>
+import marked from "marked";
+import hljs from "highlight.js";
+import "highlight.js/styles/github-gist.css";
+
 export default {
   data() {
     return {
       menus: [
         { name: "記事を編集する", action: this.toEdit },
-        { name: "記事を削除する", action: this.deleteArticle },
+        { name: "記事を削除する", action: this.toggleDialog },
       ],
       dateFormat: ["年", "月", "日"],
+      dialog: false,
     };
   },
   computed: {
@@ -124,13 +161,29 @@ export default {
       }
       return { time: this.article.createdAt, text: "に作成" };
     },
+    loginUser() {
+      return this.$store.state.auth.loginUser;
+    },
     qiitaMenus() {
       if (this.article.stateFlag == 2)
         return [{ name: "Qiitaを更新する", action: this.updateQiita }];
       return [{ name: "Qiitaに投稿する", action: this.postQiita }];
     },
+    compiledContent() {
+      return marked(this.article.content);
+    },
   },
   props: ["article"],
+  created() {
+    marked.setOptions({
+      // code要素にdefaultで付くlangage-を削除
+      langPrefix: "",
+      // highlightjsを使用したハイライト処理を追加
+      highlight: function(code, lang) {
+        return hljs.highlightAuto(code, [lang]).value;
+      },
+    });
+  },
   filters: {
     naming: function(value) {
       if (value == 2) return "Qiitaに投稿済み";
@@ -143,12 +196,17 @@ export default {
     },
   },
   methods: {
+    toggleDialog() {
+      this.dialog = !this.dialog;
+    },
     toEdit() {
       this.$router.push({ name: "articleEdit" });
-      console.log("toEdit");
     },
-    deleteArticle() {
-      console.log("deleteArticle");
+    async deleteArticle() {
+      this.$router.push({ name: "ArticleList" });
+      const item = this.article;
+      item.stateFlag = 9;
+      await this.$store.dispatch("article/saveArticle", item);
     },
     updateQiita() {
       console.log("updateQiita");
@@ -160,6 +218,7 @@ export default {
 };
 </script>
 
+<style src="highlight.js/styles/github-gist.css"></style>
 <style scoped>
 .area {
   padding: 20px;

@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class RankingUser {
     private User user;
     private Article relationArticle;
+    private Integer rank;
 }

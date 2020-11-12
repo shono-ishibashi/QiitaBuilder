@@ -47,4 +47,9 @@ public class QiitaAPIRestController {
 
         qiitaAPIService.saveArticleToQiita(integerArticleId);
     }
+
+    @RequestMapping(value = "/is-linked-to-qiita" ,method = RequestMethod.GET)
+    public boolean isLinkedToQiita(){
+        return qiitaAPIService.isLinkedToQiita();
+    }
 }

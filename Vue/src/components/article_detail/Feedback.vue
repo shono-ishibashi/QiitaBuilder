@@ -5,8 +5,8 @@
         <v-col cols="auto">
           <v-avatar size="30px" color="green">
             <img
-              v-if="feedback.postedUser.photoURL"
-              :src="feedback.postedUser.photoURL"
+              v-if="feedback.postedUser.photoUrl"
+              :src="feedback.postedUser.photoUrl"
               alt="user-icon"
             />
             <v-icon v-else dark size="30px">
@@ -50,7 +50,7 @@
       </v-row>
       <v-row>
         <v-col cols="auto">
-          <v-card-text>{{ feedback.content }}</v-card-text>
+          <v-card-text v-html="compiledContent"></v-card-text>
         </v-col>
       </v-row>
     </v-card>
@@ -58,7 +58,12 @@
 </template>
 
 <script>
+import marked from "marked";
+import hljs from "highlight.js";
+import "highlight.js/styles/github.css";
+
 export default {
+  name: "Feedback",
   data() {
     return {
       menus: [
@@ -71,19 +76,34 @@ export default {
   computed: {
     lastEditAt() {
       if (this.feedback.updatedAt) {
-        return { time: this.feedback.updatedAt, text: "に更新" };
+        return { time: this.feedback.updatedAt, text: " (編集済み)" };
       }
-      return { time: this.feedback.createdAt, text: "に作成" };
+      return { time: this.feedback.createdAt, text: "" };
     },
     loginUser() {
       return this.$store.state.auth.loginUser;
     },
+    compiledContent() {
+      return marked(this.feedback.content);
+    },
+  },
+  created() {
+    marked.setOptions({
+      // code要素にdefaultで付くlangage-を削除
+      langPrefix: "",
+      // highlightjsを使用したハイライト処理を追加
+      highlight: function(code, lang) {
+        return hljs.highlightAuto(code, [lang]).value;
+      },
+    });
   },
   filters: {
     date: function(value) {
       if (!value) return "";
-      var ymd = value.split("T")[0].split("-");
-      return ymd[0] + "年" + ymd[1] + "月" + ymd[2] + "日";
+      var dateAndTime = value.split("T");
+      var ymd = dateAndTime[0];
+      var hms = dateAndTime[1].split(":");
+      return ymd + " " + hms[0] + ":" + hms[1];
     },
   },
   methods: {
@@ -102,3 +122,4 @@ export default {
   padding: 10px;
 }
 </style>
+<style src="highlight.js/styles/github.css"></style>

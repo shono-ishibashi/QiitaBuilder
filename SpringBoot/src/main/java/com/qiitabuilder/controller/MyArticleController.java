@@ -25,8 +25,8 @@ public class MyArticleController {
      * <p>
      * Httpステータス
      * OK
+     * NoContent My記事登録済みでない場合
      * BadRequest 入力値エラーの場合
-     * NotFound My記事登録済みでない場合
      *
      * @param articleId
      * @return

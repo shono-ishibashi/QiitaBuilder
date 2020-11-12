@@ -4,18 +4,11 @@
     <v-list-item class="articleCard">
       <v-list-item-avatar>
         <v-avatar class="grey lighten-1" dark>
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on, attrs }">
-              <span
-                  v-bind="attrs"
-                  v-on.stop="on"
-                  class="white--text headline"
-              >
-                <img :src="article.postedUser.photoUrl"/>
-              </span>
-            </template>
-            <span>{{ article.postedUser.displayName }}</span>
-          </v-tooltip>
+                <img
+                    :src="article.postedUser.photoUrl"
+                     @click="toUserDetail(article.postedUser.userId)"
+                     style="cursor: pointer;"
+                />
         </v-avatar>
       </v-list-item-avatar>
       <v-list-item-avatar>
@@ -166,6 +159,12 @@ export default {
         params: { articleId },
       });
     },
+    toUserDetail(userId){
+      this.$router.push({
+        name: "userDetail",
+        params: { userId },
+      });
+    }
   },
 };
 </script>

@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.*;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 
 /**
@@ -126,9 +127,9 @@ public class QiitaAPIService {
     }
 
     /**
-     * QiitaAPIのトークンを取得し、DBに暗号化してインサートするメソッド
      *
-     * @return 取得したアクセストークン
+     * QiitaAPIのトークンをインサートするメソッド
+     *
      */
     public void saveToken() {
         SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -145,17 +146,14 @@ public class QiitaAPIService {
 
         qiitaConfigurationMapper.saveToken(String.valueOf(response.get("token")), loginUser.getUser().getUserId());
 
-        System.out.println(response);
     }
 
-    public void updateCode(QiitaConfiguration qiitaConfiguration) {
-        qiitaConfigurationMapper.updateQiitaConfigurationCode(qiitaConfiguration);
-    }
-
-    public void deleteByUserId(Integer userId) {
-        qiitaConfigurationMapper.deleteByUserId(userId);
-    }
-
+    /**
+     *
+     * Qiitaに記事を投稿・更新するメソッド
+     *
+     * @param articleId 投稿する記事のID
+     */
     public void saveArticleToQiita(Integer articleId) {
 
         SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -180,7 +178,6 @@ public class QiitaAPIService {
 
         articleForQiita.put("tags", articleForQiitaTags);
         articleForQiita.put("private", false);
-        //===============================================================================================================
 
 
         //Httpリクエストの作成
@@ -190,16 +187,25 @@ public class QiitaAPIService {
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.add("Authorization", "Bearer " + qiitaConfigurationMapper.getTokenByUserId(loginUser.getUser().getUserId()));
 
-        // build the request
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(articleForQiita, headers);
 
         if (isNull(article.getQiitaArticleId())) {
             Map<String, Object> response = restTemplate.postForObject(URL, request, Map.class);
             article.setQiitaArticleId((String) response.get("id"));
+
+            //Qiitaに投稿済みのフラッグ
+            article.setStateFlag(2);
             articleMapper.updateArticle(article);
         } else {
             Map<String, Object> response = restTemplate.patchForObject(URL + '/' + article.getQiitaArticleId(), request, Map.class);
         }
+    }
 
+    public boolean isLinkedToQiita(){
+        SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        String code = qiitaConfigurationMapper.getTokenByUserId(loginUser.getUser().getUserId());
+
+        return nonNull(code);
     }
 }

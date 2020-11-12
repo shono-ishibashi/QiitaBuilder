@@ -1,4 +1,5 @@
 import axios from "axios";
+import marked from "marked";
 
 export default {
   namespaced: true,
@@ -6,13 +7,15 @@ export default {
     article: {
       postedUser: {},
       articleId: null,
-      title: undefined,
-      content:
-        '## Java で hello world を出力させる方法\n```java\npublic static void main(String[] args){\n    System.out.println("hello world");\n}\n```',
+      title: "",
+      content: "",
       stateFlag: undefined,
       tags: [],
       feedbacks: [],
+      qiitaRecommendPoint: null,
     },
+    myArticleId: null,
+    recommendId: null,
   },
   mutations: {
     setArticle(state, article) {
@@ -25,9 +28,8 @@ export default {
       state.article = {
         postedUser: {},
         articleId: null,
-        title: undefined,
-        content:
-          '## Java で hello world を出力させる方法\n```java\npublic static void main(String[] args){\n    System.out.println("hello world");\n}\n```',
+        title: "",
+        content: "",
         state_flag: undefined,
         tags: [],
       };
@@ -47,6 +49,20 @@ export default {
         (feedback) => feedback.feedbackId == feedbackId
       );
       state.article.feedbacks.splice(targetIndex, 1);
+    },
+    // MyArticle
+    setMyArticleId(state, myArticleId) {
+      state.myArticleId = myArticleId;
+    },
+    // Recommend
+    setRecommendId(state, recommendId) {
+      state.recommendId = recommendId;
+    },
+    incrementQiitaRecommendPoint(state) {
+      state.article.qiitaRecommendPoint++;
+    },
+    decrementQiitaRecommendPoint(state) {
+      state.article.qiitaRecommendPoint--;
     },
   },
   actions: {
@@ -160,6 +176,108 @@ export default {
         console.log(error);
       }
     },
+    // MyArticle
+    async fetchMyArticle({ commit, rootGetters }, articleId) {
+      const url = rootGetters.API_URL + "my-article?articleId=" + articleId;
+      const apiToken = rootGetters["auth/apiToken"];
+      const requestConfig = {
+        headers: {
+          Authorization: apiToken,
+        },
+      };
+      try {
+        const res = await axios.get(url, requestConfig);
+        commit("setMyArticleId", res.data.myArticleId);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async registerMyArticle({ commit, rootGetters }, articleId) {
+      const url = rootGetters.API_URL + "my-article";
+      const requestBody = {
+        articleId: articleId,
+      };
+      const apiToken = rootGetters["auth/apiToken"];
+      const requestConfig = {
+        headers: {
+          Authorization: apiToken,
+        },
+      };
+      try {
+        const res = await axios.post(url, requestBody, requestConfig);
+        commit("setMyArticleId", res.data.myArticleId);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async deleteMyArticle({ commit, rootGetters }, myArticleId) {
+      const url = rootGetters.API_URL + "my-article/" + myArticleId;
+      const apiToken = rootGetters["auth/apiToken"];
+      const requestConfig = {
+        headers: {
+          Authorization: apiToken,
+        },
+      };
+      try {
+        await axios.delete(url, requestConfig);
+        commit("setMyArticleId", null);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // Recommend
+    async fetchRecommend({ commit, rootGetters }, articleId) {
+      const url = rootGetters.API_URL + "recommend?articleId=" + articleId;
+      const apiToken = rootGetters["auth/apiToken"];
+      const requestConfig = {
+        headers: {
+          Authorization: apiToken,
+        },
+      };
+      try {
+        const res = await axios.get(url, requestConfig);
+        commit("setRecommendId", res.data.recommendId);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async registerRecommend({ commit, rootGetters }, articleId) {
+      const url = rootGetters.API_URL + "recommend";
+      const requestBody = {
+        articleId: articleId,
+      };
+      const apiToken = rootGetters["auth/apiToken"];
+      const requestConfig = {
+        headers: {
+          Authorization: apiToken,
+        },
+      };
+      try {
+        const res = await axios.post(url, requestBody, requestConfig);
+        commit("setRecommendId", res.data.recommendId);
+        commit("incrementQiitaRecommendPoint");
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async deleteRecommend({ commit, rootGetters }, recommendId) {
+      const url = rootGetters.API_URL + "recommend/" + recommendId;
+      const apiToken = rootGetters["auth/apiToken"];
+      const requestConfig = {
+        headers: {
+          Authorization: apiToken,
+        },
+      };
+      try {
+        await axios.delete(url, requestConfig);
+        commit("setRecommendId", null);
+        commit("decrementQiitaRecommendPoint");
+      } catch (error) {
+        console.log(error);
+      }
+    },
   },
-  getters: {},
+  getters: {
+    compiledMarkdown: (state) => marked(state.article.content),
+  },
 };

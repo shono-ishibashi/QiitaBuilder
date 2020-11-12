@@ -35,7 +35,8 @@
         <result column="my_cnt" property="registeredMyArticleCount"/>
         <result column="recommend_cnt" property="qiitaRecommendPoint"/>
         <association property="postedUser" javaType="com.qiitabuilder.domain.User">
-            <id column="art_use_uid" property="uid"/>
+            <id column="art_use_user_id" property="userId"/>
+            <result column="art_use_uid" property="uid"/>
             <result column="art_use_display_name" property="displayName"/>
             <result column="art_use_photo_url" property="photoUrl"/>
         </association>
@@ -47,7 +48,8 @@
             <result column="fee_content" property="content"/>
             <result column="fee_delete_flag" property="deleteFlag"/>
             <association property="postedUser" javaType="com.qiitabuilder.domain.User">
-                <id column="fee_use_uid" property="uid"/>
+                <id column="fee_use_user_id" property="userId"/>
+                <result column="fee_use_uid" property="uid"/>
                 <result column="fee_use_display_name" property="displayName"/>
                 <result column="fee_use_photo_url" property="photoUrl"/>
             </association>
@@ -227,6 +229,7 @@
                art.content          AS art_content,
                art.state_flag       AS art_state_flag,
 
+               art_use.user_id      AS art_use_user_id,
                art_use.uid          AS art_use_uid,
                art_use.display_name AS art_use_display_name,
                art_use.photo_url    AS art_use_photo_url,
@@ -238,6 +241,7 @@
                fee.content          AS fee_content,
                fee.delete_flag      AS fee_delete_flag,
 
+               fee_use.user_id      AS fee_use_user_id,
                fee_use.uid          AS fee_use_uid,
                fee_use.display_name AS fee_use_display_name,
                fee_use.photo_url    AS fee_use_photo_url,
@@ -256,7 +260,12 @@
              ON art.user_id = art_use.user_id
 
                  LEFT OUTER JOIN
-             feedbacks AS fee
+            (
+            SELECT *
+            FROM feedbacks
+            WHERE delete_flag = 0
+            )
+              AS fee
              ON art.article_id = fee.article_id
 
                  LEFT JOIN
@@ -299,7 +308,6 @@
              ON art.article_id = recommend_cnt_table.article_id
 
         WHERE art.article_id = #{articleId}
-            AND fee.delete_flag = 0
 
         ORDER BY art.article_id
         ;
@@ -417,12 +425,14 @@
         INSERT INTO articles(
         user_id,
         created_at,
+        updated_at,
         title,
         content,
         qiita_article_id,
         state_flag)
         VALUES (
         #{postedUser.userId},
+        NOW(),
         NOW(),
         #{title},
         #{content},

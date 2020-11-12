@@ -1,5 +1,5 @@
 <template>
-  <v-container class="articleList">
+  <div class="articleList">
     <v-row>
       <v-col cols="3"></v-col>
       <v-col cols="6">
@@ -120,12 +120,7 @@
         ></v-pagination>
       </v-col>
     </v-row>
-    <div class="Page-Btn" @click="scrollTop">
-      <i class="fas fa-chevron-up Page-Btn-Icon">
-        <v-icon dark>mdi-arrow-up</v-icon>
-      </i>
-    </div>
-  </v-container>
+  </div>
 </template>
 
 <script>
@@ -169,14 +164,19 @@ export default {
     ['searchCriteria.currentPage']() {
       this.fetchArticles(this.searchCriteria)
       this.scrollTop()
+    },
+    apiToken(){
+      this.fetchArticles(this.searchCriteria)
+      this.fetchTags()
     }
   },
   created() {
-    this.fetchArticles(this.searchCriteria)
-    this.fetchTags()
   },
   computed: {
-    ...mapState("articles", ["articles", "tags", "totalPage","searchCriteria"])
+    ...mapState("articles", ["articles", "tags", "totalPage","searchCriteria"]),
+    apiToken(){
+      return this.$store.getters["auth/apiToken"];
+    }
   },
   components: {
     ArticleCard
@@ -215,20 +215,9 @@ export default {
 </script>
 
 <style scoped>
-.Page-Btn {
-  position: fixed;
-  right: 200px;
-  bottom: 100px;
-  width: 45px;
-  height: 45px;
-  line-height: 45px;
-  text-align: center;
-  border-radius: 50%;
-  background-color:#008b8b;
-}
 .list {
   width: 800px;
-  padding-top:100px;
+  margin-top:100px;
   margin-bottom:70px;
 }
 .searchForm{
@@ -242,6 +231,7 @@ export default {
   font-size:16px;
 }
 .articleList{
-  margin-bottom:40px;
+  padding-bottom:40px;
+  /*background-color:#f5f5f5;*/
 }
 </style>
