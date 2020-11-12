@@ -21,6 +21,7 @@
 import Feedback from "./Feedback";
 
 export default {
+  name:"Feedbacks",
   components: {
     Feedback,
   },

@@ -83,14 +83,14 @@ export default {
     ...mapActions("auth",["logout"]),
     ...mapActions("article",["resetArticle"]),
     toArticleList(){
-      this.$router.push('/article')
+      this.$router.push('/article',()=>{})
     },
     toArticleNew() {
       this.resetArticle()
-      this.$router.push('/article/new')
+      this.$router.push('/article/new',()=>{})
     },
     toRanking(){
-      this.$router.push({name:'ranking'})
+      this.$router.push({name:'ranking'},()=>{})
     }
   }
 }

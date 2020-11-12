@@ -1,4 +1,5 @@
 import axios from "axios";
+import marked from "marked";
 
 export default {
   namespaced: true,
@@ -6,8 +7,8 @@ export default {
     article: {
       postedUser: {},
       articleId:null,
-      title:undefined,
-      content:'## Java で hello world を出力させる方法\n```java\npublic static void main(String[] args){\n    System.out.println("hello world");\n}\n```',
+      title:"",
+      content:"",
       stateFlag:undefined,
       tags: [],
       feedbacks: [],
@@ -24,8 +25,8 @@ export default {
       state.article={
         postedUser: {},
         articleId:null,
-        title:undefined,
-        content:'## Java で hello world を出力させる方法\n```java\npublic static void main(String[] args){\n    System.out.println("hello world");\n}\n```',
+        title:"",
+        content:"",
         state_flag:undefined,
         tags: []
       }
@@ -92,5 +93,6 @@ export default {
     }
   },
   getters: {
+    compiledMarkdown:state=>marked(state.article.content)
   },
 };

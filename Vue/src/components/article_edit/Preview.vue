@@ -1,11 +1,11 @@
 <template>
-  <div id="preview">
-    <div class="preview" v-html="compiledMarkdown"></div>
-  </div>
+  <v-container fluid class="preview">
+    <div v-html="compiledMarkdown"></div>
+  </v-container>
 </template>
 
 <script>
-import {mapState} from 'vuex'
+import {mapState,mapGetters} from 'vuex'
 import marked from "marked";
 import hljs from "highlight.js";
 
@@ -21,15 +21,16 @@ export default {
   },
   computed: {
     ...mapState("article",["article"]),
-    compiledMarkdown: function () {
-      return marked(this.article.content);
-    },
+    ...mapGetters("article",["compiledMarkdown"]),
   },
 }
 </script>
 
-<style src='highlight.js/styles/github-gist.css' scoped >
+<style scoped >
 .preview{
-  border:4px solid #000000;
+  background-color:#ffffff;
+  border:4px solid #a9a9a9;
+  min-height: 650px;
+  height: auto !important;
 }
 </style>
