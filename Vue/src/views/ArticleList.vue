@@ -1,5 +1,5 @@
 <template>
-  <v-container class="articleList">
+  <div class="articleList">
     <v-row>
       <v-col cols="3"></v-col>
       <v-col cols="6">
@@ -125,7 +125,7 @@
         <v-icon dark>mdi-arrow-up</v-icon>
       </i>
     </div>
-  </v-container>
+  </div>
 </template>
 
 <script>
@@ -228,7 +228,7 @@ export default {
 }
 .list {
   width: 800px;
-  padding-top:100px;
+  margin-top:100px;
   margin-bottom:70px;
 }
 .searchForm{
@@ -242,6 +242,7 @@ export default {
   font-size:16px;
 }
 .articleList{
-  margin-bottom:40px;
+  padding-bottom:40px;
+  /*background-color:#f5f5f5;*/
 }
 </style>

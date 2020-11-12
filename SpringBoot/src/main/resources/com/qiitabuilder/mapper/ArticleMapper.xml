@@ -425,12 +425,14 @@
         INSERT INTO articles(
         user_id,
         created_at,
+        updated_at,
         title,
         content,
         qiita_article_id,
         state_flag)
         VALUES (
         #{postedUser.userId},
+        NOW(),
         NOW(),
         #{title},
         #{content},
