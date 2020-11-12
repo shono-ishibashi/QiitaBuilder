@@ -98,10 +98,7 @@
       </v-chip-group>
     </v-container>
     <v-container>
-      <v-main>
-        content :
-        {{ article.content }}
-      </v-main>
+      <span v-html="compiledContent"></span>
     </v-container>
     <v-dialog v-model="dialog" max-width="290">
       <v-card>
@@ -126,6 +123,8 @@
 </template>
 
 <script>
+import marked from "marked";
+
 export default {
   data() {
     return {
@@ -148,6 +147,9 @@ export default {
       if (this.article.stateFlag == 2)
         return [{ name: "Qiitaを更新する", action: this.updateQiita }];
       return [{ name: "Qiitaに投稿する", action: this.postQiita }];
+    },
+    compiledContent() {
+      return marked(this.article.content);
     },
   },
   props: ["article"],
