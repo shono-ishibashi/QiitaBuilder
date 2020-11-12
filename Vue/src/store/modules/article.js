@@ -6,10 +6,10 @@ export default {
   state: {
     article: {
       postedUser: {},
-      articleId:null,
-      title:"",
-      content:"",
-      stateFlag:undefined,
+      articleId: null,
+      title: "",
+      content: "",
+      stateFlag: undefined,
       tags: [],
       feedbacks: [],
       qiitaRecommendPoint: null,
@@ -27,12 +27,12 @@ export default {
     resetArticle(state) {
       state.article = {
         postedUser: {},
-        articleId:null,
-        title:"",
-        content:"",
-        state_flag:undefined,
-        tags: []
-      }
+        articleId: null,
+        title: "",
+        content: "",
+        state_flag: undefined,
+        tags: [],
+      };
     },
     // feedback
     addFeedback(state, feedback) {
@@ -278,6 +278,6 @@ export default {
     },
   },
   getters: {
-    compiledMarkdown:state=>marked(state.article.content)
-  }
+    compiledMarkdown: (state) => marked(state.article.content),
+  },
 };

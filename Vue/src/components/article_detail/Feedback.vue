@@ -50,7 +50,7 @@
       </v-row>
       <v-row>
         <v-col cols="auto">
-          <v-card-text>{{ feedback.content }}</v-card-text>
+          <v-card-text v-html="compiledContent"></v-card-text>
         </v-col>
       </v-row>
     </v-card>
@@ -58,8 +58,12 @@
 </template>
 
 <script>
+import marked from "marked";
+import hljs from "highlight.js";
+import "highlight.js/styles/github.css";
+
 export default {
-  name:"Feedback",
+  name: "Feedback",
   data() {
     return {
       menus: [
@@ -79,6 +83,19 @@ export default {
     loginUser() {
       return this.$store.state.auth.loginUser;
     },
+    compiledContent() {
+      return marked(this.feedback.content);
+    },
+  },
+  created() {
+    marked.setOptions({
+      // code要素にdefaultで付くlangage-を削除
+      langPrefix: "",
+      // highlightjsを使用したハイライト処理を追加
+      highlight: function(code, lang) {
+        return hljs.highlightAuto(code, [lang]).value;
+      },
+    });
   },
   filters: {
     date: function(value) {
@@ -86,7 +103,7 @@ export default {
       var dateAndTime = value.split("T");
       var ymd = dateAndTime[0];
       var hms = dateAndTime[1].split(":");
-      return ymd+ " " + hms[0] + ":" + hms[1];
+      return ymd + " " + hms[0] + ":" + hms[1];
     },
   },
   methods: {
@@ -105,3 +122,4 @@ export default {
   padding: 10px;
 }
 </style>
+<style src="highlight.js/styles/github.css"></style>
