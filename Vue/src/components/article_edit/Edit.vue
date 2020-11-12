@@ -1,14 +1,15 @@
 <template>
-  <div id="editor">
     <v-textarea
         outlined
         v-model="markdownText"
         full-width
-        rows="20"
+        color="#5bc8ac"
+        placeholder="markdown記法で書いてください"
+        background-color="#ffffff"
+        :height="height"
     >
       input
     </v-textarea>
-  </div>
 </template>
 
 <script>
@@ -19,6 +20,9 @@ export default {
   data() {
     return {}
   },
+  props: [
+    "height"
+  ],
   computed: {
     ...mapState("article", ["article"]),
     markdownText: {
@@ -28,7 +32,7 @@ export default {
       set(value) {
         this.commitMarkDownText(value)
       }
-    }
+    },
   },
   methods: {
     ...mapActions("article", ["commitMarkDownText"])

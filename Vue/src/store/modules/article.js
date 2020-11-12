@@ -1,15 +1,15 @@
 import axios from "axios";
+import marked from "marked";
 
 export default {
   namespaced: true,
   state: {
     article: {
       postedUser: {},
-      articleId: null,
-      title: undefined,
-      content:
-        '## Java で hello world を出力させる方法\n```java\npublic static void main(String[] args){\n    System.out.println("hello world");\n}\n```',
-      stateFlag: undefined,
+      articleId:null,
+      title:"",
+      content:"",
+      stateFlag:undefined,
       tags: [],
       feedbacks: [],
       qiitaRecommendPoint: null,
@@ -27,13 +27,12 @@ export default {
     resetArticle(state) {
       state.article = {
         postedUser: {},
-        articleId: null,
-        title: undefined,
-        content:
-          '## Java で hello world を出力させる方法\n```java\npublic static void main(String[] args){\n    System.out.println("hello world");\n}\n```',
-        state_flag: undefined,
-        tags: [],
-      };
+        articleId:null,
+        title:"",
+        content:"",
+        state_flag:undefined,
+        tags: []
+      }
     },
     // feedback
     addFeedback(state, feedback) {
@@ -278,5 +277,7 @@ export default {
       }
     },
   },
-  getters: {},
+  getters: {
+    compiledMarkdown:state=>marked(state.article.content)
+  }
 };

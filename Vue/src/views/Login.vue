@@ -1,7 +1,11 @@
 <template>
-  <v-flex align-self-center>
-    <google-login/>
-  </v-flex>
+  <v-main>
+    <v-container>
+      <v-flex align-self-center>
+        <google-login/>
+      </v-flex>
+    </v-container>
+  </v-main>
 </template>
 
 <script>

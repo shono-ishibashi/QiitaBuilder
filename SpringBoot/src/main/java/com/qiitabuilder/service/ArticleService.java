@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -41,16 +42,16 @@ public class ArticleService {
      */
     public List<Article> searchArticles(SearchArticleForm searchArticleForm) {
 
-        SearchArticleForm processedSearchArticleForm =searchCriteriaProcessing(searchArticleForm);
+        SearchArticleForm processedSearchArticleForm = searchCriteriaProcessing(searchArticleForm);
 
 //        検索条件に一致する記事をlistで取得
         List<Integer> articlesIdList = articleMapper.searchArticlesId(processedSearchArticleForm);
-        if(articlesIdList.size()!=0) {
+        if (articlesIdList.size() != 0) {
             searchArticleForm.setArticlesIdList(articlesIdList);
-        }else{
+        } else {
             return null;
         }
-        List<Article> articles=articleMapper.searchArticles(searchArticleForm);
+        List<Article> articles = articleMapper.searchArticles(searchArticleForm);
 
 //        qiita推奨数、my記事登録数がnullのものを0に置き換える
         articles.stream().filter(article -> article.getQiitaRecommendPoint() == null).forEach(article -> article.setQiitaRecommendPoint(0));
@@ -67,8 +68,8 @@ public class ArticleService {
      * @return
      */
     public Integer getTotalPage(SearchArticleForm searchArticleForm) {
-        SearchArticleForm processedSearchArticleForm =searchCriteriaProcessing(searchArticleForm);
-        Integer pageSize=searchArticleForm.getPageSize();
+        SearchArticleForm processedSearchArticleForm = searchCriteriaProcessing(searchArticleForm);
+        Integer pageSize = searchArticleForm.getPageSize();
         processedSearchArticleForm.setPageSize(0);
         List<Integer> articlesIdList = articleMapper.searchArticlesId(processedSearchArticleForm);
         Integer articleNumber = articlesIdList.size();
@@ -89,7 +90,7 @@ public class ArticleService {
      * @param searchArticleForm
      * @return
      */
-    public SearchArticleForm searchCriteriaProcessing(SearchArticleForm searchArticleForm){
+    public SearchArticleForm searchCriteriaProcessing(SearchArticleForm searchArticleForm) {
 //        sortNumの値ごとに並び替える条件を設定
         if (searchArticleForm.getSortNum() == 0) {
             searchArticleForm.setSort("createdAt");
@@ -187,7 +188,11 @@ public class ArticleService {
     }
 
     public Article getArticle(Integer articleId) {
-        return articleMapper.getArticleAndFeedback(articleId);
+        Article article = articleMapper.getArticleAndFeedback(articleId);
+        if (Objects.nonNull(article) && Objects.isNull(article.getQiitaRecommendPoint())) {
+            article.setQiitaRecommendPoint(0);
+        }
+        return article;
     }
 
     /**

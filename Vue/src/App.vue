@@ -25,7 +25,6 @@
 <script>
 import Header from './components/Header'
 import Footer from './components/Footer'
-import {mapActions} from 'vuex'
 
 export default {
   name: 'App',
@@ -34,7 +33,6 @@ export default {
     Header,Footer
   },
   created(){
-    this.fetchTags()
   },
   methods: {
     onScroll (e){
@@ -44,8 +42,7 @@ export default {
     },
     toTop () {
       this.$vuetify.goTo(0)
-    },
-    ...mapActions("articles",["fetchTags"])
+    }
   },
   data: () => ({
     fab : false
