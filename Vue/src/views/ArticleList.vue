@@ -120,11 +120,6 @@
         ></v-pagination>
       </v-col>
     </v-row>
-    <div class="Page-Btn" @click="scrollTop">
-      <i class="fas fa-chevron-up Page-Btn-Icon">
-        <v-icon dark>mdi-arrow-up</v-icon>
-      </i>
-    </div>
   </v-container>
 </template>
 
@@ -215,17 +210,6 @@ export default {
 </script>
 
 <style scoped>
-.Page-Btn {
-  position: fixed;
-  right: 200px;
-  bottom: 100px;
-  width: 45px;
-  height: 45px;
-  line-height: 45px;
-  text-align: center;
-  border-radius: 50%;
-  background-color:#008b8b;
-}
 .list {
   width: 800px;
   padding-top:100px;
