@@ -276,9 +276,6 @@ export default {
         console.log(error);
       }
     },
-    commitMarkDownText({commit},text) {
-      commit("mutateMarkDownText", text)
-    }
   },
   getters: {
     compiledMarkdown:state=>marked(state.article.content)
