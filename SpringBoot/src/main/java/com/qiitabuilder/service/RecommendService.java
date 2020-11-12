@@ -33,9 +33,9 @@ public class RecommendService {
         Integer recommendUserId = loginUser.getUser().getUserId();
 
         Recommend result = recommendMapper.findByArticleIdAndRecommendUserId(articleId, recommendUserId);
-        // Qiita推薦済みでない場合はNotFoundを返す
+        // Qiita推薦済みでない場合はNoContentを返す
         if (Objects.isNull(result)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT);
         }
         return result;
     }
