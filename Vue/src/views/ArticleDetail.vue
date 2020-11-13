@@ -1,96 +1,130 @@
 <template>
   <v-app class="grey lighten-3 area">
+    <v-snackbar
+        v-model="isPostedArticleToQiita"
+    >
+      Qiitaへ記事を投稿しました!!!
+    </v-snackbar>
     <v-row>
       <v-col class="hidden-xs-only hidden-sm-only" :md="mdPlacement.buttons">
         <v-row id="qiita_btn">
           <!-- Qiitaボタン -->
           <v-col
-            cols="12"
-            style="text-align: center; padding: 0"
-            class="green--text"
+              cols="12"
+              style="text-align: center; padding: 0"
+              class="green--text"
           >
             {{ article.qiitaRecommendPoint }}
           </v-col>
           <v-col cols="12" style="text-align: center;">
             <!-- 登録済み -->
-            <v-btn
-              v-if="recommendId"
-              class="mx-2"
-              fab
-              dark
-              color="green"
-              @click="toggleRecommend"
-            >
-              <v-icon large dark>
-                mdi-thumb-up
-              </v-icon>
-            </v-btn>
-            <!-- 未登録 -->
-            <v-btn
-              v-if="!recommendId"
-              class="mx-2"
-              fab
-              outlined
-              color="green"
-              @click="toggleRecommend"
-            >
-              <v-icon large color="green">
-                mdi-thumb-up
-              </v-icon>
-            </v-btn>
+            <v-tooltip top v-if="recommendId">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  v-bind="attrs"
+                  v-on="on"
+                  class="mx-2"
+                  fab
+                  dark
+                  color="green"
+                  @click="toggleRecommend"
+                >
+                  <v-icon large dark>
+                    mdi-thumb-up
+                  </v-icon>
+                </v-btn>
+              </template>
+              <span>Qiita推薦</span>
+            </v-tooltip>
+            <v-tooltip top v-if="!recommendId">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  v-bind="attrs"
+                  v-on="on"
+                  class="mx-2"
+                  fab
+                  outlined
+                  color="green"
+                  @click="toggleRecommend"
+                >
+                  <v-icon large color="green">
+                    mdi-thumb-up
+                  </v-icon>
+                </v-btn>
+              </template>
+              <span>Qiita推薦</span>
+            </v-tooltip>
           </v-col>
 
           <!-- My記事ボタン -->
           <v-col cols="12" style="text-align: center;">
             <!-- 登録済み -->
-            <v-btn
-              v-if="myArticleId"
-              class="mx-2"
-              fab
-              dark
-              color="pink"
-              @click="toggleMyArticle"
-            >
-              <v-icon large dark>
-                mdi-heart
-              </v-icon>
-            </v-btn>
+            <v-tooltip top v-if="myArticleId">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  v-bind="attrs"
+                  v-on="on"
+                  class="mx-2"
+                  fab
+                  dark
+                  color="pink"
+                  @click="toggleMyArticle"
+                >
+                  <v-icon large dark>
+                    mdi-heart
+                  </v-icon>
+                </v-btn>
+              </template>
+              <span>My記事登録</span>
+            </v-tooltip>
             <!-- 未登録 -->
-            <v-btn
-              v-if="!myArticleId"
-              class="mx-2"
-              fab
-              @click="toggleMyArticle"
-            >
-              <v-icon large color="blue-grey">
-                mdi-heart
-              </v-icon>
-            </v-btn>
+            <v-tooltip top v-if="!myArticleId">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  v-bind="attrs"
+                  v-on="on"
+                  class="mx-2"
+                  fab
+                  @click="toggleMyArticle"
+                >
+                  <v-icon large color="blue-grey">
+                    mdi-heart
+                  </v-icon>
+                </v-btn>
+              </template>
+              <span>My記事登録</span>
+            </v-tooltip>
           </v-col>
         </v-row>
       </v-col>
       <v-col cols="12" sm="12" :md="mdPlacement.article">
         <v-sheet min-height="70vh" rounded="lg">
-          <Article :article="article" />
+          <Article
+            :article="article"
+            :myArticleId="myArticleId"
+            :recommendId="recommendId"
+            @toggleMyArticle="toggleMyArticle"
+            @toggleRecommend="toggleRecommend"
+          />
           <Feedbacks :feedbacks="feedbacks" @editFeedback="editFeedback" />
         </v-sheet>
       </v-col>
       <v-col cols="12" sm="12" :md="mdPlacement.editor">
         <span v-show="EditorIsOpen">
           <FeedbackEditor
-            class="sticky"
-            @closeEditor="closeEditor"
-            @postFeedback="postFeedback"
-            :feedback="propsFeedback"
+              class="sticky"
+              @closeEditor="closeEditor"
+              @postFeedback="postFeedback"
+              :feedback="propsFeedback"
           />
         </span>
         <span v-show="!EditorIsOpen">
           <v-btn
-            color="gray"
-            icon
-            large
-            @click="openNewEditor"
-            class="toggle_editor_btn"
+              color="gray"
+              icon
+              large
+              @click="openNewEditor"
+              class="toggle_editor_btn"
           >
             <v-icon>mdi-comment-plus</v-icon>
           </v-btn>
@@ -101,7 +135,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import {mapActions} from "vuex";
 import Article from "../components/article_detail/Article";
 import Feedbacks from "../components/article_detail/Feedbacks";
 import FeedbackEditor from "../components/article_detail/FeedbackEditor";
@@ -122,11 +156,12 @@ export default {
       },
       feedbackForNewPost: {
         articleId: null,
-        feedbackId: null,
         content: "",
         deleteFlag: 0,
       },
       propsFeedback: {},
+      //snackbarに使用するメソッド
+      isPostedArticleToQiita: false
     };
   },
   computed: {
@@ -140,8 +175,8 @@ export default {
       return this.$store.state.article.article.feedbacks;
     },
     mdPlacement() {
-      if (this.EditorIsOpen) return { buttons: 1, article: 7, editor: 4 };
-      return { buttons: 2, article: 8, editor: 2 };
+      if (this.EditorIsOpen) return {buttons: 1, article: 7, editor: 4};
+      return {buttons: 2, article: 8, editor: 2};
     },
     apiToken() {
       return this.$store.getters["auth/apiToken"];
@@ -154,11 +189,15 @@ export default {
     },
   },
   watch: {
-    apiToken: function() {
+    apiToken: function () {
       this.fetchArticle(this.slug);
       this.fetchMyArticle(this.slug);
       this.fetchRecommend(this.slug);
       this.$store.dispatch("auth/checkIsLinkedToQiita");
+
+      if(this.$route.query.isPostedArticleToQiita) {
+        this.isPostedArticleToQiita = true;
+      }
     },
   },
   created() {
@@ -195,7 +234,16 @@ export default {
     },
     async editFeedback(feedback) {
       this.feedbackForUpdate = feedback;
-      this.propsFeedback = await this.feedbackForUpdate;
+      // プロパティのみ代入し引数feedbackとのリアクティブを解除
+      this.propsFeedback = {
+        articleId: feedback.articleId,
+        content: feedback.content,
+        createdAt: feedback.createdAt,
+        deleteFlag: feedback.deleteFlag,
+        feedbackId: feedback.feedbackId,
+        postedUser: feedback.postedUser,
+        updatedAt: feedback.updatedAt,
+      };
       this.EditorIsOpen = true;
     },
     toggleMyArticle() {
@@ -203,8 +251,8 @@ export default {
         this.$store.dispatch("article/deleteMyArticle", this.myArticleId);
       } else {
         this.$store.dispatch(
-          "article/registerMyArticle",
-          this.article.articleId
+            "article/registerMyArticle",
+            this.article.articleId
         );
       }
     },
@@ -213,8 +261,8 @@ export default {
         this.$store.dispatch("article/deleteRecommend", this.recommendId);
       } else {
         this.$store.dispatch(
-          "article/registerRecommend",
-          this.article.articleId
+            "article/registerRecommend",
+            this.article.articleId
         );
       }
     },
@@ -232,13 +280,16 @@ export default {
   position: sticky;
   top: 5%;
 }
+
 .toggle_editor_btn {
   position: sticky;
   top: 30%;
 }
+
 .area {
   padding: 20px;
 }
+
 #qiita_btn {
   position: sticky;
   top: 30%;

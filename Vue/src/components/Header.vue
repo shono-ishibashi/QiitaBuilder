@@ -81,7 +81,6 @@
 
 <script>
 import {mapGetters,mapActions} from 'vuex'
-import axios from "axios";
 
 export default {
   name: "Header",
@@ -100,15 +99,6 @@ export default {
     },
     toRanking(){
       this.$router.push({name:'ranking'},()=>{})
-    },
-    toQiitaAPIAuthentication() {
-      axios.get(this.$store.getters.API_URL + 'qiita/to-qiita-api-authentication', {
-        headers: {
-          Authorization: this.$store.getters["auth/apiToken"]
-        }
-      }).then((response) => {
-        location.href = response.data;
-      })
     },
   }
 }

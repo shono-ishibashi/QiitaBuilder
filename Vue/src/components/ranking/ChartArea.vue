@@ -97,8 +97,16 @@ export default {
     chartData: function () {
       let countMax;
       let countMin;
+
+      let lastIndex;
+      if (this.rankUsers.length < 10) {
+        lastIndex = this.rankUsers.length - 1;
+      } else {
+        lastIndex = 9;
+      }
+
       const rank1User = this.rankUsers[0];
-      const rank10User = this.rankUsers[9];
+      const rank10User = this.rankUsers[lastIndex];
 
       switch (this.selectRankItemId) {
         case 1:
@@ -144,7 +152,17 @@ export default {
               stepSize: 5
             }
           }]
-        }
+        },
+        responsive: true,
+        onClick: this.handle
+      }
+    }
+  },
+  methods: {
+    handle(point, event) {
+      if (typeof event[0] === 'object') {
+        const item = event[0];
+        this.$emit('receive-index', item._index)
       }
     }
   }

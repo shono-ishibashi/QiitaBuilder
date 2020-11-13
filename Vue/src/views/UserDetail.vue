@@ -23,7 +23,7 @@
           <v-layout justify-center>
             Qiita投稿数 / Builder投稿数<br></v-layout>
           <v-layout justify-center>
-            {{ userDetail.postedArticleCount }} / {{ postedArticles.length }}
+            {{ userDetail.postedArticleCount }} / {{ notDraftArticles.length }}
           </v-layout>
         </v-card>
       </v-col>
@@ -56,7 +56,7 @@
             <v-tabs v-model="activeStateTab">
               <v-tab v-for="tab of stateTabs" :key="tab.id" @click="changeListState(tab.id)">{{ tab.name }}</v-tab>
               <v-tab
-                  v-if="userDetail.isLoginUser"
+                  v-if="userDetail.isLoginUser&&displayListNum===1"
                   @click="changeListState(0)">
                 下書き記事
               </v-tab>
@@ -123,7 +123,6 @@
 <script>
 import {mapState, mapActions, mapGetters} from "vuex";
 import ArticleCard from "../components/ArticleCard";
-import axios from "axios";
 import Pie from "@/components/user_detail/Pie";
 import * as palette from "google-palette";
 
@@ -167,9 +166,9 @@ export default {
       activeListTab: 0,//記事Tabの選択されているタブのインデックス
       activeStateTab: 0,//記事StateTabの選択されているタブのインデックス
       listTabs: [
-        {id: 1, name: '投稿記事'},
-        {id: 2, name: 'FB記事'},
-        {id: 3, name: 'My記事'}
+        {id: 1, name: '公開中の投稿記事'},
+        {id: 2, name: '公開中のFBした記事'},
+        {id: 3, name: '公開中のMy記事'}
       ],//記事タブ表示用リスト
       stateTabs: [
         {id: 10, name: '全記事'},
@@ -219,6 +218,7 @@ export default {
     },
     ...mapGetters("user", [
       "postedArticles",
+      "notDraftArticles",
       "feedbackArticles",
       "myArticles",
       "userId",
@@ -300,15 +300,21 @@ export default {
         if (this.displayListNum === 3) articlesFromVuex = this.myArticles;
       }
       if (listSate !== 10) {
-        if (this.displayListNum === 1) articlesFromVuex = this.postedArticles.filter((art) => {
-          return art.stateFlag === listSate
-        });
-        if (this.displayListNum === 2) articlesFromVuex = this.feedbackArticles.filter((art) => {
-          return art.stateFlag === listSate
-        });
-        if (this.displayListNum === 3) articlesFromVuex = this.myArticles.filter((art) => {
-          return art.stateFlag === listSate
-        });
+        if (this.displayListNum === 1 && this.postedArticles.length !== 0) {
+          articlesFromVuex = this.postedArticles.filter((art) => {
+            return art.stateFlag === listSate
+          })
+        }
+        if (this.displayListNum === 2 && this.feedbackArticles.length !== 0) {
+          articlesFromVuex = this.feedbackArticles.filter((art) => {
+            return art.stateFlag === listSate
+          })
+        }
+        if (this.displayListNum === 3 && this.myArticles.length !== 0) {
+          articlesFromVuex = this.myArticles.filter((art) => {
+            return art.stateFlag === listSate
+          })
+        }
       }
       this.setArticlesAndTags(articlesFromVuex);
       if (articlesFromVuex.length === 0) {
@@ -352,21 +358,6 @@ export default {
       this.length = Math.ceil(this.displayArticles.length / this.pageSize);
     },
 
-
-    /**
-     *
-     * Qiitaの認証画面を表示
-     *
-     */
-    toQiitaAPIAuthentication() {
-      axios.get(this.$store.getters.API_URL + 'qiita/to-qiita-api-authentication', {
-        headers: {
-          Authorization: this.$store.getters["auth/apiToken"]
-        }
-      }).then((response) => {
-        location.href = response.data;
-      })
-    },
     ...mapActions("user", [
       "setArticlesAndTags",
       "setArticles",

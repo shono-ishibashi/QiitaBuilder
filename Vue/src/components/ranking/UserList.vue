@@ -49,7 +49,9 @@ export default {
       this.currentPage = 1;
     },
     currentPage() {
-      this.$vuetify.goTo(0);
+      setTimeout(() => {
+        this.$vuetify.goTo(0);
+      }, 100)
     }
   },
   computed: {

@@ -33,7 +33,8 @@
       </v-col>
       <v-col cols="6">
         <v-row>
-          <ChartArea :select-rank-item-id="selectRankItemId" :rank-users="users"></ChartArea>
+          <ChartArea :select-rank-item-id="selectRankItemId" :rank-users="users"
+                     @receive-index="toUserDetail($event)"></ChartArea>
         </v-row>
         <v-row>
           <RelationArticles :rel-articles="relationArticles"></RelationArticles>
@@ -115,7 +116,11 @@ export default {
   },
 
   methods: {
-    ...mapActions("users", ["fetchRankingUser"])
+    ...mapActions("users", ["fetchRankingUser"]),
+    toUserDetail(index) {
+      const userId = this.users[index].userId;
+      this.$router.push({name: 'userDetail', params: {userId: userId}});
+    }
   }
 }
 </script>
