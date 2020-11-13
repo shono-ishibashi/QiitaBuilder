@@ -101,7 +101,7 @@ export default {
       //リダイレクトでstate,code が存在するなら
       if (await this.$route.query.state && await this.$route.query.code) {
         await this.authenticateQiitaAPI();
-        await router.push('/articleList');
+        await router.push('/article');
       }
     }
   },

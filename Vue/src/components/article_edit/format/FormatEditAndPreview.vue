@@ -1,12 +1,12 @@
 <template>
-    <v-row>
-      <v-col>
-        <Edit class="edit" :height="480"></Edit>
-      </v-col>
-      <v-col cols="6" class="preview">
-        <Preview></Preview>
-      </v-col>
-    </v-row>
+  <v-row>
+    <v-col>
+      <Edit class="edit" :height="700"></Edit>
+    </v-col>
+    <v-col cols="6" class="preview">
+      <Preview></Preview>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
@@ -15,11 +15,10 @@ import Preview from '../Preview'
 
 export default {
   name: "FormatEditAndPreview",
-  data(){
-    return{
-    }
+  data() {
+    return {}
   },
-  components:{
+  components: {
     Edit,
     Preview
   }
@@ -27,8 +26,8 @@ export default {
 </script>
 
 <style scoped>
-.edit{
-  position:sticky;
-  top:8%;
+.edit {
+  position: sticky;
+  top: 9%;
 }
 </style>
