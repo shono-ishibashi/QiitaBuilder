@@ -42,36 +42,6 @@ public class QiitaAPIService {
     final String SCOPE = "scope=read_qiita+write_qiita";
 
 
-    public void restTemplateTest() {
-        final String URL = "https://qiita.com/api/v2/items";
-
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("body", "# テスト from StringBoot");
-        requestBody.put("title", "テスト from StringBoot");
-        requestBody.put("private", false);
-
-        Map<String, Object> tag1 = new HashMap<>();
-        tag1.put("name", "java");
-        tag1.put("versions", new ArrayList<>());
-
-        List<Map<String, Object>> tags = new ArrayList<>();
-        tags.add(tag1);
-
-        requestBody.put("tags", tags);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.add("Authorization", "Bearer 037eefff6e3c7ad9142fe1134fe78ebc9d0603df");
-
-        // build the request
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
-
-        ResponseEntity<String> response = restTemplate.postForEntity(URL, request, String.class);
-
-        System.out.println(response);
-
-    }
 
     /**
      * 正常なリクエストか判断するためのstateを作成し、Qiita APIの認証画面へ遷移させるURLを作成するメソッド
@@ -200,6 +170,13 @@ public class QiitaAPIService {
             Map<String, Object> response = restTemplate.patchForObject(URL + '/' + article.getQiitaArticleId(), request, Map.class);
         }
     }
+
+    /**
+     *
+     * ユーザーが Qiita連携しているのかを確認するメソッド
+     *
+     * @return true:連携済み false:未連携
+     */
 
     public boolean isLinkedToQiita(){
         SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
