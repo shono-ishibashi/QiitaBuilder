@@ -94,7 +94,13 @@
       </v-col>
       <v-col cols="12" sm="12" :md="mdPlacement.article">
         <v-sheet min-height="70vh" rounded="lg">
-          <Article :article="article" />
+          <Article
+            :article="article"
+            :myArticleId="myArticleId"
+            :recommendId="recommendId"
+            @toggleMyArticle="toggleMyArticle"
+            @toggleRecommend="toggleRecommend"
+          />
           <Feedbacks :feedbacks="feedbacks" @editFeedback="editFeedback" />
         </v-sheet>
       </v-col>
