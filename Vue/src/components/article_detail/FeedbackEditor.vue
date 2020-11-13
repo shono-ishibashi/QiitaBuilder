@@ -51,11 +51,14 @@
         </v-container>
       </v-form>
       <v-container v-show="tab == 1">
-        <v-row>
-          <v-col cols="12" md="12">
-            <span v-html="compiledContent"></span>
-          </v-col>
-        </v-row>
+        <Editor
+          mode="viewer"
+          ref="editor"
+          hint="Hint"
+          :outline="true"
+          :render-config="renderConfig"
+          v-model="feedback.content"
+        />
       </v-container>
       <!-- 投稿ボタン -->
       <v-card-actions>
@@ -68,34 +71,29 @@
 </template>
 
 <script>
-import marked from "marked";
+import { Editor } from "vuetify-markdown-editor";
 
 export default {
+  components: {
+    Editor,
+  },
   data() {
     return {
       loginUser: null,
       tab: 0,
       tabs: ["編集", "プレビュー"],
-      // compiledContent: null,
+      renderConfig: {
+        // Mermaid config
+        mermaid: {
+          theme: "dark",
+        },
+      },
     };
   },
   props: ["feedback"],
   created() {
     this.loginUser = this.$store.state.auth.loginUser;
   },
-  computed: {
-    compiledContent() {
-      return marked(this.feedback.content);
-    },
-  },
-  // watch: {
-  //   feedback: {
-  //     immediate: true,
-  //     handler: function() {
-  //       this.compiledContent = marked(this.feedback.content);
-  //     },
-  //   },
-  // },
   filters: {
     postOrEdit: function(value) {
       if (!value) return "投稿";

@@ -158,6 +158,7 @@ export default {
       this.fetchArticle(this.slug);
       this.fetchMyArticle(this.slug);
       this.fetchRecommend(this.slug);
+      this.$store.dispatch("auth/checkIsLinkedToQiita");
     },
   },
   created() {

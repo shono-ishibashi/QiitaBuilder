@@ -5,8 +5,8 @@
         <v-col cols="auto">
           <v-avatar size="30px" color="green">
             <img
-              v-if="feedback.postedUser.photoURL"
-              :src="feedback.postedUser.photoURL"
+              v-if="feedback.postedUser.photoUrl"
+              :src="feedback.postedUser.photoUrl"
               alt="user-icon"
             />
             <v-icon v-else dark size="30px">
@@ -49,8 +49,15 @@
         <v-spacer></v-spacer>
       </v-row>
       <v-row>
-        <v-col cols="auto">
-          <v-card-text v-html="compiledContent"></v-card-text>
+        <v-col cols="12">
+          <Editor
+            mode="viewer"
+            ref="editor"
+            hint="Hint"
+            :outline="true"
+            :render-config="renderConfig"
+            v-model="feedback.content"
+          />
         </v-col>
       </v-row>
     </v-card>
@@ -58,18 +65,25 @@
 </template>
 
 <script>
-import marked from "marked";
-import hljs from "highlight.js";
-import "highlight.js/styles/github.css";
+import { Editor } from "vuetify-markdown-editor";
 
 export default {
   name: "Feedback",
+  components: {
+    Editor,
+  },
   data() {
     return {
       menus: [
         { name: "編集する", action: this.editFeedback },
         { name: "削除する", action: this.deleteFeedback },
       ],
+      renderConfig: {
+        // Mermaid config
+        mermaid: {
+          theme: "dark",
+        },
+      },
     };
   },
   props: ["feedback"],
@@ -83,19 +97,6 @@ export default {
     loginUser() {
       return this.$store.state.auth.loginUser;
     },
-    compiledContent() {
-      return marked(this.feedback.content);
-    },
-  },
-  created() {
-    marked.setOptions({
-      // code要素にdefaultで付くlangage-を削除
-      langPrefix: "",
-      // highlightjsを使用したハイライト処理を追加
-      highlight: function(code, lang) {
-        return hljs.highlightAuto(code, [lang]).value;
-      },
-    });
   },
   filters: {
     date: function(value) {

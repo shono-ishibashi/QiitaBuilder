@@ -21,16 +21,18 @@
         <v-col class="hidden-xs-only" sm="4" md="4">
           {{ lastEditAt.time | date }}{{ lastEditAt.text }}
         </v-col>
+        <!-- Qiita投稿状況 -->
         <v-col class="" sm="3" md="3">
-          <v-menu offset-y>
+          <v-menu offset-y v-if="loginUser.uid == article.postedUser.uid">
             <template v-slot:activator="{ attrs, on }">
               <v-btn
                 v-bind="attrs"
                 v-on="on"
-                class="white"
+                color="green"
+                outlined
                 style="text-transform: none;"
               >
-                {{ article.stateFlag | naming }}
+                {{ article.stateFlag | naming }} ▼
               </v-btn>
             </template>
             <v-list>
@@ -43,9 +45,23 @@
               </v-list-item>
             </v-list>
           </v-menu>
+          <v-btn
+            v-if="loginUser.uid != article.postedUser.uid"
+            color="green"
+            outlined
+            style="text-transform: none; cursor: default;"
+          >
+            {{ article.stateFlag | naming }}
+          </v-btn>
         </v-col>
 
-        <v-col class="" sm="2" md="2">
+        <!-- 記事メニュー -->
+        <v-col
+          class=""
+          sm="2"
+          md="2"
+          v-if="loginUser.uid == article.postedUser.uid"
+        >
           <v-menu offset-y>
             <template v-slot:activator="{ attrs, on }">
               <v-btn icon v-bind="attrs" v-on="on" class="">
@@ -98,7 +114,14 @@
       </v-chip-group>
     </v-container>
     <v-container>
-      <span v-html="compiledContent"></span>
+      <Editor
+        mode="viewer"
+        ref="editor"
+        hint="Hint"
+        :outline="true"
+        :render-config="renderConfig"
+        v-model="article.content"
+      />
     </v-container>
     <v-dialog v-model="dialog" max-width="290">
       <v-card>
@@ -123,11 +146,12 @@
 </template>
 
 <script>
-import marked from "marked";
-import hljs from "highlight.js";
-import "highlight.js/styles/github-gist.css";
+import { Editor } from "vuetify-markdown-editor";
 
 export default {
+  components: {
+    Editor,
+  },
   data() {
     return {
       menus: [
@@ -136,6 +160,12 @@ export default {
       ],
       dateFormat: ["年", "月", "日"],
       dialog: false,
+      renderConfig: {
+        // Mermaid config
+        mermaid: {
+          theme: "dark"
+        }
+      }
     };
   },
   computed: {
@@ -145,25 +175,22 @@ export default {
       }
       return { time: this.article.createdAt, text: "に作成" };
     },
+    loginUser() {
+      return this.$store.state.auth.loginUser;
+    },
     qiitaMenus() {
       if (this.article.stateFlag == 2)
         return [{ name: "Qiitaを更新する", action: this.updateQiita }];
       return [{ name: "Qiitaに投稿する", action: this.postQiita }];
     },
-    compiledContent() {
-      return marked(this.article.content);
-    },
   },
   props: ["article"],
-  created() {
-    marked.setOptions({
-      // code要素にdefaultで付くlangage-を削除
-      langPrefix: "",
-      // highlightjsを使用したハイライト処理を追加
-      highlight: function(code, lang) {
-        return hljs.highlightAuto(code, [lang]).value;
-      },
-    });
+  mounted() {
+    // Access properties or methods using $refs
+    // this.$refs.editor.focus();
+    // this.$refs.editor.upload();
+    // Dark theme
+    // this.$vuetify.theme.dark = true;
   },
   filters: {
     naming: function(value) {
@@ -199,7 +226,6 @@ export default {
 };
 </script>
 
-<style src="highlight.js/styles/github-gist.css"></style>
 <style scoped>
 .area {
   padding: 20px;

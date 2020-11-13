@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.*;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 
 /**
@@ -198,6 +199,13 @@ public class QiitaAPIService {
         } else {
             Map<String, Object> response = restTemplate.patchForObject(URL + '/' + article.getQiitaArticleId(), request, Map.class);
         }
+    }
 
+    public boolean isLinkedToQiita(){
+        SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        String code = qiitaConfigurationMapper.getTokenByUserId(loginUser.getUser().getUserId());
+
+        return nonNull(code);
     }
 }

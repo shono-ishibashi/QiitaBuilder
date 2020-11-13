@@ -1,17 +1,24 @@
 <template>
-  <v-container>
-    <v-row justify="center">
-      <v-col cols=5><img :src="userDetail.photoUrl" alt=""/></v-col>
+  <v-container :class="{'d-flex':windowWidthClass}">
+    <v-row justify="center" align-content="center">
+      <v-col cols=6 class="contentWrap">
+        <v-avatar size="80%">
+          <img :src="userDetail.photoUrl" alt=""/></v-avatar>
+      </v-col>
+      <v-col cols=6 align-self="center">
+        <Pie class="chart" :chart-data="chartDisplay" :options="chartOptions" v-if="userDetail.usedTags.length!==0"/>
+        <v-card v-if="userDetail.usedTags.length===0" height="80%" class="contentWrap">
+          タグの使用履歴がありません
+        </v-card>
+      </v-col>
+      <v-col cols="6" style="font-size: large" class="contentWrap"><span
+          style="font-weight: bold">{{ userDetail.displayName }}</span></v-col>
+      <v-col cols="6" class="contentWrap">
+        <v-btn @click="toQiitaAPIAuthentication" color="#5bc8ac" elevation="2" style="font-weight: bold">Qiita連携</v-btn>
+      </v-col>
+
+
       <v-col cols=5>
-        <Pie class="chart" :chart-data="chartDisplay" :options="chartOptions"/>
-      </v-col>
-
-      <v-col cols=5>{{ userDetail.displayName }}</v-col>
-      <v-col cols=4>
-        <v-btn @click="toQiitaAPIAuthentication" color="#5bc8ac" elevation="2">Qiita連携</v-btn>
-      </v-col>
-
-      <v-col cols=4>
         <v-card>
           <v-layout justify-center>
             Qiita投稿数 / Builder投稿数<br></v-layout>
@@ -20,7 +27,7 @@
           </v-layout>
         </v-card>
       </v-col>
-      <v-col cols=4>
+      <v-col cols=3>
         <v-card>
           <v-layout justify-center>FB数</v-layout>
           <v-layout justify-center>
@@ -28,7 +35,7 @@
           </v-layout>
         </v-card>
       </v-col>
-      <v-col cols=4>
+      <v-col cols="4">
         <v-card>
           <v-layout justify-center>総獲得推奨数</v-layout>
           <v-layout justify-center>
@@ -36,79 +43,80 @@
           </v-layout>
         </v-card>
       </v-col>
-
-      <v-col cols="4">
-        <v-btn color="#5bc8ac" @click="changeList(1)">投稿記事</v-btn>
-      </v-col>
-      <v-col cols="4">
-        <v-btn color="#5bc8ac" @click="changeList(2)">FB記事</v-btn>
-      </v-col>
-      <v-col cols="4">
-        <v-btn color="#5bc8ac" @click="changeList(3)">My記事</v-btn>
-      </v-col>
-
-      <v-col cols="12" v-if="displayListNum===1||displayListNum===11||displayListNum===12||displayListNum===13">
-        <v-btn color="#5bc8ac" @click="changeList(1)">全記事</v-btn>
-        <v-btn color="#5bc8ac" @click="changeList(11)">Qiita 未投稿記事</v-btn>
-        <v-btn color="#5bc8ac" @click="changeList(12)">Qiita 投稿済み記事</v-btn>
-        <v-btn
-            v-if="userDetail.isLoginUser"
-            color="#5bc8ac"
-            @click="changeList(13)">
-          下書き記事
-        </v-btn>
-      </v-col>
-
-      <v-col cols="5">
-        <v-text-field v-model="conditions.title"
-                      label="記事タイトルを入力"></v-text-field>
-      </v-col>
-      <v-col cols="5">
-        <v-autocomplete
-            v-model="conditions.conditionTags"
-            :items="usedTags"
-            item-value="tagId"
-            item-text="tagName"
-            label="タグを選択"
-            chips
-            deletable-chips
-            multiple
-            small-chips
-        >
-        </v-autocomplete>
-      </v-col>
-      <v-col cols="2">
-        <v-btn @click="searchWithConditions" color="#5bc8ac" elevation="2">検索</v-btn>
-      </v-col>
-      <v-col cols="4">
-        <v-select
-            :items="sortList"
-            item-value="key"
-            item-text="state"
-            item-color="green"
-            color="#5bc8ac"
-            v-model="sortNum"
-        >
-        </v-select>
-      </v-col>
-      <v-col cols="10">
-        <ArticleCard v-for="(article,index) in sortedArticles" :key="article.articleId" :article="article"
-                     :is="articleCardDisplay" :index="index">
-        </ArticleCard>
-        <div v-if="displayArticles.length===0">
-          該当する記事がありません
-        </div>
-        <v-pagination
-            v-model="page"
-            :length="length"
-            prev-icon="mdi-menu-left"
-            next-icon="mdi-menu-right"
-            dark
-        ></v-pagination>
-
-      </v-col>
     </v-row>
 
+    <v-container>
+      <v-tabs v-model="activeListTab">
+        <v-tab v-for="tab of listTabs" :key="tab.id" @click="changeList(tab.id)">{{ tab.name }}</v-tab>
+      </v-tabs>
+
+      <v-card outlined>
+        <v-container>
+          <v-row>
+            <v-tabs v-model="activeStateTab">
+              <v-tab v-for="tab of stateTabs" :key="tab.id" @click="changeListState(tab.id)">{{ tab.name }}</v-tab>
+              <v-tab
+                  v-if="userDetail.isLoginUser"
+                  @click="changeListState(0)">
+                下書き記事
+              </v-tab>
+            </v-tabs>
+
+            <v-col cols="5">
+              <v-text-field v-model="conditions.title"
+                            label="記事タイトルを入力"></v-text-field>
+            </v-col>
+            <v-col cols="5">
+              <v-autocomplete
+                  v-model="conditions.conditionTags"
+                  :items="usedTags"
+                  item-value="tagId"
+                  item-text="tagName"
+                  label="タグを選択"
+                  chips
+                  deletable-chips
+                  multiple
+                  small-chips
+              >
+              </v-autocomplete>
+            </v-col>
+            <v-col cols="2">
+              <v-btn @click="searchWithConditions" color="#5bc8ac" elevation="2" style="font-weight: bold">検索</v-btn>
+            </v-col>
+
+            <v-layout justify-center>
+              <v-col cols="4">
+                <v-select
+                    :items="sortList"
+                    item-value="key"
+                    item-text="state"
+                    item-color="green"
+                    color="#5bc8ac"
+                    v-model="sortNum"
+                >
+                </v-select>
+              </v-col>
+            </v-layout>
+            <v-col cols="10">
+              <ArticleCard v-for="(article,index) in sortedArticles" :key="article.articleId" :article="article"
+                           :is="articleCardDisplay" :index="index">
+              </ArticleCard>
+              <v-card v-if="sortedArticles.length===0" class="contentWrap">
+                該当する記事がありません
+              </v-card>
+              <v-pagination
+                  v-model="page"
+                  :length="length"
+                  prev-icon="mdi-menu-left"
+                  next-icon="mdi-menu-right"
+                  dark
+              ></v-pagination>
+
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card>
+    </v-container>
   </v-container>
 </template>
 
@@ -132,14 +140,13 @@ export default {
             backgroundColor: [],
           },
         ]
-      },
+      },//Pieコンポーネントに渡してグラフを表示するためのデータ。DBからタグ使用率を取り次第dataとcolor指定
       chartOptions: {
         responsive: true,
         legend: {
           position: 'right'
         }
-      },
-      //chartDisplayData: null,//コンポーネント表示切替用真偽値
+      },//Pieコンポーネントのグラフ表示用オプション
       sortList: [
         {key: 0, state: "新着順"},
         {key: 1, state: "更新順"},
@@ -149,13 +156,26 @@ export default {
       sortNum: 0,//現在のソートkey
       page: 1,//現在のページ
       pageSize: 10,//ページ当たりの記事数
-      articles: [],//データ整理用list
-      //articleCardDisplay: ArticleCard,//コンポーネント表示切替用真偽値
       displayListNum: 1,//1:posted, 2:feedback, 3:my, 11:notPostedQiita, 12:postedQiita, 13:draft
+      displayListState: 10,//10:all, 0:draft, 1:notPostedQiita, 2:postedQiita
       conditions: {
         title: "",
         conditionTags: []
       },//検索条件
+      windowWidth: window.innerWidth,//画面横幅
+      windowWidthClass: false,//画面横幅に応じて付与するクラスの切り替え用boolean
+      activeListTab: 0,//記事Tabの選択されているタブのインデックス
+      activeStateTab: 0,//記事StateTabの選択されているタブのインデックス
+      listTabs: [
+        {id: 1, name: '投稿記事'},
+        {id: 2, name: 'FB記事'},
+        {id: 3, name: 'My記事'}
+      ],//記事タブ表示用リスト
+      stateTabs: [
+        {id: 10, name: '全記事'},
+        {id: 1, name: 'Qiita未投稿記事'},
+        {id: 2, name: 'Qiita投稿済み記事'},
+      ],//記事stateタブ表示用リスト
     };
   },
   computed: {
@@ -198,15 +218,15 @@ export default {
       },
     },
     ...mapGetters("user", [
+      "postedArticles",
+      "feedbackArticles",
+      "myArticles",
       "userId",
-      "notPostedQiitaArticles",
-      "postedQiitaArticles",
-      "draftArticles",
-      "displayArticles", "" +
+      "displayArticles",
       "usedTags",
       "articleCardDisplay",
       "chartDisplay",]),
-    ...mapState("user", ["userDetail", "postedArticles", "feedbackArticles", "myArticles"])
+    ...mapState("user", ["userDetail",])
   },
   watch: {
     sortNum() {
@@ -244,28 +264,51 @@ export default {
      * @param listNum (1:投稿記事), (2:FB記事), (3:My記事)
      */
     changeList(listNum) {
-      this.setArticlesAndTags([]);
-      //this.usedTags.length = 0;
       this.conditions.title = "";
       this.conditions.conditionTags = [];
       this.displayListNum = listNum;
+      this.displayListState = 10;
       this.sortNum = 0;
+      this.activeListTab = listNum - 1;
+      this.activeStateTab = 0;
       let articlesFromVuex = [];
 
-      if (listNum === 1) {
-        articlesFromVuex = this.postedArticles;
-      } else if (listNum === 2) {
-        articlesFromVuex = this.feedbackArticles;
-      } else if (listNum === 3) {
-        articlesFromVuex = this.myArticles;
-      } else if (listNum === 11) {
-        articlesFromVuex = this.notPostedQiitaArticles;
-      } else if (listNum === 12) {
-        articlesFromVuex = this.postedQiitaArticles;
-      } else if (listNum === 13 && this.userDetail.isLoginUser) {
-        articlesFromVuex = this.draftArticles;
-      } else {
-        console.log("予期せぬ値 listNum:" + listNum);
+      if (listNum === 1) articlesFromVuex = this.postedArticles;
+      if (listNum === 2) articlesFromVuex = this.feedbackArticles;
+      if (listNum === 3) articlesFromVuex = this.myArticles;
+      this.setArticlesAndTags(articlesFromVuex);
+      if (articlesFromVuex.length === 0) {
+        this.sortedArticles.length = 0;
+      }
+      this.page = 1;
+      this.length = Math.ceil(this.displayArticles.length / this.pageSize);
+    },
+    /**
+     * 表示したい記事に対応する数値を渡して、表示する記事一覧を変更する
+     * @param listSate (10:全記事), (1:Qiita未投稿記事), (2:Qiita投稿済み記事), (3:下書き記事)
+     */
+    changeListState(listSate) {
+      this.conditions.title = "";
+      this.conditions.conditionTags = [];
+      this.displayListState = listSate;
+      this.sortNum = 0;
+
+      let articlesFromVuex = [];
+      if (listSate === 10) {
+        if (this.displayListNum === 1) articlesFromVuex = this.postedArticles;
+        if (this.displayListNum === 2) articlesFromVuex = this.feedbackArticles;
+        if (this.displayListNum === 3) articlesFromVuex = this.myArticles;
+      }
+      if (listSate !== 10) {
+        if (this.displayListNum === 1) articlesFromVuex = this.postedArticles.filter((art) => {
+          return art.stateFlag === listSate
+        });
+        if (this.displayListNum === 2) articlesFromVuex = this.feedbackArticles.filter((art) => {
+          return art.stateFlag === listSate
+        });
+        if (this.displayListNum === 3) articlesFromVuex = this.myArticles.filter((art) => {
+          return art.stateFlag === listSate
+        });
       }
       this.setArticlesAndTags(articlesFromVuex);
       if (articlesFromVuex.length === 0) {
@@ -274,34 +317,37 @@ export default {
       this.page = 1;
       this.length = Math.ceil(this.displayArticles.length / this.pageSize);
     },
+    /**
+     * 入力された検索条件とタグ条件に応じた記事を検索する
+     */
     searchWithConditions() {
-      if (this.displayListNum === 1) {
-        this.articles = this.postedArticles
+      let articlesFromVuex = [];
+      if (this.displayListState === 10) {
+        if (this.displayListNum === 1) articlesFromVuex = this.postedArticles;
+        if (this.displayListNum === 2) articlesFromVuex = this.feedbackArticles;
+        if (this.displayListNum === 3) articlesFromVuex = this.myArticles;
       }
-      if (this.displayListNum === 2) {
-        this.articles = this.feedbackArticles
+      if (this.displayListState !== 10) {
+        if (this.displayListNum === 1) articlesFromVuex = this.postedArticles.filter((art) => {
+          return art.stateFlag === this.displayListState
+        });
+        if (this.displayListNum === 2) articlesFromVuex = this.feedbackArticles.filter((art) => {
+          return art.stateFlag === this.displayListState
+        });
+        if (this.displayListNum === 3) articlesFromVuex = this.myArticles.filter((art) => {
+          return art.stateFlag === this.displayListState
+        });
       }
-      if (this.displayListNum === 3) {
-        this.articles = this.myArticles
-      }
-      if (this.displayListNum === 11) {
-        this.articles = this.notPostedQiitaArticles
-      }
-      if (this.displayListNum === 12) {
-        this.articles = this.postedQiitaArticles
-      }
-      if (this.displayListNum === 13 && this.userDetail.isLoginUser) {
-        this.articles = this.draftArticles
-      }
-      this.articles = this.articles.filter(article => {
+
+      articlesFromVuex = articlesFromVuex.filter(article => {
         return article.title.includes(this.conditions.title)
       })
       for (let conTag of this.conditions.conditionTags) {
-        this.articles = this.articles.filter(function (value) {
+        articlesFromVuex = articlesFromVuex.filter(function (value) {
           return value.tags.find(artTag => artTag.tagId === conTag)
         })
       }
-      this.setArticlesAndTags(this.articles);
+      this.setArticles(articlesFromVuex);
       this.page = 1;
       this.length = Math.ceil(this.displayArticles.length / this.pageSize);
     },
@@ -323,6 +369,7 @@ export default {
     },
     ...mapActions("user", [
       "setArticlesAndTags",
+      "setArticles",
       "setArticleCardDisplay",
       "setChartDisplay",
       "fetchUserDetail",
@@ -333,6 +380,15 @@ export default {
 
   },
   created() {
+    //画面横幅が960px以上であればwindowWidthClassをtrueに変え画面を記事一覧を横に配置
+    (this.windowWidth >= 960) ? this.windowWidthClass = true : this.windowWidthClass = false;
+  },
+  mounted() {
+    //画面の横幅が変わるが度に960px以上かを判定
+    window.onresize = () => {
+      this.windowWidth = window.innerWidth;
+      (this.windowWidth >= 960) ? this.windowWidthClass = true : this.windowWidthClass = false;
+    }
   },
   beforeRouteEnter(to, from, next) {
     //URLのparam(userId)に数値以外が入力された際に記事一覧に戻る
@@ -344,3 +400,10 @@ export default {
   }
 }
 </script>
+<style scoped>
+.contentWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>
