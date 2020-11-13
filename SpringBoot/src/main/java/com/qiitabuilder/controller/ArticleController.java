@@ -39,7 +39,6 @@ public class ArticleController {
         } else if (searchArticleForm.getStateFlagList().get(0) == 10) {
             searchArticleForm.setStateFlagList(Arrays.asList(0, 1, 2));
         }
-        System.out.println(searchArticleForm.getStateFlagList());
         return articleService.searchArticles(searchArticleForm);
     }
 
@@ -99,8 +98,6 @@ public class ArticleController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 
         }
-        System.out.println("insert");
-        System.out.println(article);
         return articleService.saveArticle(article);
     }
 
