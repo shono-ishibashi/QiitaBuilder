@@ -372,20 +372,6 @@ export default {
       this.conditions.conditionTags.splice(0);
       this.searchWithConditions();
     },
-    /**
-     *
-     * Qiitaの認証画面を表示
-     *
-     */
-    toQiitaAPIAuthentication() {
-      axios.get(this.$store.getters.API_URL + 'qiita/to-qiita-api-authentication', {
-        headers: {
-          Authorization: this.$store.getters["auth/apiToken"]
-        }
-      }).then((response) => {
-        location.href = response.data;
-      })
-    },
     ...mapActions("user", [
       "setArticlesAndTags",
       "setArticles",
