@@ -13,59 +13,82 @@
           </v-col>
           <v-col cols="12" style="text-align: center;">
             <!-- 登録済み -->
-            <v-btn
-              v-if="recommendId"
-              class="mx-2"
-              fab
-              dark
-              color="green"
-              @click="toggleRecommend"
-            >
-              <v-icon large dark>
-                mdi-thumb-up
-              </v-icon>
-            </v-btn>
-            <!-- 未登録 -->
-            <v-btn
-              v-if="!recommendId"
-              class="mx-2"
-              fab
-              outlined
-              color="green"
-              @click="toggleRecommend"
-            >
-              <v-icon large color="green">
-                mdi-thumb-up
-              </v-icon>
-            </v-btn>
+            <v-tooltip top v-if="recommendId">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  v-bind="attrs"
+                  v-on="on"
+                  class="mx-2"
+                  fab
+                  dark
+                  color="green"
+                  @click="toggleRecommend"
+                >
+                  <v-icon large dark>
+                    mdi-thumb-up
+                  </v-icon>
+                </v-btn>
+              </template>
+              <span>Qiita推薦</span>
+            </v-tooltip>
+            <v-tooltip top v-if="!recommendId">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  v-bind="attrs"
+                  v-on="on"
+                  class="mx-2"
+                  fab
+                  outlined
+                  color="green"
+                  @click="toggleRecommend"
+                >
+                  <v-icon large color="green">
+                    mdi-thumb-up
+                  </v-icon>
+                </v-btn>
+              </template>
+              <span>Qiita推薦</span>
+            </v-tooltip>
           </v-col>
 
           <!-- My記事ボタン -->
           <v-col cols="12" style="text-align: center;">
             <!-- 登録済み -->
-            <v-btn
-              v-if="myArticleId"
-              class="mx-2"
-              fab
-              dark
-              color="pink"
-              @click="toggleMyArticle"
-            >
-              <v-icon large dark>
-                mdi-heart
-              </v-icon>
-            </v-btn>
+            <v-tooltip top v-if="myArticleId">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  v-bind="attrs"
+                  v-on="on"
+                  class="mx-2"
+                  fab
+                  dark
+                  color="pink"
+                  @click="toggleMyArticle"
+                >
+                  <v-icon large dark>
+                    mdi-heart
+                  </v-icon>
+                </v-btn>
+              </template>
+              <span>My記事登録</span>
+            </v-tooltip>
             <!-- 未登録 -->
-            <v-btn
-              v-if="!myArticleId"
-              class="mx-2"
-              fab
-              @click="toggleMyArticle"
-            >
-              <v-icon large color="blue-grey">
-                mdi-heart
-              </v-icon>
-            </v-btn>
+            <v-tooltip top v-if="!myArticleId">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  v-bind="attrs"
+                  v-on="on"
+                  class="mx-2"
+                  fab
+                  @click="toggleMyArticle"
+                >
+                  <v-icon large color="blue-grey">
+                    mdi-heart
+                  </v-icon>
+                </v-btn>
+              </template>
+              <span>My記事登録</span>
+            </v-tooltip>
           </v-col>
         </v-row>
       </v-col>
