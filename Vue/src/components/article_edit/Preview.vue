@@ -1,35 +1,46 @@
 <template>
   <v-container fluid class="preview">
-    <div v-html="compiledMarkdown"></div>
+    <Editor
+      mode="viewer"
+      ref="editor"
+      hint="Hint"
+      :outline="true"
+      :render-config="renderConfig"
+      v-model="content"
+    />
   </v-container>
 </template>
 
 <script>
-import {mapState,mapGetters} from 'vuex'
-import marked from "marked";
-import hljs from "highlight.js";
+import { Editor } from "vuetify-markdown-editor";
 
 export default {
+  components: {
+    Editor,
+  },
   name: "Preview",
-  created(){
-    marked.setOptions({
-      langPrefix: "",
-      highlight (code, lang) {
-        return hljs.highlightAuto(code, [lang]).value;
-      },
-    });
+  data() {
+    return {
+      renderConfig: {
+        // Mermaid config
+        mermaid: {
+          theme: "dark"
+        }
+      }
+    };
   },
   computed: {
-    ...mapState("article",["article"]),
-    ...mapGetters("article",["compiledMarkdown"]),
+    content(){
+      return this.$store.state.article.article.content;
+    }
   },
-}
+};
 </script>
 
-<style scoped >
-.preview{
-  background-color:#ffffff;
-  border:4px solid #a9a9a9;
+<style scoped>
+.preview {
+  background-color: #ffffff;
+  border: 4px solid #a9a9a9;
   min-height: 650px;
   height: auto !important;
 }
