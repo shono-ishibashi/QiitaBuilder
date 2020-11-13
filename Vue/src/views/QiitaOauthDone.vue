@@ -1,3 +1,4 @@
+<script src="../mixins/QiitaAPI.js"></script>
 <template>
   <v-app>
     <v-container v-if="isLoading">
@@ -17,7 +18,6 @@
 import {VueLoading} from 'vue-loading-template';
 import axios from 'axios';
 import {mapGetters} from 'vuex';
-import router from "@/router";
 
 export default {
   components: {
@@ -75,17 +75,7 @@ export default {
       })
     },
 
-    async postQiitaTest() {
-      await axios.post(this.API_URL + 'qiita/save-article-to-qiita', {}, {
-        headers: {
-          Authorization: await this.$store.getters["auth/apiToken"],
-        }
-      }).then((response) => {
-        console.log(response);
-      }).catch(error => {
-        console.error(error);
-      })
-    },
+
     toggleIsLoading() {
       this.isLoading = !this.isLoading;
     }
@@ -98,10 +88,24 @@ export default {
   },
   watch: {
     async apiToken() {
+
+
       //リダイレクトでstate,code が存在するなら
       if (await this.$route.query.state && await this.$route.query.code) {
         await this.authenticateQiitaAPI();
-        await router.push('/articleList');
+        //form article detail or edit page
+        const articleId = localStorage.getItem('articleId');
+        if (articleId) {
+
+          await this.$store.dispatch("auth/checkIsLinkedToQiita");
+
+          await this.postArticleToQiita(articleId);
+          await this.$router.push('/article/' + articleId + '?isPostedArticleToQiita=true');
+          await localStorage.removeItem('articleId');
+
+        } else {
+          await this.$router.push({name: 'ArticleList'});
+        }
       }
     }
   },

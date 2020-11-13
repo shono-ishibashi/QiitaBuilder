@@ -216,11 +216,13 @@ export default {
       item.stateFlag = 9;
       await this.$store.dispatch("article/saveArticle", item);
     },
-    updateQiita() {
-      console.log("updateQiita");
+    async updateQiita() {
+      await this.postArticleToQiita(this.article.articleId);
+      await this.$router.push('/article/'+ this.article.articleId + '?isPostedArticleToQiita=true');
     },
-    postQiita() {
-      console.log("postQiita");
+    async postQiita() {
+      await this.postArticleToQiita(this.article.articleId);
+      await this.$router.push('/article/'+ this.article.articleId + '?isPostedArticleToQiita=true');
     },
   },
 };
