@@ -1,15 +1,16 @@
 <template>
-    <v-textarea
-        outlined
-        v-model="markdownText"
-        full-width
-        color="#5bc8ac"
-        placeholder="markdown記法で書いてください"
-        background-color="#ffffff"
-        :height="height"
-    >
-      input
-    </v-textarea>
+  <v-textarea
+      outlined
+      v-model="markdownText"
+      full-width
+      color="#5bc8ac"
+      placeholder="markdown記法で書いてください"
+      background-color="#ffffff"
+      :height="height"
+      :rules="[required]"
+  >
+    input
+  </v-textarea>
 </template>
 
 <script>
@@ -18,7 +19,9 @@ import {mapState, mapActions} from 'vuex'
 export default {
   name: "Edit",
   data() {
-    return {}
+    return {
+      required: value => !!value || "必ず入力してください",
+    }
   },
   props: [
     "height"

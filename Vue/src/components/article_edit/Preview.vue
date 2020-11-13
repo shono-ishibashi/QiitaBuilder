@@ -5,32 +5,33 @@
 </template>
 
 <script>
-import {mapState,mapGetters} from 'vuex'
+import {mapState, mapGetters} from 'vuex'
 import marked from "marked";
 import hljs from "highlight.js";
 
 export default {
   name: "Preview",
-  created(){
+  created() {
     marked.setOptions({
       langPrefix: "",
-      highlight (code, lang) {
+      highlight(code, lang) {
         return hljs.highlightAuto(code, [lang]).value;
       },
     });
   },
   computed: {
-    ...mapState("article",["article"]),
-    ...mapGetters("article",["compiledMarkdown"]),
+    ...mapState("article", ["article"]),
+    ...mapGetters("article", ["compiledMarkdown"]),
   },
 }
 </script>
 
-<style scoped >
-.preview{
-  background-color:#ffffff;
-  border:4px solid #a9a9a9;
-  min-height: 650px;
-  height: auto !important;
+<style src="highlight.js/styles/github-gist.css"></style>
+<style scoped>
+.preview {
+  background-color: #ffffff;
+  border: 4px solid #a9a9a9;
+  height: 480px;
+  overflow: scroll;
 }
 </style>
