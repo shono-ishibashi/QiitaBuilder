@@ -1,5 +1,8 @@
 <template>
   <v-app class="grey lighten-3 area">
+    <v-snackbar v-model="isPostedArticleToQiita">
+      Qiitaへ記事を投稿しました!!!
+    </v-snackbar>
     <v-row>
       <v-col class="hidden-xs-only hidden-sm-only" :md="mdPlacement.buttons">
         <v-row id="qiita_btn">
@@ -155,6 +158,8 @@ export default {
         deleteFlag: 0,
       },
       propsFeedback: {},
+      //snackbarに使用するメソッド
+      isPostedArticleToQiita: false,
     };
   },
   computed: {
@@ -187,6 +192,9 @@ export default {
       this.fetchMyArticle(this.slug);
       this.fetchRecommend(this.slug);
       this.$store.dispatch("auth/checkIsLinkedToQiita");
+      if (this.$route.query.isPostedArticleToQiita) {
+        this.isPostedArticleToQiita = true;
+      }
     },
   },
   created() {
@@ -220,6 +228,7 @@ export default {
       } else {
         this.$store.dispatch("article/updateFeedback", this.propsFeedback);
       }
+      this.closeEditor();
     },
     async editFeedback(feedback) {
       this.feedbackForUpdate = feedback;
