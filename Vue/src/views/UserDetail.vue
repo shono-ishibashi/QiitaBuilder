@@ -301,15 +301,21 @@ export default {
         if (this.displayListNum === 3) articlesFromVuex = this.myArticles;
       }
       if (listSate !== 10) {
-        if (this.displayListNum === 1) articlesFromVuex = this.postedArticles.filter((art) => {
-          return art.stateFlag === listSate
-        });
-        if (this.displayListNum === 2) articlesFromVuex = this.feedbackArticles.filter((art) => {
-          return art.stateFlag === listSate
-        });
-        if (this.displayListNum === 3) articlesFromVuex = this.myArticles.filter((art) => {
-          return art.stateFlag === listSate
-        });
+        if (this.displayListNum === 1 && this.postedArticles.length !== 0) {
+          articlesFromVuex = this.postedArticles.filter((art) => {
+            return art.stateFlag === listSate
+          })
+        }
+        if (this.displayListNum === 2 && this.feedbackArticles.length !== 0) {
+          articlesFromVuex = this.feedbackArticles.filter((art) => {
+            return art.stateFlag === listSate
+          })
+        }
+        if (this.displayListNum === 3 && this.myArticles.length !== 0) {
+          articlesFromVuex = this.myArticles.filter((art) => {
+            return art.stateFlag === listSate
+          })
+        }
       }
       this.setArticlesAndTags(articlesFromVuex);
       if (articlesFromVuex.length === 0) {
