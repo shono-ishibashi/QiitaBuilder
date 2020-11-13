@@ -144,7 +144,17 @@ export default {
               stepSize: 5
             }
           }]
-        }
+        },
+        responsive: true,
+        onClick: this.handle
+      }
+    }
+  },
+  methods: {
+    handle(point, event) {
+      if (typeof event[0] === 'object') {
+        const item = event[0];
+        this.$emit('receive-index', item._index)
       }
     }
   }
