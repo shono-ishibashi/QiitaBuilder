@@ -1,12 +1,12 @@
 <template>
     <v-row>
-      <v-col>
+      <v-col cols="6">
         <v-row class="editAndFeedbacks">
           <Edit :height="425"></Edit>
           <Feedbacks :feedback="article.feedbacks"></Feedbacks>
         </v-row>
       </v-col>
-      <v-col>
+      <v-col cols="6">
         <Preview></Preview>
       </v-col>
     </v-row>
