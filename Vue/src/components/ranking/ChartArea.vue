@@ -1,9 +1,5 @@
 <template>
   <v-container>
-    <h3>
-      <v-icon color="#5bc8ac">mdi-chess-king</v-icon>
-      {{ rankTitle }}
-    </h3>
     <RankingChart class="ranking-chart" :chart-data="chartData" :options="options" height="60%"
                   width="100%"></RankingChart>
   </v-container>
@@ -18,12 +14,7 @@ export default {
   components: {
     RankingChart
   },
-  data() {
-    return {
-      chartData: {},
-      options: {}
-    }
-  },
+
   props: {
     selectRankItemId: {
       type: Number,
@@ -34,29 +25,19 @@ export default {
       required: true
     }
   },
-  computed: {
-    rankTitle() {
-      let rankTitle;
-      switch (this.selectRankItemId) {
-        case 1:
-          rankTitle = 'FBした数ランキング';
-          break;
-        case 2:
-          rankTitle = '記事投稿数ランキング';
-          break;
-        case 3:
-          rankTitle = 'Qiita推薦累計数ランキング';
-          break;
-      }
-      return rankTitle;
+
+  data() {
+    return {
+      chartData: {},
+      options: {}
     }
   },
+
   watch: {
     rankUsers: function () {
       let rankUserNames = [];
       let countData = [];
       let labelName = null;
-
 
       this.rankUsers.slice(0, 10).forEach(rankUser => {
         rankUserNames.push(rankUser.displayName);
@@ -158,6 +139,7 @@ export default {
       }
     }
   },
+
   methods: {
     handle(point, event) {
       if (typeof event[0] === 'object') {
