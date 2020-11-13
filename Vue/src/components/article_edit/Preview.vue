@@ -41,7 +41,7 @@ export default {
 .preview {
   background-color: #ffffff;
   border: 4px solid #a9a9a9;
-  min-height: 650px;
-  height: auto !important;
+  height: 480px;
+  overflow: scroll;
 }
 </style>

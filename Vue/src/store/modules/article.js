@@ -10,7 +10,7 @@ export default {
       title: "",
       content: "",
       stateFlag: undefined,
-      tags: [],
+      tags: undefined,
       feedbacks: [],
       qiitaRecommendPoint: null,
     },
@@ -31,7 +31,7 @@ export default {
         title: "",
         content: "",
         state_flag: undefined,
-        tags: [],
+        tags: undefined,
       };
     },
     // feedback

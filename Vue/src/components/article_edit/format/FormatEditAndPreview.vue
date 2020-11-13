@@ -1,7 +1,7 @@
 <template>
     <v-row>
-      <v-col cols="6">
-        <Edit class="edit" :height="700"></Edit>
+      <v-col>
+        <Edit class="edit" :height="480"></Edit>
       </v-col>
       <v-col cols="6" class="preview">
         <Preview></Preview>
