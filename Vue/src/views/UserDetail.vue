@@ -23,7 +23,7 @@
           <v-layout justify-center>
             Qiita投稿数 / Builder投稿数<br></v-layout>
           <v-layout justify-center>
-            {{ userDetail.postedArticleCount }} / {{ postedArticles.length }}
+            {{ userDetail.postedArticleCount }} / {{ notDraftArticles.length }}
           </v-layout>
         </v-card>
       </v-col>
@@ -167,9 +167,9 @@ export default {
       activeListTab: 0,//記事Tabの選択されているタブのインデックス
       activeStateTab: 0,//記事StateTabの選択されているタブのインデックス
       listTabs: [
-        {id: 1, name: '投稿記事'},
-        {id: 2, name: 'FB記事'},
-        {id: 3, name: 'My記事'}
+        {id: 1, name: '公開中の投稿記事'},
+        {id: 2, name: '公開中のFBした記事'},
+        {id: 3, name: '公開中のMy記事'}
       ],//記事タブ表示用リスト
       stateTabs: [
         {id: 10, name: '全記事'},
@@ -219,6 +219,7 @@ export default {
     },
     ...mapGetters("user", [
       "postedArticles",
+      "notDraftArticles",
       "feedbackArticles",
       "myArticles",
       "userId",
