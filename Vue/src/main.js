@@ -4,6 +4,7 @@ import router from './router';
 import store from './store';
 import vuetify from './plugins/vuetify';
 import firebase from 'firebase';
+import QiitaAPI from "@/mixins/QiitaAPI";
 
 Vue.config.productionTip = false
 
@@ -23,9 +24,12 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 
+Vue.mixin(QiitaAPI);
+
 new Vue({
   router,
   store,
   vuetify,
   render: h => h(App)
 }).$mount('#app')
+
