@@ -122,7 +122,6 @@ export default {
       },
       feedbackForNewPost: {
         articleId: null,
-        feedbackId: null,
         content: "",
         deleteFlag: 0,
       },
@@ -195,7 +194,16 @@ export default {
     },
     async editFeedback(feedback) {
       this.feedbackForUpdate = feedback;
-      this.propsFeedback = await this.feedbackForUpdate;
+      // プロパティのみ代入し引数feedbackとのリアクティブを解除
+      this.propsFeedback = {
+        articleId: feedback.articleId,
+        content: feedback.content,
+        createdAt: feedback.createdAt,
+        deleteFlag: feedback.deleteFlag,
+        feedbackId: feedback.feedbackId,
+        postedUser: feedback.postedUser,
+        updatedAt: feedback.updatedAt,
+      };
       this.EditorIsOpen = true;
     },
     toggleMyArticle() {
