@@ -68,6 +68,7 @@
 <script>
 export default {
   name: "UserCard",
+
   props: {
     rankUser: {
       type: Object,
@@ -82,6 +83,7 @@ export default {
       required: true
     }
   },
+
   methods: {
     toUserDetail(userId) {
       this.$router.push({name: 'userDetail', params: {userId: userId}});
