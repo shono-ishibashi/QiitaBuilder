@@ -1,9 +1,9 @@
 <template>
     <v-row>
       <v-col>
-        <Edit class="edit" :height="700"></Edit>
+        <Edit class="edit" :height="480"></Edit>
       </v-col>
-      <v-col class="preview">
+      <v-col cols="6" class="preview">
         <Preview></Preview>
       </v-col>
     </v-row>

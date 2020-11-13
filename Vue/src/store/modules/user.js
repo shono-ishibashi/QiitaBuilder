@@ -26,14 +26,30 @@ export default {
         userId(state) {
             return state.userDetail.userId
         },
-        postedQiitaArticles(state) {
-            return state.postedArticles.filter((art) => art.stateFlag === 2)
+        postedArticles(state) {
+            return (state.userDetail.isLoginUser) ? state.postedArticles : state.postedArticles.filter((art) => art.stateFlag !== 0);
         },
-        notPostedQiitaArticles(state) {
-            return state.postedArticles.filter((art) => art.stateFlag === 1)
+        feedbackArticles(state) {
+            //login(画面を開いている)ユーザーと画面に表示中のユーザーが等しいか
+            //等しい中でも表示中のFB記事の投稿者自身かで下書き表示の有無を分けている
+            return (state.userDetail.isLoginUser) ? state.feedbackArticles.filter(function (art) {
+                if (state.userDetail.userId === art.postedUser.userId) {
+                    return art
+                } else {
+                    return (art.stateFlag === 0) ? null : art
+                }
+            }) : state.feedbackArticles.filter((art) => art.stateFlag !== 0);
         },
-        draftArticles(state) {
-            return state.postedArticles.filter((art) => art.stateFlag === 0)
+        myArticles(state) {
+            //login(画面を開いている)ユーザーと画面に表示中のユーザーが等しいか
+            //等しい中でも表示中のMy記事の投稿者自身かで下書き表示の有無を分けている
+            return (state.userDetail.isLoginUser) ? state.myArticles.filter(function (art) {
+                if (state.userDetail.userId === art.postedUser.userId) {
+                    return art
+                } else {
+                    return (art.stateFlag === 0) ? null : art
+                }
+            }) : state.myArticles.filter((art) => art.stateFlag !== 0);
         },
         displayArticles(state) {
             return state.displayArticles.filter((art) => art.stateFlag !== 9)
@@ -46,7 +62,7 @@ export default {
         },
         chartDisplay(state) {
             return state.chartDisplay;
-        }
+        },
     },
     mutations: {
         setUserDetail(state, user) {
@@ -67,22 +83,20 @@ export default {
             state.feedbackArticles = feedbackArticles;
         },
         setDisplayArticles(state, articles) {
-            if (articles.length === 0) state.displayArticles.length = 0;
             articles.forEach((art) => {
                 state.displayArticles.push(art)
             })
         },
         setUsedTags(state, tags) {
-            if (tags.length === 0) state.usedTags.length = 0;
             tags.forEach((tag) => {
                 state.usedTags.push(tag)
             })
         },
         clearDisplayArticles(state) {
-            state.displayArticles.length = 0;
+            state.displayArticles.splice(0);
         },
         clearUsedTag(state) {
-            state.usedTags.length = 0;
+            state.usedTags.splice(0);
         },
         setArticleCardDisplay(state, articleCard) {
             state.articleCardDisplay = articleCard;
@@ -94,9 +108,17 @@ export default {
     actions: {
         async setArticlesAndTags({commit}, articles) {
             await commit("clearDisplayArticles");
-            await commit("setDisplayArticles", articles);
             await commit("clearUsedTag");
-            await articles.forEach((art) => commit("setUsedTags", art.tags));
+            if (articles.length !== 0) {
+                await commit("setDisplayArticles", articles);
+                await articles.forEach((art) => commit("setUsedTags", art.tags));
+            }
+        },
+        async setArticles({commit}, articles) {
+            await commit("clearDisplayArticles");
+            if (articles.length !== 0) {
+                await commit("setDisplayArticles", articles);
+            }
         },
         setArticleCardDisplay({commit}, articleCard) {
             commit("setArticleCardDisplay", articleCard)
@@ -150,7 +172,7 @@ export default {
 
 
             await axios.get(url, {
-                params: userId,
+                params: {userId},
                 headers: {
                     Authorization: apiToken,
                 },
@@ -163,7 +185,7 @@ export default {
             let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
 
             await axios.get(url, {
-                params: userId,
+                params: {userId},
                 headers: {
                     Authorization: apiToken,
                 },
