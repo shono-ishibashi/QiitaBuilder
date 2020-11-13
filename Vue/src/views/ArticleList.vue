@@ -22,7 +22,7 @@
             <v-row>
               <v-col>
                 <v-row>
-                    <v-icon @click="toggleSearchWordBox">mdi-sync-circle</v-icon>
+                  <v-icon @click="toggleSearchWordBox">mdi-sync-circle</v-icon>
                   <v-form ref="search_form">
                     <v-text-field
                         v-if="this.searchCriteria.toggleSearchWord===0"
@@ -46,9 +46,11 @@
                 </v-row>
               </v-col>
               <v-col>
+                <v-form ref="search_form">
                   <v-autocomplete
                       v-model="searchCriteria.searchTag"
                       :items="tags"
+                      :rules="[tags_limit_length]"
                       item-value="tagId"
                       item-text="tagName"
                       item-color="green"
@@ -60,6 +62,7 @@
                       small-chips
                   >
                   </v-autocomplete>
+                </v-form>
               </v-col>
             </v-row>
           </v-card-text>
@@ -145,6 +148,7 @@ export default {
       ],
       title_limit_length: value => value.length <= 100 || "100文字以内で入力してください",
       user_limit_length: value => value.length <= 30 || "30文字以内で入力してください",
+      tags_limit_length: value => value.length <= 5 || "6個以上入力しないでください",
     }
   },
   watch: {
@@ -165,7 +169,7 @@ export default {
       this.fetchArticles(this.searchCriteria)
       this.scrollTop()
     },
-    apiToken(){
+    apiToken() {
       this.fetchArticles(this.searchCriteria)
       this.fetchTags()
     }
@@ -173,8 +177,8 @@ export default {
   created() {
   },
   computed: {
-    ...mapState("articles", ["articles", "tags", "totalPage","searchCriteria"]),
-    apiToken(){
+    ...mapState("articles", ["articles", "tags", "totalPage", "searchCriteria"]),
+    apiToken() {
       return this.$store.getters["auth/apiToken"];
     }
   },
@@ -187,7 +191,7 @@ export default {
       this.searchCriteria.period = key
     },
     search() {
-      if(this.$refs.search_form.validate()){
+      if (this.$refs.search_form.validate()) {
         this.searchCriteria.currentPage = 1
         this.fetchArticles(this.searchCriteria)
       }
@@ -198,16 +202,16 @@ export default {
         behavior: "smooth"
       });
     },
-    reset(){
-      this.searchCriteria.searchWord=""
-      this.searchCriteria.searchTag=[]
+    reset() {
+      this.searchCriteria.searchWord = ""
+      this.searchCriteria.searchTag = []
       this.fetchArticles(this.searchCriteria)
     },
-    toggleSearchWordBox(){
-      if(this.searchCriteria.toggleSearchWord===0){
-        this.searchCriteria.toggleSearchWord=1
-      }else{
-        this.searchCriteria.toggleSearchWord=0
+    toggleSearchWordBox() {
+      if (this.searchCriteria.toggleSearchWord === 0) {
+        this.searchCriteria.toggleSearchWord = 1
+      } else {
+        this.searchCriteria.toggleSearchWord = 0
       }
     }
   }
@@ -217,21 +221,24 @@ export default {
 <style scoped>
 .list {
   width: 800px;
-  margin-top:100px;
-  margin-bottom:70px;
+  margin-top: 100px;
+  margin-bottom: 70px;
 }
-.searchForm{
-  margin-top:70px;
+
+.searchForm {
+  margin-top: 70px;
 }
-.no-article-field{
+
+.no-article-field {
   text-align: center;
-  height:200px;
-  margin-top:100px;
-  font-weight:bold;
-  font-size:16px;
+  height: 200px;
+  margin-top: 100px;
+  font-weight: bold;
+  font-size: 16px;
 }
-.articleList{
-  padding-bottom:40px;
+
+.articleList {
+  padding-bottom: 40px;
   /*background-color:#f5f5f5;*/
 }
 </style>

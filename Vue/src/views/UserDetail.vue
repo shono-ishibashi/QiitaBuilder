@@ -61,27 +61,33 @@
                 下書き記事
               </v-tab>
             </v-tabs>
-
-            <v-col cols="5">
-              <v-text-field v-model="conditions.title"
-                            label="記事タイトルを入力"></v-text-field>
-            </v-col>
-            <v-col cols="5">
-              <v-autocomplete
-                  v-model="conditions.conditionTags"
-                  :items="usedTags"
-                  item-value="tagId"
-                  item-text="tagName"
-                  label="タグを選択"
-                  chips
-                  deletable-chips
-                  multiple
-                  small-chips
-              >
-              </v-autocomplete>
-            </v-col>
+            <v-form ref="search_form">
+              <v-col cols="5">
+                <v-text-field
+                    v-model="conditions.title"
+                    label="記事タイトルを入力"
+                    :rules="[title_limit_length]"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="5">
+                <v-autocomplete
+                    v-model="conditions.conditionTags"
+                    :items="usedTags"
+                    :rules="[tags_limit_length]"
+                    item-value="tagId"
+                    item-text="tagName"
+                    label="タグを選択"
+                    chips
+                    deletable-chips
+                    multiple
+                    small-chips
+                >
+                </v-autocomplete>
+              </v-col>
+            </v-form>
             <v-col cols="2">
               <v-btn @click="searchWithConditions" color="#5bc8ac" elevation="2" style="font-weight: bold">検索</v-btn>
+              <v-btn @click="resetConditions" color="#ff6347" elevation="2" style="font-weight: bold">リセット</v-btn>
             </v-col>
 
             <v-layout justify-center>
@@ -176,6 +182,8 @@ export default {
         {id: 1, name: 'Qiita未投稿記事'},
         {id: 2, name: 'Qiita投稿済み記事'},
       ],//記事stateタブ表示用リスト
+      title_limit_length: value => value.length <= 100 || "100文字以内で入力してください",
+      tags_limit_length: value => value.length <= 5 || "6個以上入力しないでください",
     };
   },
   computed: {
@@ -328,38 +336,43 @@ export default {
      * 入力された検索条件とタグ条件に応じた記事を検索する
      */
     searchWithConditions() {
-      let articlesFromVuex = [];
-      if (this.displayListState === 10) {
-        if (this.displayListNum === 1) articlesFromVuex = this.postedArticles;
-        if (this.displayListNum === 2) articlesFromVuex = this.feedbackArticles;
-        if (this.displayListNum === 3) articlesFromVuex = this.myArticles;
-      }
-      if (this.displayListState !== 10) {
-        if (this.displayListNum === 1) articlesFromVuex = this.postedArticles.filter((art) => {
-          return art.stateFlag === this.displayListState
-        });
-        if (this.displayListNum === 2) articlesFromVuex = this.feedbackArticles.filter((art) => {
-          return art.stateFlag === this.displayListState
-        });
-        if (this.displayListNum === 3) articlesFromVuex = this.myArticles.filter((art) => {
-          return art.stateFlag === this.displayListState
-        });
-      }
+      if (this.$refs.search_form.validate()) {
+        let articlesFromVuex = [];
+        if (this.displayListState === 10) {
+          if (this.displayListNum === 1) articlesFromVuex = this.postedArticles;
+          if (this.displayListNum === 2) articlesFromVuex = this.feedbackArticles;
+          if (this.displayListNum === 3) articlesFromVuex = this.myArticles;
+        }
+        if (this.displayListState !== 10) {
+          if (this.displayListNum === 1) articlesFromVuex = this.postedArticles.filter((art) => {
+            return art.stateFlag === this.displayListState
+          });
+          if (this.displayListNum === 2) articlesFromVuex = this.feedbackArticles.filter((art) => {
+            return art.stateFlag === this.displayListState
+          });
+          if (this.displayListNum === 3) articlesFromVuex = this.myArticles.filter((art) => {
+            return art.stateFlag === this.displayListState
+          });
+        }
 
-      articlesFromVuex = articlesFromVuex.filter(article => {
-        return article.title.includes(this.conditions.title)
-      })
-      for (let conTag of this.conditions.conditionTags) {
-        articlesFromVuex = articlesFromVuex.filter(function (value) {
-          return value.tags.find(artTag => artTag.tagId === conTag)
+        articlesFromVuex = articlesFromVuex.filter(article => {
+          return article.title.includes(this.conditions.title)
         })
+        for (let conTag of this.conditions.conditionTags) {
+          articlesFromVuex = articlesFromVuex.filter(function (value) {
+            return value.tags.find(artTag => artTag.tagId === conTag)
+          })
+        }
+        this.setArticles(articlesFromVuex);
+        this.page = 1;
+        this.length = Math.ceil(this.displayArticles.length / this.pageSize);
       }
-      this.setArticles(articlesFromVuex);
-      this.page = 1;
-      this.length = Math.ceil(this.displayArticles.length / this.pageSize);
     },
-
-
+    resetConditions() {
+      this.conditions.title = "";
+      this.conditions.conditionTags.splice(0);
+      this.searchWithConditions();
+    },
     /**
      *
      * Qiitaの認証画面を表示
