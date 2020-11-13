@@ -39,13 +39,14 @@
     </v-tabs>
     <!-- 入力欄/プレビュー -->
     <v-card>
-      <v-form v-show="tab == 0">
+      <v-form v-show="tab == 0" ref="form" v-model="valid">
         <v-container>
           <v-textarea
             background-color="grey lighten-2"
             color="green darken-2"
             solo
             v-model="feedback.content"
+            :rules="[required]"
             label="テキストを入力"
           ></v-textarea>
         </v-container>
@@ -62,7 +63,12 @@
       </v-container>
       <!-- 投稿ボタン -->
       <v-card-actions>
-        <v-btn dark color="green" @click="saveFeedback">
+        <v-btn
+          color="green"
+          class="white--text"
+          :disabled="!valid"
+          @click="saveFeedback"
+        >
           {{ feedback.feedbackId | postOrEdit }}する
         </v-btn>
       </v-card-actions>
@@ -88,6 +94,8 @@ export default {
           theme: "dark",
         },
       },
+      valid: false,
+      required: (value) => !!value || "コメントを入力してください",
     };
   },
   props: ["feedback"],
@@ -102,10 +110,16 @@ export default {
   },
   methods: {
     closeEditor() {
+      this.resetValidation();
       this.$emit("closeEditor");
     },
     saveFeedback() {
-      this.$emit("postFeedback");
+      if (this.valid) {
+        this.$emit("postFeedback");
+      }
+    },
+    resetValidation() {
+      this.$refs.form.resetValidation();
     },
   },
 };
