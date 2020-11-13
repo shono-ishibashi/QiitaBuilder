@@ -27,20 +27,29 @@
                 :rules="[tags_limit_size]"
                 multiple
                 counter="5"
-                chips>
+                chips
+            >
             </v-combobox>
           </v-col>
           <v-col cols="4">
             <div class="article-edit-action-field">
               <v-row v-if="this.slug==null" justify="center">
-                <v-btn @click="postArticle(1)" class="create-article-btn">記事を公開</v-btn>
-                <v-btn @click="postArticle(0)" class="create-article-btn">下書き保存</v-btn>
+                <v-btn @click="postArticle(1)" class="btn" outlined color="#008b8b">記事を公開</v-btn>
+              </v-row>
+              <v-row v-if="this.slug==null" justify="center">
+                <v-btn @click="postArticle(0)" class="btn" style="margin-top:40px;" outlined color="#008b8b">下書き保存
+                </v-btn>
               </v-row>
               <v-row v-if="this.slug!=null" justify="center">
-                <v-btn @click="postArticle(article.stateFlag)">Qiita Builderの記事を更新</v-btn>
+                <v-btn @click="postArticle(article.stateFlag)" class="btn" outlined color="#008b8b">Qiita Builder
+                  に記事を更新
+                </v-btn>
               </v-row>
               <v-row v-if="this.slug!=null" justify="center" class="post-article-toQiita-btn">
-                <v-btn @click.stop="toggleQiitaDialog">{{ postToQiita }}</v-btn>
+                <v-btn @click.stop="toggleQiitaDialog" width="220" class="btn" outlined color="#008b8b">{{
+                    postToQiita
+                  }}
+                </v-btn>
               </v-row>
             </div>
           </v-col>
@@ -48,22 +57,22 @@
         <v-tabs
             color="#5bc8ac"
             background-color="#f5f5f5"
-            :class="selectedFormat===0||selectedFormat===3?'change-format-field-tab':null"
+            :class="selectedFormat===2||selectedFormat===3?'change-format-field-tab':null"
         >
           <v-tab
               @click="changeFormat(0)"
           >
-            編集 & プレビュー
+            編集
           </v-tab>
           <v-tab
               @click="changeFormat(1)"
           >
-            編集
+            プレビュー
           </v-tab>
           <v-tab
               @click="changeFormat(2)"
           >
-            プレビュー
+            編集 & プレビュー
           </v-tab>
           <v-tab
               v-if="slug!=null"
@@ -73,23 +82,11 @@
           </v-tab>
         </v-tabs>
         <v-row>
-          <v-content class="content">
+          <v-main class="content">
             <component :is="currentView"></component>
-          </v-content>
+          </v-main>
         </v-row>
       </v-form>
-<!--      <div class="article-edit-action-field">-->
-<!--        <v-row v-if="this.slug==null" justify="center">-->
-<!--          <v-btn @click="postArticle(1)" class="create-article-btn">記事を公開</v-btn>-->
-<!--          <v-btn @click="postArticle(0)" class="create-article-btn">下書き保存</v-btn>-->
-<!--        </v-row>-->
-<!--        <v-row v-if="this.slug!=null" justify="center">-->
-<!--          <v-btn @click="postArticle(article.stateFlag)">Qiita Builderの記事を更新</v-btn>-->
-<!--        </v-row>-->
-<!--        <v-row v-if="this.slug!=null" justify="center" class="post-article-toQiita-btn">-->
-<!--          <v-btn @click.stop="toggleQiitaDialog">{{ postToQiita }}</v-btn>-->
-<!--        </v-row>-->
-<!--      </div>-->
     </div>
     <v-dialog v-model="qiitaDialog" max-width="400">
       <v-card>
@@ -134,16 +131,22 @@ export default {
   },
   data() {
     return {
-      valid:true,
-      currentView: EditAndPreview,
+      valid: true,
+      currentView: Edit,
       selectedFormat: 0,
       qiitaDialog: false,
       required: value => (value && !!value) || "必ず入力してください",
-      title_limit_length: value => value.length <= 100 || "100文字以内で入力してください",
-      tags_limit_size: value => value.length <= 5 && value.length>=1|| "5つまで入力してください",
+      title_limit_length: value => value && value.length <= 100 || "100文字以内で入力してください",
+      tags_limit_size: value => value && value.length <= 5 && value.length >= 1 || "5つまで入力してください",
     }
   },
-  created() {
+  beforeUpdate() {
+    if (this.selectedFormat === 3 && this.$route.path === '/article/new') {
+      this.changeFormat(2)
+    }
+    if (this.article.title == "" && this.article.content == "" && this.article.tags == null) {
+      this.resetValidation()
+    }
   },
   watch: {
     apiToken() {
@@ -173,9 +176,9 @@ export default {
     //qiitaのトークンを取得して比較
     postToQiita() {
       if (this.article.qiitaArticleId != null) {
-        return "Qiitaに記事を更新"
+        return "Qiita に記事を更新"
       } else {
-        return "Qiitaに記事を投稿"
+        return "Qiita に記事を投稿"
       }
     },
     //qiitaのトークンを取得して比較
@@ -202,23 +205,27 @@ export default {
         }
         await this.saveArticle(this.article)
         await this.$router.push('/article')
+      } else {
+        this.$refs.edit_form.validate()
       }
     },
     changeFormat(key) {
       this.selectedFormat = key
       if (key === 0) {
-        console.log(this.article)
-        this.currentView = EditAndPreview
-      } else if (key === 1) {
         this.currentView = Edit
-      } else if (key === 2) {
+      } else if (key === 1) {
         this.currentView = Preview
+      } else if (key === 2) {
+        this.currentView = EditAndPreview
       } else if (key === 3) {
         this.currentView = EditAndPreviewAndFeedback
       }
     },
     toggleQiitaDialog() {
       this.qiitaDialog = !this.qiitaDialog
+    },
+    resetValidation() {
+      this.$refs.edit_form.resetValidation()
     },
   }
 }
@@ -228,39 +235,46 @@ export default {
 <style scoped>
 #article-edit-field {
   background-color: #f5f5f5;
-  padding:5px 30px;
+  padding: 5px 30px;
 }
 
-/*.title-tag-form {*/
-/*  margin-top: 60px;*/
-/*  margin-bottom: 45px;*/
-/*}*/
+.title-tag-form {
+  margin-top: 40px;
+}
 
 .title-tag-form .title {
- padding:0;
+  padding: 0;
 }
 
 
-.create-article-btn {
-  margin-right: 30px;
-}
-
-.edit-field{
+.edit-field {
   position: sticky;
   top: 1%;
 }
 
 .post-article-toQiita-btn {
-  margin-top: 30px;
+  margin-top: 40px;
 }
 
 .change-format-field-tab {
-  /*position: sticky;*/
-  /*top: 20%;*/
+  position: sticky;
+  top: 1%;
 }
 
 .article-edit-action-field {
   margin-top: 30px;
+  margin-left: 20px;
   margin-bottom: 30px;
+  padding-top: 30px;
+  padding-bottom: 20px;
+  height: 150px;
+  width: 400px;
+  /*border: 2px solid #00fa9a;*/
+  /*border-radius: 15px;*/
+  /*background-color: ;*/
+}
+
+.btn {
+  background-color: #ffffff;
 }
 </style>
