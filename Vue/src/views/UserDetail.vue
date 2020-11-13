@@ -61,34 +61,58 @@
                 下書き記事
               </v-tab>
             </v-tabs>
-            <v-form ref="search_form">
-              <v-col cols="5">
-                <v-text-field
-                    v-model="conditions.title"
-                    label="記事タイトルを入力"
-                    :rules="[title_limit_length]"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="5">
-                <v-autocomplete
-                    v-model="conditions.conditionTags"
-                    :items="usedTags"
-                    :rules="[tags_limit_length]"
-                    item-value="tagId"
-                    item-text="tagName"
-                    label="タグを選択"
-                    chips
-                    deletable-chips
-                    multiple
-                    small-chips
-                >
-                </v-autocomplete>
-              </v-col>
-            </v-form>
-            <v-col cols="2">
-              <v-btn @click="searchWithConditions" color="#5bc8ac" elevation="2" style="font-weight: bold">検索</v-btn>
-              <v-btn @click="resetConditions" color="#ff6347" elevation="2" style="font-weight: bold">リセット</v-btn>
-            </v-col>
+
+            <v-card class="contentWrap" outline-color="#008b8b">
+              <v-row>
+                <v-col>
+                  <v-card-title>
+                    <v-icon>mdi-magnify</v-icon>
+                    検索フォーム
+                  </v-card-title>
+                </v-col>
+                <v-col>
+                  <v-card-actions>
+                    <v-btn @click="searchWithConditions" color="#5bc8ac" elevation="2" style="font-weight: bold">検索
+                    </v-btn>
+                    <v-btn @click="resetConditions" color="#ff6347" elevation="2" style="font-weight: bold">リセット</v-btn>
+                  </v-card-actions>
+                </v-col>
+              </v-row>
+              <v-card-text>
+                <v-row>
+                  <v-col>
+                    <v-row>
+                      <v-form ref="search_form">
+                        <v-text-field
+                            v-model="conditions.title"
+                            label="記事タイトルを入力"
+                            :rules="[title_limit_length]"
+                        ></v-text-field>
+                      </v-form>
+                    </v-row>
+                  </v-col>
+                  <v-col>
+                    <v-form ref="search_form">
+                      <v-autocomplete
+                          v-model="conditions.conditionTags"
+                          :items="usedTags"
+                          :rules="[tags_limit_length]"
+                          item-value="tagId"
+                          item-text="tagName"
+                          item-color="green"
+                          label="タグを選択"
+                          color="#5bc8ac"
+                          chips
+                          deletable-chips
+                          multiple
+                          small-chips
+                      >
+                      </v-autocomplete>
+                    </v-form>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
 
             <v-layout justify-center>
               <v-col cols="4">
