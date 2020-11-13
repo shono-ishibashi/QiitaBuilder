@@ -129,7 +129,6 @@
 <script>
 import {mapState, mapActions, mapGetters} from "vuex";
 import ArticleCard from "../components/ArticleCard";
-import axios from "axios";
 import Pie from "@/components/user_detail/Pie";
 import * as palette from "google-palette";
 

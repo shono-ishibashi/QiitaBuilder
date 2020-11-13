@@ -26,18 +26,48 @@
             </v-select>
           </v-col>
         </v-row>
-        <v-row>
-          <UserList :rank-users="users" :select-rank-item-id="selectRankItemId"
+        <v-row align-content="center" justify="center">
+          <v-col cols="6" v-show="isLoading">
+            <v-progress-linear
+                color="green"
+                indeterminate
+                rounded
+                height="10"
+            ></v-progress-linear>
+          </v-col>
+          <UserList v-show="isDisplay" :rank-users="users" :select-rank-item-id="selectRankItemId"
                     :display-count="selectDisplayCount"></UserList>
         </v-row>
       </v-col>
       <v-col cols="6">
         <v-row>
+          <h3>
+            <v-icon color="#5bc8ac">mdi-chess-king</v-icon>
+            {{ rankTitle }}
+          </h3>
+        </v-row>
+        <v-row align-content="center" justify="center">
           <ChartArea :select-rank-item-id="selectRankItemId" :rank-users="users"
                      @receive-index="toUserDetail($event)"></ChartArea>
         </v-row>
         <v-row>
-          <RelationArticles :rel-articles="relationArticles"></RelationArticles>
+          <h3>
+            <v-icon color="#5bc8ac">
+              mdi-book-open-blank-variant
+            </v-icon>
+            関連記事一覧
+          </h3>
+        </v-row>
+        <v-row align-content="center" justify="center">
+          <v-col cols="6" v-show="isLoading">
+            <v-progress-linear
+                color="green"
+                indeterminate
+                rounded
+                height="10"
+            ></v-progress-linear>
+          </v-col>
+          <RelationArticles v-show="isDisplay" :rel-articles="relationArticles"></RelationArticles>
         </v-row>
       </v-col>
     </v-row>
@@ -53,11 +83,13 @@ import {mapActions, mapGetters} from "vuex";
 
 export default {
   name: "RankingComponent",
+
   components: {
     ChartArea,
     UserList,
     RelationArticles
   },
+
   data() {
     return {
       //ランキング項目
@@ -93,7 +125,10 @@ export default {
         }],
 
       //選択されている表示件数
-      selectDisplayCount: 10
+      selectDisplayCount: 10,
+
+      isLoading: false,
+      isDisplay: true
     }
   },
 
@@ -101,13 +136,36 @@ export default {
     apiToken() {
       return this.$store.getters["auth/apiToken"];
     },
+    rankTitle() {
+      let rankTitle;
+      switch (this.selectRankItemId) {
+        case 1:
+          rankTitle = 'FBした数ランキング';
+          break;
+        case 2:
+          rankTitle = '記事投稿数ランキング';
+          break;
+        case 3:
+          rankTitle = 'Qiita推薦累計数ランキング';
+          break;
+      }
+      return rankTitle;
+    },
     ...mapGetters("users", ["users", "relationArticles"])
   },
 
   watch: {
     selectRankItemId: {
       handler() {
+        this.isDisplay = false;
+        this.isLoading = true;
+
         this.fetchRankingUser(this.selectRankItemId);
+        this.$nextTick();
+        setTimeout(() => {
+          this.isDisplay = true;
+          this.isLoading = false;
+        }, 1300)
       }
     },
     apiToken: function () {

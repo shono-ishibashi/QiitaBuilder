@@ -2,7 +2,7 @@
   <v-row>
     <v-col>
       <v-row class="editAndFeedbacks">
-        <Edit :height="260" class="edit"></Edit>
+        <Edit :height="350" class="edit"></Edit>
         <v-container class="feedback-area">
           <v-row class="feedback-title">
             <v-col cols="1">
@@ -47,10 +47,10 @@ export default {
 </script>
 
 <style scoped>
-/*.editAndFeedbacks {*/
-/*  position: sticky;*/
-/*  top: 8%;*/
-/*}*/
+.editAndFeedbacks {
+  position: sticky;
+  top: 8%;
+}
 
 .edit {
   margin-bottom: 0;
@@ -58,8 +58,10 @@ export default {
 
 .feedback-area {
   background-color: #5bc8ac;
+  border:2px solid #008b8b;
+  border-radius:15px;
   padding: 20px;
-  height: 260px;
+  height: 330px;
   overflow: scroll;
 }
 

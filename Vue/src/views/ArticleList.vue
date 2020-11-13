@@ -35,7 +35,7 @@
                     </v-text-field>
                     <v-text-field
                         v-if="this.searchCriteria.toggleSearchWord===1"
-                        label="ユーザーネームを検索"
+                        label="ユーザーを検索"
                         color="#5bc8ac"
                         v-model="searchCriteria.searchWord"
                         :rules="[user_limit_length]"
