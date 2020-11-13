@@ -23,14 +23,11 @@ import UserCard from "./UserCard.vue";
 
 export default {
   name: "UserList",
+
   components: {
     UserCard
   },
-  data() {
-    return {
-      currentPage: 1,
-    }
-  },
+
   props: {
     rankUsers: {
       type: Array
@@ -44,16 +41,13 @@ export default {
       required: true
     }
   },
-  watch: {
-    displayCount() {
-      this.currentPage = 1;
-    },
-    currentPage() {
-      setTimeout(() => {
-        this.$vuetify.goTo(0);
-      }, 100)
+
+  data() {
+    return {
+      currentPage: 1,
     }
   },
+
   computed: {
     totalPage() {
       let totalPage;
@@ -68,6 +62,17 @@ export default {
       const begin = (this.currentPage - 1) * this.displayCount;
       const end = this.currentPage * this.displayCount;
       return this.rankUsers.slice(begin, end);
+    }
+  },
+
+  watch: {
+    displayCount() {
+      this.currentPage = 1;
+    },
+    currentPage() {
+      setTimeout(() => {
+        this.$vuetify.goTo(0);
+      }, 100)
     }
   }
 }
