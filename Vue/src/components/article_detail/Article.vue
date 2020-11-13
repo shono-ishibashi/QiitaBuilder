@@ -114,7 +114,14 @@
       </v-chip-group>
     </v-container>
     <v-container>
-      <span v-html="compiledContent"></span>
+      <Editor
+        mode="viewer"
+        ref="editor"
+        hint="Hint"
+        :outline="true"
+        :render-config="renderConfig"
+        v-model="article.content"
+      />
     </v-container>
     <v-dialog v-model="dialog" max-width="290">
       <v-card>
@@ -139,11 +146,12 @@
 </template>
 
 <script>
-import marked from "marked";
-import hljs from "highlight.js";
-import "highlight.js/styles/github-gist.css";
+import { Editor } from "vuetify-markdown-editor";
 
 export default {
+  components: {
+    Editor,
+  },
   data() {
     return {
       menus: [
@@ -152,6 +160,12 @@ export default {
       ],
       dateFormat: ["年", "月", "日"],
       dialog: false,
+      renderConfig: {
+        // Mermaid config
+        mermaid: {
+          theme: "dark"
+        }
+      }
     };
   },
   computed: {
@@ -169,20 +183,14 @@ export default {
         return [{ name: "Qiitaを更新する", action: this.updateQiita }];
       return [{ name: "Qiitaに投稿する", action: this.postQiita }];
     },
-    compiledContent() {
-      return marked(this.article.content);
-    },
   },
   props: ["article"],
-  created() {
-    marked.setOptions({
-      // code要素にdefaultで付くlangage-を削除
-      langPrefix: "",
-      // highlightjsを使用したハイライト処理を追加
-      highlight: function(code, lang) {
-        return hljs.highlightAuto(code, [lang]).value;
-      },
-    });
+  mounted() {
+    // Access properties or methods using $refs
+    // this.$refs.editor.focus();
+    // this.$refs.editor.upload();
+    // Dark theme
+    // this.$vuetify.theme.dark = true;
   },
   filters: {
     naming: function(value) {
@@ -218,7 +226,6 @@ export default {
 };
 </script>
 
-<style src="highlight.js/styles/github-gist.css"></style>
 <style scoped>
 .area {
   padding: 20px;
