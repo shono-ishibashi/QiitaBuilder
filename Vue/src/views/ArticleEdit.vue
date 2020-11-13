@@ -91,8 +91,11 @@
     <v-dialog v-model="qiitaDialog" max-width="400">
       <v-card>
         <v-card-title>
-          {{ qiitaConfirmMessage }}
+          {{ qiitaConfirmTitle }}
         </v-card-title>
+        <v-card-text>
+          {{ qiitaConfirmMessage }}
+        </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
@@ -105,7 +108,7 @@
           <v-btn
               color="green darken-1"
               text
-              @click="dialog = false"
+              @click="postedToQiita(article)"
           >
             投稿する
           </v-btn>
@@ -182,13 +185,20 @@ export default {
       }
     },
     //qiitaのトークンを取得して比較
-    qiitaConfirmMessage() {
+    qiitaConfirmTitle() {
       if (this.article.qiitaArticleId != null) {
         return "Qiitaに記事を更新しますか？"
       } else {
         return "Qiitaに記事を投稿しますか？"
       }
-    }
+    },
+    qiitaConfirmMessage() {
+      if (this.article.qiitaArticleId != null) {
+        return "編集内容をQiitaBuilderに保存し、Qiitaに記事を更新します"
+      } else {
+        return "編集内容をQiitaBuilderに保存し、Qiitaに記事を投稿します"
+      }
+    },
   },
   methods: {
     ...mapActions("article", ["fetchArticle", "saveArticle", "resetArticle"]),
@@ -223,6 +233,10 @@ export default {
     },
     toggleQiitaDialog() {
       this.qiitaDialog = !this.qiitaDialog
+    },
+    async postedToQiita(article){
+      await this.postArticle(article.stateFlag)
+      await this.postArticleToQiita(article.articleId)
     },
     resetValidation() {
       this.$refs.edit_form.resetValidation()
