@@ -57,6 +57,7 @@
                                  ON tag_cnt_table.tag_id = tags.tag_id
                  LEFT OUTER JOIN (SELECT user_id, count(feed.user_id) AS feed_cnt
                                   FROM qiita_builder.feedbacks AS feed
+                                  WHERE feed.delete_flag != 1
                                   GROUP BY feed.user_id) AS feed_cnt_table
                                  ON u.user_id = feed_cnt_table.user_id
                  LEFT OUTER JOIN (SELECT user_id, count(art.user_id) AS art_qiita_cnt

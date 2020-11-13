@@ -56,7 +56,7 @@
             <v-tabs v-model="activeStateTab">
               <v-tab v-for="tab of stateTabs" :key="tab.id" @click="changeListState(tab.id)">{{ tab.name }}</v-tab>
               <v-tab
-                  v-if="userDetail.isLoginUser"
+                  v-if="userDetail.isLoginUser&&displayListNum===1"
                   @click="changeListState(0)">
                 下書き記事
               </v-tab>

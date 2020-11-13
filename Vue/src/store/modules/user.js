@@ -30,10 +30,26 @@ export default {
             return (state.userDetail.isLoginUser) ? state.postedArticles : state.postedArticles.filter((art) => art.stateFlag !== 0);
         },
         feedbackArticles(state) {
-            return (state.userDetail.isLoginUser) ? state.feedbackArticles : state.feedbackArticles.filter((art) => art.stateFlag !== 0);
+            //login(画面を開いている)ユーザーと画面に表示中のユーザーが等しいか
+            //等しい中でも表示中のFB記事の投稿者自身かで下書き表示の有無を分けている
+            return (state.userDetail.isLoginUser) ? state.feedbackArticles.filter(function (art) {
+                if (state.userDetail.userId === art.postedUser.userId) {
+                    return art
+                } else {
+                    return (art.stateFlag === 0) ? null : art
+                }
+            }) : state.feedbackArticles.filter((art) => art.stateFlag !== 0);
         },
         myArticles(state) {
-            return (state.userDetail.isLoginUser) ? state.myArticles : state.myArticles.filter((art) => art.stateFlag !== 0);
+            //login(画面を開いている)ユーザーと画面に表示中のユーザーが等しいか
+            //等しい中でも表示中のMy記事の投稿者自身かで下書き表示の有無を分けている
+            return (state.userDetail.isLoginUser) ? state.myArticles.filter(function (art) {
+                if (state.userDetail.userId === art.postedUser.userId) {
+                    return art
+                } else {
+                    return (art.stateFlag === 0) ? null : art
+                }
+            }) : state.myArticles.filter((art) => art.stateFlag !== 0);
         },
         displayArticles(state) {
             return state.displayArticles.filter((art) => art.stateFlag !== 9)
@@ -156,7 +172,7 @@ export default {
 
 
             await axios.get(url, {
-                params: userId,
+                params: {userId},
                 headers: {
                     Authorization: apiToken,
                 },
@@ -169,7 +185,7 @@ export default {
             let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
 
             await axios.get(url, {
-                params: userId,
+                params: {userId},
                 headers: {
                     Authorization: apiToken,
                 },
