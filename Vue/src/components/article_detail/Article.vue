@@ -80,24 +80,15 @@
           </v-menu>
         </v-col>
       </v-row>
-      <v-row align="center" class="spacer">
-        <v-col
-          class="hidden-xl-only hidden-lg-only hidden-md-only"
-          cols="2"
-          sm="2"
-        >
-          <v-btn elevation="2" id="qiita_btn" style="text-transform: none;"
-            >Qiita</v-btn
-          >
-        </v-col>
-        <v-col
-          class="hidden-xl-only hidden-lg-only hidden-md-only"
-          cols="2"
-          sm="2"
-        >
-          <v-btn elevation="2" id="my_btn" style="text-transform: none;"
-            >My記事登録</v-btn
-          >
+      <v-row>
+        <v-col cols="12">
+          <Button 
+          :myArticleId="myArticleId"
+          :recommendId="recommendId"
+          :qiitaRecommendPoint="article.qiitaRecommendPoint"
+          @toggleMyArticle="toggleMyArticle"
+          @toggleRecommend="toggleRecommend"
+          />
         </v-col>
       </v-row>
 
@@ -147,10 +138,12 @@
 
 <script>
 import { Editor } from "vuetify-markdown-editor";
+import Button from "./ArticleButton";
 
 export default {
   components: {
     Editor,
+    Button,
   },
   data() {
     return {
@@ -163,9 +156,9 @@ export default {
       renderConfig: {
         // Mermaid config
         mermaid: {
-          theme: "dark"
-        }
-      }
+          theme: "dark",
+        },
+      },
     };
   },
   computed: {
@@ -184,7 +177,7 @@ export default {
       return [{ name: "Qiitaに投稿する", action: this.postQiita }];
     },
   },
-  props: ["article"],
+  props: ["article", "myArticleId", "recommendId"],
   mounted() {
     // Access properties or methods using $refs
     // this.$refs.editor.focus();
@@ -204,6 +197,12 @@ export default {
     },
   },
   methods: {
+    toggleRecommend() {
+      this.$emit("toggleRecommend");
+    },
+    toggleMyArticle() {
+      this.$emit("toggleMyArticle");
+    },
     toggleDialog() {
       this.dialog = !this.dialog;
     },
@@ -231,13 +230,5 @@ export default {
 <style scoped>
 .area {
   padding: 20px;
-}
-#qiita_btn {
-  position: sticky;
-  top: 35%;
-}
-#my_btn {
-  position: sticky;
-  top: 45%;
 }
 </style>
