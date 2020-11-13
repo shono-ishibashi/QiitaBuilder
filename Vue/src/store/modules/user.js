@@ -30,7 +30,7 @@ export default {
             return (state.userDetail.isLoginUser) ? state.postedArticles : state.postedArticles.filter((art) => art.stateFlag !== 0);
         },
         notDraftArticles(state) {
-            return state.postedArticles.filter((art) => art.stateFlag !== 0);
+            return (state.postedArticles.length === 0) ? [] : state.postedArticles.filter((art) => art.stateFlag !== 0);
         },
         feedbackArticles(state) {
             //login(画面を開いている)ユーザーと画面に表示中のユーザーが等しいか
