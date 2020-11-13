@@ -182,5 +182,8 @@ export default {
     loginUser(state) {
       return state.loginUser;
     },
+    isLinked(state){
+      return state.isLinkedToQiita;
+    }
   },
 };
