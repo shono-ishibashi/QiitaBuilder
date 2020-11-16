@@ -40,9 +40,10 @@ public class RankingUserService {
     public List<RankingUser> fetchFBCountRank() {
 
         List<RankingUser> rankingUserList = feedbackMapper.getFBRank();
-        rankingUserList = setRelationArticle(rankingUserList, 1);
-        rankingUserList = setRank(rankingUserList, 1);
-
+        if (!rankingUserList.isEmpty()) {
+            rankingUserList = setRelationArticle(rankingUserList, 1);
+            rankingUserList = setRank(rankingUserList, 1);
+        }
         return rankingUserList;
     }
 
@@ -54,9 +55,10 @@ public class RankingUserService {
     public List<RankingUser> fetchArticleCountRank() {
 
         List<RankingUser> rankingUserList = articleMapper.getPostedArticleCountRank();
-        rankingUserList = setRelationArticle(rankingUserList, 2);
-        rankingUserList = setRank(rankingUserList, 2);
-
+        if (!rankingUserList.isEmpty()) {
+            rankingUserList = setRelationArticle(rankingUserList, 2);
+            rankingUserList = setRank(rankingUserList, 2);
+        }
         return rankingUserList;
     }
 
@@ -68,9 +70,10 @@ public class RankingUserService {
     public List<RankingUser> fetchQiitaCountRank() {
 
         List<RankingUser> rankingUserList = recommendMapper.getQiitaRecommendedRank();
-        rankingUserList = setRelationArticle(rankingUserList, 3);
-        rankingUserList = setRank(rankingUserList, 3);
-
+        if (!rankingUserList.isEmpty()) {
+            rankingUserList = setRelationArticle(rankingUserList, 3);
+            rankingUserList = setRank(rankingUserList, 3);
+        }
         return rankingUserList;
     }
 

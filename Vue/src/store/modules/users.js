@@ -17,7 +17,7 @@ export default {
     },
 
     actions: {
-        fetchRankingUser({commit, rootState, rootGetters}, selectRankItemId) {
+        async fetchRankingUser({commit, rootState, rootGetters}, selectRankItemId) {
             let path;
             switch (selectRankItemId) {
                 case 1:
@@ -37,7 +37,7 @@ export default {
             const url = rootGetters.API_URL + "user/ranking" + path;
             const apiToken = rootState.auth.apiToken;
 
-            axios
+            await axios
                 .get(url, {
                     headers: {
                         "Authorization": apiToken
