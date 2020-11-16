@@ -54,14 +54,6 @@ public interface FeedbackMapper {
      */
     Feedback load(Integer feedbackId);
 
-//    /**
-//     * FBした数を取得する.
-//     *
-//     * @param userId ユーザーID
-//     * @return FBした数
-//     */
-//    Integer getCount(Integer userId);
-
     /**
      * FBした記事一覧を取得する
      *
