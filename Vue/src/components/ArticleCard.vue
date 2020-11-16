@@ -150,6 +150,9 @@ export default {
   methods: {
     ...mapActions("articles", ["fetchArticles"]),
     findByTagId(tagId) {
+      if(this.$route.path !== '/article'){
+        this.$router.push({name: 'ArticleList'})
+      }
       this.searchCriteria.searchTag = [tagId];
       this.fetchArticles(this.searchCriteria);
     },
