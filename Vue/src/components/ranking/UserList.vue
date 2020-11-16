@@ -8,7 +8,7 @@
     ></v-pagination>
     <UserCard class="control-margin" v-for="rankUser in controlledRankUsers" :key="rankUser.userId"
               :rank-user="rankUser"
-              :rank-item-id="selectRankItemId" :rank-num="rankUser.rank"></UserCard>
+              :rank-item-id="rankItemId" :rank-num="rankUser.rank"></UserCard>
     <v-pagination
         v-model="currentPage"
         :length="totalPage"
@@ -32,11 +32,11 @@ export default {
     rankUsers: {
       type: Array
     },
-    selectRankItemId: {
+    displayCount: {
       type: Number,
       required: true
     },
-    displayCount: {
+    rankItemId: {
       type: Number,
       required: true
     }
@@ -74,7 +74,7 @@ export default {
         this.$vuetify.goTo(0);
       }, 100)
     },
-    selectRankItemId(){
+    rankItemId() {
       this.currentPage = 1;
     }
   }

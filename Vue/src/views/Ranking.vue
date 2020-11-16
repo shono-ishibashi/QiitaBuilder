@@ -37,8 +37,8 @@
                 height="10"
             ></v-progress-linear>
           </v-col>
-          <UserList v-show="isDisplay" :rank-users="users" :select-rank-item-id="selectRankItemId"
-                    :display-count="selectDisplayCount"></UserList>
+          <UserList v-show="isDisplay" :rank-users="users"
+                    :display-count="selectDisplayCount" :rank-item-id="rankItemId"></UserList>
         </v-row>
       </v-col>
       <v-col cols="6">
@@ -149,8 +149,14 @@ export default {
       //選択されている表示件数
       selectDisplayCount: 10,
 
+      //Load
       isLoading: false,
-      isDisplay: true
+
+      //{display: none}の切り替え
+      isDisplay: true,
+
+      //UserListコンポーネントに渡すランキング項目ID
+      rankItemId: 1
     }
   },
 
@@ -185,15 +191,16 @@ export default {
         this.isDisplay = false;
         this.isLoading = true;
 
-        if(this.users.length){
+        if (this.users.length) {
           setTimeout(() => {
             this.isDisplay = true;
             this.isLoading = false;
           }, 1300)
-        }else{
+        } else {
           this.isDisplay = false;
           this.isLoading = false;
         }
+        this.rankItemId = this.selectRankItemId
       }
     },
     apiToken: function () {
