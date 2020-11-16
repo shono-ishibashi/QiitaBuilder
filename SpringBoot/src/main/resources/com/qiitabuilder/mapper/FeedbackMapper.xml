@@ -36,6 +36,20 @@
         </association>
     </resultMap>
 
+    <resultMap id="feedbackResultMap" type="com.qiitabuilder.domain.Feedback">
+        <id column="fee_feedback_id" property="feedbackId"/>
+        <result column="fee_article_id" property="articleId"/>
+        <result column="fee_created_at" property="createdAt"/>
+        <result column="fee_updated_at" property="updatedAt"/>
+        <result column="fee_content" property="content"/>
+        <result column="fee_delete_flag" property="deleteFlag"/>
+        <collection property="postedUser" ofType="com.qiitabuilder.domain.User">
+            <id column="users_uid" property="uid"/>
+            <result column="users_display_name" property="displayName"/>
+            <result column="users_photo_url" property="photoUrl"/>
+        </collection>
+    </resultMap>
+
     <!-- ****** SELECT ****** -->
     <select id="getFeedbackedArticlesByUserId" resultMap="feedbackedArticlesResultMap">
         SELECT art.article_id                    AS article_id,
@@ -84,14 +98,6 @@
         WHERE feedbacked.user_id = #{userId} AND art.state_flag != 9 AND feedbacked.delete_flag !=1
         ORDER BY art.created_at DESC;
     </select>
-
-    <!--    <select id="getCount" resultType="Integer">-->
-    <!--        SELECT count(*)-->
-    <!--        FROM feedbacks-->
-    <!--        <where>-->
-    <!--            user_id = #{userId};-->
-    <!--        </where>-->
-    <!--    </select>-->
 
     <select id="getFBRank" resultMap="rankingUserResultMap">
         SELECT users.user_id,
@@ -149,24 +155,12 @@
         FROM
         feedbacks as fee
         LEFT JOIN
-        users as users
+        users
         ON fee.user_id = users.user_id
         WHERE
         feedback_id = #{feedbackId}
     </select>
-    <resultMap id="feedbackResultMap" type="com.qiitabuilder.domain.Feedback">
-        <id column="fee_feedback_id" property="feedbackId"/>
-        <result column="fee_article_id" property="articleId"/>
-        <result column="fee_created_at" property="createdAt"/>
-        <result column="fee_updated_at" property="updatedAt"/>
-        <result column="fee_content" property="content"/>
-        <result column="fee_delete_flag" property="deleteFlag"/>
-        <collection property="postedUser" ofType="com.qiitabuilder.domain.User">
-            <id column="users_uid" property="uid"/>
-            <result column="users_display_name" property="displayName"/>
-            <result column="users_photo_url" property="photoUrl"/>
-        </collection>
-    </resultMap>
+
 
     <!-- ****** INSERT ****** -->
     <insert id="insert" useGeneratedKeys="true" keyProperty="feedbackId" parameterType="com.qiitabuilder.domain.Feedback">
