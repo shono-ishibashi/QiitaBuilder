@@ -85,5 +85,7 @@ public interface ArticleMapper {
      */
     Article getArticleAndFeedback(Integer articleId);
 
+    String getQiitaArticleId(Integer articleId);
+
     Article load(Integer articleId);
 }

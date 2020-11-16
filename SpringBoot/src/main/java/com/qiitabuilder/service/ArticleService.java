@@ -145,6 +145,7 @@ public class ArticleService {
             });
 
         } else {
+            article.setQiitaArticleId(articleMapper.getQiitaArticleId(article.getArticleId()));
             //入力された記事を更新
             articleMapper.updateArticle(article);
 
@@ -155,6 +156,7 @@ public class ArticleService {
             //DBに存在するarticleが持つtagsのtag_idのlist
             List<Integer> tagIdsInDB
                     = tagMapper.findAllArticleTag(loginUser.getUser().getUserId(), article.getArticleId());
+
 
             // -------------------insert-------------------t
             //DBに存在しない記事が持つタグを追加
