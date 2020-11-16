@@ -9,6 +9,7 @@
                 :items="rankItems"
                 item-text="item"
                 item-value="id"
+                item-color="green"
                 color="#5bc8ac"
                 outlined
                 label="ランキング項目"
@@ -22,11 +23,12 @@
                 v-model="selectDisplayCount"
                 color="#5bc8ac"
                 label="表示件数"
+                item-color="green"
             >
             </v-select>
           </v-col>
         </v-row>
-        <v-row align-content="center" justify="center">
+        <v-row align-content="center" justify="center" v-if="users.length">
           <v-col cols="6" v-show="isLoading">
             <v-progress-linear
                 color="green"
@@ -41,17 +43,25 @@
       </v-col>
       <v-col cols="6">
         <v-row>
-          <h3>
+          <h3 v-if="users.length">
             <v-icon color="#5bc8ac">mdi-chess-king</v-icon>
             {{ rankTitle }}
           </h3>
         </v-row>
         <v-row align-content="center" justify="center">
-          <ChartArea :select-rank-item-id="selectRankItemId" :rank-users="users"
+          <v-col cols="6" v-show="isLoading">
+            <v-progress-linear
+                color="green"
+                indeterminate
+                rounded
+                height="10"
+            ></v-progress-linear>
+          </v-col>
+          <ChartArea v-show="isDisplay" :select-rank-item-id="selectRankItemId" :rank-users="users"
                      @receive-index="toUserDetail($event)"></ChartArea>
         </v-row>
         <v-row>
-          <h3>
+          <h3 v-if="users.length">
             <v-icon color="#5bc8ac">
               mdi-book-open-blank-variant
             </v-icon>
@@ -70,6 +80,18 @@
           <RelationArticles v-show="isDisplay" :rel-articles="relationArticles"></RelationArticles>
         </v-row>
       </v-col>
+
+    </v-row>
+    <v-row align-content="center" justify="center" v-if="!users.length">
+      <v-alert
+          text
+          dense
+          color="teal"
+          icon="mdi-emoticon-confused"
+          border="left"
+      >
+        ランキング該当ユーザーが存在しません
+      </v-alert>
     </v-row>
   </v-container>
 </template>
@@ -156,16 +178,22 @@ export default {
 
   watch: {
     selectRankItemId: {
-      handler() {
+      async handler() {
+        await this.fetchRankingUser(this.selectRankItemId);
+        await this.$nextTick();
+
         this.isDisplay = false;
         this.isLoading = true;
 
-        this.fetchRankingUser(this.selectRankItemId);
-        this.$nextTick();
-        setTimeout(() => {
-          this.isDisplay = true;
+        if(this.users.length){
+          setTimeout(() => {
+            this.isDisplay = true;
+            this.isLoading = false;
+          }, 1300)
+        }else{
+          this.isDisplay = false;
           this.isLoading = false;
-        }, 1300)
+        }
       }
     },
     apiToken: function () {
