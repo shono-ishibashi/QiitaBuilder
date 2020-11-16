@@ -10,5 +10,11 @@
         <property name="serverTimezone" value="JST" />
       </driver-properties>
     </data-source>
+    <data-source source="LOCAL" name="qiita_builder_for_test@localhost" uuid="18f46e0c-6a7e-4b24-ab64-a034b54a9970">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/qiita_builder_for_test</jdbc-url>
+    </data-source>
   </component>
 </project>
