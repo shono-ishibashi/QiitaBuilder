@@ -397,6 +397,12 @@
         ORDER BY created_at DESC;
     </select>
 
+    <select id="getQiitaArticleId" resultType="String">
+        SELECT qiita_article_id
+        FROM articles
+        WHERE article_id = #{articleId}
+    </select>
+
     <select id="load" resultType="com.qiitabuilder.domain.Article" resultMap="loadResultMap">
         SELECT
                articles.article_id as article_id,
