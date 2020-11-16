@@ -7,7 +7,7 @@
       placeholder="markdown記法で書いてください"
       background-color="#ffffff"
       :height="height"
-      :rules="[required]"
+      :rules="[required,blank]"
   >
     input
   </v-textarea>
@@ -21,6 +21,10 @@ export default {
   data() {
     return {
       required: value => !!value || "必ず入力してください",
+      blank: value => {
+        const pattern = /\S/g
+        return pattern.test(value) || "空文字のみの入力はできません"
+      },
     }
   },
   props: [

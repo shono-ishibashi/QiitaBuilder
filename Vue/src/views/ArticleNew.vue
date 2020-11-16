@@ -1,7 +1,7 @@
 <template>
   <v-container id="article-edit-field" fluid>
     <div class="edit-field">
-      <v-form ref="edit_form" v-model="valid" lazy-validation>
+      <v-form ref="form" v-model="valid" lazy-validation>
         <v-row>
           <v-col cols="8" class="title-tag-form">
             <v-text-field
@@ -33,15 +33,11 @@
           </v-col>
           <v-col cols="4">
             <div class="article-edit-action-field">
-              <v-row v-if="this.slug!=null" justify="center">
-                <v-btn @click="postArticle(article.stateFlag)" class="btn" outlined color="#008b8b">Qiita Builder
-                  に記事を更新
-                </v-btn>
+              <v-row v-if="this.slug==null" justify="center">
+                <v-btn @click="postArticle(1)" class="btn" outlined color="#008b8b">記事を公開</v-btn>
               </v-row>
-              <v-row v-if="this.slug!=null" justify="center" class="post-article-toQiita-btn">
-                <v-btn @click.stop="toggleQiitaDialog" width="220" class="btn" outlined color="#008b8b">{{
-                    postToQiita
-                  }}
+              <v-row v-if="this.slug==null" justify="center">
+                <v-btn @click="postArticle(0)" class="btn" style="margin-top:40px;" outlined color="#008b8b">下書き保存
                 </v-btn>
               </v-row>
             </div>
@@ -50,7 +46,7 @@
         <v-tabs
             color="#5bc8ac"
             background-color="#f5f5f5"
-            :class="selectedFormat===2||selectedFormat===3?'change-format-field-tab':null"
+            :class="selectedFormat===2?'change-format-field-tab':null"
         >
           <v-tab
               @click="changeFormat(0)"
@@ -67,12 +63,6 @@
           >
             編集 & プレビュー
           </v-tab>
-          <v-tab
-              v-if="slug!=null"
-              @click="changeFormat(3)"
-          >
-            編集 & プレビュー & FB
-          </v-tab>
         </v-tabs>
         <v-row>
           <v-main class="content">
@@ -81,56 +71,27 @@
         </v-row>
       </v-form>
     </div>
-    <v-dialog v-model="qiitaDialog" max-width="400">
-      <v-card>
-        <v-card-title>
-          {{ qiitaConfirmTitle }}
-        </v-card-title>
-        <v-card-text>
-          {{ qiitaConfirmMessage }}
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-              color="red darken-1"
-              text
-              @click="toggleQiitaDialog"
-          >
-            キャンセル
-          </v-btn>
-          <v-btn
-              color="green darken-1"
-              text
-              @click="postedToQiita(article)"
-          >
-            投稿する
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </v-container>
 </template>
+
 <script>
 import EditAndPreview from '../components/article_edit/format/FormatEditAndPreview'
 import Edit from '../components/article_edit/format/FormatEdit'
 import Preview from '../components/article_edit/format/FormatPreview'
-import EditAndPreviewAndFeedback from '../components/article_edit/format/FormatEditAndPreviewAndFeedback'
 import {mapState, mapActions} from 'vuex'
 
 export default {
-  name: "ArticleEdit",
+  name: "ArticleNew",
   components: {
     EditAndPreview,
     Edit,
     Preview,
-    EditAndPreviewAndFeedback
   },
   data() {
     return {
       valid: true,
       currentView: Edit,
       selectedFormat: 0,
-      qiitaDialog: false,
       required: value => value && !!value || "必ず入力してください",
       blank: value => {
         const pattern = /\S/g
@@ -145,7 +106,6 @@ export default {
     apiToken() {
       this.resetArticle()
       this.fetchTags()
-      this.fetchArticle(this.slug);
     }
   },
   computed: {
@@ -157,30 +117,6 @@ export default {
     apiToken() {
       return this.$store.getters["auth/apiToken"];
     },
-    //qiitaのトークンを取得し、表示するボタンの文字列を変更
-    postToQiita() {
-      if (this.article.qiitaArticleId != null) {
-        return "Qiita に記事を更新"
-      } else {
-        return "Qiita に記事を投稿"
-      }
-    },
-    //qiitaのトークンを取得し、qiita更新時のモーダルのタイトルを変更
-    qiitaConfirmTitle() {
-      if (this.article.qiitaArticleId != null) {
-        return "Qiitaに記事を更新しますか？"
-      } else {
-        return "Qiitaに記事を投稿しますか？"
-      }
-    },
-    //qiitaのトークンを取得し、qiita更新時のモーダルのメッセージを変更
-    qiitaConfirmMessage() {
-      if (this.article.qiitaArticleId != null) {
-        return "編集内容をQiitaBuilderに保存し、Qiitaに記事を更新します"
-      } else {
-        return "編集内容をQiitaBuilderに保存し、Qiitaに記事を投稿します"
-      }
-    },
   },
   methods: {
     ...mapActions("article", ["fetchArticle", "saveArticle", "resetArticle"]),
@@ -188,7 +124,7 @@ export default {
     //記事を投稿or更新するメソッド
     async postArticle(state) {
       //validationチェック
-      if (this.$refs.edit_form.validate()) {
+      if (this.$refs.form.validate()) {
         this.article.stateFlag = state
         //タグが登録されていないものにはtagIdにnullをset
         for (var i = 0; i < this.article.tags.length; i++) {
@@ -201,7 +137,7 @@ export default {
         await this.saveArticle(this.article)
         await this.$router.push('/article')
       } else {
-        this.$refs.edit_form.validate()
+        this.$refs.form.validate()
       }
     },
     //v-tabの変更に応じて表示する編集formatを変更
@@ -213,23 +149,12 @@ export default {
         this.currentView = Preview
       } else if (key === 2) {
         this.currentView = EditAndPreview
-      } else if (key === 3) {
-        this.currentView = EditAndPreviewAndFeedback
       }
-    },
-    //qiita投稿or更新ボタンを押下した時にモーダルを変更するメソッド
-    toggleQiitaDialog() {
-      this.qiitaDialog = !this.qiitaDialog
-    },
-    //qiitaに投稿or更新んするメソッド
-    async postedToQiita(article) {
-      await this.postArticle(article.stateFlag)
-      await this.postArticleToQiita(article.articleId)
     },
   }
 }
-</script>
 
+</script>
 
 <style scoped>
 #article-edit-field {
