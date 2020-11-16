@@ -18,14 +18,6 @@ public interface RecommendMapper {
      */
     List<RankingUser> getQiitaRecommendedRank();
 
-//    /**
-//     * Qiita推薦累計数を取得する.
-//     *
-//     * @param postedUserId ユーザーID
-//     * @return Qiita推薦累計数
-//     */
-//    Integer getAllCountByPostedUserId(Integer postedUserId);
-
     /**
      * 最もQiita推薦数の多い記事IDを取得する.
      *
@@ -34,7 +26,6 @@ public interface RecommendMapper {
      * @return 記事ID一覧
      */
     List<Integer> getMostRecommendedArticleId(Integer userId, Integer sortId);
-
 
     /**
      * 検索条件に一致するレコードを取得する
