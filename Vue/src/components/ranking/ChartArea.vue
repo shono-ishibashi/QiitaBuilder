@@ -35,47 +35,52 @@ export default {
 
   watch: {
     rankUsers: function () {
-      let rankUserNames = [];
-      let countData = [];
-      let labelName = null;
 
-      this.rankUsers.slice(0, 10).forEach(rankUser => {
-        rankUserNames.push(rankUser.displayName);
-        switch (this.selectRankItemId) {
-          case 1:
-            countData.push(rankUser.feedbackCount);
-            labelName = 'FBした数';
-            break;
-          case 2:
-            countData.push(rankUser.postedArticleCount);
-            labelName = '記事投稿数';
-            break;
-          case 3:
-            countData.push(rankUser.qiitaRecommendedAllCount);
-            labelName = 'Qiita推薦累計数';
-            break;
-          default :
-            countData.push(rankUser.feedbackCount);
-            labelName = 'FBした数';
-            break;
-        }
-      })
+      if (this.rankUsers.length) {
 
-      this.chartData = {
-        labels: rankUserNames,
-        datasets: [
-          {
-            label: labelName,
-            data: countData,
-            backgroundColor: 'rgba(91,200,172,0.2)',
-            borderColor: 'rgba(91,200,172,1)',
-            borderWidth: 1
+        let rankUserNames = [];
+        let countData = [];
+        let labelName = null;
+
+        this.rankUsers.slice(0, 10).forEach(rankUser => {
+          rankUserNames.push(rankUser.displayName);
+          switch (this.selectRankItemId) {
+            case 1:
+              countData.push(rankUser.feedbackCount);
+              labelName = 'FBした数';
+              break;
+            case 2:
+              countData.push(rankUser.postedArticleCount);
+              labelName = '記事投稿数';
+              break;
+            case 3:
+              countData.push(rankUser.qiitaRecommendedAllCount);
+              labelName = 'Qiita推薦累計数';
+              break;
+            default :
+              countData.push(rankUser.feedbackCount);
+              labelName = 'FBした数';
+              break;
           }
-        ]
+        })
+
+        this.chartData = {
+          labels: rankUserNames,
+          datasets: [
+            {
+              label: labelName,
+              data: countData,
+              backgroundColor: 'rgba(91,200,172,0.2)',
+              borderColor: 'rgba(91,200,172,1)',
+              borderWidth: 1
+            }
+          ]
+        }
       }
     },
 
     chartData: function () {
+
       let countMax;
       let countMin;
 
@@ -86,21 +91,21 @@ export default {
         lastIndex = 9;
       }
 
-      const rank1User = this.rankUsers[0];
-      const rank10User = this.rankUsers[lastIndex];
+      const champUser = this.rankUsers[0];
+      const lastUser = this.rankUsers[lastIndex];
 
       switch (this.selectRankItemId) {
         case 1:
-          countMax = rank1User.feedbackCount;
-          countMin = rank10User.feedbackCount;
+          countMax = champUser.feedbackCount;
+          countMin = lastUser.feedbackCount;
           break;
         case 2:
-          countMax = rank1User.postedArticleCount;
-          countMin = rank10User.postedArticleCount;
+          countMax = champUser.postedArticleCount;
+          countMin = lastUser.postedArticleCount;
           break;
         case 3:
-          countMax = rank1User.qiitaRecommendedAllCount;
-          countMin = rank10User.qiitaRecommendedAllCount;
+          countMax = champUser.qiitaRecommendedAllCount;
+          countMin = lastUser.qiitaRecommendedAllCount;
           break;
       }
       const suggestedMax = () => {
@@ -138,6 +143,7 @@ export default {
         onClick: this.handle
       }
     }
+
   },
 
   methods: {
@@ -156,5 +162,4 @@ export default {
   width: 100%;
   height: 50%;
 }
-
 </style>
