@@ -24,10 +24,9 @@ public interface ArticleMapper {
     /**
      * 検索条件に一致する記事のIDを取得
      *
-     * @param searchArticleForm
-     * @return
+     * @param searchArticleForm　フォーム
+     * @return 検索条件に一致する記事ID一覧
      */
-
     List<Integer> searchArticlesId(@Param("search") SearchArticleForm searchArticleForm);
 
 
@@ -53,14 +52,6 @@ public interface ArticleMapper {
      * @return 記事ID一覧
      */
     List<Integer> getArticleIdListByUserId(Integer userId);
-
-//    /**
-//     * 投稿数を取得する.
-//     *
-//     * @param userId ユーザーID
-//     * @return 投稿数
-//     */
-//    Integer getCountByUserId(Integer userId);
 
     /**
      * 記事を投稿する.

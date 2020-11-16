@@ -52,12 +52,6 @@
                                  ON qiita_count.posted_user_id = users.user_id;
     </select>
 
-    <!--    <select id="getAllCountByUserId" resultType="Integer">-->
-    <!--        SELECT count(*)-->
-    <!--        FROM qiita_recommends-->
-    <!--        WHERE posted_user_id = #{postedUserId};-->
-    <!--    </select>-->
-
     <select id="getMostRecommendedArticleId" resultType="Integer">
         # sortId =
         # 1 : FB投稿数Rank

@@ -82,16 +82,6 @@
         WHERE uid = #{uid}
     </select>
 
-    <select id="findByUserId">
-        SELECT user_id      AS user_id,
-               uid          AS uid,
-               photo_url    AS photo_url,
-               display_name AS display_name,
-               password     AS password
-        FROM users
-        WHERE user_id = #{userId}
-    </select>
-
     <select id="findQiitaApiCodeByUserId">
         SELECT qiita_api_code
         FROM users
