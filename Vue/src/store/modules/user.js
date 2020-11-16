@@ -32,6 +32,9 @@ export default {
         notDraftArticles(state) {
             return (state.postedArticles.length === 0) ? [] : state.postedArticles.filter((art) => art.stateFlag !== 0);
         },
+        draftArticles(state) {
+            return (state.userDetail.isLoginUser) ? (state.postedArticles.length !== 0) ? state.postedArticles.filter((art) => art.stateFlag === 0) : [] : []
+        },
         feedbackArticles(state) {
             //login(画面を開いている)ユーザーと画面に表示中のユーザーが等しいか
             //等しい中でも表示中のFB記事の投稿者自身かで下書き表示の有無を分けている

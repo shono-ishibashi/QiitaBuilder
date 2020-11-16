@@ -14,7 +14,9 @@
       <v-col cols="6" style="font-size: large" class="contentWrap"><span
           style="font-weight: bold">{{ userDetail.displayName }}</span></v-col>
       <v-col cols="6" class="contentWrap">
-        <v-btn @click="toQiitaAPIAuthentication" v-if="userDetail.isLoginUser" color="#5bc8ac" elevation="2" style="font-weight: bold">Qiita連携</v-btn>
+        <v-btn @click="toQiitaAPIAuthentication" v-if="userDetail.isLoginUser" color="#5bc8ac" elevation="2"
+               style="font-weight: bold">Qiita連携
+        </v-btn>
       </v-col>
 
 
@@ -46,19 +48,19 @@
     </v-row>
 
     <v-container>
-      <v-tabs v-model="activeListTab">
-        <v-tab v-for="tab of listTabs" :key="tab.id" @click="changeList(tab.id)">{{ tab.name }}</v-tab>
+      <v-tabs v-model="activeListTab" v-if="userDetail.isLoginUser">
+        <v-tab v-for="tab of loginListTabs" :key="tab.id" @click="changeList(tab.id)">{{ tab.name }}</v-tab>
+      </v-tabs>
+      <v-tabs v-model="activeListTab" v-if="!(userDetail.isLoginUser)">
+        <v-tab v-for="tab of notLoginListTabs" :key="tab.id" @click="changeList(tab.id)">{{ tab.name }}</v-tab>
       </v-tabs>
 
       <v-card outlined>
         <v-container>
           <v-row>
-            <v-tabs v-model="activeStateTab">
-              <v-tab v-for="tab of stateTabs" :key="tab.id" @click="changeListState(tab.id)">{{ tab.name }}</v-tab>
-              <v-tab
-                  v-if="userDetail.isLoginUser&&displayListNum===1"
-                  @click="changeListState(0)">
-                下書き記事
+            <v-tabs v-model="activeStateTab" v-show="displayListNum!==0">
+              <v-tab v-for="tab of stateTabs" :key="tab.id" @click="changeListState(tab.id)">
+                {{ tab.name }}
               </v-tab>
             </v-tabs>
 
@@ -185,8 +187,8 @@ export default {
       sortNum: 0,//現在のソートkey
       page: 1,//現在のページ
       pageSize: 10,//ページ当たりの記事数
-      displayListNum: 1,//1:posted, 2:feedback, 3:my, 11:notPostedQiita, 12:postedQiita, 13:draft
-      displayListState: 10,//10:all, 0:draft, 1:notPostedQiita, 2:postedQiita
+      displayListNum: 1,//1:posted, 2:feedback, 3:my, 0:draft
+      displayListState: 10,//10:all, 1:notPostedQiita, 2:postedQiita
       conditions: {
         title: "",
         conditionTags: []
@@ -195,11 +197,17 @@ export default {
       windowWidthClass: false,//画面横幅に応じて付与するクラスの切り替え用boolean
       activeListTab: 0,//記事Tabの選択されているタブのインデックス
       activeStateTab: 0,//記事StateTabの選択されているタブのインデックス
-      listTabs: [
+      loginListTabs: [
         {id: 1, name: '公開中の投稿記事'},
         {id: 2, name: '公開中のFBした記事'},
-        {id: 3, name: '公開中のMy記事'}
+        {id: 3, name: '公開中のMy記事'},
+        {id: 4, name: '下書き記事'}
       ],//記事タブ表示用リスト
+      notLoginListTabs: [
+        {id: 1, name: '公開中の投稿記事'},
+        {id: 2, name: '公開中のFBした記事'},
+        {id: 3, name: '公開中のMy記事'},
+      ],
       stateTabs: [
         {id: 10, name: '全記事'},
         {id: 1, name: 'Qiita未投稿記事'},
@@ -251,6 +259,7 @@ export default {
     ...mapGetters("user", [
       "postedArticles",
       "notDraftArticles",
+      "draftArticles",
       "feedbackArticles",
       "myArticles",
       "userId",
@@ -273,9 +282,15 @@ export default {
 
       await this.fetchFeedbackArticles(this.$route.params['userId']);
       await this.fetchMyArticles(this.$route.params['userId']);
-
       await this.fetchPostedArticles(this.$route.params['userId']);
-      this.changeList(1);
+
+      if (this.$route.query.defaultList === '0' && this.userDetail.isLoginUser) {
+        this.changeList(4);
+      } else if (this.$route.query.defaultList === '3') {
+        this.changeList(3);
+      } else {
+        this.changeList(1);
+      }
       this.setArticleCardDisplay(ArticleCard);
 
       await this.userDetail.usedTags.forEach(function (tag) {
@@ -293,7 +308,7 @@ export default {
   methods: {
     /**
      * 表示したい記事に対応する数値を渡して、表示する記事一覧とオートコンプリート用タグリストを変更する
-     * @param listNum (1:投稿記事), (2:FB記事), (3:My記事)
+     * @param listNum (1:投稿記事), (2:FB記事), (3:My記事), (0:下書き記事)
      */
     changeList(listNum) {
       this.conditions.title = "";
@@ -308,6 +323,7 @@ export default {
       if (listNum === 1) articlesFromVuex = this.postedArticles;
       if (listNum === 2) articlesFromVuex = this.feedbackArticles;
       if (listNum === 3) articlesFromVuex = this.myArticles;
+      if (listNum === 4) articlesFromVuex = this.draftArticles;
       this.setArticlesAndTags(articlesFromVuex);
       if (articlesFromVuex.length === 0) {
         this.sortedArticles.length = 0;
@@ -317,34 +333,34 @@ export default {
     },
     /**
      * 表示したい記事に対応する数値を渡して、表示する記事一覧を変更する
-     * @param listSate (10:全記事), (1:Qiita未投稿記事), (2:Qiita投稿済み記事), (3:下書き記事)
+     * @param listState (10:全記事), (1:Qiita未投稿記事), (2:Qiita投稿済み記事)
      */
-    changeListState(listSate) {
+    changeListState(listState) {
       this.conditions.title = "";
       this.conditions.conditionTags = [];
-      this.displayListState = listSate;
+      this.displayListState = listState;
       this.sortNum = 0;
 
       let articlesFromVuex = [];
-      if (listSate === 10) {
+      if (listState === 10) {
         if (this.displayListNum === 1) articlesFromVuex = this.postedArticles;
         if (this.displayListNum === 2) articlesFromVuex = this.feedbackArticles;
         if (this.displayListNum === 3) articlesFromVuex = this.myArticles;
       }
-      if (listSate !== 10) {
+      if (listState !== 10) {
         if (this.displayListNum === 1 && this.postedArticles.length !== 0) {
           articlesFromVuex = this.postedArticles.filter((art) => {
-            return art.stateFlag === listSate
+            return art.stateFlag === listState
           })
         }
         if (this.displayListNum === 2 && this.feedbackArticles.length !== 0) {
           articlesFromVuex = this.feedbackArticles.filter((art) => {
-            return art.stateFlag === listSate
+            return art.stateFlag === listState
           })
         }
         if (this.displayListNum === 3 && this.myArticles.length !== 0) {
           articlesFromVuex = this.myArticles.filter((art) => {
-            return art.stateFlag === listSate
+            return art.stateFlag === listState
           })
         }
       }
@@ -365,6 +381,7 @@ export default {
           if (this.displayListNum === 1) articlesFromVuex = this.postedArticles;
           if (this.displayListNum === 2) articlesFromVuex = this.feedbackArticles;
           if (this.displayListNum === 3) articlesFromVuex = this.myArticles;
+          if (this.displayListNum === 0) articlesFromVuex = this.draftArticles;
         }
         if (this.displayListState !== 10) {
           if (this.displayListNum === 1) articlesFromVuex = this.postedArticles.filter((art) => {
