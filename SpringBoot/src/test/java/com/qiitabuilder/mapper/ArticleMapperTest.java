@@ -8,17 +8,20 @@ import org.junit.jupiter.api.Test;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.*;
 
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 @MybatisTest
+@SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class ArticleMapperTest {
 
@@ -68,14 +71,11 @@ class ArticleMapperTest {
     void insertArticleTest() {
         //投稿者ユーザー
         User user = new User();
-        user.setUserId(null);
 
         Tag tag1 = new Tag();
-        tag1.setTagId(null);
         tag1.setTagName("Tag1");
 
         Tag tag2 = new Tag();
-        tag2.setTagId(null);
         tag2.setTagName("Tag2");
 
         List<Tag> tags = new ArrayList<>(Arrays.asList(tag1, tag2));
@@ -97,9 +97,11 @@ class ArticleMapperTest {
 
         List<Map<String, Object>> resultArticles = namedParameterJdbcTemplate.queryForList(articleSelectSql, param);
 
-        System.out.println(resultArticles.get(0).get("article_id"));
+        assertEquals(1, resultArticles.get(0).get("article_id"));
+
 
     }
+
 
     @Test
     void updateArticle() {
