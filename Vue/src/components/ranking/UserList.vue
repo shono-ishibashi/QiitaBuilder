@@ -73,6 +73,9 @@ export default {
       setTimeout(() => {
         this.$vuetify.goTo(0);
       }, 100)
+    },
+    selectRankItemId(){
+      this.currentPage = 1;
     }
   }
 }
