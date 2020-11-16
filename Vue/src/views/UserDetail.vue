@@ -284,7 +284,7 @@ export default {
       await this.fetchMyArticles(this.$route.params['userId']);
       await this.fetchPostedArticles(this.$route.params['userId']);
 
-      if (this.$route.query.defaultList === '0' && this.userDetail.isLoginUser) {
+      if (this.$route.query.defaultList === '4' && this.userDetail.isLoginUser) {
         this.changeList(4);
       } else if (this.$route.query.defaultList === '3') {
         this.changeList(3);
