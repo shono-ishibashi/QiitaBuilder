@@ -17,10 +17,7 @@ public interface UserMapper {
 
     Optional<User> findByUid(String uid);
 
-    Optional<User> findByUserId(Integer userId);
-
     void insert(User user);
-
 
     String findQiitaAPICodeByUserId(Integer userId);
 
