@@ -13,8 +13,8 @@ export default {
       })
     },
     async postArticleToQiita(articleId) {
-      console.log(store.getters["auth/isLinked"]);
-      if (store.getters["auth/isLinked"]) {
+      console.log(store.getters["auth/isLinkedToQiita"]);
+      if (store.getters["auth/isLinkedToQiita"]) {
         axios.post(store.getters.API_URL + 'qiita/save-article-to-qiita/' + articleId, {}, {
           headers: {
             "Authorization": store.getters["auth/apiToken"]
