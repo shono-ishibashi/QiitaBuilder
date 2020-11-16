@@ -17,7 +17,7 @@ const routes = [
   {
     path:'/article/new',
     name:'articleNew',
-    component:()=>import(/* webpackChunkName: "articleEdit" */'../views/ArticleEdit')
+    component:()=>import(/* webpackChunkName: "articleNew" */'../views/ArticleNew')
   },
   {
     path: '/article/:articleId',
