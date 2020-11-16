@@ -14,7 +14,7 @@
       <v-col cols="6" style="font-size: large" class="contentWrap"><span
           style="font-weight: bold">{{ userDetail.displayName }}</span></v-col>
       <v-col cols="6" class="contentWrap">
-        <v-btn @click="toQiitaAPIAuthentication" color="#5bc8ac" elevation="2" style="font-weight: bold">Qiita連携</v-btn>
+        <v-btn @click="toQiitaAPIAuthentication" v-if="userDetail.isLoginUser" color="#5bc8ac" elevation="2" style="font-weight: bold">Qiita連携</v-btn>
       </v-col>
 
 
