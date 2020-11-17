@@ -10,7 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -125,9 +130,9 @@ class RecommendMapperTest {
                 "(\n" +
                 "   recommend_id      int auto_increment\n" +
                 "       primary key,\n" +
-                "   article_id        int null,\n" +
-                "   posted_user_id    int null,\n" +
-                "   recommend_user_id int null,\n" +
+                "   article_id        int not null,\n" +
+                "   posted_user_id    int not null,\n" +
+                "   recommend_user_id int not null,\n" +
                 "   constraint fk_qiitarecommends_articleid\n" +
                 "       foreign key (article_id) references articles (article_id),\n" +
                 "   constraint fk_qiitarecommends_posted_userid\n" +
@@ -196,7 +201,70 @@ class RecommendMapperTest {
     }
 
     @Test
-    void insert() {
+    void insertのテスト正常系() {
+        // insert
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key
+
+        Recommend recommend = Recommend.builder()
+                .articleId(1)
+                .postedUserId(1)
+                .recommendUserId(1)
+                .build();
+
+        recommendMapper.insert(recommend);
+
+        // check
+        String sql = "SELECT * FROM qiita_recommends ORDER BY recommend_id";
+
+        SqlParameterSource param = new EmptySqlParameterSource();
+
+        List<Map<String, Object>> resultRecommends = namedParameterJdbcTemplate.queryForList(sql, param);
+
+        assertEquals(1, resultRecommends.get(0).get("recommend_id"));
+        assertEquals(1, resultRecommends.get(0).get("article_id"));
+        assertEquals(1, resultRecommends.get(0).get("posted_user_id"));
+        assertEquals(1, resultRecommends.get(0).get("recommend_user_id"));
+    }
+
+    @Test
+    void insertのテスト異常系_外部制約例外() {
+        // insert
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+
+        Recommend recommend = Recommend.builder()
+                .articleId(1)
+                .postedUserId(1)
+                .recommendUserId(1)
+                .build();
+
+        // check
+        Exception exception = assertThrows(org.springframework.dao.DataIntegrityViolationException.class, () -> {
+            recommendMapper.insert(recommend);
+        });
+
+        String expectedMessage = "Cannot add or update a child row: a foreign key constraint fails";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    void insertのテスト異常系_引数がNullの場合() {
+        // insert
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+
+        Recommend recommend = new Recommend();
+
+        // check
+        Exception exception = assertThrows(org.springframework.dao.DataIntegrityViolationException.class, () -> {
+            recommendMapper.insert(recommend);
+        });
+        String expectedMessage = "Column 'article_id' cannot be null";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+
     }
 
     @Test
