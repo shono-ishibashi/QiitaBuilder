@@ -178,6 +178,26 @@ class ArticleMapperTest {
 
     @Test
     void getArticleIdListByUserId() {
+
+        String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
+        String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
+
+        for(String sql : userSqlArr){
+            jdbcTemplate.execute(sql);
+        }
+        for(String sql : articleSqlArr){
+            jdbcTemplate.execute(sql);
+        }
+
+        List<Integer> articleIdList = articleMapper.getArticleIdListByUserId(24);
+
+        assertEquals(6, articleIdList.size());
+        assertEquals(132, articleIdList.get(0));
+        assertEquals(131, articleIdList.get(1));
+        assertEquals(130, articleIdList.get(2));
+        assertEquals(129, articleIdList.get(3));
+        assertEquals(128, articleIdList.get(4));
+        assertEquals(127, articleIdList.get(5));
     }
 
     @Test
