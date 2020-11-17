@@ -2,7 +2,7 @@
   <v-container :class="{'d-flex':windowWidthClass}">
     <v-row justify="center" align-content="center">
       <v-col cols=6 class="contentWrap">
-        <v-avatar size="80%">
+        <v-avatar size="140">
           <img :src="userDetail.photoUrl" alt=""/></v-avatar>
       </v-col>
       <v-col cols=6 align-self="center">
@@ -97,7 +97,7 @@
                 </v-select>
               </v-col>
             </v-layout>
-            <v-col cols="10">
+            <v-col cols="12">
               <ArticleCard v-for="(article,index) in sortedArticles" :key="article.articleId" :article="article"
                            :is="articleCardDisplay" :index="index">
               </ArticleCard>
