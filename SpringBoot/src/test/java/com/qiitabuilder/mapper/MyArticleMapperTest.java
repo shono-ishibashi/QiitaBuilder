@@ -107,9 +107,9 @@ class MyArticleMapperTest {
                 "(\n" +
                 "   my_article_id    int auto_increment\n" +
                 "       primary key,\n" +
-                "   article_id       int null,\n" +
-                "   posted_user_id   int null,\n" +
-                "   register_user_id int null,\n" +
+                "   article_id       int not null,\n" +
+                "   posted_user_id   int not null,\n" +
+                "   register_user_id int not null,\n" +
                 "   constraint fk_myarticles_articleid\n" +
                 "       foreign key (article_id) references articles (article_id),\n" +
                 "   constraint fk_myarticles_posted_userid\n" +
@@ -165,16 +165,54 @@ class MyArticleMapperTest {
     void getMyArticlesByUserId() {
     }
 
+    //// findByArticleIdAndRegisterUserId()
     @Test
-    void findByArticleIdAndRegisterUserId() {
+    void findByArticleIdAndRegisterUserIdのテスト正常系() {
+        // insert
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key 記事1
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key 記事2
+
+        jdbcTemplate.execute("INSERT INTO my_articles(article_id, posted_user_id, register_user_id) VALUES(1, 1, 1)");
+
+        MyArticle myArticle = myArticleMapper.findByArticleIdAndRegisterUserId(1, 1);
+        assertEquals(1, myArticle.getMyArticleId());
+        assertEquals(1, myArticle.getArticleId());
+        assertEquals(1, myArticle.getPostedUserId());
+        assertEquals(1, myArticle.getRegisterUserId());
+    }
+
+    @Test
+    void findByArticleIdAndRegisterUserIdのテスト異常系_MyArticleが存在しない場合() {
+        // insert
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key 記事1
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key 記事2
+
+        jdbcTemplate.execute("INSERT INTO my_articles(article_id, posted_user_id, register_user_id) VALUES(1, 1, 1)");
+
+        MyArticle myArticle = myArticleMapper.findByArticleIdAndRegisterUserId(2, 1);
+        assertNull(myArticle);
+    }
+    @Test
+    void findByArticleIdAndRegisterUserIdのテスト異常系_引数がNullの場合() {
+        // insert
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key 記事1
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key 記事2
+
+        jdbcTemplate.execute("INSERT INTO my_articles(article_id, posted_user_id, register_user_id) VALUES(1, 1, 1)");
+
+        MyArticle myArticle = myArticleMapper.findByArticleIdAndRegisterUserId(null, null);
+        assertNull(myArticle);
     }
 
     //// insert()
     @Test
     void insertのテスト正常系() {
         // insert
-        jdbcTemplate.execute(("INSERT INTO users() VALUES();")); // Foreign key
-        jdbcTemplate.execute(("INSERT INTO articles(user_id) VALUES(1);")); // Foreign key
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key
 
         MyArticle myArticle = MyArticle.builder()
                 .articleId(1)
@@ -200,7 +238,7 @@ class MyArticleMapperTest {
     @Test
     void insertのテスト異常系_外部制約例外() {
         // insert
-        jdbcTemplate.execute(("INSERT INTO users() VALUES();")); // Foreign key
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
 
         MyArticle myArticle = MyArticle.builder()
                 .articleId(1)
@@ -214,6 +252,23 @@ class MyArticleMapperTest {
         });
 
         String expectedMessage = "Cannot add or update a child row: a foreign key constraint fails";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    void insertのテスト異常系_引数がNullの場合() {
+        // insert
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+
+        MyArticle myArticle = new MyArticle();
+
+        // check
+        Exception exception = assertThrows(org.springframework.dao.DataIntegrityViolationException.class, () -> {
+            myArticleMapper.insert(myArticle);
+        });
+        String expectedMessage = "Column 'article_id' cannot be null";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -235,7 +290,44 @@ class MyArticleMapperTest {
         assertEquals(2, actualResult2);
     }
 
+    //// delete()
     @Test
-    void delete() {
+    void deleteのテスト正常系() {
+        // insert
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key 記事1
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key 記事2
+
+        jdbcTemplate.execute("INSERT INTO my_articles(article_id, posted_user_id, register_user_id) VALUES(1, 1, 1)");
+
+        boolean actualResult = myArticleMapper.delete(1);
+        assertTrue(actualResult);
+    }
+
+    @Test
+    void deleteのテスト異常系_MyArticleが存在しない場合() {
+        // insert
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key 記事1
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key 記事2
+
+        jdbcTemplate.execute("INSERT INTO my_articles(article_id, posted_user_id, register_user_id) VALUES(1, 1, 1)");
+
+        boolean actualResult = myArticleMapper.delete(2);
+        assertFalse(actualResult);
+    }
+
+    @Test
+    void deleteのテスト異常系_引数がNullの場合() {
+        // insert
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key 記事1
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key 記事2
+
+        jdbcTemplate.execute("INSERT INTO my_articles(article_id, posted_user_id, register_user_id) VALUES(1, 1, 1)");
+
+        // check
+        boolean actualResult = myArticleMapper.delete(null);
+        assertFalse(actualResult);
     }
 }
