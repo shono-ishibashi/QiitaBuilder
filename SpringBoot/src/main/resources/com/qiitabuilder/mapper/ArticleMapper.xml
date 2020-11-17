@@ -260,12 +260,12 @@
              ON art.user_id = art_use.user_id
 
                  LEFT OUTER JOIN
-            (
-            SELECT *
-            FROM feedbacks
-            WHERE delete_flag = 0
-            )
-              AS fee
+             (
+                 SELECT *
+                 FROM feedbacks
+                 WHERE delete_flag = 0
+             )
+                 AS fee
              ON art.article_id = fee.article_id
 
                  LEFT JOIN
@@ -397,26 +397,32 @@
     </select>
 
     <select id="load" resultType="com.qiitabuilder.domain.Article" resultMap="loadResultMap">
-        SELECT
-               articles.article_id as article_id,
-               articles.user_id as user_id,
-               articles.content as content,
-               articles.created_at as created_at,
-               articles.updated_at as updated_at,
-               articles.title as title,
-               articles.content as content,
+        SELECT articles.article_id       as article_id,
+               articles.user_id          as user_id,
+               articles.content          as content,
+               articles.created_at       as created_at,
+               articles.updated_at       as updated_at,
+               articles.title            as title,
+               articles.content          as content,
                articles.qiita_article_id as qiita_article_id,
-               articles.state_flag as state_flag,
+               articles.state_flag       as state_flag,
 
-               tags.tag_id as tag_id,
-               tags.tag_name as tag_name
+               tags.tag_id               as tag_id,
+               tags.tag_name             as tag_name
 
         FROM articles
-        LEFT JOIN articles_tags_relations as atr
-        ON articles.article_id = atr.article_id
-        LEFT JOIN tags
-        ON tags.tag_id = atr.tag_id
+                 LEFT JOIN articles_tags_relations as atr
+                           ON articles.article_id = atr.article_id
+                 LEFT JOIN tags
+                           ON tags.tag_id = atr.tag_id
         WHERE articles.article_id = #{articleId};
+    </select>
+
+    <select id="findByArticleIdAndUserId" resultType="_int">
+        SELECT article_id
+        FROM articles
+        WHERE article_id = #{articleId}
+          AND user_id = #{userId}
     </select>
 
     <!-- ****** INSERT ****** -->
@@ -455,6 +461,7 @@
             state_flag       = #{stateFlag},
             qiita_article_id = #{qiitaArticleId}
         WHERE article_id = #{articleId}
+          AND user_id = #{postedUser.userId}
     </update>
 
 </mapper>

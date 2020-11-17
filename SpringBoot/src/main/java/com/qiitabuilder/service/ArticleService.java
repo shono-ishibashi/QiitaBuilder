@@ -198,6 +198,23 @@ public class ArticleService {
     }
 
     /**
+     * articleidとuserIdで記事が存在するかを確かめるメソッド
+     *
+     * @param articleId
+     * @param userId
+     * @return
+     */
+
+    public Integer findByArticleIdAndUserId(Integer articleId, Integer userId) {
+        Integer findArticleId = articleMapper.findByArticleIdAndUserId(articleId, userId);
+        if (Objects.nonNull(findArticleId)) {
+            return findArticleId;
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * ユーザーがFBした記事の一覧を取得するメソッド
      * 各記事は記事ID、タイトル、作成・更新日時、状態、各カウント、タグリスト、記事作成者のID・名前・写真URL　を持つ
      *

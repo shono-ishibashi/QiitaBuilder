@@ -24,7 +24,7 @@ public interface ArticleMapper {
     /**
      * 検索条件に一致する記事のIDを取得
      *
-     * @param searchArticleForm　フォーム
+     * @param searchArticleForm 　フォーム
      * @return 検索条件に一致する記事ID一覧
      */
     List<Integer> searchArticlesId(@Param("search") SearchArticleForm searchArticleForm);
@@ -79,4 +79,14 @@ public interface ArticleMapper {
     String getQiitaArticleId(Integer articleId);
 
     Article load(Integer articleId);
+
+    /**
+     * 記事IDとuserIDを基に記事IDを取得する
+     *
+     * @param articleId
+     * @param userId
+     * @return
+     */
+
+    Integer findByArticleIdAndUserId(@Param("articleId") Integer articleId, @Param("userId") Integer userId);
 }

@@ -8,6 +8,7 @@
                     :src="article.postedUser.photoUrl"
                      @click="toUserDetail(article.postedUser.userId)"
                      style="cursor: pointer;"
+                    alt=""
                 />
         </v-avatar>
       </v-list-item-avatar>
@@ -49,54 +50,62 @@
           <v-list-item-subtitle class="subtitle-field">
             <!--            ここfilter使って表示の仕方変えてもいいかも-->
             <v-row>
-              <v-col cols="4">
-                投稿日時：{{ article.createdAt | moment() }}
-              </v-col>
-              <v-col cols="4">
-                最終更新日時：{{ article.updatedAt | moment() }}
-              </v-col>
 
-              <v-col cols="1">
+              <v-col cols="5" class="margin-control">
+                投稿日：{{ article.createdAt | moment() }}
+              </v-col>
+              <v-col cols="5" class="margin-control">
+                最終更新日：{{ article.updatedAt | moment() }}
+              </v-col>
+              <v-col cols="2"></v-col>
+            </v-row>
+            <v-row>
+
+              <v-col cols="4" class="margin-control">
+                投稿者：{{ article.postedUser.displayName }}
+              </v-col>
+              <v-col cols="1"></v-col>
+              <v-col cols="1" class="margin-control">
                 <v-tooltip top>
                   <template v-slot:activator="{ on, attrs }">
                     <v-icon
-                      class="qiita-icon"
-                      dark
-                      color="#5bc8ac"
-                      v-bind="attrs"
-                      v-on.stop="on"
-                      >Q
+                        class="qiita-icon"
+                        dark
+                        color="#5bc8ac"
+                        v-bind="attrs"
+                        v-on.stop="on"
+                    >Q
                     </v-icon>
                     {{ article.qiitaRecommendPoint }}
                   </template>
                   <span>Qiita推奨数</span>
                 </v-tooltip>
               </v-col>
-              <v-col cols="1">
+              <v-col cols="1" class="margin-control">
                 <v-tooltip top>
                   <template v-slot:activator="{ on, attrs }">
                     <v-icon
-                      class="my-icon"
-                      dark
-                      color="red"
-                      v-bind="attrs"
-                      v-on.stop="on"
-                      >mdi-heart
+                        class="my-icon"
+                        dark
+                        color="red"
+                        v-bind="attrs"
+                        v-on.stop="on"
+                    >mdi-heart
                     </v-icon>
                     {{ article.registeredMyArticleCount }}
                   </template>
                   <span>My記事登録数</span>
                 </v-tooltip>
               </v-col>
-              <v-col cols="1">
+              <v-col cols="1" class="margin-control">
                 <v-tooltip top>
                   <template v-slot:activator="{ on, attrs }">
                     <v-icon
-                      class="feed-icon"
-                      color="blue"
-                      v-bind="attrs"
-                      v-on.stop="on"
-                      >mdi-message-processing-outline
+                        class="feed-icon"
+                        color="blue"
+                        v-bind="attrs"
+                        v-on.stop="on"
+                    >mdi-message-processing-outline
                     </v-icon>
                     {{ article.feedbackCount }}
                   </template>
@@ -104,6 +113,7 @@
                 </v-tooltip>
               </v-col>
             </v-row>
+
           </v-list-item-subtitle>
         </div>
       </v-list-item-content>
@@ -113,7 +123,7 @@
 
 <script>
 import moment from 'moment'
-import {mapState,mapGetters, mapActions} from "vuex"
+import {mapState, mapGetters, mapActions} from "vuex"
 
 export default {
   name: "ArticleCard",
@@ -132,19 +142,19 @@ export default {
   },
   computed: {
     ...mapState("articles", ["searchCriteria"]),
-    ...mapGetters("auth",["loginUser"])
+    ...mapGetters("auth", ["loginUser"])
   },
   filters: {
     moment(value) {
-      return moment(value).format("MM/DD hh:mm");
+      return moment(value).format("MM/DD");
     },
     truncate(value) {
-      var length = 28;
-      var ommision = "...";
+      const length = 28;
+      const omission = "...";
       if (value.length <= length) {
         return value;
       }
-      return value.substring(0, length) + ommision;
+      return value.substring(0, length) + omission;
     }
   },
   methods: {
@@ -159,13 +169,13 @@ export default {
     toDetail(articleId) {
       this.$router.push({
         name: "articleDetail",
-        params: { articleId },
+        params: {articleId},
       });
     },
-    toUserDetail(userId){
+    toUserDetail(userId) {
       this.$router.push({
         name: "userDetail",
-        params: { userId },
+        params: {userId},
       });
     }
   },
@@ -174,28 +184,34 @@ export default {
 
 <style scoped>
 .articleCard {
-  height: 110px;
+  margin: 10px;
 }
 
-.title-field {
-  margin-top: 15px;
-  height: 70px;
-}
+/*.title-field {*/
+/*  margin-top: 15px;*/
+/*  height: 70px;*/
+/*}*/
 
-.title {
-  font-weight: bold;
-  font-size: 40px;
-  padding-top: 10px;
-  padding-left: 30px;
-  padding-bottom: 4px;
-}
+/*.title {*/
+/*  font-weight: bold;*/
+/*  font-size: 40px;*/
+/*  padding-top: 10px;*/
+/*  !*padding-left: 30px;*!*/
+/*  padding-bottom: 4px;*/
+/*}*/
 
-.tag-field {
-  padding-left: 20px;
-}
+/*.tag-field {*/
+/*  !*padding-left: 20px;*!*/
+/*}*/
 
-.subtitle-field {
-  height: 35px;
-  margin-bottom: 10px;
+/*.subtitle-field {*/
+/*  height: 35px;*/
+/*  margin-bottom: 10px;*/
+/*}*/
+
+.margin-control {
+  margin: 0;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 </style>
