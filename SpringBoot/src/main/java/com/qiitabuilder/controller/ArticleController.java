@@ -106,8 +106,9 @@ public class ArticleController {
      */
 
     @GetMapping("/isExist")
+    @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    public Integer findByArticleIdAndUserId(@Validated @RequestBody ExistArticleForm existArticleForm, BindingResult result) {
+    public Integer findByArticleIdAndUserId(@Validated @ModelAttribute ExistArticleForm existArticleForm, BindingResult result) {
         if (result.hasErrors()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
