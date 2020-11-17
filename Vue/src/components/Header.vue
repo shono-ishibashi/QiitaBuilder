@@ -54,13 +54,13 @@
           </template>
 
           <v-list>
-            <v-list-item link>
+            <v-list-item link @click="toMyPage">
               <v-list-item-title>マイページ</v-list-item-title>
             </v-list-item>
-            <v-list-item link>
+            <v-list-item link @click="toMyArticles">
               <v-list-item-title>マイ記事</v-list-item-title>
             </v-list-item>
-            <v-list-item link>
+            <v-list-item link @click="toDraftArticles">
               <v-list-item-title>下書き一覧</v-list-item-title>
             </v-list-item>
             <v-list-item link @click="toQiitaAPIAuthentication">
@@ -80,25 +80,37 @@
 </template>
 
 <script>
-import {mapGetters,mapActions} from 'vuex'
+import {mapGetters, mapActions} from 'vuex'
 
 export default {
   name: "Header",
   computed: {
-    ...mapGetters("auth",["loginUser"])
+    ...mapGetters("auth", ["loginUser"])
   },
-  methods:{
-    ...mapActions("auth",["logout"]),
-    ...mapActions("article",["resetArticle"]),
-    toArticleList(){
-      this.$router.push('/article',()=>{})
+  methods: {
+    ...mapActions("auth", ["logout"]),
+    ...mapActions("article", ["resetArticle"]),
+    toArticleList() {
+      this.$router.push('/article', () => {
+      })
     },
     toArticleNew() {
       this.resetArticle()
-      this.$router.push('/article/new',()=>{})
+      this.$router.push('/article/new', () => {
+      })
     },
-    toRanking(){
-      this.$router.push({name:'ranking'},()=>{})
+    toRanking() {
+      this.$router.push({name: 'ranking'}, () => {
+      })
+    },
+    async toMyPage() {
+      await this.$router.push('/user/0?defaultList=0')
+    },
+    async toMyArticles() {
+      await this.$router.push('/user/0?defaultList=3')
+    },
+    async toDraftArticles() {
+      await this.$router.push('/user/0?defaultList=4')
     },
   }
 }
@@ -109,7 +121,8 @@ export default {
   padding-left: 40px;
   padding-right: 20px;
 }
-.header-btn{
-  margin-right:10px;
+
+.header-btn {
+  margin-right: 10px;
 }
 </style>
