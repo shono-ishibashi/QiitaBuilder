@@ -1,6 +1,7 @@
 package com.qiitabuilder.controller;
 
 import com.qiitabuilder.domain.Article;
+import com.qiitabuilder.form.ExistArticleForm;
 import com.qiitabuilder.form.SearchArticleForm;
 import com.qiitabuilder.service.ArticleService;
 import com.qiitabuilder.service.QiitaAPIService;
@@ -27,6 +28,14 @@ public class ArticleController {
     //// GET
     /////////////////////////////
 
+    /**
+     * 　検索条件に一致する記事一覧を取得する
+     *
+     * @param searchArticleForm
+     * @param result
+     * @return
+     */
+
     @RequestMapping(value = "/", method = RequestMethod.GET)
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
@@ -41,6 +50,14 @@ public class ArticleController {
         }
         return articleService.searchArticles(searchArticleForm);
     }
+
+    /**
+     * 検索条件に一致する記事の全ページ数を取得する
+     *
+     * @param searchArticleForm
+     * @param result
+     * @return
+     */
 
     @RequestMapping(value = "/totalPage", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
@@ -78,6 +95,23 @@ public class ArticleController {
 
         return result;
 
+    }
+
+    /**
+     * 記事IDとuserIdをもとに記事の存在の有無を確かめるメソッド
+     *
+     * @param existArticleForm
+     * @param result
+     * @return
+     */
+
+    @GetMapping("/isExist")
+    @ResponseStatus(HttpStatus.OK)
+    public Integer findByArticleIdAndUserId(@Validated @RequestBody ExistArticleForm existArticleForm, BindingResult result) {
+        if (result.hasErrors()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        return articleService.findByArticleIdAndUserId(existArticleForm.getArticleId(), existArticleForm.getUserId());
     }
 
     /////////////////////////////
