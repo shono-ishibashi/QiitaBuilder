@@ -418,6 +418,13 @@
         WHERE articles.article_id = #{articleId};
     </select>
 
+    <select id="findByArticleIdAndUserId" resultType="_int">
+        SELECT article_id
+        FROM articles
+        WHERE article_id = #{articleId}
+          AND user_id = #{userId}
+    </select>
+
     <!-- ****** INSERT ****** -->
     <insert id="insertArticle">
         INSERT INTO articles(
