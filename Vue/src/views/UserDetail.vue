@@ -267,22 +267,35 @@ export default {
       "usedTags",
       "articleCardDisplay",
       "chartDisplay",]),
-    ...mapState("user", ["userDetail",])
+    ...mapState("user", ["userDetail",]),
+    ...mapGetters("auth", ["loginUser"]),
   },
   watch: {
     sortNum() {
       this.page = 1;//sort変更時computedによる並び替え変更が行われるのでページが変更されないため、ここで1pに変えている
     },
     apiToken: async function () {
-      await this.fetchUserDetail(this.$route.params['userId']);
-      //DBに存在しないユーザーIDが渡された場合記事一覧に戻る
-      if (this.userId === 0) {
-        await this.$router.push({path: '/article'})
+      if (this.$route.params['userId'] === '0') {
+        if (!this.loginUser.uid)this.$router.push({path: '/article'});
+        await this.findUserIdByUid(this.loginUser.uid);
+        //DBに存在しないユーザーIDが渡された場合記事一覧に戻る
+        /*if (this.userId === 0 || this.userId) {
+          await this.$router.push({path: '/article'})
+        }*/
+        await this.fetchUserDetail(this.userId);
+        await this.fetchFeedbackArticles(this.userId);
+        await this.fetchMyArticles(this.userId);
+        await this.fetchPostedArticles(this.userId);
+      } else {
+        await this.fetchUserDetail(this.$route.params['userId']);
+        //DBに存在しないユーザーIDが渡された場合記事一覧に戻る
+        if (this.userId === 0) {
+          await this.$router.push({path: '/article'})
+        }
+        await this.fetchFeedbackArticles(this.$route.params['userId']);
+        await this.fetchMyArticles(this.$route.params['userId']);
+        await this.fetchPostedArticles(this.$route.params['userId']);
       }
-
-      await this.fetchFeedbackArticles(this.$route.params['userId']);
-      await this.fetchMyArticles(this.$route.params['userId']);
-      await this.fetchPostedArticles(this.$route.params['userId']);
 
       if (this.$route.query.defaultList === '4' && this.userDetail.isLoginUser) {
         this.changeList(4);
@@ -421,7 +434,9 @@ export default {
       "fetchUserDetail",
       "fetchPostedArticles",
       "fetchFeedbackArticles",
-      "fetchMyArticles"]),
+      "fetchMyArticles",
+      "findUserIdByUid"
+    ]),
 
 
   },

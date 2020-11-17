@@ -29,6 +29,10 @@ public class UserService {
         userMapper.insert(user);
     }
 
+    public Integer findUserIdByUid(String uid) {
+        return userMapper.findUserIdByUid(uid);
+    }
+
     public void test() {
         System.out.println(userMapper.selectTest());
     }

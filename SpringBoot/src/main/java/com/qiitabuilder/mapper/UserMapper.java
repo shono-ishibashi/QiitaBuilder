@@ -25,4 +25,5 @@ public interface UserMapper {
 
     User fetchUserDetails(@Param("userId") Integer userId);
 
+    Integer findUserIdByUid(@Param("uid") String uid);
 }

@@ -81,6 +81,11 @@
         FROM users
         WHERE uid = #{uid}
     </select>
+    <select id="findUserIdByUid" resultType="java.lang.Integer">
+        SELECT user_id AS user_id
+        FROM users
+        WHERE uid = #{uid}
+    </select>
 
     <select id="findQiitaApiCodeByUserId">
         SELECT qiita_api_code

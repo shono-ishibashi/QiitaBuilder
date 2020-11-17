@@ -23,6 +23,9 @@ export default {
         articleCardDisplay: null,
     },
     getters: {
+        uid(state){
+          return state.uid
+        },
         userId(state) {
             return state.userDetail.userId
         },
@@ -109,6 +112,9 @@ export default {
         },
         setChartDisplay(state, chartDiaplay) {
             state.chartDisplay = chartDiaplay;
+        },
+        setUserId(state, userId){
+            state.userDetail.userId=userId;
         }
     },
     actions: {
@@ -199,5 +205,18 @@ export default {
                 commit("setMyArticles", res.data);
             })
         },
+        async findUserIdByUid({commit, rootGetters, rootState}, uid){
+            const url = rootGetters.API_URL + 'userId';
+            let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
+
+            await axios.get(url, {
+                params: {uid},
+                headers: {
+                    Authorization: apiToken,
+                },
+            }).then(res => {
+                commit("setUserId", res.data);
+            })
+        }
     }
 }
