@@ -30,7 +30,7 @@ public class QiitaAPIRestController {
     }
 
     @RequestMapping(value = "/to-qiita-api-authentication", method = RequestMethod.GET)
-    public String toQiitaAPIAuthentication() {
+    public String generateQiitaAPIAuthenticationURL() {
 
         return qiitaAPIService.generateQiitaAPIAuthenticationURL();
     }
