@@ -103,11 +103,11 @@ export default {
   methods: {
     async loginPartners() {
       await this.$store.dispatch('auth/googleLoginPartners');
-      await router.push('/articleList');
+      await router.push('/article');
     },
     async loginRakus() {
       await this.$store.dispatch('auth/googleLoginRakus');
-      await router.push('/articleList');
+      await router.push('/article');
     }
   },
 
