@@ -3,6 +3,7 @@ package com.qiitabuilder.mapper;
 import com.qiitabuilder.domain.Article;
 import com.qiitabuilder.domain.Tag;
 import com.qiitabuilder.domain.User;
+import org.apache.ibatis.annotations.Insert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @MybatisTest
@@ -181,26 +182,22 @@ class ArticleMapperTest {
     }
 
     @Test
-    void insertArticleTest() {
-        //投稿者ユーザー
+    void insertArticleTest正常系() {
+
         User user = new User();
+        user.setUserId(1);
 
-        Tag tag1 = new Tag();
-        tag1.setTagName("Tag1");
-
-        Tag tag2 = new Tag();
-        tag2.setTagName("Tag2");
-
-        List<Tag> tags = new ArrayList<>(Arrays.asList(tag1, tag2));
+        String userSql = "INSERT INTO users(user_id) VALUES (1)";
+        jdbcTemplate.execute(userSql);
 
         Article article = Article.builder()
                 .postedUser(user)
                 .title("title test")
                 .content("content test")
                 .stateFlag(1)
-                .tags(tags)
                 .build();
 
+        //テスト
         articleMapper.insertArticle(article);
 
         String articleSelectSql
@@ -210,14 +207,74 @@ class ArticleMapperTest {
 
         List<Map<String, Object>> resultArticles = namedParameterJdbcTemplate.queryForList(articleSelectSql, param);
 
-        assertEquals(1, resultArticles.get(0).get("article_id"));
+        Map<String, Object> resultArticle = resultArticles.get(0);
 
 
+        assertEquals(1, resultArticle.get("user_id"));
+        assertEquals("title test", resultArticle.get("title"));
+        assertEquals("content test", resultArticle.get("content"));
+        assertEquals(1, resultArticle.get("state_flag"));
+        assertEquals(1, resultArticle.get("user_id"));
+
+    }
+
+    @Test
+    void insertArticleTest異常系_外部成約されている値が存在しない場合() {
+        User user = new User();
+        user.setUserId(1);
+
+        Article article = Article.builder()
+                .postedUser(user)
+                .title("title test")
+                .content("content test")
+                .stateFlag(1)
+                .build();
+
+
+        //テスト
+        Exception exception = assertThrows(org.springframework.dao.DataIntegrityViolationException.class, () -> articleMapper.insertArticle(article));
+        assertTrue(exception.getMessage().contains("fk_articles_userid` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)"));
     }
 
 
     @Test
-    void updateArticle() {
+    void updateArticle正常系() {
+        String insertUser = "INSERT INTO users (user_id) values (1)";
+        String insertArticle =
+                "INSERT INTO articles ( user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) " +
+                        "VALUES(1,NOW(),NOW(),'test title','content title',null,1)";
+
+        jdbcTemplate.execute(insertUser);
+        jdbcTemplate.execute(insertArticle);
+
+        User user = new User();
+        user.setUserId(1);
+
+        Article article = Article.builder()
+                .articleId(1)
+                .title("test title edited")
+                .content("content title edited")
+                .stateFlag(2)
+                .postedUser(user)
+                .build();
+
+        articleMapper.updateArticle(article);
+
+        String articleSelectSql
+                = "SELECT * FROM articles ORDER BY article_id";
+
+        SqlParameterSource param = new EmptySqlParameterSource();
+
+        List<Map<String, Object>> resultArticles = namedParameterJdbcTemplate.queryForList(articleSelectSql, param);
+
+        Map<String, Object> resultArticle = resultArticles.get(0);
+
+
+        assertEquals(1, resultArticle.get("article_id"));
+        assertEquals(1, resultArticle.get("user_id"));
+        assertEquals("test title edited", resultArticle.get("title"));
+        assertEquals("content title edited", resultArticle.get("content"));
+        assertEquals(2, resultArticle.get("state_flag"));
     }
 
     @Test
@@ -225,6 +282,33 @@ class ArticleMapperTest {
     }
 
     @Test
-    void load() {
+    void load正常系() {
+        String insertUsers = "INSERT INTO users (user_id) VALUES (1), (2)";
+        String insertArticles =
+                "INSERT INTO articles ( user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) " +
+                        "VALUES(1,NOW(),NOW(),'test title','content title',null,1)";
+
+        String insertTags =
+                "INSERT INTO tags VALUES (1,'test_tag1'),(2,'test_tag2')";
+
+        String insertArticlesTags = "INSERT INTO articles_tags_relations(tags_relation_id, article_id, posted_user_id, tag_id) VALUES (1,1,1,1),(2,1,1,2)";
+
+        jdbcTemplate.execute(insertUsers);
+        jdbcTemplate.execute(insertArticles);
+        jdbcTemplate.execute(insertTags);
+        jdbcTemplate.execute(insertArticlesTags);
+
+        Article article = articleMapper.load(1);
+
+        assertEquals(article.getArticleId(), 1);
+        assertEquals(article.getStateFlag(), 1);
+        assertEquals(article.getTitle(), "test title");
+        assertEquals(article.getContent(), "content title");
+
+        assertEquals(article.getTags().get(0).getTagId(), 1);
+        assertEquals(article.getTags().get(1).getTagId(), 2);
+
+        assertEquals(article.getTags().get(0).getTagName(), "test_tag1");
+        assertEquals(article.getTags().get(1).getTagName(), "test_tag2");
     }
 }
