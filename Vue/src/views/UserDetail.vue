@@ -186,7 +186,7 @@ export default {
       ],//並び替え選択用リスト
       sortNum: 0,//現在のソートkey
       page: 1,//現在のページ
-      pageSize: 10,//ページ当たりの記事数
+      pageSize: 5,//ページ当たりの記事数
       displayListNum: 1,//1:posted, 2:feedback, 3:my, 0:draft
       displayListState: 10,//10:all, 1:notPostedQiita, 2:postedQiita
       conditions: {
