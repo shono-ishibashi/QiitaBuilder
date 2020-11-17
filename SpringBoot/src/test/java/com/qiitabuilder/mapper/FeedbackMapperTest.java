@@ -221,7 +221,7 @@ class FeedbackMapperTest {
         assertTrue(actualMessage.contains(expectedMessage));
     }
 
-    //// update
+    //// update()
     @Test
     void updateのテスト正常系() {
         // set up
@@ -265,15 +265,15 @@ class FeedbackMapperTest {
 
         SqlParameterSource param = new EmptySqlParameterSource();
 
-        List<Map<String, Object>> resultRecommends = namedParameterJdbcTemplate.queryForList(sql, param);
+        List<Map<String, Object>> resultFeedbacks = namedParameterJdbcTemplate.queryForList(sql, param);
 
-        assertEquals(1, resultRecommends.get(0).get("feedback_id"));
-        assertEquals(2, resultRecommends.get(0).get("article_id"));
-        assertEquals(2, resultRecommends.get(0).get("user_id"));
-        assertEquals(Timestamp.valueOf(ldtnow), resultRecommends.get(0).get("created_at"));
-        assertEquals(Timestamp.valueOf(ldtnow.plusHours(3)), resultRecommends.get(0).get("updated_at"));
-        assertEquals("changed", resultRecommends.get(0).get("content"));
-        assertEquals(1, resultRecommends.get(0).get("delete_flag"));
+        assertEquals(1, resultFeedbacks.get(0).get("feedback_id"));
+        assertEquals(2, resultFeedbacks.get(0).get("article_id"));
+        assertEquals(2, resultFeedbacks.get(0).get("user_id"));
+        assertEquals(Timestamp.valueOf(ldtnow), resultFeedbacks.get(0).get("created_at"));
+        assertEquals(Timestamp.valueOf(ldtnow.plusHours(3)), resultFeedbacks.get(0).get("updated_at"));
+        assertEquals("changed", resultFeedbacks.get(0).get("content"));
+        assertEquals(1, resultFeedbacks.get(0).get("delete_flag"));
     }
 
     @Test
@@ -322,8 +322,61 @@ class FeedbackMapperTest {
     void getArticleIdByUserId() {
     }
 
+    //// load()
     @Test
-    void load() {
+    void loadのテスト正常系() {
+        // set up
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key
+
+        String insertSql = "INSERT INTO feedbacks(article_id, user_id, created_at, content, delete_flag) VALUES(:articleId, :userId, :createdAt, :content, :deleteFlag);";
+        LocalDateTime ldtnow = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS); // ns以下の時間単位を切り落とし
+
+        Feedback setUpFeedback = Feedback.builder()
+                .articleId(1)
+                .postedUser(User.builder().userId(1).build())
+                .createdAt(ldtnow)
+                .content("sample")
+                .deleteFlag(0)
+                .build();
+        SqlParameterSource setUpParam = new MapSqlParameterSource()
+                .addValue("articleId", setUpFeedback.getArticleId())
+                .addValue("userId", setUpFeedback.getPostedUser().getUserId())
+                .addValue("createdAt", setUpFeedback.getCreatedAt())
+                .addValue("content", setUpFeedback.getContent())
+                .addValue("deleteFlag", setUpFeedback.getDeleteFlag());
+        namedParameterJdbcTemplate.update(insertSql, setUpParam);
+
+        String updateSql = "UPDATE feedbacks SET updated_at = :updatedAt WHERE feedback_id = :feedbackId";
+        SqlParameterSource updateParam = new MapSqlParameterSource()
+                .addValue("updatedAt", ldtnow.plusHours(3))
+                .addValue("feedbackId", 1);
+        namedParameterJdbcTemplate.update(updateSql, updateParam);
+
+        // target method
+        Feedback actualResult = feedbackMapper.load(1);
+
+        // check
+        assertEquals(1, actualResult.getFeedbackId());
+        assertEquals(1, actualResult.getArticleId());
+        assertEquals(1, actualResult.getPostedUser().getUserId());
+        assertEquals(ldtnow, actualResult.getCreatedAt());
+        assertEquals(ldtnow.plusHours(3), actualResult.getUpdatedAt());
+        assertEquals("sample", actualResult.getContent());
+        assertEquals(0, actualResult.getDeleteFlag());
+    }
+
+    @Test
+    void loadのテスト異常系_feedbackIdが存在しない場合() {
+        // set up
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key
+
+        // target method
+        Feedback actualResult = feedbackMapper.load(1);
+
+        // check
+        assertNull(actualResult);
     }
 
     @Test
