@@ -4,26 +4,26 @@
       <v-col cols="3"></v-col>
       <v-col cols="6">
         <v-card class="searchForm" outline-color="#008b8b">
-          <v-row>
-            <v-col>
-              <v-card-title style="padding-left: 40px">
-                <v-icon>mdi-magnify</v-icon>
-                検索フォーム
-              </v-card-title>
-            </v-col>
-            <v-col>
-              <v-card-actions>
-                <v-btn @click="search" dark color="#5bc8ac">検索</v-btn>
-                <v-btn @click="reset" dark color="#ff6347">リセット</v-btn>
-              </v-card-actions>
-            </v-col>
-          </v-row>
-          <v-card-text>
+          <v-form ref="search_form">
             <v-row>
               <v-col>
-                <v-row>
-                  <v-icon @click="toggleSearchWordBox">mdi-sync-circle</v-icon>
-                  <v-form ref="search_form">
+                <v-card-title style="padding-left: 40px">
+                  <v-icon>mdi-magnify</v-icon>
+                  検索フォーム
+                </v-card-title>
+              </v-col>
+              <v-col>
+                <v-card-actions>
+                  <v-btn @submit="search" dark color="#5bc8ac">検索</v-btn>
+                  <v-btn @click="reset" dark color="#ff6347">リセット</v-btn>
+                </v-card-actions>
+              </v-col>
+            </v-row>
+            <v-card-text>
+              <v-row>
+                <v-col>
+                  <v-row>
+                    <v-icon @click="toggleSearchWordBox">mdi-sync-circle</v-icon>
                     <v-text-field
                         v-if="this.searchCriteria.toggleSearchWord===0"
                         label="記事タイトルを検索"
@@ -42,11 +42,9 @@
                         counter="30"
                     >
                     </v-text-field>
-                  </v-form>
-                </v-row>
-              </v-col>
-              <v-col>
-                <v-form ref="search_form">
+                  </v-row>
+                </v-col>
+                <v-col>
                   <v-autocomplete
                       v-model="searchCriteria.searchTag"
                       :items="tags"
@@ -62,10 +60,10 @@
                       small-chips
                   >
                   </v-autocomplete>
-                </v-form>
-              </v-col>
-            </v-row>
-          </v-card-text>
+                </v-col>
+              </v-row>
+            </v-card-text>
+          </v-form>
         </v-card>
       </v-col>
       <v-col cols="3"></v-col>
