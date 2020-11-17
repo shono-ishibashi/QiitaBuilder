@@ -96,6 +96,7 @@
         <result property="updatedAt" column="updated_at"/>
         <result property="feedbackCount" column="fb_count"/>
         <result property="qiitaArticleId" column="qiita_article_id"/>
+        <result property="stateFlag" column="state_flag"/>
 
         <collection property="tags" ofType="com.qiitabuilder.domain.Tag">
             <result property="tagId" column="tag_id"/>
@@ -415,7 +416,8 @@
                            ON articles.article_id = atr.article_id
                  LEFT JOIN tags
                            ON tags.tag_id = atr.tag_id
-        WHERE articles.article_id = #{articleId};
+        WHERE articles.article_id = #{articleId}
+        ORDER BY articles.article_id , tags.tag_id;
     </select>
 
     <!-- ****** INSERT ****** -->
