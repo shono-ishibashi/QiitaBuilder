@@ -179,7 +179,7 @@ class MyArticleMapperTest {
         MyArticle myArticle = MyArticle.builder()
                 .articleId(1)
                 .postedUserId(1)
-                .registerUserId(2)
+                .registerUserId(1)
                 .build();
 
         myArticleMapper.insert(myArticle);
@@ -223,6 +223,16 @@ class MyArticleMapperTest {
     //// getAutoIncrementKey()
     @Test
     void getAutoIncrementKeyのテスト正常系() {
+        // insert
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key 記事1
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key 記事2
+
+        jdbcTemplate.execute("INSERT INTO my_articles(article_id, posted_user_id, register_user_id) VALUES(1, 1, 1)");
+        jdbcTemplate.execute("INSERT INTO my_articles(article_id, posted_user_id, register_user_id) VALUES(2, 1, 1)");
+
+        Integer actualResult2 = myArticleMapper.getAutoIncrementKey();
+        assertEquals(2, actualResult2);
     }
 
     @Test
