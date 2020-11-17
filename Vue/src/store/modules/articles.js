@@ -16,6 +16,7 @@ export default {
         },
         totalPage: undefined,
         tags: [],
+        errorTransistionDialog:false,
     },
     mutations: {
         setArticles(state, articles) {
@@ -26,7 +27,10 @@ export default {
         },
         setTotalPage(state, totalPage) {
             state.totalPage = totalPage
-        }
+        },
+        toggleErrorTransitionDialog(state){
+            state.errorTransistionDialog=!state.errorTransistionDialog
+        },
     },
     actions: {
         async fetchArticles({commit, rootGetters}, newSearchCriteria) {
@@ -78,6 +82,9 @@ export default {
                 .then(res => {
                     commit("setTags", res.data)
                 })
+        },
+        toggleErrorTransitionDialog({commit}){
+            commit("toggleErrorTransitionDialog")
         }
     }
 }

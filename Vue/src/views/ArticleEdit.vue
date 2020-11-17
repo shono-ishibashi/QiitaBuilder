@@ -115,7 +115,8 @@ import EditAndPreview from '../components/article_edit/format/FormatEditAndPrevi
 import Edit from '../components/article_edit/format/FormatEdit'
 import Preview from '../components/article_edit/format/FormatPreview'
 import EditAndPreviewAndFeedback from '../components/article_edit/format/FormatEditAndPreviewAndFeedback'
-import {mapState, mapActions} from 'vuex'
+import {mapState, mapGetters, mapActions} from 'vuex'
+import axios from 'axios'
 
 export default {
   name: "ArticleEdit",
@@ -142,15 +143,39 @@ export default {
     }
   },
   watch: {
-    apiToken() {
-      this.resetArticle()
-      this.fetchTags()
-      this.fetchArticle(this.slug);
+    async apiToken() {
+      const uid=await this.loginUser.uid
+      console.log(uid)
+      await this.findUserIdByUid(uid)
+      console.log(this.userId)
+      const article=await this.slug
+      const params= await {
+        articleId:article,
+        userId:this.userId
+      }
+      const findArticleId=await axios.get(this.API_URL+'article/isExist',{
+        params: params,
+        headers: {
+          "Authorization": this.apiToken,
+          "Content-Type": "application/json"
+        },
+      })
+      if(findArticleId!=null){
+        await this.resetArticle()
+        await this.fetchTags()
+        await this.fetchArticle(this.slug);
+      }else{
+        await this.$router.push('/article')
+        await this.toggleErrorTransitionDialog()
+      }
     }
   },
   computed: {
     ...mapState("articles", ["tags"]),
     ...mapState("article", ["article"]),
+    ...mapGetters("auth", ["loginUser"]),
+    ...mapGetters(["API_URL"]),
+    ...mapGetters("user",["userId"]),
     slug() {
       return this.$route.params.articleId;
     },
@@ -184,7 +209,8 @@ export default {
   },
   methods: {
     ...mapActions("article", ["fetchArticle", "saveArticle", "resetArticle"]),
-    ...mapActions("articles", ["fetchTags"]),
+    ...mapActions("articles", ["fetchTags","toggleErrorTransitionDialog"]),
+    ...mapActions("user", ["findUserIdByUid"]),
     //記事を投稿or更新するメソッド
     async postArticle(state) {
       //validationチェック
@@ -227,16 +253,7 @@ export default {
       await this.postArticleToQiita(article.articleId)
     },
   },
-  //userIdを取得できるメソッドが完成し次第、メソッドを作成
-  // beforeRouteEnter(to, from, next) {
-    //URLのparam(articleId)とuserIdに
-    //URLのparam(userId)に数値以外が入力された際に記事一覧に戻る
-    // if (!isNaN(to.params['userId'])) {
-    //   next();
-    // } else {
-    //   next({path: '/article'})
-    // }
-  // }
+
 }
 </script>
 

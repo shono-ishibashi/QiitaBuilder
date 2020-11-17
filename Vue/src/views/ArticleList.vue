@@ -121,6 +121,19 @@
         ></v-pagination>
       </v-col>
     </v-row>
+    <v-dialog v-model="errorDialog" width="400">
+      <v-card>
+        <v-card-title>
+          警告
+        </v-card-title>
+        <v-card-text>
+          記事に対する権限がないか、記事が存在しません。
+        </v-card-text>
+        <v-card-actions>
+          <v-btn @click="toggleErrorTransitionDialog">OK</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -175,16 +188,24 @@ export default {
   created() {
   },
   computed: {
-    ...mapState("articles", ["articles", "tags", "totalPage", "searchCriteria"]),
+    ...mapState("articles", ["articles", "tags", "totalPage", "searchCriteria","errorTransistionDialog"]),
     apiToken() {
       return this.$store.getters["auth/apiToken"];
+    },
+    errorDialog:{
+      get() {
+        return this.errorTransistionDialog
+      },
+      set() {
+        this.toggleErrorTransitionDialog()
+      }
     }
   },
   components: {
     ArticleCard
   },
   methods: {
-    ...mapActions("articles", ["fetchArticles", "fetchTags"]),
+    ...mapActions("articles", ["fetchArticles", "fetchTags","toggleErrorTransitionDialog"]),
     changePeriod(key) {
       this.searchCriteria.period = key
     },
