@@ -226,7 +226,17 @@ export default {
       await this.postArticle(article.stateFlag)
       await this.postArticleToQiita(article.articleId)
     },
-  }
+  },
+  //userIdを取得できるメソッドが完成し次第、メソッドを作成
+  // beforeRouteEnter(to, from, next) {
+    //URLのparam(articleId)とuserIdに
+    //URLのparam(userId)に数値以外が入力された際に記事一覧に戻る
+    // if (!isNaN(to.params['userId'])) {
+    //   next();
+    // } else {
+    //   next({path: '/article'})
+    // }
+  // }
 }
 </script>
 
