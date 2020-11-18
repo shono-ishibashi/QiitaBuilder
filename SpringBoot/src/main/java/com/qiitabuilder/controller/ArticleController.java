@@ -187,4 +187,16 @@ public class ArticleController {
         if (Objects.isNull(userId)) return null;
         return articleService.getMyArticlesByUserId(userId);
     }
+
+    /**
+     * ユーザーが投稿した記事一覧を取得するメソッド
+     *
+     * @param userId
+     * @return List<Article> (ユーザーが投稿した記事一覧)
+     */
+    @RequestMapping(value = "/posted", method = RequestMethod.GET)
+    public List<Article> getArticlesByUserId(Integer userId) {
+        if (Objects.isNull(userId)) return null;
+        return articleService.getArticlesByUserId(userId);
+    }
 }

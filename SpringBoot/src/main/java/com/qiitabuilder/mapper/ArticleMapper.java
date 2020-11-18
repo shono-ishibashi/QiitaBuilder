@@ -89,4 +89,12 @@ public interface ArticleMapper {
      */
 
     Integer findByArticleIdAndUserId(@Param("articleId") Integer articleId, @Param("userId") Integer userId);
+
+    /**
+     * userIdからそのユーザーが作成した記事一覧を取得する
+     *
+     * @param userId
+     * @return List<Article> (ユーザーが投稿した記事一覧)
+     */
+    List<Article> getArticlesByUserId(@Param("userId") Integer userId);
 }

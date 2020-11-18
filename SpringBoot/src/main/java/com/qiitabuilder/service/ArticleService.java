@@ -235,4 +235,14 @@ public class ArticleService {
     public List<Article> getMyArticlesByUserId(Integer userId) {
         return myArticleMapper.getMyArticlesByUserId(userId);
     }
+
+    /**
+     * userIdからそのユーザーが作成した記事一覧を取得する
+     *
+     * @param userId
+     * @return List<Article> (ユーザーが投稿した記事一覧)
+     */
+    public List<Article> getArticlesByUserId(Integer userId) {
+        return articleMapper.getArticlesByUserId(userId);
+    }
 }
