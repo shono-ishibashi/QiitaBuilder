@@ -69,7 +69,8 @@
                                   FROM qiita_builder.qiita_recommends AS recommend
                                   GROUP BY recommend.posted_user_id) AS recommend_cnt_table
                                  ON u.user_id = recommend_cnt_table.posted_user_id
-        WHERE u.user_id = #{userId};
+        WHERE u.user_id = #{userId}
+        ORDER BY tag_cnt_table.tag_cnt DESC , tags.tag_id;
     </select>
 
     <select id="findByUid" resultMap="userResultMap">

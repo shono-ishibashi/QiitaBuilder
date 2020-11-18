@@ -135,7 +135,7 @@ export default {
       required: value => value && !!value || "必ず入力してください",
       blank: value => {
         const pattern = /\S/g
-        return pattern.test(value) || "空文字のみの入力はできません"
+        return pattern.test(value[value.length-1]) || "空文字のみの入力はできません"
       },
       title_limit_length: value => value && value.length <= 100 || "100文字以内で入力してください",
       tags_max_size: value => value && value.length <= 5 || "5つまで入力してください",
@@ -145,9 +145,7 @@ export default {
   watch: {
     async apiToken() {
       const uid=await this.loginUser.uid
-      console.log(uid)
       await this.findUserIdByUid(uid)
-      console.log(this.userId)
       const article=await this.slug
       const params= await {
         articleId:article,
@@ -226,6 +224,7 @@ export default {
         }
         await this.saveArticle(this.article)
         await this.$router.push('/article')
+        await this.resetArticle()
       } else {
         this.$refs.edit_form.validate()
       }
@@ -247,7 +246,7 @@ export default {
     toggleQiitaDialog() {
       this.qiitaDialog = !this.qiitaDialog
     },
-    //qiitaに投稿or更新んするメソッド
+    //qiitaに投稿or更新するメソッド
     async postedToQiita(article) {
       await this.postArticle(article.stateFlag)
       await this.postArticleToQiita(article.articleId)

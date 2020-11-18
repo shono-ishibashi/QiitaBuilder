@@ -159,9 +159,44 @@ public class UserMapperTest {
     }
 
     @Test
-    void fetchUserDetails(Integer userId){
-        User user=new User();
-        user.setUserId(1);
+    void fetchUserDetails(){
+        String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
+        String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
+        String[] feedbackSqlArr = CollectionSQL.insertFeedbacks.split("\n", 0);
+        String[] qiitaRecommendSqlArr = CollectionSQL.insertQiitaRecommends.split("\n", 0);
+        String[] tagSqlArr = CollectionSQL.insertTags.split("\n", 0);
+        String[] tagRelationSqlArr = CollectionSQL.insertArticlesTagsRelations.split("\n", 0);
+        String[] myArticleSqlArr = CollectionSQL.insertMyArticles.split("\n", 0);
+
+        Arrays.stream(userSqlArr).forEach((sql)->jdbcTemplate.execute(sql));
+        Arrays.stream(articleSqlArr).forEach((sql)->jdbcTemplate.execute(sql));
+        Arrays.stream(feedbackSqlArr).forEach((sql)->jdbcTemplate.execute(sql));
+        Arrays.stream(qiitaRecommendSqlArr).forEach((sql)->jdbcTemplate.execute(sql));
+        Arrays.stream(tagSqlArr).forEach((sql)->jdbcTemplate.execute(sql));
+        Arrays.stream(tagRelationSqlArr).forEach((sql)->jdbcTemplate.execute(sql));
+        Arrays.stream(myArticleSqlArr).forEach((sql)->jdbcTemplate.execute(sql));
+
+        User user=userMapper.fetchUserDetails(1);
+        assertEquals(1,user.getUserId());
+        assertEquals("a",user.getUid());
+        assertEquals("a",user.getDisplayName());
+        assertEquals("a",user.getPhotoUrl());
+
+        assertEquals(8,user.getUsedTags().get(0).getUsedTagCount());
+        assertEquals("Java",user.getUsedTags().get(0).getTagName());
+        assertEquals(5,user.getUsedTags().get(1).getUsedTagCount());
+        assertEquals("ruby",user.getUsedTags().get(1).getTagName());
+        assertEquals(5,user.getUsedTags().get(2).getUsedTagCount());
+        assertEquals("javascript",user.getUsedTags().get(2).getTagName());
+        assertEquals(4,user.getUsedTags().get(3).getUsedTagCount());
+        assertEquals("go",user.getUsedTags().get(3).getTagName());
+        assertEquals(2,user.getUsedTags().get(4).getUsedTagCount());
+        assertEquals("php",user.getUsedTags().get(4).getTagName());
+
+        assertEquals(8,user.getFeedbackCount());
+        assertEquals(3,user.getPostedArticleCount());
+        assertEquals(14,user.getQiitaRecommendedAllCount());
+
     }
 
 

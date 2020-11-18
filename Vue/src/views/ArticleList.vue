@@ -14,7 +14,7 @@
               </v-col>
               <v-col>
                 <v-card-actions>
-                  <v-btn @submit="search" dark color="#5bc8ac">検索</v-btn>
+                  <v-btn @click="submit" dark color="#5bc8ac">検索</v-btn>
                   <v-btn @click="reset" dark color="#ff6347">リセット</v-btn>
                 </v-card-actions>
               </v-col>
@@ -112,10 +112,11 @@
         >
         </v-select>
       </v-col>
-      <v-col cols="8">
+      <v-col cols="8" v-if="articles.length!=0">
         <v-pagination
             v-model="searchCriteria.currentPage"
             :length="totalPage"
+            :total-visible="7"
             color="#5bc8ac"
             circle
         ></v-pagination>
@@ -209,7 +210,7 @@ export default {
     changePeriod(key) {
       this.searchCriteria.period = key
     },
-    search() {
+    submit() {
       if (this.$refs.search_form.validate()) {
         this.searchCriteria.currentPage = 1
         this.fetchArticles(this.searchCriteria)
