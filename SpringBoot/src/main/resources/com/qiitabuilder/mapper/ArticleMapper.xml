@@ -173,16 +173,11 @@
             ) as a_t_relation
             ON art.article_id = a_t_relation.atArticleId
         </if>
-        <if test="search.searchWord !=null or search.userId !=null">
+        <if test="search.searchWord !=null　and search.toggleSearchWord==1">
             JOIN (SELECT users.user_id
             FROM users
             <where>
-                <if test="search.searchWord !=null and search.toggleSearchWord==1">
-                    display_name LIKE CONCAT('%', #{search.searchWord}, '%')
-                </if>
-                <if test="search.userId !=null">
-                    AND user_id = #{search.userId}
-                </if>
+                display_name LIKE CONCAT('%', #{search.searchWord}, '%')
             </where>
             ) as users
             ON art.user_id = users.user_id
@@ -285,7 +280,7 @@
              (
                  SELECT article_id,
                         COUNT(feed.article_id) AS feed_cnt
-                 FROM qiita_builder.feedbacks AS feed
+                 FROM feedbacks AS feed
                  GROUP BY feed.article_id
              ) AS feed_cnt_table
              ON art.article_id = feed_cnt_table.article_id
@@ -294,7 +289,7 @@
              (
                  SELECT article_id,
                         COUNT(my.article_id) AS my_cnt
-                 FROM qiita_builder.my_articles AS my
+                 FROM my_articles AS my
                  GROUP BY my.article_id
              ) AS my_cnt_table
              ON art.article_id = my_cnt_table.article_id
@@ -303,7 +298,7 @@
              (
                  SELECT article_id,
                         COUNT(recommend.article_id) AS recommend_cnt
-                 FROM qiita_builder.qiita_recommends AS recommend
+                 FROM qiita_recommends AS recommend
                  GROUP BY recommend.article_id
              ) AS recommend_cnt_table
              ON art.article_id = recommend_cnt_table.article_id
@@ -337,7 +332,8 @@
                  WHERE state_flag = 1
                     OR state_flag = 2
                  GROUP BY user_id
-                 ORDER BY count(*) DESC
+                 ORDER BY count(*) DESC,
+                          user_id
              ) AS art_count_rank
                  LEFT OUTER JOIN users
                                  ON art_count_rank.user_id = users.user_id;
@@ -417,7 +413,7 @@
                  LEFT JOIN tags
                            ON tags.tag_id = atr.tag_id
         WHERE articles.article_id = #{articleId}
-        ORDER BY articles.article_id , tags.tag_id;
+        ORDER BY articles.article_id, tags.tag_id;
     </select>
 
     <select id="findByArticleIdAndUserId" resultType="_int">
