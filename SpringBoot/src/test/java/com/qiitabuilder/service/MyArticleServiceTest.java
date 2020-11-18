@@ -10,12 +10,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
+
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -289,7 +295,63 @@ class MyArticleServiceTest {
         assertTrue(actualMessage.contains(expectedMessage));
     }
 
+    //// deleteMyArticle()
     @Test
-    void deleteMyArticle() {
+    void deleteMyArticle正常系() {
+        // insert
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(2);"); // Foreign key 記事
+
+        jdbcTemplate.execute("INSERT INTO my_articles(article_id, posted_user_id, register_user_id) VALUES(1, 2, 1)");
+
+        myArticleService.deleteMyArticle(1);
+
+        // check
+        String sql = "SELECT * FROM my_articles WHERE my_article_id = 1";
+
+        SqlParameterSource param = new EmptySqlParameterSource();
+
+        List<Map<String, Object>> actual = namedParameterJdbcTemplate.queryForList(sql, param);
+
+        assertTrue(actual.isEmpty());
     }
+    @Test
+    void deleteMyArticle異常系_myArticleIdが存在しない場合() {
+        // insert
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(2);"); // Foreign key 記事
+
+        // ステータスコード409をスローするか確認
+        Exception exception = assertThrows(org.springframework.web.server.ResponseStatusException.class, () -> {
+            myArticleService.deleteMyArticle(1);
+        });
+        String expectedMessage = "409 CONFLICT";
+        String actualMessage = exception.getMessage();
+        System.out.println(actualMessage);
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+//    @Test
+//    void deleteMyArticle異常系_myArticleIdがログインユーザーのものではない場合() {
+//        // insert
+//        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+//        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+//        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key 記事
+//        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(2);"); // Foreign key 記事
+//
+//        jdbcTemplate.execute("INSERT INTO my_articles(article_id, posted_user_id, register_user_id) VALUES(1, 1, 2)");
+//
+//
+//        // ステータスコード403をスローするか確認
+//        Exception exception = assertThrows(org.springframework.web.server.ResponseStatusException.class, () -> {
+//            myArticleService.deleteMyArticle(1);
+//        });
+//        String expectedMessage = "403 FORBIDDEN";
+//        String actualMessage = exception.getMessage();
+//        System.out.println(actualMessage);
+//
+//        assertTrue(actualMessage.contains(expectedMessage));
+//    }
 }

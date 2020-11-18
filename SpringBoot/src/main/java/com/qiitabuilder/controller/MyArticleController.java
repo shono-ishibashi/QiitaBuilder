@@ -92,6 +92,10 @@ public class MyArticleController {
     @DeleteMapping("/{myArticleId}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteMyArticle(@PathVariable("myArticleId") String myArticleId) {
-        myArticleService.deleteMyArticle(myArticleId);
+        // 入力値エラーの場合はBadRequestを返す
+        if (!myArticleId.matches("^\\d+$")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        myArticleService.deleteMyArticle(Integer.parseInt(myArticleId));
     }
 }
