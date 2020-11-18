@@ -81,7 +81,7 @@ export default {
                 })
                 .catch((error) => console.log("Error getting data : ", error));
         },
-        async saveArticle({commit, rootGetters}, article) {
+        async saveArticle({rootGetters}, article) {
             const articleEditUrl = rootGetters.API_URL + "article/";
             const apiToken = await rootGetters["auth/apiToken"];
             const requestBody = {
@@ -99,9 +99,6 @@ export default {
                             "Content-Type": "application/json",
                         },
                     })
-                    .then(() => {
-                        commit("resetArticle");
-                    });
             } else {
                 await axios
                     .put(articleEditUrl, requestBody, {
@@ -110,9 +107,6 @@ export default {
                             "Content-Type": "application/json",
                         },
                     })
-                    .then(() => {
-                        commit("resetArticle");
-                    });
             }
         },
         resetArticle({commit}) {

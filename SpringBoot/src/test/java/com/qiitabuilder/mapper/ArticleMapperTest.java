@@ -171,6 +171,25 @@ class ArticleMapperTest {
 
     @Test
     void getPostedArticleCountRank() {
+        String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
+        String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
+        String[] feedbackSqlArr = CollectionSQL.insertFeedbacks.split("\n", 0);
+        String[] qiitaRecommendSqlArr = CollectionSQL.insertQiitaRecommends.split("\n", 0);
+
+        for(String sql : userSqlArr){
+            jdbcTemplate.execute(sql);
+        }
+        for(String sql : articleSqlArr){
+            jdbcTemplate.execute(sql);
+        }
+        for(String sql : feedbackSqlArr){
+            jdbcTemplate.execute(sql);
+        }
+        for(String sql : qiitaRecommendSqlArr){
+            jdbcTemplate.execute(sql);
+        }
+
+
     }
 
     @Test
