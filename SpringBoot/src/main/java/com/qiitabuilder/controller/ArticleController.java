@@ -171,6 +171,7 @@ public class ArticleController {
      */
     @RequestMapping(value = "/feedbacked", method = RequestMethod.GET)
     public List<Article> getFeedbackedArticlesByUserId(Integer userId) {
+        if (Objects.isNull(userId)) return null;
         return articleService.getFeedbackedArticlesByUserId(userId);
     }
 
@@ -183,6 +184,7 @@ public class ArticleController {
      */
     @RequestMapping(value = "/my-articles", method = RequestMethod.GET)
     public List<Article> getMyArticlesByUserId(Integer userId) {
+        if (Objects.isNull(userId)) return null;
         return articleService.getMyArticlesByUserId(userId);
     }
 }

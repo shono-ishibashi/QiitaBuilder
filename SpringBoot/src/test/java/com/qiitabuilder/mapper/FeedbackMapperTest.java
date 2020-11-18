@@ -1,5 +1,6 @@
 package com.qiitabuilder.mapper;
 
+import com.qiitabuilder.domain.Article;
 import com.qiitabuilder.domain.Feedback;
 import com.qiitabuilder.domain.User;
 import org.junit.jupiter.api.AfterEach;
@@ -18,6 +19,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -380,6 +382,45 @@ class FeedbackMapperTest {
     }
 
     @Test
-    void getFeedbackedArticlesByUserId() {
+    void getFeedbackedArticlesByUserIdのテスト正常系() {
+        String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
+        String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
+        String[] feedbackSqlArr = CollectionSQL.insertFeedbacks.split("\n", 0);
+        String[] qiitaRecommendSqlArr = CollectionSQL.insertQiitaRecommends.split("\n", 0);
+        String[] tagSqlArr = CollectionSQL.insertTags.split("\n", 0);
+        String[] tagRelationSqlArr = CollectionSQL.insertArticlesTagsRelations.split("\n", 0);
+        String[] myArticleSqlArr = CollectionSQL.insertMyArticles.split("\n", 0);
+
+        Arrays.stream(userSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+        Arrays.stream(articleSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+        Arrays.stream(feedbackSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+        Arrays.stream(qiitaRecommendSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+        Arrays.stream(tagSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+        Arrays.stream(tagRelationSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+        Arrays.stream(myArticleSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+
+        //userId=4のテスト
+        List<Article> articles = feedbackMapper.getFeedbackedArticlesByUserId(4);
+
+        LocalDateTime createDate = LocalDateTime.of(2020, 11, 8, 00, 00, 00);
+        LocalDateTime updateDate = createDate.plusDays(1);
+
+        //記事件数と一個目の記事のみ取得してきたもの全てテスト
+        assertEquals(5, articles.size());
+        assertEquals(190, articles.get(0).getArticleId());
+        assertEquals("title190", articles.get(0).getTitle());
+        assertEquals(createDate, articles.get(0).getCreatedAt());
+        assertEquals(updateDate, articles.get(0).getUpdatedAt());
+        assertEquals(1, articles.get(0).getStateFlag());
+        assertEquals(2, articles.get(0).getTags().get(0).getTagId());
+        assertEquals("ruby", articles.get(0).getTags().get(0).getTagName());
+        assertEquals(4, articles.get(0).getTags().get(1).getTagId());
+        assertEquals("php", articles.get(0).getTags().get(1).getTagName());
+        assertEquals(2, articles.get(0).getFeedbackCount());
+        assertEquals(1, articles.get(0).getRegisteredMyArticleCount());
+        assertEquals(37, articles.get(0).getPostedUser().getUserId());
+        assertEquals("user37", articles.get(0).getPostedUser().getDisplayName());
+        assertEquals("photo37", articles.get(0).getPostedUser().getPhotoUrl());
+        assertEquals(1, articles.get(0).getQiitaRecommendPoint());
     }
 }
