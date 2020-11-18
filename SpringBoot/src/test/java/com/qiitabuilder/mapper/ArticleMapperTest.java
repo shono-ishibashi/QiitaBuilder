@@ -192,6 +192,113 @@ class ArticleMapperTest {
         List<RankingUser> rankingUserList = articleMapper.getPostedArticleCountRank();
         assertEquals(35, rankingUserList.size());
 
+        //////////最初
+        assertEquals(31, rankingUserList.get(0).getUser().getUserId());
+        assertEquals("user31", rankingUserList.get(0).getUser().getDisplayName());
+        assertEquals("photo31", rankingUserList.get(0).getUser().getPhotoUrl());
+        assertEquals(7, rankingUserList.get(0).getUser().getFeedbackCount());
+        assertEquals(15, rankingUserList.get(0).getUser().getPostedArticleCount());
+        assertEquals(11, rankingUserList.get(0).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(21, rankingUserList.get(1).getUser().getUserId());
+        assertEquals("user21", rankingUserList.get(1).getUser().getDisplayName());
+        assertEquals("photo21", rankingUserList.get(1).getUser().getPhotoUrl());
+        assertEquals(7, rankingUserList.get(1).getUser().getFeedbackCount());
+        assertEquals(14, rankingUserList.get(1).getUser().getPostedArticleCount());
+        assertEquals(3, rankingUserList.get(1).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(11, rankingUserList.get(2).getUser().getUserId());
+        assertEquals("user", rankingUserList.get(2).getUser().getDisplayName());
+        assertEquals("user_photo", rankingUserList.get(2).getUser().getPhotoUrl());
+        assertEquals(8, rankingUserList.get(2).getUser().getFeedbackCount());
+        assertEquals(13, rankingUserList.get(2).getUser().getPostedArticleCount());
+        assertEquals(15, rankingUserList.get(2).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(1, rankingUserList.get(3).getUser().getUserId());
+        assertEquals("a", rankingUserList.get(3).getUser().getDisplayName());
+        assertEquals("a", rankingUserList.get(3).getUser().getPhotoUrl());
+        assertEquals(8, rankingUserList.get(3).getUser().getFeedbackCount());
+        assertEquals(12, rankingUserList.get(3).getUser().getPostedArticleCount());
+        assertEquals(14, rankingUserList.get(3).getUser().getQiitaRecommendedAllCount());
+        
+        assertEquals(32, rankingUserList.get(4).getUser().getUserId());
+        assertEquals("user32", rankingUserList.get(4).getUser().getDisplayName());
+        assertEquals("photo32", rankingUserList.get(4).getUser().getPhotoUrl());
+        assertEquals(0, rankingUserList.get(4).getUser().getFeedbackCount());
+        assertEquals(11, rankingUserList.get(4).getUser().getPostedArticleCount());
+        assertEquals(7, rankingUserList.get(4).getUser().getQiitaRecommendedAllCount());
+
+        //////////中間
+        assertEquals(24, rankingUserList.get(14).getUser().getUserId());
+        assertEquals("user24", rankingUserList.get(14).getUser().getDisplayName());
+        assertEquals("photo24", rankingUserList.get(14).getUser().getPhotoUrl());
+        assertEquals(4, rankingUserList.get(14).getUser().getFeedbackCount());
+        assertEquals(6, rankingUserList.get(14).getUser().getPostedArticleCount());
+        assertEquals(7, rankingUserList.get(14).getUser().getQiitaRecommendedAllCount());
+        
+        assertEquals(4, rankingUserList.get(15).getUser().getUserId());
+        assertEquals("d", rankingUserList.get(15).getUser().getDisplayName());
+        assertEquals("d", rankingUserList.get(15).getUser().getPhotoUrl());
+        assertEquals(5, rankingUserList.get(15).getUser().getFeedbackCount());
+        assertEquals(5, rankingUserList.get(15).getUser().getPostedArticleCount());
+        assertEquals(3, rankingUserList.get(15).getUser().getQiitaRecommendedAllCount());
+        
+        assertEquals(15, rankingUserList.get(16).getUser().getUserId());
+        assertEquals("user15", rankingUserList.get(16).getUser().getDisplayName());
+        assertEquals("photo15", rankingUserList.get(16).getUser().getPhotoUrl());
+        assertEquals(9, rankingUserList.get(16).getUser().getFeedbackCount());
+        assertEquals(5, rankingUserList.get(16).getUser().getPostedArticleCount());
+        assertEquals(7, rankingUserList.get(16).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(5, rankingUserList.get(17).getUser().getUserId());
+        assertEquals("test", rankingUserList.get(17).getUser().getDisplayName());
+        assertEquals("test_photo", rankingUserList.get(17).getUser().getPhotoUrl());
+        assertEquals(11, rankingUserList.get(17).getUser().getFeedbackCount());
+        assertEquals(4, rankingUserList.get(17).getUser().getPostedArticleCount());
+        assertEquals(9, rankingUserList.get(17).getUser().getQiitaRecommendedAllCount());
+        
+        assertEquals(26, rankingUserList.get(18).getUser().getUserId());
+        assertEquals("user26", rankingUserList.get(18).getUser().getDisplayName());
+        assertEquals("photo26", rankingUserList.get(18).getUser().getPhotoUrl());
+        assertEquals(3, rankingUserList.get(18).getUser().getFeedbackCount());
+        assertEquals(4, rankingUserList.get(18).getUser().getPostedArticleCount());
+        assertEquals(1, rankingUserList.get(18).getUser().getQiitaRecommendedAllCount());
+
+        //////////最後
+        assertEquals(9, rankingUserList.get(30).getUser().getUserId());
+        assertEquals("ゆみ", rankingUserList.get(30).getUser().getDisplayName());
+        assertEquals("rrr", rankingUserList.get(30).getUser().getPhotoUrl());
+        assertEquals(1, rankingUserList.get(30).getUser().getFeedbackCount());
+        assertEquals(1, rankingUserList.get(30).getUser().getPostedArticleCount());
+        assertEquals(4, rankingUserList.get(30).getUser().getQiitaRecommendedAllCount());
+        
+        assertEquals(10, rankingUserList.get(31).getUser().getUserId());
+        assertEquals("そうし", rankingUserList.get(31).getUser().getDisplayName());
+        assertEquals("uuu", rankingUserList.get(31).getUser().getPhotoUrl());
+        assertEquals(15, rankingUserList.get(31).getUser().getFeedbackCount());
+        assertEquals(1, rankingUserList.get(31).getUser().getPostedArticleCount());
+        assertEquals(5, rankingUserList.get(31).getUser().getQiitaRecommendedAllCount());
+        
+        assertEquals(19, rankingUserList.get(32).getUser().getUserId());
+        assertEquals("user19", rankingUserList.get(32).getUser().getDisplayName());
+        assertEquals("photo19", rankingUserList.get(32).getUser().getPhotoUrl());
+        assertEquals(1, rankingUserList.get(32).getUser().getFeedbackCount());
+        assertEquals(1, rankingUserList.get(32).getUser().getPostedArticleCount());
+        assertEquals(3, rankingUserList.get(32).getUser().getQiitaRecommendedAllCount());
+        
+        assertEquals(29, rankingUserList.get(33).getUser().getUserId());
+        assertEquals("user29", rankingUserList.get(33).getUser().getDisplayName());
+        assertEquals("photo29", rankingUserList.get(33).getUser().getPhotoUrl());
+        assertEquals(1, rankingUserList.get(33).getUser().getFeedbackCount());
+        assertEquals(1, rankingUserList.get(33).getUser().getPostedArticleCount());
+        assertEquals(2, rankingUserList.get(33).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(39, rankingUserList.get(34).getUser().getUserId());
+        assertEquals("user39", rankingUserList.get(34).getUser().getDisplayName());
+        assertEquals("photo39", rankingUserList.get(34).getUser().getPhotoUrl());
+        assertEquals(0, rankingUserList.get(34).getUser().getFeedbackCount());
+        assertEquals(1, rankingUserList.get(34).getUser().getPostedArticleCount());
+        assertEquals(2, rankingUserList.get(34).getUser().getQiitaRecommendedAllCount());
     }
 
     @Test
@@ -216,7 +323,7 @@ class ArticleMapperTest {
         assertEquals(6, articleIdList.size());
         assertEquals(132, articleIdList.get(0));
         assertEquals(131, articleIdList.get(1));
-        assertEquals(130, articleIdList.get(2));
+        assertEquals(130, articleIdList.get(0));
         assertEquals(129, articleIdList.get(3));
         assertEquals(128, articleIdList.get(4));
         assertEquals(127, articleIdList.get(5));
