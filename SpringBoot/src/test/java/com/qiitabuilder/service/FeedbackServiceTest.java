@@ -4,15 +4,12 @@ import com.qiitabuilder.domain.Feedback;
 import com.qiitabuilder.domain.User;
 import com.qiitabuilder.security.SimpleLoginUser;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -21,13 +18,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.test.context.event.annotation.BeforeTestClass;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -55,6 +49,7 @@ class FeedbackServiceTest {
         SecurityContextHolder.setContext(context);
         System.out.println("LoginUser Set");
     }
+
     public static void clearContext() {
         SecurityContextHolder.clearContext();
     }
@@ -248,12 +243,8 @@ class FeedbackServiceTest {
         jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
         jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key
 
-        LocalDateTime ldtnow = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS); // ns以下の時間単位を切り落とし
-        Timestamp tsNow = Timestamp.valueOf(ldtnow);
-
         Feedback feedback = Feedback.builder()
                 .articleId(1)
-                .postedUser(User.builder().userId(1).build())
                 .content("sample")
                 .deleteFlag(0)
                 .build();
@@ -268,7 +259,40 @@ class FeedbackServiceTest {
         assertEquals(0, actual.getDeleteFlag());
     }
 
+    //// updateFeedback()
     @Test
-    void updateFeedback() {
+    void updateFeedback正常系() {
+        // set up
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(2);"); // Foreign key
+
+        String insertFeed1 = "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (1, 2, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content1', 0);";
+        jdbcTemplate.execute(insertFeed1);
+
+        // actual
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime updatedAt = LocalDateTime.parse("2020-11-05 00:00", dtf);
+        Feedback feedback = Feedback.builder()
+                .feedbackId(1)
+                .articleId(1)
+                .content("changed")
+                .updatedAt(updatedAt)
+                .deleteFlag(1)
+                .build();
+        Feedback actual = feedbackService.updateFeedback(feedback);
+        // check
+        assertEquals(1, actual.getFeedbackId());
+        assertEquals(1, actual.getArticleId());
+        assertEquals(User.builder().userId(1).build(), actual.getPostedUser());
+        assertNotNull(actual.getCreatedAt());
+        assertEquals("changed", actual.getContent());
+        assertEquals(1, actual.getDeleteFlag());
+    }
+
+    @Test
+    void updateFeedback異常系_FBの投稿者とログインユーザーが一致しない場合() {
+
     }
 }
