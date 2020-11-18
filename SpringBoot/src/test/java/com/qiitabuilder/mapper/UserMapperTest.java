@@ -199,5 +199,12 @@ public class UserMapperTest {
 
     }
 
+    @Test
+    void findUserIdByUid(){
+        String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
+        Arrays.stream(userSqlArr).forEach((sql)->jdbcTemplate.execute(sql));
+        Integer userId=userMapper.findUserIdByUid("a");
+        assertEquals(1,userId);
+    }
 
 }
