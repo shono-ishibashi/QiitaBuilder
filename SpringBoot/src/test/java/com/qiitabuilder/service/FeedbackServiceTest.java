@@ -47,7 +47,6 @@ class FeedbackServiceTest {
         SecurityContext context = new SecurityContextImpl();
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
-        System.out.println("LoginUser Set");
     }
 
     public static void clearContext() {
@@ -268,7 +267,7 @@ class FeedbackServiceTest {
         jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key
         jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(2);"); // Foreign key
 
-        String insertFeed1 = "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (1, 2, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content1', 0);";
+        String insertFeed1 = "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (1, 1, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content1', 0);";
         jdbcTemplate.execute(insertFeed1);
 
         // actual
@@ -293,6 +292,33 @@ class FeedbackServiceTest {
 
     @Test
     void updateFeedback異常系_FBの投稿者とログインユーザーが一致しない場合() {
+        // set up
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(2);"); // Foreign key
 
+        String insertFeed1 = "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (1, 2, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content1', 0);";
+        jdbcTemplate.execute(insertFeed1);
+
+        // actual
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime updatedAt = LocalDateTime.parse("2020-11-05 00:00", dtf);
+        Feedback feedback = Feedback.builder()
+                .feedbackId(1)
+                .articleId(1)
+                .content("changed")
+                .updatedAt(updatedAt)
+                .deleteFlag(1)
+                .build();
+
+        // 403エラーをスローするか確認
+        Exception exception = assertThrows(org.springframework.web.server.ResponseStatusException.class, () -> {
+            Feedback actual = feedbackService.updateFeedback(feedback);
+        });
+        String expectedMessage = "403 FORBIDDEN";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 }
