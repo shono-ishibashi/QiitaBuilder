@@ -573,15 +573,17 @@ class FeedbackMapperTest {
         //userId=4のテスト
         List<Article> articles = feedbackMapper.getFeedbackedArticlesByUserId(4);
 
-        LocalDateTime createDate = LocalDateTime.of(2020, 11, 8, 00, 00, 00);
-        LocalDateTime updateDate = createDate.plusDays(1);
+        LocalDateTime createDateFirst = LocalDateTime.of(2020, 11, 8, 00, 00, 00);
+        LocalDateTime updateDateFirst = createDateFirst.plusDays(1);
+        LocalDateTime createDateLast = LocalDateTime.of(2020, 10, 1, 00, 00, 00);
+        LocalDateTime updateDateLast = createDateLast.plusDays(1);
 
-        //記事件数と一個目の記事のみ取得してきたもの全てテスト
+        //記事件数と最初,最後の記事の取得してきたもの全てテスト
         assertEquals(5, articles.size());
         assertEquals(190, articles.get(0).getArticleId());
         assertEquals("title190", articles.get(0).getTitle());
-        assertEquals(createDate, articles.get(0).getCreatedAt());
-        assertEquals(updateDate, articles.get(0).getUpdatedAt());
+        assertEquals(createDateFirst, articles.get(0).getCreatedAt());
+        assertEquals(updateDateFirst, articles.get(0).getUpdatedAt());
         assertEquals(1, articles.get(0).getStateFlag());
         assertEquals(2, articles.get(0).getTags().get(0).getTagId());
         assertEquals("ruby", articles.get(0).getTags().get(0).getTagName());
@@ -593,5 +595,21 @@ class FeedbackMapperTest {
         assertEquals("user37", articles.get(0).getPostedUser().getDisplayName());
         assertEquals("photo37", articles.get(0).getPostedUser().getPhotoUrl());
         assertEquals(1, articles.get(0).getQiitaRecommendPoint());
+
+        assertEquals(191, articles.get(4).getArticleId());
+        assertEquals("title191", articles.get(4).getTitle());
+        assertEquals(createDateLast, articles.get(4).getCreatedAt());
+        assertEquals(updateDateLast, articles.get(4).getUpdatedAt());
+        assertEquals(2, articles.get(4).getStateFlag());
+        assertEquals(4, articles.get(4).getTags().get(0).getTagId());
+        assertEquals("php", articles.get(4).getTags().get(0).getTagName());
+        assertEquals(5, articles.get(4).getTags().get(1).getTagId());
+        assertEquals("go", articles.get(4).getTags().get(1).getTagName());
+        assertEquals(1,articles.get(4).getFeedbackCount());
+        assertNull( articles.get(4).getRegisteredMyArticleCount());
+        assertEquals(38, articles.get(4).getPostedUser().getUserId());
+        assertEquals("user38", articles.get(4).getPostedUser().getDisplayName());
+        assertEquals("photo38", articles.get(4).getPostedUser().getPhotoUrl());
+        assertEquals(2, articles.get(4).getQiitaRecommendPoint());
     }
 }

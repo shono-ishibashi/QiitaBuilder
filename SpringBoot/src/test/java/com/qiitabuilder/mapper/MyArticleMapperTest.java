@@ -183,15 +183,17 @@ class MyArticleMapperTest {
         //userId=1のテスト
         List<Article> articles = myArticleMapper.getMyArticlesByUserId(1);
 
-        LocalDateTime createDate = LocalDateTime.of(2020, 11, 5, 00, 00, 00);
-        LocalDateTime updateDate = createDate.plusDays(1);
+        LocalDateTime createDateFirst = LocalDateTime.of(2020, 11, 5, 00, 00, 00);
+        LocalDateTime updateDateFirst = createDateFirst.plusDays(1);
+        LocalDateTime createDateLast = LocalDateTime.of(2020, 10, 8, 00, 00, 00);
+        LocalDateTime updateDateLast = createDateLast.plusDays(1);
 
-        //記事件数と一個目の記事のみ取得してきたもの全てテスト
+        //記事件数と最初,最後の記事の取得してきたもの全てテスト
         assertEquals(6, articles.size());
         assertEquals(28, articles.get(0).getArticleId());
         assertEquals("title28", articles.get(0).getTitle());
-        assertEquals(createDate, articles.get(0).getCreatedAt());
-        assertEquals(updateDate, articles.get(0).getUpdatedAt());
+        assertEquals(createDateFirst, articles.get(0).getCreatedAt());
+        assertEquals(updateDateFirst, articles.get(0).getUpdatedAt());
         assertEquals(2, articles.get(0).getStateFlag());
         assertEquals(3, articles.get(0).getTags().get(0).getTagId());
         assertEquals("javascript", articles.get(0).getTags().get(0).getTagName());
@@ -203,6 +205,22 @@ class MyArticleMapperTest {
         assertEquals("c", articles.get(0).getPostedUser().getDisplayName());
         assertEquals("c", articles.get(0).getPostedUser().getPhotoUrl());
         assertEquals(3, articles.get(0).getQiitaRecommendPoint());
+
+        assertEquals(14, articles.get(5).getArticleId());
+        assertEquals("title14", articles.get(5).getTitle());
+        assertEquals(createDateLast, articles.get(5).getCreatedAt());
+        assertEquals(updateDateLast, articles.get(5).getUpdatedAt());
+        assertEquals(1, articles.get(5).getStateFlag());
+        assertEquals(3, articles.get(5).getTags().get(0).getTagId());
+        assertEquals("javascript", articles.get(5).getTags().get(0).getTagName());
+        assertEquals(4, articles.get(5).getTags().get(1).getTagId());
+        assertEquals("php", articles.get(5).getTags().get(1).getTagName());
+        assertNull(articles.get(5).getFeedbackCount());
+        assertEquals(1, articles.get(5).getRegisteredMyArticleCount());
+        assertEquals(2, articles.get(5).getPostedUser().getUserId());
+        assertEquals("b", articles.get(5).getPostedUser().getDisplayName());
+        assertEquals("b", articles.get(5).getPostedUser().getPhotoUrl());
+        assertEquals(2, articles.get(5).getQiitaRecommendPoint());
     }
 
     //// findByArticleIdAndRegisterUserId()
@@ -234,6 +252,7 @@ class MyArticleMapperTest {
         MyArticle myArticle = myArticleMapper.findByArticleIdAndRegisterUserId(2, 1);
         assertNull(myArticle);
     }
+
     @Test
     void findByArticleIdAndRegisterUserIdのテスト異常系_引数がNullの場合() {
         // insert

@@ -616,4 +616,64 @@ class ArticleMapperTest {
         assertEquals(article.getTags().get(0).getTagName(), "test_tag1");
         assertEquals(article.getTags().get(1).getTagName(), "test_tag2");
     }
+    @Test
+    void getArticlesByUserId(){
+        String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
+        String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
+        String[] feedbackSqlArr = CollectionSQL.insertFeedbacks.split("\n", 0);
+        String[] qiitaRecommendSqlArr = CollectionSQL.insertQiitaRecommends.split("\n", 0);
+        String[] tagSqlArr = CollectionSQL.insertTags.split("\n", 0);
+        String[] tagRelationSqlArr = CollectionSQL.insertArticlesTagsRelations.split("\n", 0);
+        String[] myArticleSqlArr = CollectionSQL.insertMyArticles.split("\n", 0);
+
+        Arrays.stream(userSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+        Arrays.stream(articleSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+        Arrays.stream(feedbackSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+        Arrays.stream(qiitaRecommendSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+        Arrays.stream(tagSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+        Arrays.stream(tagRelationSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+        Arrays.stream(myArticleSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+
+        //userId=1のテスト
+        List<Article> articles = articleMapper.getArticlesByUserId(1);
+
+        LocalDateTime createDateFirst = LocalDateTime.of(2020, 10, 23, 00, 00, 00);
+        LocalDateTime updateDateFirst = createDateFirst.plusDays(1);
+        LocalDateTime createDateLast = LocalDateTime.of(2020, 10, 1, 00, 00, 00);
+        LocalDateTime updateDateLast = createDateLast.plusDays(1);
+
+        //記事件数と最初,最後の記事の取得してきたもの全てテスト
+        assertEquals(12, articles.size());
+        assertEquals(12, articles.get(0).getArticleId());
+        assertEquals("title12", articles.get(0).getTitle());
+        assertEquals(createDateFirst, articles.get(0).getCreatedAt());
+        assertEquals(updateDateFirst, articles.get(0).getUpdatedAt());
+        assertEquals(1, articles.get(0).getStateFlag());
+        assertEquals(1, articles.get(0).getTags().get(0).getTagId());
+        assertEquals("Java", articles.get(0).getTags().get(0).getTagName());
+        assertEquals(2, articles.get(0).getTags().get(1).getTagId());
+        assertEquals("ruby", articles.get(0).getTags().get(1).getTagName());
+        assertEquals(4, articles.get(0).getFeedbackCount());
+        assertEquals(2, articles.get(0).getRegisteredMyArticleCount());
+        assertEquals(1, articles.get(0).getPostedUser().getUserId());
+        assertEquals("a", articles.get(0).getPostedUser().getDisplayName());
+        assertEquals("a", articles.get(0).getPostedUser().getPhotoUrl());
+        assertEquals(1, articles.get(0).getQiitaRecommendPoint());
+
+        assertEquals(1, articles.get(11).getArticleId());
+        assertEquals("title1", articles.get(11).getTitle());
+        assertEquals(createDateLast, articles.get(11).getCreatedAt());
+        assertEquals(updateDateLast, articles.get(11).getUpdatedAt());
+        assertEquals(1, articles.get(11).getStateFlag());
+        assertEquals(1, articles.get(11).getTags().get(0).getTagId());
+        assertEquals("Java", articles.get(11).getTags().get(0).getTagName());
+        assertEquals(5, articles.get(11).getTags().get(1).getTagId());
+        assertEquals("go", articles.get(11).getTags().get(1).getTagName());
+        assertEquals(5,articles.get(11).getFeedbackCount());
+        assertNull( articles.get(11).getRegisteredMyArticleCount());
+        assertEquals(1, articles.get(11).getPostedUser().getUserId());
+        assertEquals("a", articles.get(11).getPostedUser().getDisplayName());
+        assertEquals("a", articles.get(11).getPostedUser().getPhotoUrl());
+        assertEquals(2, articles.get(11).getQiitaRecommendPoint());
+    }
 }
