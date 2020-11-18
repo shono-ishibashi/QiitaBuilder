@@ -451,6 +451,8 @@ public class CollectionSQL {
             "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (1, 5, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content199', 1);\n" +
             "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (2, 5, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content200', 1);";
 
+
+
     //200件のQiita推薦をinsert
     static String insertQiitaRecommends = "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (1, 2, 1);\n" +
             "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (1, 2, 3);\n" +
@@ -649,6 +651,7 @@ public class CollectionSQL {
             "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (38, 6, 192);\n" +
             "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (39, 1, 193);\n" +
             "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (39, 2, 193);";
+
 
     //5件のタグ情報をinsert
     static String insertTags = "INSERT INTO tags (tag_name) VALUES ('Java');\n" +
@@ -1059,6 +1062,8 @@ public class CollectionSQL {
             "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (199, 8, 3);\n" +
             "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (200, 8, 2);";
 
+
+
     //150件のMy記事情報をinsert
     static String insertMyArticles = "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (2, 1, 2);\n" +
             "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (4, 1, 2);\n" +
@@ -1210,4 +1215,340 @@ public class CollectionSQL {
             "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (198, 24, 23);\n" +
             "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (200, 8, 7);\n" +
             "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (200, 8, 6);";
+
+    //期間が1週間または1ヶ月の時のmy記事登録数
+    static String insertMyArticlesInWeeklyAndMonthly = "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (2, 1, 2);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (4, 1, 2);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (4, 1, 3);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (6, 1, 2);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (8, 1, 2);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (8, 1, 3);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (10, 1, 2);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (12, 1, 2);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (12, 1, 3);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (14, 2, 1);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (16, 2, 1);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (16, 2, 4);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (18, 2, 1);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (20, 2, 1);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (20, 2, 4);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (22, 3, 2);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (24, 3, 2);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (24, 3, 1);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (26, 3, 2);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (28, 3, 2);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (28, 3, 1);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (30, 4, 3);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (32, 4, 3);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (32, 4, 2);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (34, 5, 4);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (36, 5, 4);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (36, 5, 3);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (38, 6, 5);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (40, 6, 5);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (40, 6, 4);\n" +
+            "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (42, 7, 6);\n" ;
+
+
+//---------------------------------------------------------------------------------------------------------------------------------
+
+
+    static String insertArticlesInWeekly = "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, NOW() - INTERVAL 3 DAY, NOW() - INTERVAL 2 DAY, 'title1', '#content1', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, NOW() - INTERVAL 3 DAY, NOW() - INTERVAL 3 DAY, 'title2', '#content2', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, NOW() - INTERVAL 6 DAY, NOW() - INTERVAL 3 DAY, 'title3', '#content3', 'qiita_id_3', 2);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, NOW() - INTERVAL 4 DAY, NOW() - INTERVAL 2 DAY, 'title4', '#content4', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, NOW() - INTERVAL 6 DAY, NOW() - INTERVAL 3 DAY, 'title5', '#content5', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, NOW() - INTERVAL 3 DAY, NOW() - INTERVAL 2 DAY, 'title6', '#content6', 'qiita_id_6', 2);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, NOW() - INTERVAL 5 DAY, NOW() - INTERVAL 3 DAY, 'title7', '#content7', 'qiita_id_7', 2);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, NOW() - INTERVAL 3 DAY, NOW() - INTERVAL 3 DAY, 'title8', '#content8', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, NOW() - INTERVAL 4 DAY, NOW() - INTERVAL 2 DAY, 'title9', '#content9', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, NOW() - INTERVAL 6 DAY, NOW() - INTERVAL 3 DAY, 'title10', '#content10', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, NOW() - INTERVAL 3 DAY, NOW() - INTERVAL 2 DAY, 'title11', '#content11', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, NOW() - INTERVAL 4 DAY, NOW() - INTERVAL 3 DAY, 'title12', '#content12', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (2, NOW() - INTERVAL 3 DAY, NOW() - INTERVAL 2 DAY, 'title13', '#content13', 'qiita_id_13', 2);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (2, NOW() - INTERVAL 4 DAY, NOW() - INTERVAL 2 DAY, 'title14', '#content14', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (2, NOW() - INTERVAL 3 DAY, NOW() - INTERVAL 2 DAY, 'title15', '#content15', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (2, NOW() - INTERVAL 5 DAY, NOW() - INTERVAL 3 DAY, 'title16', '#content16', 'qiita_id_16', 2);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (2, NOW() - INTERVAL 4 DAY, NOW() - INTERVAL 3 DAY, 'title17', '#content17', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (2, NOW() - INTERVAL 6 DAY, NOW() - INTERVAL 1 DAY, 'title18', '#content18', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (2, NOW() - INTERVAL 2 DAY, NOW() - INTERVAL 1 DAY, 'title19', '#content19', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (2, NOW() - INTERVAL 3 DAY, NOW() - INTERVAL 2 DAY, 'title20', '#content20', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (2, NOW() - INTERVAL 2 DAY, NOW() - INTERVAL 2 DAY, 'title21', '#content21', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (3, NOW() - INTERVAL 4 DAY, NOW() - INTERVAL 3 DAY, 'title22', '#content22', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (3, NOW() - INTERVAL 3 DAY, NOW() - INTERVAL 1 DAY, 'title23', '#content23', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (3, NOW() - INTERVAL 6 DAY, NOW() - INTERVAL 1 DAY, 'title24', '#content24', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (3, NOW() - INTERVAL 6 DAY, NOW() - INTERVAL 3 DAY, 'title25', '#content25', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (3, NOW() - INTERVAL 3 DAY, NOW() - INTERVAL 3 DAY, 'title26', '#content26', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (3, NOW() - INTERVAL 4 DAY, NOW() - INTERVAL 3 DAY, 'title27', '#content27', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (3, NOW() - INTERVAL 3 DAY, NOW() - INTERVAL 1 DAY, 'title28', '#content28', 'qiita_id_28', 2);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (4, NOW() - INTERVAL 5 DAY, NOW() - INTERVAL 3 DAY, 'title29', '#content29', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (4, NOW() - INTERVAL 3 DAY, NOW() - INTERVAL 3 DAY, 'title30', '#content30', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (4, NOW() - INTERVAL 6 DAY, NOW() - INTERVAL 2 DAY, 'title31', '#content31', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (4, NOW() - INTERVAL 4 DAY, NOW() - INTERVAL 3 DAY, 'title32', '#content32', 'qiita_id_32', 2);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (4, NOW() - INTERVAL 3 DAY, NOW() - INTERVAL 2 DAY, 'title33', '#content33', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (5, NOW() - INTERVAL 5 DAY, NOW() - INTERVAL 3 DAY, 'title34', '#content34', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (5, NOW() - INTERVAL 4 DAY, NOW() - INTERVAL 2 DAY, 'title35', '#content35', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (5, NOW() - INTERVAL 6 DAY, NOW() - INTERVAL 3 DAY, 'title36', '#content36', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (5, NOW() - INTERVAL 3 DAY, NOW() - INTERVAL 3 DAY, 'title37', '#content37', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (6, NOW() - INTERVAL 3 DAY, NOW() - INTERVAL 2 DAY, 'title38', '#content38', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (6, NOW() - INTERVAL 4 DAY, NOW() - INTERVAL 3 DAY, 'title39', '#content39', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (6, NOW() - INTERVAL 3 DAY, NOW() - INTERVAL 2 DAY, 'title40', '#content40', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (7, NOW() - INTERVAL 5 DAY, NOW() - INTERVAL 3 DAY, 'title41', '#content41', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (7, NOW() - INTERVAL 4 DAY, NOW() - INTERVAL 2 DAY, 'title42', '#content42', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (8, NOW() - INTERVAL 3 DAY, NOW() - INTERVAL 3 DAY, 'title43', '#content43', 'qiita_id_43', 2);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (8, NOW() - INTERVAL 6 DAY, NOW() - INTERVAL 2 DAY, 'title44', '#content44', null, 1);\n";
+
+    static String insertArticlesInMonthly = "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, NOW() - INTERVAL 23 DAY, NOW() - INTERVAL 23 DAY, 'title1', '#content1', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, NOW() - INTERVAL 23 DAY, NOW() - INTERVAL 23 DAY, 'title2', '#content2', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, NOW() - INTERVAL 16 DAY, NOW() - INTERVAL 11 DAY, 'title3', '#content3', 'qiita_id_3', 2);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, NOW() - INTERVAL 24 DAY, NOW() - INTERVAL 12 DAY, 'title4', '#content4', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, NOW() - INTERVAL 16 DAY, NOW() - INTERVAL 13 DAY, 'title5', '#content5', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, NOW() - INTERVAL 13 DAY, NOW() - INTERVAL 2 DAY, 'title6', '#content6', 'qiita_id_6', 2);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, NOW() - INTERVAL 15 DAY, NOW() - INTERVAL 13 DAY, 'title7', '#content7', 'qiita_id_7', 2);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, NOW() - INTERVAL 13 DAY, NOW() - INTERVAL 10 DAY, 'title8', '#content8', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, NOW() - INTERVAL 24 DAY, NOW() - INTERVAL 12 DAY, 'title9', '#content9', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, NOW() - INTERVAL 26 DAY, NOW() - INTERVAL 23 DAY, 'title10', '#content10', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, NOW() - INTERVAL 13 DAY, NOW() - INTERVAL 12 DAY, 'title11', '#content11', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, NOW() - INTERVAL 14 DAY, NOW() - INTERVAL 13 DAY, 'title12', '#content12', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (2, NOW() - INTERVAL 18 DAY, NOW() - INTERVAL 12 DAY, 'title13', '#content13', 'qiita_id_13', 2);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (2, NOW() - INTERVAL 14 DAY, NOW() - INTERVAL 11 DAY, 'title14', '#content14', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (2, NOW() - INTERVAL 14 DAY, NOW() - INTERVAL 11 DAY, 'title15', '#content15', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (2, NOW() - INTERVAL 11 DAY, NOW() - INTERVAL 2 DAY, 'title16', '#content16', 'qiita_id_16', 2);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (2, NOW() - INTERVAL 24 DAY, NOW() - INTERVAL 6 DAY, 'title17', '#content17', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (2, NOW() - INTERVAL 23 DAY, NOW() - INTERVAL 11 DAY, 'title18', '#content18', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (2, NOW() - INTERVAL 28 DAY, NOW() - INTERVAL 14 DAY, 'title19', '#content19', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (2, NOW() - INTERVAL 30 DAY, NOW() - INTERVAL 21 DAY, 'title20', '#content20', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (2, NOW() - INTERVAL 21 DAY, NOW() - INTERVAL 12 DAY, 'title21', '#content21', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (3, NOW() - INTERVAL 14 DAY, NOW() - INTERVAL 13 DAY, 'title22', '#content22', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (3, NOW() - INTERVAL 21 DAY, NOW() - INTERVAL 17 DAY, 'title23', '#content23', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (3, NOW() - INTERVAL 20 DAY, NOW() - INTERVAL 18 DAY, 'title24', '#content24', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (3, NOW() - INTERVAL 10 DAY, NOW() - INTERVAL 3 DAY, 'title25', '#content25', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (3, NOW() - INTERVAL 13 DAY, NOW() - INTERVAL 7 DAY, 'title26', '#content26', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (3, NOW() - INTERVAL 14 DAY, NOW() - INTERVAL 8 DAY, 'title27', '#content27', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (3, NOW() - INTERVAL 28 DAY, NOW() - INTERVAL 9 DAY, 'title28', '#content28', 'qiita_id_28', 2);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (4, NOW() - INTERVAL 29 DAY, NOW() - INTERVAL 13 DAY, 'title29', '#content29', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (4, NOW() - INTERVAL 13 DAY, NOW() - INTERVAL 10 DAY, 'title30', '#content30', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (4, NOW() - INTERVAL 26 DAY, NOW() - INTERVAL 11 DAY, 'title31', '#content31', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (4, NOW() - INTERVAL 24 DAY, NOW() - INTERVAL 13 DAY, 'title32', '#content32', 'qiita_id_32', 2);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (4, NOW() - INTERVAL 26 DAY, NOW() - INTERVAL 12 DAY, 'title33', '#content33', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (5, NOW() - INTERVAL 25 DAY, NOW() - INTERVAL 21 DAY, 'title34', '#content34', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (5, NOW() - INTERVAL 25 DAY, NOW() - INTERVAL 20 DAY, 'title35', '#content35', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (5, NOW() - INTERVAL 21 DAY, NOW() - INTERVAL 18 DAY, 'title36', '#content36', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (5, NOW() - INTERVAL 22 DAY, NOW() - INTERVAL 13 DAY, 'title37', '#content37', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (6, NOW() - INTERVAL 21 DAY, NOW() - INTERVAL 12 DAY, 'title38', '#content38', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (6, NOW() - INTERVAL 14 DAY, NOW() - INTERVAL 13 DAY, 'title39', '#content39', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (6, NOW() - INTERVAL 18 DAY, NOW() - INTERVAL 2 DAY, 'title40', '#content40', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (7, NOW() - INTERVAL 19 DAY, NOW() - INTERVAL 4 DAY, 'title41', '#content41', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (7, NOW() - INTERVAL 17 DAY, NOW() - INTERVAL 11 DAY, 'title42', '#content42', null, 1);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (8, NOW() - INTERVAL 21 DAY, NOW() - INTERVAL 16 DAY, 'title43', '#content43', 'qiita_id_43', 2);\n" +
+            "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (8, NOW() - INTERVAL 16 DAY, NOW() - INTERVAL 12 DAY, 'title44', '#content44', null, 1);\n";
+
+    //    期間が1週間または1ヶ月の時のフィードバック
+    static String insertFeedbacksInWeeklyAndMonthly = "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (13, 1, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content1', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (15, 1, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content2', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (17, 1, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content3', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (19, 1, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content4', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (21, 1, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content5', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (23, 1, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content6', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (25, 1, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content7', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (27, 1, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content8', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (1, 3, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content9', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (2, 3, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content10', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (3, 3, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content11', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (4, 3, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content12', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (5, 3, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content13', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (6, 3, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content14', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (7, 3, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content15', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (10, 5, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content21', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (20, 5, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content22', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (30, 5, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content23', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (40, 5, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content24', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (1, 7, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content35', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (2, 7, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content36', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (3, 7, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content37', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (4, 8, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content38', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (5, 8, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content39', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (6, 9, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content40', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (21, 10, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content41', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (31, 10, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content42', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (41, 10, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content43', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (20, 11, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content56', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (40, 11, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content57', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (31, 13, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content64', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (32, 13, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content65', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (33, 13, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content66', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (34, 13, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content67', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (35, 13, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content68', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (36, 13, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content69', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (20, 15, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content80', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (21, 15, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content81', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (22, 15, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content82', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (27, 16, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content83', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (28, 16, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content84', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (29, 16, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content85', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (17, 17, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content86', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (18, 17, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content87', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (18, 18, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content88', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (19, 18, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content89', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (19, 19, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content90', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (20, 20, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content91', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (24, 20, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content92', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (28, 20, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content93', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (32, 20, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content94', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (34, 20, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content95', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (36, 20, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content96', 0);\n" +
+            "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (40, 20, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content97', 0);\n";
+
+    //    期間が1週間または1ヶ月の時のqiita推奨数
+    static String insertQiitaRecommendsInWeeklyAndMonthly = "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (1, 2, 1);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (1, 2, 3);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (1, 2, 5);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (1, 2, 8);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (1, 2, 9);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (1, 2, 11);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (1, 3, 2);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (1, 3, 5);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (1, 3, 6);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (1, 7, 11);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (1, 7, 12);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (1, 8, 11);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (1, 8, 1);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (1, 8, 2);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (2, 3, 13);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (2, 3, 21);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (2, 3, 14);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (2, 3, 19);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (2, 3, 18);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (2, 4, 14);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (2, 5, 21);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (2, 6, 17);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (2, 6, 18);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (3, 2, 22);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (3, 2, 28);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (3, 5, 23);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (3, 6, 23);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (3, 7, 22);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (3, 7, 25);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (3, 8, 22);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (3, 8, 28);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (3, 9, 28);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (3, 9, 24);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (3, 9, 23);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (3, 10, 22);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (4, 1, 29);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (4, 2, 29);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (4, 3, 29);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (5, 1, 34);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (5, 1, 37);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (5, 6, 35);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (5, 6, 36);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (5, 7, 36);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (5, 7, 37);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (5, 8, 35);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (5, 10, 34);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (5, 10, 36);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (6, 1, 38);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (6, 1, 39);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (6, 2, 38);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (6, 3, 38);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (6, 3, 39);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (6, 4, 39);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (6, 7, 38);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (6, 7, 39);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (7, 1, 41);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (7, 2, 42);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (7, 3, 41);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (7, 4, 42);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (7, 5, 41);\n" +
+            "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (7, 6, 42);\n";
+
+
+
+    //    期間が1週間または1ヶ月の時のタグリレーション
+    static String insertArticlesTagsRelationsInWeeklyAndMonthly = "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (1, 1, 5);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (2, 1, 3);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (3, 1, 1);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (4, 1, 1);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (5, 1, 5);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (6, 1, 3);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (7, 1, 2);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (8, 1, 5);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (9, 1, 3);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (10, 1, 2);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (11, 1, 1);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (12, 1, 2);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (13, 2, 3);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (14, 2, 4);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (15, 2, 2);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (16, 2, 2);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (17, 2, 4);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (18, 2, 1);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (19, 2, 4);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (20, 2, 1);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (21, 2, 5);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (22, 3, 5);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (23, 3, 5);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (24, 3, 1);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (25, 3, 5);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (26, 3, 1);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (27, 3, 1);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (28, 3, 3);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (29, 4, 2);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (30, 4, 5);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (31, 4, 5);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (32, 4, 3);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (33, 4, 3);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (34, 5, 3);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (35, 5, 4);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (36, 5, 3);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (37, 5, 3);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (38, 6, 2);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (39, 6, 2);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (40, 6, 4);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (41, 7, 3);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (42, 7, 5);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (1, 1, 1);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (2, 1, 4);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (3, 1, 3);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (4, 1, 4);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (5, 1, 2);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (6, 1, 5);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (7, 1, 1);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (8, 1, 2);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (9, 1, 1);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (10, 1, 1);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (11, 1, 3);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (12, 1, 1);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (13, 2, 4);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (14, 2, 3);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (15, 2, 1);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (16, 2, 4);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (17, 2, 5);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (18, 2, 5);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (19, 2, 1);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (20, 2, 4);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (21, 2, 2);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (22, 3, 4);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (23, 3, 1);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (24, 3, 4);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (25, 3, 4);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (26, 3, 5);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (27, 3, 5);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (28, 3, 5);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (29, 4, 4);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (30, 4, 4);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (31, 4, 4);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (32, 4, 5);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (33, 4, 2);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (34, 5, 1);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (35, 5, 3);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (36, 5, 5);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (37, 5, 2);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (38, 6, 1);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (39, 6, 4);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (40, 6, 1);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (41, 7, 2);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (42, 7, 1);\n" +
+            "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (43, 8, 5);\n";
+
 }

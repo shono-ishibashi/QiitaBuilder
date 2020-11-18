@@ -1,10 +1,10 @@
 package com.qiitabuilder.mapper;
 
 import com.qiitabuilder.domain.Article;
-import com.qiitabuilder.domain.Feedback;
-import com.qiitabuilder.domain.RankingUser;
 import com.qiitabuilder.domain.Tag;
 import com.qiitabuilder.domain.User;
+import com.qiitabuilder.form.SearchArticleForm;
+import org.apache.ibatis.annotations.Insert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,9 +15,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.*;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -160,13 +161,61 @@ class ArticleMapperTest {
         jdbcTemplate.execute("DROP TABLE users");
     }
 
+    private void searchArticlesSqlTemplate(){
+        String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
+        String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
+        String[] feedbackSqlArr = CollectionSQL.insertFeedbacks.split("\n", 0);
+        String[] qiitaRecommendSqlArr = CollectionSQL.insertQiitaRecommends.split("\n", 0);
+        String[] myArticlesSqlArr=CollectionSQL.insertMyArticles.split("\n", 0);
+        String[] tagsSqlArr=CollectionSQL.insertTags.split("\n", 0);
+        String[] articlesTagsRelationsSqlArr = CollectionSQL.insertArticlesTagsRelations.split("\n", 0);
+
+        for(String sql:userSqlArr){
+            jdbcTemplate.execute(sql);
+        }
+        for(String sql:articleSqlArr){
+            jdbcTemplate.execute(sql);
+        }
+        for(String sql:feedbackSqlArr){
+            jdbcTemplate.execute(sql);
+        }
+        for(String sql:qiitaRecommendSqlArr){
+            jdbcTemplate.execute(sql);
+        }
+        for(String sql:myArticlesSqlArr){
+            jdbcTemplate.execute(sql);
+        }
+        for(String sql:tagsSqlArr){
+            jdbcTemplate.execute(sql);
+        }
+        for(String sql:articlesTagsRelationsSqlArr){
+            jdbcTemplate.execute(sql);
+        }
+    }
+
     @Test
     void searchArticles() {
 
     }
 
+//    sortNum(0:新着順,1:更新順,2:qiita,3:my記事)
+//    preriod(0:週間:,1:月間)
+//    toggleSearchWord(0:記事タイトル,1:ユーザー名)
+
     @Test
-    void searchArticlesId() {
+    void searchArticlesId正常系_TC1() {
+        searchArticlesSqlTemplate();
+        SearchArticleForm searchArticleForm=new SearchArticleForm();
+        searchArticleForm.setSortNum(0);
+        searchArticleForm.setPeriod(0);
+        searchArticleForm.setSearchWord("");
+        searchArticleForm.setToggleSearchWord(0);
+        searchArticleForm.setSearchTag(null);
+        searchArticleForm.setPageSize(10);
+        searchArticleForm.setCurrentPage(1);
+
+        List<Integer> articles=articleMapper.searchArticlesId(searchArticleForm);
+
     }
 
     @Test
@@ -187,6 +236,7 @@ class ArticleMapperTest {
         for (String sql : qiitaRecommendSqlArr) {
             jdbcTemplate.execute(sql);
         }
+
 
         List<RankingUser> rankingUserList = articleMapper.getPostedArticleCountRank();
         assertEquals(35, rankingUserList.size());
@@ -366,7 +416,7 @@ class ArticleMapperTest {
         for (String sql : userSqlArr) {
             jdbcTemplate.execute(sql);
         }
-        for (String sql : articleSqlArr) {
+        for(String sql : articleSqlArr){
             jdbcTemplate.execute(sql);
         }
 
@@ -558,32 +608,7 @@ class ArticleMapperTest {
     }
 
     @Test
-    void getArticleAndFeedback異常系_記事IDが存在しない場合() {
-        // set up
-        String insertUser1 = "INSERT INTO users (user_id, uid, photo_url, display_name, password) VALUES (1, 'a', 'a', 'a', 'a');";
-        String insertUser2 = "INSERT INTO users (user_id, uid, photo_url, display_name, password) VALUES (2, 'b', 'b', 'b', 'b');";
-
-        String insertArt1 = "INSERT INTO articles (article_id, user_id, created_at, updated_at, title, content, state_flag) VALUES (1, 1, '2020-10-01 00:00:00', '2020-10-02 00:00:00', 'title1', '#content1', 1);";
-        String insertFeed1 = "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (1, 2, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content1', 0);";
-
-        String insertMyArt = "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (1, 1, 2);";
-        String insertRec = "INSERT INTO qiita_recommends (article_id, posted_user_id, recommend_user_id) VALUES (1, 1, 2);";
-        String insertTag1 = "INSERT INTO tags (tag_name) VALUES ('Java');";
-        String insertTagRel1 = "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (1, 1, 1);";
-
-        jdbcTemplate.execute(insertUser1);
-        jdbcTemplate.execute(insertUser2);
-        jdbcTemplate.execute(insertArt1);
-        jdbcTemplate.execute(insertFeed1);
-        jdbcTemplate.execute(insertMyArt);
-        jdbcTemplate.execute(insertRec);
-        jdbcTemplate.execute(insertTag1);
-        jdbcTemplate.execute(insertTagRel1);
-
-        // check
-        Article actual = articleMapper.getArticleAndFeedback(2);
-
-        assertNull(actual);
+    void getArticleAndFeedback() {
     }
 
     @Test
@@ -591,7 +616,7 @@ class ArticleMapperTest {
         String insertUsers = "INSERT INTO users (user_id) VALUES (1), (2)";
         String insertArticles =
                 "INSERT INTO articles ( user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) " +
-                        "VALUES(1,NOW(),NOW(),'test title','content title', null, 1)";
+                        "VALUES(1,NOW(),NOW(),'test title','content title',null,1)";
 
         String insertTags =
                 "INSERT INTO tags VALUES (1,'test_tag1'),(2,'test_tag2')";
