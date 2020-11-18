@@ -5,9 +5,11 @@ import com.qiitabuilder.mapper.ArticleMapper;
 import com.qiitabuilder.mapper.FeedbackMapper;
 import com.qiitabuilder.security.SimpleLoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 
@@ -50,6 +52,7 @@ public class FeedbackService {
 
     /**
      * ログイン中のユーザー情報を取得し、ユーザーが投稿済みのFBの更新を行うメソッド
+     * ※FBの投稿者とログインユーザーが一致しない場合はHttpStatus403を返す
      *
      * @param feedback
      * @return
@@ -58,6 +61,12 @@ public class FeedbackService {
         // ログイン中のユーザ情報をセット
         SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         feedback.setPostedUser(loginUser.getUser());
+
+        // FBの投稿者とログインユーザーが一致しない場合はHttpStatus403を返す
+        Feedback current = fetchFeedback(feedback.getFeedbackId());
+        if (current.getPostedUser().getUserId() != loginUser.getUser().getUserId()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
 
         // 現在時刻をセット
         feedback.setUpdatedAt(LocalDateTime.now());
