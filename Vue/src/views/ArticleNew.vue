@@ -102,11 +102,9 @@ export default {
       tags_min_size: value => value && value.length >= 1 || "1つ以上入力してください",
     }
   },
-  watch: {
-    apiToken() {
-      this.resetArticle()
-      this.fetchTags()
-    }
+  created() {
+    this.resetValidation()
+    this.fetchTags()
   },
   computed: {
     ...mapState("articles", ["tags"]),
@@ -151,6 +149,9 @@ export default {
         this.currentView = EditAndPreview
       }
     },
+    resetValidation() {
+      this.$refs.form.resetValidation()
+    }
   }
 }
 
