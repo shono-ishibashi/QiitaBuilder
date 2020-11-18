@@ -1,6 +1,6 @@
 package com.qiitabuilder.mapper;
 
-import com.qiitabuilder.domain.MyArticle;
+import com.qiitabuilder.domain.RankingUser;
 import com.qiitabuilder.domain.Recommend;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -154,8 +154,141 @@ class RecommendMapperTest {
         jdbcTemplate.execute("DROP TABLE articles");
         jdbcTemplate.execute("DROP TABLE users");
     }
+
     @Test
     void getQiitaRecommendedRank() {
+        String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
+        String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
+        String[] feedbackSqlArr = CollectionSQL.insertFeedbacks.split("\n", 0);
+        String[] qiitaRecommendSqlArr = CollectionSQL.insertQiitaRecommends.split("\n", 0);
+        for (String sql : userSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+        for (String sql : articleSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+        for (String sql : feedbackSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+        for (String sql : qiitaRecommendSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+
+        List<RankingUser> rankingUserList = recommendMapper.getQiitaRecommendedRank();
+        assertEquals(35, rankingUserList.size());
+
+        //////////最初(1~5位)
+        assertEquals(11, rankingUserList.get(0).getUser().getUserId());
+        assertEquals("user", rankingUserList.get(0).getUser().getDisplayName());
+        assertEquals("user_photo", rankingUserList.get(0).getUser().getPhotoUrl());
+        assertEquals(8, rankingUserList.get(0).getUser().getFeedbackCount());
+        assertEquals(13, rankingUserList.get(0).getUser().getPostedArticleCount());
+        assertEquals(15, rankingUserList.get(0).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(1, rankingUserList.get(1).getUser().getUserId());
+        assertEquals("a", rankingUserList.get(1).getUser().getDisplayName());
+        assertEquals("a", rankingUserList.get(1).getUser().getPhotoUrl());
+        assertEquals(8, rankingUserList.get(1).getUser().getFeedbackCount());
+        assertEquals(12, rankingUserList.get(1).getUser().getPostedArticleCount());
+        assertEquals(14, rankingUserList.get(1).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(22, rankingUserList.get(2).getUser().getUserId());
+        assertEquals("user22", rankingUserList.get(2).getUser().getDisplayName());
+        assertEquals("photo22", rankingUserList.get(2).getUser().getPhotoUrl());
+        assertEquals(0, rankingUserList.get(2).getUser().getFeedbackCount());
+        assertEquals(9, rankingUserList.get(2).getUser().getPostedArticleCount());
+        assertEquals(13, rankingUserList.get(2).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(3, rankingUserList.get(3).getUser().getUserId());
+        assertEquals("c", rankingUserList.get(3).getUser().getDisplayName());
+        assertEquals("c", rankingUserList.get(3).getUser().getPhotoUrl());
+        assertEquals(7, rankingUserList.get(3).getUser().getFeedbackCount());
+        assertEquals(7, rankingUserList.get(3).getUser().getPostedArticleCount());
+        assertEquals(12, rankingUserList.get(3).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(31, rankingUserList.get(4).getUser().getUserId());
+        assertEquals("user31", rankingUserList.get(4).getUser().getDisplayName());
+        assertEquals("photo31", rankingUserList.get(4).getUser().getPhotoUrl());
+        assertEquals(7, rankingUserList.get(4).getUser().getFeedbackCount());
+        assertEquals(15, rankingUserList.get(4).getUser().getPostedArticleCount());
+        assertEquals(11, rankingUserList.get(4).getUser().getQiitaRecommendedAllCount());
+
+        //////////中間(15~19位)
+        assertEquals(7, rankingUserList.get(14).getUser().getUserId());
+        assertEquals("しんじ", rankingUserList.get(14).getUser().getDisplayName());
+        assertEquals("ggg", rankingUserList.get(14).getUser().getPhotoUrl());
+        assertEquals(3, rankingUserList.get(14).getUser().getFeedbackCount());
+        assertEquals(2, rankingUserList.get(14).getUser().getPostedArticleCount());
+        assertEquals(6, rankingUserList.get(14).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(34, rankingUserList.get(15).getUser().getUserId());
+        assertEquals("user34", rankingUserList.get(15).getUser().getDisplayName());
+        assertEquals("photo34", rankingUserList.get(15).getUser().getPhotoUrl());
+        assertEquals(4, rankingUserList.get(15).getUser().getFeedbackCount());
+        assertEquals(7, rankingUserList.get(15).getUser().getPostedArticleCount());
+        assertEquals(6, rankingUserList.get(15).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(10, rankingUserList.get(16).getUser().getUserId());
+        assertEquals("そうし", rankingUserList.get(16).getUser().getDisplayName());
+        assertEquals("uuu", rankingUserList.get(16).getUser().getPhotoUrl());
+        assertEquals(15, rankingUserList.get(16).getUser().getFeedbackCount());
+        assertEquals(1, rankingUserList.get(16).getUser().getPostedArticleCount());
+        assertEquals(5, rankingUserList.get(16).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(14, rankingUserList.get(17).getUser().getUserId());
+        assertEquals("user14", rankingUserList.get(17).getUser().getDisplayName());
+        assertEquals("photo14", rankingUserList.get(17).getUser().getPhotoUrl());
+        assertEquals(4, rankingUserList.get(17).getUser().getFeedbackCount());
+        assertEquals(6, rankingUserList.get(17).getUser().getPostedArticleCount());
+        assertEquals(5, rankingUserList.get(17).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(8, rankingUserList.get(18).getUser().getUserId());
+        assertEquals("しょーの", rankingUserList.get(18).getUser().getDisplayName());
+        assertEquals("nnn", rankingUserList.get(18).getUser().getPhotoUrl());
+        assertEquals(2, rankingUserList.get(18).getUser().getFeedbackCount());
+        assertEquals(2, rankingUserList.get(18).getUser().getPostedArticleCount());
+        assertEquals(4, rankingUserList.get(18).getUser().getQiitaRecommendedAllCount());
+
+        //////////最後(31~35位)
+        assertEquals(16, rankingUserList.get(30).getUser().getUserId());
+        assertEquals("user16", rankingUserList.get(30).getUser().getDisplayName());
+        assertEquals("photo16", rankingUserList.get(30).getUser().getPhotoUrl());
+        assertEquals(3, rankingUserList.get(30).getUser().getFeedbackCount());
+        assertEquals(3, rankingUserList.get(30).getUser().getPostedArticleCount());
+        assertEquals(1, rankingUserList.get(30).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(17, rankingUserList.get(31).getUser().getUserId());
+        assertEquals("user17", rankingUserList.get(31).getUser().getDisplayName());
+        assertEquals("photo17", rankingUserList.get(31).getUser().getPhotoUrl());
+        assertEquals(2, rankingUserList.get(31).getUser().getFeedbackCount());
+        assertEquals(3, rankingUserList.get(31).getUser().getPostedArticleCount());
+        assertEquals(1, rankingUserList.get(31).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(18, rankingUserList.get(32).getUser().getUserId());
+        assertEquals("user18", rankingUserList.get(32).getUser().getDisplayName());
+        assertEquals("photo18", rankingUserList.get(32).getUser().getPhotoUrl());
+        assertEquals(2, rankingUserList.get(32).getUser().getFeedbackCount());
+        assertEquals(2, rankingUserList.get(32).getUser().getPostedArticleCount());
+        assertEquals(1, rankingUserList.get(32).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(26, rankingUserList.get(33).getUser().getUserId());
+        assertEquals("user26", rankingUserList.get(33).getUser().getDisplayName());
+        assertEquals("photo26", rankingUserList.get(33).getUser().getPhotoUrl());
+        assertEquals(3, rankingUserList.get(33).getUser().getFeedbackCount());
+        assertEquals(4, rankingUserList.get(33).getUser().getPostedArticleCount());
+        assertEquals(1, rankingUserList.get(33).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(27, rankingUserList.get(34).getUser().getUserId());
+        assertEquals("user27", rankingUserList.get(34).getUser().getDisplayName());
+        assertEquals("photo27", rankingUserList.get(34).getUser().getPhotoUrl());
+        assertEquals(2, rankingUserList.get(34).getUser().getFeedbackCount());
+        assertEquals(3, rankingUserList.get(34).getUser().getPostedArticleCount());
+        assertEquals(1, rankingUserList.get(34).getUser().getQiitaRecommendedAllCount());
+    }
+
+    @Test
+    void getMostRecommendedArticleId() {
+
     }
 
     //// findByArticleIdAndRecommendUserId()
@@ -187,6 +320,7 @@ class RecommendMapperTest {
         Recommend recommend = recommendMapper.findByArticleIdAndRecommendUserId(2, 1);
         assertNull(recommend);
     }
+
     @Test
     void findByArticleIdAndRecommendUserIdのテスト異常系_引数がNullの場合() {
         // insert
