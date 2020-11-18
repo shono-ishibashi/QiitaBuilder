@@ -3,6 +3,7 @@ package com.qiitabuilder.mapper;
 import com.qiitabuilder.domain.Article;
 import com.qiitabuilder.domain.Tag;
 import com.qiitabuilder.domain.User;
+import com.qiitabuilder.form.SearchArticleForm;
 import org.apache.ibatis.annotations.Insert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -160,13 +161,61 @@ class ArticleMapperTest {
         jdbcTemplate.execute("DROP TABLE users");
     }
 
+    private void searchArticlesSqlTemplate(){
+        String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
+        String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
+        String[] feedbackSqlArr = CollectionSQL.insertFeedbacks.split("\n", 0);
+        String[] qiitaRecommendSqlArr = CollectionSQL.insertQiitaRecommends.split("\n", 0);
+        String[] myArticlesSqlArr=CollectionSQL.insertMyArticles.split("\n", 0);
+        String[] tagsSqlArr=CollectionSQL.insertTags.split("\n", 0);
+        String[] articlesTagsRelationsSqlArr = CollectionSQL.insertArticlesTagsRelations.split("\n", 0);
+
+        for(String sql:userSqlArr){
+            jdbcTemplate.execute(sql);
+        }
+        for(String sql:articleSqlArr){
+            jdbcTemplate.execute(sql);
+        }
+        for(String sql:feedbackSqlArr){
+            jdbcTemplate.execute(sql);
+        }
+        for(String sql:qiitaRecommendSqlArr){
+            jdbcTemplate.execute(sql);
+        }
+        for(String sql:myArticlesSqlArr){
+            jdbcTemplate.execute(sql);
+        }
+        for(String sql:tagsSqlArr){
+            jdbcTemplate.execute(sql);
+        }
+        for(String sql:articlesTagsRelationsSqlArr){
+            jdbcTemplate.execute(sql);
+        }
+    }
+
     @Test
     void searchArticles() {
 
     }
 
+//    sortNum(0:新着順,1:更新順,2:qiita,3:my記事)
+//    preriod(0:週間:,1:月間)
+//    toggleSearchWord(0:記事タイトル,1:ユーザー名)
+
     @Test
-    void searchArticlesId() {
+    void searchArticlesId正常系_TC1() {
+        searchArticlesSqlTemplate();
+        SearchArticleForm searchArticleForm=new SearchArticleForm();
+        searchArticleForm.setSortNum(0);
+        searchArticleForm.setPeriod(0);
+        searchArticleForm.setSearchWord("");
+        searchArticleForm.setToggleSearchWord(0);
+        searchArticleForm.setSearchTag(null);
+        searchArticleForm.setPageSize(10);
+        searchArticleForm.setCurrentPage(1);
+
+        List<Integer> articles=articleMapper.searchArticlesId(searchArticleForm);
+
     }
 
     @Test
