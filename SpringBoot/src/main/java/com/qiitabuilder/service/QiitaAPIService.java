@@ -3,14 +3,15 @@ package com.qiitabuilder.service;
 import com.qiitabuilder.domain.*;
 import com.qiitabuilder.mapper.ArticleMapper;
 import com.qiitabuilder.mapper.QiitaConfigurationMapper;
-import com.qiitabuilder.mapper.UserMapper;
 import com.qiitabuilder.security.SimpleLoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
@@ -29,9 +30,6 @@ public class QiitaAPIService {
     private RestTemplate restTemplate;
 
     @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
     private QiitaConfigurationMapper qiitaConfigurationMapper;
 
     @Autowired
@@ -40,7 +38,6 @@ public class QiitaAPIService {
     final String CLIENT_ID = "59ba99a3357cf730bbcab40fde87bb06f3876124";
     final String CLIENT_SECRET = "6dde7331beda9a58b7665d9767c9dd6b6241198b";
     final String SCOPE = "scope=read_qiita+write_qiita";
-
 
 
     /**
@@ -97,9 +94,7 @@ public class QiitaAPIService {
     }
 
     /**
-     *
      * QiitaAPIのトークンをインサートするメソッド
-     *
      */
     public void saveToken() {
         SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -119,11 +114,11 @@ public class QiitaAPIService {
     }
 
     /**
-     *
      * Qiitaに記事を投稿・更新するメソッド
      *
      * @param articleId 投稿する記事のID
      */
+    @Transactional
     public void saveArticleToQiita(Integer articleId) {
 
         SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -159,30 +154,45 @@ public class QiitaAPIService {
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(articleForQiita, headers);
 
-        if (isNull(article.getQiitaArticleId())) {
-            Map<String, Object> response = restTemplate.postForObject(URL, request, Map.class);
-            article.setQiitaArticleId((String) response.get("id"));
 
-            //Qiitaに投稿済みのフラッグ
-            article.setStateFlag(2);
-            articleMapper.updateArticle(article);
+        if (isNull(article.getQiitaArticleId())) {
+
+            try {
+                Map<String, Object> response = restTemplate.postForObject(URL, request, Map.class);
+                article.setQiitaArticleId((String) response.get("id"));
+                //Qiitaに投稿済みのフラッグ
+                article.setStateFlag(2);
+                articleMapper.updateArticle(article);
+            } catch (RestClientException e) {
+                article.setQiitaArticleId(null);
+                article.setStateFlag(1);
+                articleMapper.updateArticle(article);
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
         } else {
-            Map<String, Object> response = restTemplate.patchForObject(URL + '/' + article.getQiitaArticleId(), request, Map.class);
+            try {
+                Map<String, Object> response = restTemplate.patchForObject(URL + '/' + article.getQiitaArticleId(), request, Map.class);
+            } catch (RestClientException e) {
+                article.setQiitaArticleId(null);
+                articleMapper.updateArticle(article);
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
     }
 
-    /**
-     *
-     * ユーザーが Qiita連携しているのかを確認するメソッド
-     *
-     * @return true:連携済み false:未連携
-     */
+        /**
+         *
+         * ユーザーが Qiita連携しているのかを確認するメソッド
+         *
+         * @return true:連携済み false:未連携
+         */
 
-    public boolean isLinkedToQiita(){
-        SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        public boolean isLinkedToQiita () {
+            SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        String code = qiitaConfigurationMapper.getTokenByUserId(loginUser.getUser().getUserId());
+            String code = qiitaConfigurationMapper.getTokenByUserId(loginUser.getUser().getUserId());
 
-        return nonNull(code);
+            return nonNull(code);
+        }
     }
-}
