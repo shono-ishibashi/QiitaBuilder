@@ -69,7 +69,7 @@ public interface ArticleMapper {
     void updateArticle(Article article);
 
     /**
-     * 記事IDを基に記事情報を取得する
+     * 記事IDを基に記事情報,記事に関するフィードバックを取得する
      *
      * @param articleId 記事ID
      * @return 記事情報
@@ -78,6 +78,14 @@ public interface ArticleMapper {
 
     String getQiitaArticleId(Integer articleId);
 
+
+    /**
+     *
+     * 記事の詳細情報を取得する。
+     *
+     * @param articleId
+     * @return Article
+     */
     Article load(Integer articleId);
 
     /**
