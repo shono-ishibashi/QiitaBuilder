@@ -23,6 +23,11 @@ public class FeedbackService {
     @Autowired
     private ArticleMapper articleMapper;
 
+    /**
+     * FBIDを基にFeedback情報を取得するメソッド
+     * @param feedbackId
+     * @return
+     */
     public Feedback fetchFeedback(Integer feedbackId) {
         return feedbackMapper.load(feedbackId);
     }
