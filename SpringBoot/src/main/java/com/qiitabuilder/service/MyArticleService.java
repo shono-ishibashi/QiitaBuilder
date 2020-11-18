@@ -62,12 +62,6 @@ public class MyArticleService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
-        //// エラーハンドリング
-        // 入力値エラーの場合はBadRequestを返す
-        if (!String.valueOf(myArticle.getArticleId()).matches("^\\d+$")) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-
         // すでにDBに登録されている場合はConflictを投げる
         MyArticle insertedMyArticle = myArticleMapper.findByArticleIdAndRegisterUserId(myArticle.getArticleId(), myArticle.getRegisterUserId());
         if (Objects.nonNull(insertedMyArticle)) {
@@ -87,13 +81,9 @@ public class MyArticleService {
      *
      * @param myArticleId
      */
-    public void deleteMyArticle(String myArticleId) {
-        // 入力値エラーの場合はBadRequestを返す
-        if (!myArticleId.matches("^\\d+$")) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
+    public void deleteMyArticle(Integer myArticleId) {
         // レコードの削除がなかった場合はConflictを投げる
-        if (!myArticleMapper.delete(Integer.parseInt(myArticleId))) {
+        if (!myArticleMapper.delete(myArticleId)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
     }
