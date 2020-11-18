@@ -2,7 +2,6 @@ package com.qiitabuilder.mapper;
 
 import com.qiitabuilder.domain.Article;
 import com.qiitabuilder.domain.Feedback;
-import com.qiitabuilder.domain.User;
 import com.qiitabuilder.domain.RankingUser;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -44,12 +43,12 @@ public interface FeedbackMapper {
      * @param userId ユーザーID
      * @return 記事ID一覧
      */
-    List<Integer> getArticleIdByUserId(Integer userId);
+    List<Integer> getArticleIdListByUserId(Integer userId);
 
     /**
      * FBIDが一致するフィードバック情報を返す
      *
-     * @param feedbackId
+     * @param feedbackId FBID
      * @return フィードバック情報
      */
     Feedback load(Integer feedbackId);
