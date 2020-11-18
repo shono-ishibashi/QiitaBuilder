@@ -2,7 +2,9 @@ package com.qiitabuilder.service;
 
 import com.qiitabuilder.domain.Feedback;
 import com.qiitabuilder.domain.User;
+import com.qiitabuilder.security.SimpleLoginUser;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
@@ -10,12 +12,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.test.context.event.annotation.BeforeTestClass;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,8 +42,26 @@ class FeedbackServiceTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    public static void setAuthenticationInfo() {
+        User user = User.builder()
+                .userId(1)
+                .uid("test_uid")
+                .password("test_password")
+                .build();
+        SimpleLoginUser loginUser = new SimpleLoginUser(user);
+        Authentication authentication = new TestingAuthenticationToken(loginUser, null);
+        SecurityContext context = new SecurityContextImpl();
+        context.setAuthentication(authentication);
+        SecurityContextHolder.setContext(context);
+        System.out.println("LoginUser Set");
+    }
+    public static void clearContext() {
+        SecurityContextHolder.clearContext();
+    }
+
     @BeforeEach
     private void beforeEach() {
+        setAuthenticationInfo();
         jdbcTemplate.execute("create table users\n" +
                 "(\n" +
                 "   user_id      int auto_increment\n" +
@@ -143,6 +173,7 @@ class FeedbackServiceTest {
 
     @AfterEach
     private void beforeAfter() {
+        clearContext();
         jdbcTemplate.execute("DROP TABLE qiita_recommends");
         jdbcTemplate.execute("DROP TABLE qiita_configurations");
         jdbcTemplate.execute("DROP TABLE my_articles");
@@ -153,7 +184,7 @@ class FeedbackServiceTest {
         jdbcTemplate.execute("DROP TABLE users");
     }
 
-    //// fetchFeedback
+    //// fetchFeedback()
     @Test
     void fetchFeedback正常系() {
         // set up
@@ -196,6 +227,7 @@ class FeedbackServiceTest {
         assertEquals("sample", actualResult.getContent());
         assertEquals(0, actualResult.getDeleteFlag());
     }
+
     @Test
     void fetchFeedback異常系_feedbackIdが存在しない場合() {
         // set up
@@ -209,8 +241,31 @@ class FeedbackServiceTest {
         assertNull(actualResult);
     }
 
+    //// postFeedback()
     @Test
-    void postFeedback() {
+    void postFeedback正常系() {
+        // insert
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key
+
+        LocalDateTime ldtnow = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS); // ns以下の時間単位を切り落とし
+        Timestamp tsNow = Timestamp.valueOf(ldtnow);
+
+        Feedback feedback = Feedback.builder()
+                .articleId(1)
+                .postedUser(User.builder().userId(1).build())
+                .content("sample")
+                .deleteFlag(0)
+                .build();
+
+        Feedback actual = feedbackService.postFeedback(feedback);
+
+        // check
+        assertEquals(1, actual.getFeedbackId());
+        assertEquals(User.builder().userId(1).build(), actual.getPostedUser());
+        assertNotNull(actual.getCreatedAt());
+        assertEquals("sample", actual.getContent());
+        assertEquals(0, actual.getDeleteFlag());
     }
 
     @Test

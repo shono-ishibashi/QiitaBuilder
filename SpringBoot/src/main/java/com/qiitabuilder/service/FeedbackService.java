@@ -32,6 +32,11 @@ public class FeedbackService {
         return feedbackMapper.load(feedbackId);
     }
 
+    /**
+     * Feedbackを新規作成するメソッド
+     * @param feedback
+     * @return 生成したFeedbackId付きのフィードバック情報を返す
+     */
     public Feedback postFeedback(Feedback feedback) {
         // ログイン中のユーザ情報をセット
         SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
