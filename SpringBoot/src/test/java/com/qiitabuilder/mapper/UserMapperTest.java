@@ -159,9 +159,17 @@ public class UserMapperTest {
     }
 
     @Test
-    void fetchUserDetails(Integer userId){
-        User user=new User();
-        user.setUserId(1);
+    void fetchUserDetails_正常系(Integer userId){
+        String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
+        String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
+        String[] feedbackSqlArr = CollectionSQL.insertFeedbacks.split("\n", 0);
+        String[] qiitaRecommendSqlArr = CollectionSQL.insertQiitaRecommends.split("\n", 0);
+
+        Arrays.stream(userSqlArr).forEach((sql)->jdbcTemplate.execute(sql));
+        Arrays.stream(articleSqlArr).forEach((sql)->jdbcTemplate.execute(sql));
+        Arrays.stream(feedbackSqlArr).forEach((sql)->jdbcTemplate.execute(sql));
+        Arrays.stream(qiitaRecommendSqlArr).forEach((sql)->jdbcTemplate.execute(sql));
+
     }
 
 
