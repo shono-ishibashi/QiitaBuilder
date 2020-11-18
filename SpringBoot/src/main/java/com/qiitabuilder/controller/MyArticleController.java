@@ -59,9 +59,15 @@ public class MyArticleController {
     @PostMapping("")
     @ResponseStatus(HttpStatus.OK)
     public MyArticle postMyArticle(@RequestBody MyArticle myArticle) {
+        //// エラーハンドリング
+        // 入力値エラーの場合はBadRequestを返す
         if (Objects.isNull(myArticle.getArticleId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
+        if (!String.valueOf(myArticle.getArticleId()).matches("^\\d+$")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
         return myArticleService.postMyArticle(myArticle);
     }
     /////////////////////////////
@@ -86,6 +92,10 @@ public class MyArticleController {
     @DeleteMapping("/{myArticleId}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteMyArticle(@PathVariable("myArticleId") String myArticleId) {
-        myArticleService.deleteMyArticle(myArticleId);
+        // 入力値エラーの場合はBadRequestを返す
+        if (!myArticleId.matches("^\\d+$")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        myArticleService.deleteMyArticle(Integer.parseInt(myArticleId));
     }
 }

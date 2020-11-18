@@ -224,34 +224,196 @@ class ArticleMapperTest {
         String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
         String[] feedbackSqlArr = CollectionSQL.insertFeedbacks.split("\n", 0);
         String[] qiitaRecommendSqlArr = CollectionSQL.insertQiitaRecommends.split("\n", 0);
+        for (String sql : userSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+        for (String sql : articleSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+        for (String sql : feedbackSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+        for (String sql : qiitaRecommendSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
 
-        for(String sql : userSqlArr){
+
+        List<RankingUser> rankingUserList = articleMapper.getPostedArticleCountRank();
+        assertEquals(35, rankingUserList.size());
+
+        //////////最初
+        assertEquals(31, rankingUserList.get(0).getUser().getUserId());
+        assertEquals("user31", rankingUserList.get(0).getUser().getDisplayName());
+        assertEquals("photo31", rankingUserList.get(0).getUser().getPhotoUrl());
+        assertEquals(7, rankingUserList.get(0).getUser().getFeedbackCount());
+        assertEquals(15, rankingUserList.get(0).getUser().getPostedArticleCount());
+        assertEquals(11, rankingUserList.get(0).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(21, rankingUserList.get(1).getUser().getUserId());
+        assertEquals("user21", rankingUserList.get(1).getUser().getDisplayName());
+        assertEquals("photo21", rankingUserList.get(1).getUser().getPhotoUrl());
+        assertEquals(7, rankingUserList.get(1).getUser().getFeedbackCount());
+        assertEquals(14, rankingUserList.get(1).getUser().getPostedArticleCount());
+        assertEquals(3, rankingUserList.get(1).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(11, rankingUserList.get(2).getUser().getUserId());
+        assertEquals("user", rankingUserList.get(2).getUser().getDisplayName());
+        assertEquals("user_photo", rankingUserList.get(2).getUser().getPhotoUrl());
+        assertEquals(8, rankingUserList.get(2).getUser().getFeedbackCount());
+        assertEquals(13, rankingUserList.get(2).getUser().getPostedArticleCount());
+        assertEquals(15, rankingUserList.get(2).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(1, rankingUserList.get(3).getUser().getUserId());
+        assertEquals("a", rankingUserList.get(3).getUser().getDisplayName());
+        assertEquals("a", rankingUserList.get(3).getUser().getPhotoUrl());
+        assertEquals(8, rankingUserList.get(3).getUser().getFeedbackCount());
+        assertEquals(12, rankingUserList.get(3).getUser().getPostedArticleCount());
+        assertEquals(14, rankingUserList.get(3).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(32, rankingUserList.get(4).getUser().getUserId());
+        assertEquals("user32", rankingUserList.get(4).getUser().getDisplayName());
+        assertEquals("photo32", rankingUserList.get(4).getUser().getPhotoUrl());
+        assertEquals(0, rankingUserList.get(4).getUser().getFeedbackCount());
+        assertEquals(11, rankingUserList.get(4).getUser().getPostedArticleCount());
+        assertEquals(7, rankingUserList.get(4).getUser().getQiitaRecommendedAllCount());
+
+        //////////中間
+        assertEquals(24, rankingUserList.get(14).getUser().getUserId());
+        assertEquals("user24", rankingUserList.get(14).getUser().getDisplayName());
+        assertEquals("photo24", rankingUserList.get(14).getUser().getPhotoUrl());
+        assertEquals(4, rankingUserList.get(14).getUser().getFeedbackCount());
+        assertEquals(6, rankingUserList.get(14).getUser().getPostedArticleCount());
+        assertEquals(7, rankingUserList.get(14).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(4, rankingUserList.get(15).getUser().getUserId());
+        assertEquals("d", rankingUserList.get(15).getUser().getDisplayName());
+        assertEquals("d", rankingUserList.get(15).getUser().getPhotoUrl());
+        assertEquals(5, rankingUserList.get(15).getUser().getFeedbackCount());
+        assertEquals(5, rankingUserList.get(15).getUser().getPostedArticleCount());
+        assertEquals(3, rankingUserList.get(15).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(15, rankingUserList.get(16).getUser().getUserId());
+        assertEquals("user15", rankingUserList.get(16).getUser().getDisplayName());
+        assertEquals("photo15", rankingUserList.get(16).getUser().getPhotoUrl());
+        assertEquals(9, rankingUserList.get(16).getUser().getFeedbackCount());
+        assertEquals(5, rankingUserList.get(16).getUser().getPostedArticleCount());
+        assertEquals(7, rankingUserList.get(16).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(5, rankingUserList.get(17).getUser().getUserId());
+        assertEquals("test", rankingUserList.get(17).getUser().getDisplayName());
+        assertEquals("test_photo", rankingUserList.get(17).getUser().getPhotoUrl());
+        assertEquals(11, rankingUserList.get(17).getUser().getFeedbackCount());
+        assertEquals(4, rankingUserList.get(17).getUser().getPostedArticleCount());
+        assertEquals(9, rankingUserList.get(17).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(26, rankingUserList.get(18).getUser().getUserId());
+        assertEquals("user26", rankingUserList.get(18).getUser().getDisplayName());
+        assertEquals("photo26", rankingUserList.get(18).getUser().getPhotoUrl());
+        assertEquals(3, rankingUserList.get(18).getUser().getFeedbackCount());
+        assertEquals(4, rankingUserList.get(18).getUser().getPostedArticleCount());
+        assertEquals(1, rankingUserList.get(18).getUser().getQiitaRecommendedAllCount());
+
+        //////////最後
+        assertEquals(9, rankingUserList.get(30).getUser().getUserId());
+        assertEquals("ゆみ", rankingUserList.get(30).getUser().getDisplayName());
+        assertEquals("rrr", rankingUserList.get(30).getUser().getPhotoUrl());
+        assertEquals(1, rankingUserList.get(30).getUser().getFeedbackCount());
+        assertEquals(1, rankingUserList.get(30).getUser().getPostedArticleCount());
+        assertEquals(4, rankingUserList.get(30).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(10, rankingUserList.get(31).getUser().getUserId());
+        assertEquals("そうし", rankingUserList.get(31).getUser().getDisplayName());
+        assertEquals("uuu", rankingUserList.get(31).getUser().getPhotoUrl());
+        assertEquals(15, rankingUserList.get(31).getUser().getFeedbackCount());
+        assertEquals(1, rankingUserList.get(31).getUser().getPostedArticleCount());
+        assertEquals(5, rankingUserList.get(31).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(19, rankingUserList.get(32).getUser().getUserId());
+        assertEquals("user19", rankingUserList.get(32).getUser().getDisplayName());
+        assertEquals("photo19", rankingUserList.get(32).getUser().getPhotoUrl());
+        assertEquals(1, rankingUserList.get(32).getUser().getFeedbackCount());
+        assertEquals(1, rankingUserList.get(32).getUser().getPostedArticleCount());
+        assertEquals(3, rankingUserList.get(32).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(29, rankingUserList.get(33).getUser().getUserId());
+        assertEquals("user29", rankingUserList.get(33).getUser().getDisplayName());
+        assertEquals("photo29", rankingUserList.get(33).getUser().getPhotoUrl());
+        assertEquals(1, rankingUserList.get(33).getUser().getFeedbackCount());
+        assertEquals(1, rankingUserList.get(33).getUser().getPostedArticleCount());
+        assertEquals(2, rankingUserList.get(33).getUser().getQiitaRecommendedAllCount());
+
+        assertEquals(39, rankingUserList.get(34).getUser().getUserId());
+        assertEquals("user39", rankingUserList.get(34).getUser().getDisplayName());
+        assertEquals("photo39", rankingUserList.get(34).getUser().getPhotoUrl());
+        assertEquals(0, rankingUserList.get(34).getUser().getFeedbackCount());
+        assertEquals(1, rankingUserList.get(34).getUser().getPostedArticleCount());
+        assertEquals(2, rankingUserList.get(34).getUser().getQiitaRecommendedAllCount());
+    }
+
+    @Test
+    void getPostedArticleCountRank_none_exist_rankingUser() {
+        String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
+        String[] articleSqlArr = CollectionSQL.insertArticles
+                .replace("1);", "9);")
+                .replace("2);", "9);")
+                .split("\n", 0);
+        for (String sql : userSqlArr) {
             jdbcTemplate.execute(sql);
         }
-        for(String sql : articleSqlArr){
-            jdbcTemplate.execute(sql);
-        }
-        for(String sql : feedbackSqlArr){
-            jdbcTemplate.execute(sql);
-        }
-        for(String sql : qiitaRecommendSqlArr){
+        for (String sql : articleSqlArr) {
             jdbcTemplate.execute(sql);
         }
 
-
+        List<RankingUser> rankingUserList = articleMapper.getPostedArticleCountRank();
+        assertTrue(rankingUserList.isEmpty());
     }
 
     @Test
     void findArticleById() {
+        String[] tagsSqlArr = CollectionSQL.insertTags.split("\n", 0);
+        for (String sql : tagsSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+        List<String> sqlArr = new ArrayList<>();
+        sqlArr.add("INSERT INTO users (display_name, photo_url) VALUES ('test_user1', 'test_photo1');");
+        sqlArr.add("INSERT INTO users (display_name, photo_url) VALUES ('test_user2', 'test_photo2');");
+        sqlArr.add("INSERT INTO users (display_name, photo_url) VALUES ('test_user3', 'test_photo3');");
+        sqlArr.add("INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, '2020-10-31 00:00:00', '2020-11-01 00:00:00', 'title test', '#content test', null, 1);");
+        sqlArr.add("INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (1, 1, 2);");
+        sqlArr.add("INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (1, 1, 4);");
+        sqlArr.add("INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (1, 2, 1);");
+        sqlArr.add("INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (1, 3, 1);");
+        sqlArr.add("INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (1, 1, 2);");
+        sqlArr.add("INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (1, 3, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content', 0);");
+        sqlArr.add("INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (1, 2, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content', 1);");
+        sqlArr.forEach(sql -> jdbcTemplate.execute(sql));
+
+        List<Article> article = articleMapper.findArticleById(1);
+
+        assertEquals(1, article.size());
+        assertEquals(1, article.get(0).getArticleId());
+        assertEquals(1, article.get(0).getPostedUser().getUserId());
+        assertEquals("test_user1", article.get(0).getPostedUser().getDisplayName());
+        assertEquals("test_photo1", article.get(0).getPostedUser().getPhotoUrl());
+        assertEquals(LocalDateTime.of(2020, 10, 31, 0, 0, 0), article.get(0).getCreatedAt());
+        assertEquals(LocalDateTime.of(2020, 11, 1, 0, 0, 0), article.get(0).getUpdatedAt());
+        assertEquals("title test", article.get(0).getTitle());
+        assertNull(article.get(0).getQiitaArticleId());
+        assertEquals(1, article.get(0).getStateFlag());
+        assertEquals(2, article.get(0).getTags().get(0).getTagId());
+        assertEquals("ruby", article.get(0).getTags().get(0).getTagName());
+        assertEquals(4, article.get(0).getTags().get(1).getTagId());
+        assertEquals("php", article.get(0).getTags().get(1).getTagName());
+        assertEquals(2, article.get(0).getQiitaRecommendPoint());
+        assertEquals(1, article.get(0).getRegisteredMyArticleCount());
+        assertEquals(1, article.get(0).getFeedbackCount());
     }
 
     @Test
     void getArticleIdListByUserId() {
-
         String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
         String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
-
-        for(String sql : userSqlArr){
+        for (String sql : userSqlArr) {
             jdbcTemplate.execute(sql);
         }
         for(String sql : articleSqlArr){
@@ -365,6 +527,86 @@ class ArticleMapperTest {
         assertEquals(2, resultArticle.get("state_flag"));
     }
 
+    //// getArticleAndFeedback()
+    @Test
+    void getArticleAndFeedback正常系() {
+        // set up
+        String insertUser1 = "INSERT INTO users (user_id, uid, photo_url, display_name, password) VALUES (1, 'a', 'a', 'a', 'a');";
+        String insertUser2 = "INSERT INTO users (user_id, uid, photo_url, display_name, password) VALUES (2, 'b', 'b', 'b', 'b');";
+
+        String insertArt1 = "INSERT INTO articles (article_id, user_id, created_at, updated_at, title, content, state_flag) VALUES (1, 1, '2020-10-01 00:00:00', '2020-10-02 00:00:00', 'title1', '#content1', 1);";
+        String insertFeed1 = "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (1, 2, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content1', 0);";
+
+        String insertMyArt = "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (1, 1, 2);";
+        String insertRec = "INSERT INTO qiita_recommends (article_id, posted_user_id, recommend_user_id) VALUES (1, 1, 2);";
+        String insertTag1 = "INSERT INTO tags (tag_name) VALUES ('Java');";
+        String insertTagRel1 = "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (1, 1, 1);";
+
+        jdbcTemplate.execute(insertUser1);
+        jdbcTemplate.execute(insertUser2);
+        jdbcTemplate.execute(insertArt1);
+        jdbcTemplate.execute(insertFeed1);
+        jdbcTemplate.execute(insertMyArt);
+        jdbcTemplate.execute(insertRec);
+        jdbcTemplate.execute(insertTag1);
+        jdbcTemplate.execute(insertTagRel1);
+
+        User user1 = User.builder().userId(1).displayName("a").photoUrl("a").uid("a").build();
+        User user2 = User.builder().userId(2).displayName("b").photoUrl("b").uid("b").build();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime createdAtArt1 = LocalDateTime.parse("2020-10-01 00:00", dtf);
+        LocalDateTime updatedAtArt1 = LocalDateTime.parse("2020-10-02 00:00", dtf);
+        LocalDateTime createdAtFeed1 = LocalDateTime.parse("2020-11-03 00:00", dtf);
+        LocalDateTime updatedAtFeed1 = LocalDateTime.parse("2020-11-04 00:00", dtf);
+
+        Feedback feed1 = Feedback.builder()
+                .feedbackId(1)
+                .articleId(1)
+                .postedUser(user2)
+                .createdAt(createdAtFeed1)
+                .updatedAt(updatedAtFeed1)
+                .content("feedback content1")
+                .deleteFlag(0)
+                .build();
+        List<Feedback> feedbacks = new ArrayList<>();
+        feedbacks.add(feed1);
+
+        Tag tag1 = Tag.builder().tagId(1).tagName("Java").build();
+        List<Tag> tags = new ArrayList<>();
+        tags.add(tag1);
+
+        Article expected = Article.builder()
+                .articleId(1)
+                .postedUser(user1)
+                .createdAt(createdAtArt1)
+                .updatedAt(updatedAtArt1)
+                .title("title1")
+                .content("#content1")
+                .stateFlag(1)
+                .feedbacks(feedbacks)
+                .feedbackCount(1)
+                .qiitaRecommendPoint(1)
+                .registeredMyArticleCount(1)
+                .tags(tags)
+                .build();
+
+        // check
+        Article actual = articleMapper.getArticleAndFeedback(1);
+
+        assertEquals(expected.getArticleId(), actual.getArticleId());
+        assertEquals(expected.getPostedUser(), actual.getPostedUser());
+        assertEquals(expected.getCreatedAt(), actual.getCreatedAt());
+        assertEquals(expected.getUpdatedAt(), actual.getUpdatedAt());
+        assertEquals(expected.getTitle(), actual.getTitle());
+        assertEquals(expected.getContent(), actual.getContent());
+        assertEquals(expected.getStateFlag(), actual.getStateFlag());
+        assertEquals(expected.getFeedbacks().get(0), actual.getFeedbacks().get(0));
+        assertEquals(expected.getFeedbackCount(), actual.getFeedbackCount());
+        assertEquals(expected.getQiitaRecommendPoint(), actual.getQiitaRecommendPoint());
+        assertEquals(expected.getRegisteredMyArticleCount(), actual.getRegisteredMyArticleCount());
+        assertEquals(expected.getTags().get(0), actual.getTags().get(0));
+    }
+
     @Test
     void getArticleAndFeedback() {
     }
@@ -398,5 +640,65 @@ class ArticleMapperTest {
 
         assertEquals(article.getTags().get(0).getTagName(), "test_tag1");
         assertEquals(article.getTags().get(1).getTagName(), "test_tag2");
+    }
+    @Test
+    void getArticlesByUserId(){
+        String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
+        String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
+        String[] feedbackSqlArr = CollectionSQL.insertFeedbacks.split("\n", 0);
+        String[] qiitaRecommendSqlArr = CollectionSQL.insertQiitaRecommends.split("\n", 0);
+        String[] tagSqlArr = CollectionSQL.insertTags.split("\n", 0);
+        String[] tagRelationSqlArr = CollectionSQL.insertArticlesTagsRelations.split("\n", 0);
+        String[] myArticleSqlArr = CollectionSQL.insertMyArticles.split("\n", 0);
+
+        Arrays.stream(userSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+        Arrays.stream(articleSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+        Arrays.stream(feedbackSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+        Arrays.stream(qiitaRecommendSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+        Arrays.stream(tagSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+        Arrays.stream(tagRelationSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+        Arrays.stream(myArticleSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+
+        //userId=1のテスト
+        List<Article> articles = articleMapper.getArticlesByUserId(1);
+
+        LocalDateTime createDateFirst = LocalDateTime.of(2020, 10, 23, 00, 00, 00);
+        LocalDateTime updateDateFirst = createDateFirst.plusDays(1);
+        LocalDateTime createDateLast = LocalDateTime.of(2020, 10, 1, 00, 00, 00);
+        LocalDateTime updateDateLast = createDateLast.plusDays(1);
+
+        //記事件数と最初,最後の記事の取得してきたもの全てテスト
+        assertEquals(12, articles.size());
+        assertEquals(12, articles.get(0).getArticleId());
+        assertEquals("title12", articles.get(0).getTitle());
+        assertEquals(createDateFirst, articles.get(0).getCreatedAt());
+        assertEquals(updateDateFirst, articles.get(0).getUpdatedAt());
+        assertEquals(1, articles.get(0).getStateFlag());
+        assertEquals(1, articles.get(0).getTags().get(0).getTagId());
+        assertEquals("Java", articles.get(0).getTags().get(0).getTagName());
+        assertEquals(2, articles.get(0).getTags().get(1).getTagId());
+        assertEquals("ruby", articles.get(0).getTags().get(1).getTagName());
+        assertEquals(4, articles.get(0).getFeedbackCount());
+        assertEquals(2, articles.get(0).getRegisteredMyArticleCount());
+        assertEquals(1, articles.get(0).getPostedUser().getUserId());
+        assertEquals("a", articles.get(0).getPostedUser().getDisplayName());
+        assertEquals("a", articles.get(0).getPostedUser().getPhotoUrl());
+        assertEquals(1, articles.get(0).getQiitaRecommendPoint());
+
+        assertEquals(1, articles.get(11).getArticleId());
+        assertEquals("title1", articles.get(11).getTitle());
+        assertEquals(createDateLast, articles.get(11).getCreatedAt());
+        assertEquals(updateDateLast, articles.get(11).getUpdatedAt());
+        assertEquals(1, articles.get(11).getStateFlag());
+        assertEquals(1, articles.get(11).getTags().get(0).getTagId());
+        assertEquals("Java", articles.get(11).getTags().get(0).getTagName());
+        assertEquals(5, articles.get(11).getTags().get(1).getTagId());
+        assertEquals("go", articles.get(11).getTags().get(1).getTagName());
+        assertEquals(5,articles.get(11).getFeedbackCount());
+        assertNull( articles.get(11).getRegisteredMyArticleCount());
+        assertEquals(1, articles.get(11).getPostedUser().getUserId());
+        assertEquals("a", articles.get(11).getPostedUser().getDisplayName());
+        assertEquals("a", articles.get(11).getPostedUser().getPhotoUrl());
+        assertEquals(2, articles.get(11).getQiitaRecommendPoint());
     }
 }

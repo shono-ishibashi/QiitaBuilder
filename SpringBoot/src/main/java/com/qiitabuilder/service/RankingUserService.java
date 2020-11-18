@@ -101,7 +101,7 @@ public class RankingUserService {
                             case 1:
                                 // FBした数ランキング
                                 // 最新のFBした記事を取得.
-                                articleIdList = feedbackMapper.getArticleIdByUserId(userId);
+                                articleIdList = feedbackMapper.getArticleIdListByUserId(userId);
                                 break;
                             default:
                                 // 記事投稿数ランキング, Qiita推薦累計数ランキング

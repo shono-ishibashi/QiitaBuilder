@@ -77,6 +77,7 @@
         <result property="title" column="title"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
+        <result property="stateFlag" column="state_flag"/>
         <result property="qiitaRecommendPoint" column="rec_count"/>
         <result property="registeredMyArticleCount" column="my_count"/>
         <result property="feedbackCount" column="fb_count"/>
@@ -376,7 +377,8 @@
                  LEFT OUTER JOIN articles_tags_relations AS rel
                                  ON art.article_id = rel.article_id
                  LEFT OUTER JOIN tags ON rel.tag_id = tags.tag_id
-        WHERE art.article_id = #{articleId};
+        WHERE art.article_id = #{articleId}
+        ORDER BY tags.tag_id;
     </select>
 
     <select id="getArticleIdListByUserId" resultType="Integer">
@@ -423,6 +425,46 @@
           AND user_id = #{userId}
     </select>
 
+    <select id="getArticlesByUserId" resultMap="articlesMap">
+        SELECT art.article_id                    AS articleId,
+               art.title                         AS title,
+               art.created_at                    AS createdAt,
+               art.updated_at                    AS updatedAt,
+               art.state_flag                    AS stateFlag,
+               tags.tag_id                       AS tagId,
+               tags.tag_name                     AS tagName,
+               feed_cnt_table.feed_cnt           AS feedCnt,
+               my_cnt_table.my_cnt               AS myCnt,
+               users.user_id                     AS userId,
+               users.display_name                AS displayName,
+               users.photo_url                   AS photoUrl,
+               recommend_cnt_table.recommend_cnt AS recommendCnt
+        FROM articles AS art
+                 LEFT OUTER JOIN qiita_builder.articles_tags_relations AS a_t_relation
+                                 ON art.article_id = a_t_relation.article_id
+                 LEFT OUTER JOIN qiita_builder.tags AS tags
+                                 ON a_t_relation.tag_id = tags.tag_id
+                 LEFT OUTER JOIN (SELECT article_id,
+                                         count(feed.article_id) AS feed_cnt
+                                  FROM qiita_builder.feedbacks AS feed
+                                  GROUP BY feed.article_id) AS feed_cnt_table
+                                 ON art.article_id = feed_cnt_table.article_id
+                 LEFT OUTER JOIN (SELECT article_id,
+                                         count(my.article_id) AS my_cnt
+                                  FROM qiita_builder.my_articles AS my
+                                  GROUP BY my.article_id) AS my_cnt_table
+                                 ON art.article_id = my_cnt_table.article_id
+                 LEFT OUTER JOIN (SELECT article_id,
+                                         count(recommend.article_id) AS recommend_cnt
+                                  FROM qiita_builder.qiita_recommends AS recommend
+                                  GROUP BY recommend.article_id) AS recommend_cnt_table
+                                 ON art.article_id = recommend_cnt_table.article_id
+                 LEFT JOIN qiita_builder.users
+                           ON art.user_id = users.user_id
+        WHERE art.user_id = #{userId}
+          AND art.state_flag != 9
+        ORDER BY art.created_at DESC, tags.tag_id;
+    </select>
     <!-- ****** INSERT ****** -->
     <insert id="insertArticle">
         INSERT INTO articles(

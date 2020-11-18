@@ -66,38 +66,38 @@
                users.display_name                AS display_name,
                users.photo_url                   AS photo_url,
                recommend_cnt_table.recommend_cnt AS qiita_recommend_point
-        FROM qiita_builder.feedbacks AS feedbacked
-                 LEFT JOIN qiita_builder.articles AS art
+        FROM feedbacks AS feedbacked
+                 LEFT JOIN articles AS art
                            ON feedbacked.article_id = art.article_id
 
-                 LEFT OUTER JOIN qiita_builder.articles_tags_relations AS a_t_relation
+                 LEFT OUTER JOIN articles_tags_relations AS a_t_relation
                                  ON art.article_id = a_t_relation.article_id
 
-                 LEFT OUTER JOIN qiita_builder.tags AS tags
+                 LEFT OUTER JOIN tags
                                  ON a_t_relation.tag_id = tags.tag_id
 
                  LEFT OUTER JOIN (SELECT article_id,
                                          count(feed.article_id) AS feed_cnt
-                                  FROM qiita_builder.feedbacks AS feed
+                                  FROM feedbacks AS feed
                                   GROUP BY feed.article_id) AS feed_cnt_table
                                  ON art.article_id = feed_cnt_table.article_id
 
                  LEFT OUTER JOIN (SELECT article_id,
                                          count(my.article_id) AS my_cnt
-                                  FROM qiita_builder.my_articles AS my
+                                  FROM my_articles AS my
                                   GROUP BY my.article_id) AS my_cnt_table
                                  ON art.article_id = my_cnt_table.article_id
 
                  LEFT OUTER JOIN (SELECT article_id,
                                          count(recommend.article_id) AS recommend_cnt
-                                  FROM qiita_builder.qiita_recommends AS recommend
+                                  FROM qiita_recommends AS recommend
                                   GROUP BY recommend.article_id) AS recommend_cnt_table
                                  ON art.article_id = recommend_cnt_table.article_id
 
-                 LEFT JOIN qiita_builder.users
+                 LEFT JOIN users
                            ON art.user_id = users.user_id
         WHERE feedbacked.user_id = #{userId} AND art.state_flag != 9 AND feedbacked.delete_flag !=1
-        ORDER BY art.created_at DESC;
+        ORDER BY art.created_at DESC, tag_id;
     </select>
 
     <select id="getFBRank" resultMap="rankingUserResultMap">
@@ -122,13 +122,14 @@
                  FROM feedbacks
                  WHERE delete_flag = 0
                  GROUP BY user_id
-                 ORDER BY count(*) DESC
+                 ORDER BY count(*) DESC,
+                          user_id
              ) AS fbrank
                  LEFT OUTER JOIN users
                                  ON fbrank.user_id = users.user_id;
     </select>
 
-    <select id="getArticleIdByUserId" resultType="Integer">
+    <select id="getArticleIdListByUserId" resultType="Integer">
         SELECT fb.article_id
         FROM feedbacks AS fb
         WHERE fb.user_id = #{userId}
