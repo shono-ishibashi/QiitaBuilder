@@ -337,7 +337,8 @@
                  WHERE state_flag = 1
                     OR state_flag = 2
                  GROUP BY user_id
-                 ORDER BY count(*) DESC
+                 ORDER BY count(*) DESC,
+                          user_id
              ) AS art_count_rank
                  LEFT OUTER JOIN users
                                  ON art_count_rank.user_id = users.user_id;
