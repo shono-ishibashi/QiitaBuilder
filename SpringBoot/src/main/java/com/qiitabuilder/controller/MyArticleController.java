@@ -59,9 +59,15 @@ public class MyArticleController {
     @PostMapping("")
     @ResponseStatus(HttpStatus.OK)
     public MyArticle postMyArticle(@RequestBody MyArticle myArticle) {
+        //// エラーハンドリング
+        // 入力値エラーの場合はBadRequestを返す
         if (Objects.isNull(myArticle.getArticleId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
+        if (!String.valueOf(myArticle.getArticleId()).matches("^\\d+$")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
         return myArticleService.postMyArticle(myArticle);
     }
     /////////////////////////////

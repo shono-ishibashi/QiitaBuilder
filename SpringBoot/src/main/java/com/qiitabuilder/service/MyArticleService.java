@@ -62,12 +62,6 @@ public class MyArticleService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
-        //// エラーハンドリング
-        // 入力値エラーの場合はBadRequestを返す
-        if (!String.valueOf(myArticle.getArticleId()).matches("^\\d+$")) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-
         // すでにDBに登録されている場合はConflictを投げる
         MyArticle insertedMyArticle = myArticleMapper.findByArticleIdAndRegisterUserId(myArticle.getArticleId(), myArticle.getRegisterUserId());
         if (Objects.nonNull(insertedMyArticle)) {
