@@ -350,6 +350,10 @@ class ArticleMapperTest {
         assertEquals("title test", article.get(0).getTitle());
         assertNull(article.get(0).getQiitaArticleId());
         assertEquals(1, article.get(0).getStateFlag());
+        assertEquals(2, article.get(0).getTags().get(0).getTagId());
+        assertEquals("ruby", article.get(0).getTags().get(0).getTagName());
+        assertEquals(4, article.get(0).getTags().get(1).getTagId());
+        assertEquals("php", article.get(0).getTags().get(1).getTagName());
         assertEquals(2, article.get(0).getQiitaRecommendPoint());
         assertEquals(1, article.get(0).getRegisteredMyArticleCount());
         assertEquals(1, article.get(0).getFeedbackCount());
