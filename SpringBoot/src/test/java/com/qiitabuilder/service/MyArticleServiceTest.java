@@ -1,13 +1,11 @@
 package com.qiitabuilder.service;
 
-import com.qiitabuilder.domain.Feedback;
 import com.qiitabuilder.domain.MyArticle;
 import com.qiitabuilder.domain.User;
 import com.qiitabuilder.security.SimpleLoginUser;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -190,6 +188,7 @@ class MyArticleServiceTest {
         assertEquals(1, myArticle.getPostedUserId());
         assertEquals(1, myArticle.getRegisterUserId());
     }
+
     @Test
     void fetchMyArticle異常系_該当のMy記事情報が存在しない場合_articleIdなし() {
         // insert
@@ -205,6 +204,7 @@ class MyArticleServiceTest {
 
         assertTrue(actualMessage.contains(expectedMessage));
     }
+
     @Test
     void fetchMyArticle異常系_該当のMy記事情報が存在しない場合_registerUserIdなし() {
         // insert
@@ -214,7 +214,7 @@ class MyArticleServiceTest {
 
         jdbcTemplate.execute("INSERT INTO my_articles(article_id, posted_user_id, register_user_id) VALUES(1, 1, 2)");
 
-        // 403エラーをスローするか確認
+        // ステータスコード204をスローするか確認
         Exception exception = assertThrows(org.springframework.web.server.ResponseStatusException.class, () -> {
             MyArticle myArticle = myArticleService.fetchMyArticle(1);
         });
@@ -224,8 +224,69 @@ class MyArticleServiceTest {
         assertTrue(actualMessage.contains(expectedMessage));
     }
 
+    //// postMyArticle()
     @Test
-    void postMyArticle() {
+    void postMyArticle正常系() {
+        // insert
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(2);"); // Foreign key
+
+        MyArticle myArticle = MyArticle.builder()
+                .articleId(1)
+                .build();
+
+        MyArticle actual = myArticleService.postMyArticle(myArticle);
+
+        assertEquals(1, actual.getMyArticleId());
+        assertEquals(1, actual.getArticleId());
+        assertEquals(2, actual.getPostedUserId());
+        assertEquals(1, actual.getRegisterUserId());
+    }
+
+    @Test
+    void postMyArticle異常系_記事IDが存在しない場合() {
+        // insert
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+
+        MyArticle myArticle = MyArticle.builder()
+                .articleId(1)
+                .build();
+
+        // ステータスコード400をスローするか確認
+        Exception exception = assertThrows(org.springframework.web.server.ResponseStatusException.class, () -> {
+            myArticleService.postMyArticle(myArticle);
+        });
+        String expectedMessage = "400 BAD_REQUEST";
+        String actualMessage = exception.getMessage();
+        System.out.println(actualMessage);
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    void postMyArticle異常系_すでにDBに登録されている場合() {
+        // insert
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(2);"); // Foreign key 記事2
+
+        jdbcTemplate.execute("INSERT INTO my_articles(article_id, posted_user_id, register_user_id) VALUES(1, 2, 1)");
+
+        MyArticle myArticle = MyArticle.builder()
+                .articleId(1)
+                .build();
+
+        // ステータスコード409をスローするか確認
+        Exception exception = assertThrows(org.springframework.web.server.ResponseStatusException.class, () -> {
+            myArticleService.postMyArticle(myArticle);
+        });
+        String expectedMessage = "409 CONFLICT";
+        String actualMessage = exception.getMessage();
+        System.out.println(actualMessage);
+
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 
     @Test
