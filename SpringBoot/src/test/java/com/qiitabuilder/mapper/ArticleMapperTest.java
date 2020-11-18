@@ -1,6 +1,7 @@
 package com.qiitabuilder.mapper;
 
 import com.qiitabuilder.domain.Article;
+import com.qiitabuilder.domain.RankingUser;
 import com.qiitabuilder.domain.Tag;
 import com.qiitabuilder.domain.User;
 import org.apache.ibatis.annotations.Insert;
@@ -189,6 +190,8 @@ class ArticleMapperTest {
             jdbcTemplate.execute(sql);
         }
 
+        List<RankingUser> rankingUserList = articleMapper.getPostedArticleCountRank();
+        assertEquals(35, rankingUserList.size());
 
     }
 
