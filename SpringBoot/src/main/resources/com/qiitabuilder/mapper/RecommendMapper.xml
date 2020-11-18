@@ -46,7 +46,8 @@
                         count(*) AS cnt
                  FROM qiita_recommends
                  GROUP BY posted_user_id
-                 ORDER BY count(*) DESC
+                 ORDER BY count(*) DESC,
+                          posted_user_id
              ) AS qiita_count
                  LEFT OUTER JOIN users
                                  ON qiita_count.posted_user_id = users.user_id;
