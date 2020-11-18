@@ -175,17 +175,16 @@ class ArticleMapperTest {
         String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
         String[] feedbackSqlArr = CollectionSQL.insertFeedbacks.split("\n", 0);
         String[] qiitaRecommendSqlArr = CollectionSQL.insertQiitaRecommends.split("\n", 0);
-
-        for(String sql : userSqlArr){
+        for (String sql : userSqlArr) {
             jdbcTemplate.execute(sql);
         }
-        for(String sql : articleSqlArr){
+        for (String sql : articleSqlArr) {
             jdbcTemplate.execute(sql);
         }
-        for(String sql : feedbackSqlArr){
+        for (String sql : feedbackSqlArr) {
             jdbcTemplate.execute(sql);
         }
-        for(String sql : qiitaRecommendSqlArr){
+        for (String sql : qiitaRecommendSqlArr) {
             jdbcTemplate.execute(sql);
         }
 
@@ -220,7 +219,7 @@ class ArticleMapperTest {
         assertEquals(8, rankingUserList.get(3).getUser().getFeedbackCount());
         assertEquals(12, rankingUserList.get(3).getUser().getPostedArticleCount());
         assertEquals(14, rankingUserList.get(3).getUser().getQiitaRecommendedAllCount());
-        
+
         assertEquals(32, rankingUserList.get(4).getUser().getUserId());
         assertEquals("user32", rankingUserList.get(4).getUser().getDisplayName());
         assertEquals("photo32", rankingUserList.get(4).getUser().getPhotoUrl());
@@ -235,14 +234,14 @@ class ArticleMapperTest {
         assertEquals(4, rankingUserList.get(14).getUser().getFeedbackCount());
         assertEquals(6, rankingUserList.get(14).getUser().getPostedArticleCount());
         assertEquals(7, rankingUserList.get(14).getUser().getQiitaRecommendedAllCount());
-        
+
         assertEquals(4, rankingUserList.get(15).getUser().getUserId());
         assertEquals("d", rankingUserList.get(15).getUser().getDisplayName());
         assertEquals("d", rankingUserList.get(15).getUser().getPhotoUrl());
         assertEquals(5, rankingUserList.get(15).getUser().getFeedbackCount());
         assertEquals(5, rankingUserList.get(15).getUser().getPostedArticleCount());
         assertEquals(3, rankingUserList.get(15).getUser().getQiitaRecommendedAllCount());
-        
+
         assertEquals(15, rankingUserList.get(16).getUser().getUserId());
         assertEquals("user15", rankingUserList.get(16).getUser().getDisplayName());
         assertEquals("photo15", rankingUserList.get(16).getUser().getPhotoUrl());
@@ -256,7 +255,7 @@ class ArticleMapperTest {
         assertEquals(11, rankingUserList.get(17).getUser().getFeedbackCount());
         assertEquals(4, rankingUserList.get(17).getUser().getPostedArticleCount());
         assertEquals(9, rankingUserList.get(17).getUser().getQiitaRecommendedAllCount());
-        
+
         assertEquals(26, rankingUserList.get(18).getUser().getUserId());
         assertEquals("user26", rankingUserList.get(18).getUser().getDisplayName());
         assertEquals("photo26", rankingUserList.get(18).getUser().getPhotoUrl());
@@ -271,21 +270,21 @@ class ArticleMapperTest {
         assertEquals(1, rankingUserList.get(30).getUser().getFeedbackCount());
         assertEquals(1, rankingUserList.get(30).getUser().getPostedArticleCount());
         assertEquals(4, rankingUserList.get(30).getUser().getQiitaRecommendedAllCount());
-        
+
         assertEquals(10, rankingUserList.get(31).getUser().getUserId());
         assertEquals("そうし", rankingUserList.get(31).getUser().getDisplayName());
         assertEquals("uuu", rankingUserList.get(31).getUser().getPhotoUrl());
         assertEquals(15, rankingUserList.get(31).getUser().getFeedbackCount());
         assertEquals(1, rankingUserList.get(31).getUser().getPostedArticleCount());
         assertEquals(5, rankingUserList.get(31).getUser().getQiitaRecommendedAllCount());
-        
+
         assertEquals(19, rankingUserList.get(32).getUser().getUserId());
         assertEquals("user19", rankingUserList.get(32).getUser().getDisplayName());
         assertEquals("photo19", rankingUserList.get(32).getUser().getPhotoUrl());
         assertEquals(1, rankingUserList.get(32).getUser().getFeedbackCount());
         assertEquals(1, rankingUserList.get(32).getUser().getPostedArticleCount());
         assertEquals(3, rankingUserList.get(32).getUser().getQiitaRecommendedAllCount());
-        
+
         assertEquals(29, rankingUserList.get(33).getUser().getUserId());
         assertEquals("user29", rankingUserList.get(33).getUser().getDisplayName());
         assertEquals("photo29", rankingUserList.get(33).getUser().getPhotoUrl());
@@ -302,15 +301,64 @@ class ArticleMapperTest {
     }
 
     @Test
+    void getPostedArticleCountRank_none_exist_rankingUser() {
+        String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
+        String[] articleSqlArr = CollectionSQL.insertArticles
+                .replace("1);", "9);")
+                .replace("2);", "9);")
+                .split("\n", 0);
+        for (String sql : userSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+        for (String sql : articleSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+
+        List<RankingUser> rankingUserList = articleMapper.getPostedArticleCountRank();
+        assertTrue(rankingUserList.isEmpty());
+    }
+
+    @Test
     void findArticleById() {
+        String[] tagsSqlArr = CollectionSQL.insertTags.split("\n", 0);
+        for (String sql : tagsSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+        List<String> sqlArr = new ArrayList<>();
+        sqlArr.add("INSERT INTO users (display_name, photo_url) VALUES ('test_user1', 'test_photo1');");
+        sqlArr.add("INSERT INTO users (display_name, photo_url) VALUES ('test_user2', 'test_photo2');");
+        sqlArr.add("INSERT INTO users (display_name, photo_url) VALUES ('test_user3', 'test_photo3');");
+        sqlArr.add("INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, '2020-10-31 00:00:00', '2020-11-01 00:00:00', 'title test', '#content test', null, 1);");
+        sqlArr.add("INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (1, 1, 2);");
+        sqlArr.add("INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (1, 1, 4);");
+        sqlArr.add("INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (1, 2, 1);");
+        sqlArr.add("INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (1, 3, 1);");
+        sqlArr.add("INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (1, 1, 2);");
+        sqlArr.add("INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (1, 3, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content', 0);");
+        sqlArr.add("INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (1, 2, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content', 1);");
+        sqlArr.forEach(sql -> jdbcTemplate.execute(sql));
+
+        List<Article> article = articleMapper.findArticleById(1);
+
+        assertEquals(1, article.size());
+        assertEquals(1, article.get(0).getArticleId());
+        assertEquals(1, article.get(0).getPostedUser().getUserId());
+        assertEquals("test_user1", article.get(0).getPostedUser().getDisplayName());
+        assertEquals("test_photo1", article.get(0).getPostedUser().getPhotoUrl());
+        assertEquals(LocalDateTime.of(2020, 10, 31, 0, 0, 0), article.get(0).getCreatedAt());
+        assertEquals(LocalDateTime.of(2020, 11, 1, 0, 0, 0), article.get(0).getUpdatedAt());
+        assertEquals("title test", article.get(0).getTitle());
+        assertNull(article.get(0).getQiitaArticleId());
+        assertEquals(1, article.get(0).getStateFlag());
+        assertEquals(2, article.get(0).getQiitaRecommendPoint());
+        assertEquals(1, article.get(0).getRegisteredMyArticleCount());
+        assertEquals(1, article.get(0).getFeedbackCount());
     }
 
     @Test
     void getArticleIdListByUserId() {
-
         String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
         String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
-
         for (String sql : userSqlArr) {
             jdbcTemplate.execute(sql);
         }
@@ -504,6 +552,7 @@ class ArticleMapperTest {
         assertEquals(expected.getRegisteredMyArticleCount(), actual.getRegisteredMyArticleCount());
         assertEquals(expected.getTags().get(0), actual.getTags().get(0));
     }
+
     @Test
     void getArticleAndFeedback異常系_記事IDが存在しない場合() {
         // set up
