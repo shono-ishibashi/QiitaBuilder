@@ -285,7 +285,7 @@
              (
                  SELECT article_id,
                         COUNT(feed.article_id) AS feed_cnt
-                 FROM qiita_builder.feedbacks AS feed
+                 FROM feedbacks AS feed
                  GROUP BY feed.article_id
              ) AS feed_cnt_table
              ON art.article_id = feed_cnt_table.article_id
@@ -294,7 +294,7 @@
              (
                  SELECT article_id,
                         COUNT(my.article_id) AS my_cnt
-                 FROM qiita_builder.my_articles AS my
+                 FROM my_articles AS my
                  GROUP BY my.article_id
              ) AS my_cnt_table
              ON art.article_id = my_cnt_table.article_id
@@ -303,7 +303,7 @@
              (
                  SELECT article_id,
                         COUNT(recommend.article_id) AS recommend_cnt
-                 FROM qiita_builder.qiita_recommends AS recommend
+                 FROM qiita_recommends AS recommend
                  GROUP BY recommend.article_id
              ) AS recommend_cnt_table
              ON art.article_id = recommend_cnt_table.article_id
