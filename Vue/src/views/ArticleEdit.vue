@@ -134,13 +134,8 @@ export default {
       qiitaDialog: false,
       required: value => value && !!value || "必ず入力してください",
       blank: value => {
-        // const index=value.length
-        // console.log(value)
-        // console.log(value[index])
         const pattern = /\S/g
-        // if(typeof value[index] ==="undefined"){
-          return pattern.test(value)|| "空文字のみの入力はできません";
-        // }
+        return pattern.test(value[value.length-1]) || "空文字のみの入力はできません"
       },
       title_limit_length: value => value && value.length <= 100 || "100文字以内で入力してください",
       tags_max_size: value => value && value.length <= 5 || "5つまで入力してください",
