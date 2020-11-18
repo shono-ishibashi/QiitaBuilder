@@ -159,7 +159,7 @@ public class UserMapperTest {
     }
 
     @Test
-    void fetchUserDetails(){
+    void fetchUserDetailsのテスト正常系(){
         String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
         String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
         String[] feedbackSqlArr = CollectionSQL.insertFeedbacks.split("\n", 0);
