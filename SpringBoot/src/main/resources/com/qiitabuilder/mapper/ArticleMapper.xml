@@ -382,7 +382,8 @@
                  LEFT OUTER JOIN articles_tags_relations AS rel
                                  ON art.article_id = rel.article_id
                  LEFT OUTER JOIN tags ON rel.tag_id = tags.tag_id
-        WHERE art.article_id = #{articleId};
+        WHERE art.article_id = #{articleId}
+        ORDER BY tags.tag_id;
     </select>
 
     <select id="getArticleIdListByUserId" resultType="Integer">
