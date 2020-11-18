@@ -10,13 +10,13 @@ public class CollectionSQL {
             "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('b', 'b', 'b', 'b');\n" +
             "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('c', 'c', 'c', 'c');\n" +
             "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('d', 'd', 'd', 'd');\n" +
-            "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('test', test_photo, test, 'test_pass;\n" +
+            "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('test', 'test_photo', 'test', 'test_pass');\n" +
             "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('ttt', 'ppp', 'たろ', 'kkk');\n" +
             "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('aaa', 'ggg', 'しんじ', 'sss');\n" +
             "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('iii', 'nnn', 'しょーの', 'sss');\n" +
             "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('ttt', 'rrr', 'ゆみ', 'yyy');\n" +
             "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('mmm', 'uuu', 'そうし', 'sss');\n" +
-            "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('user1', user_photo, user, 'user_pass');\n" +
+            "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('user1', 'user_photo', 'user', 'user_pass');\n" +
             "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('uid12', 'photo12', 'user12', 'pass12');\n" +
             "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('uid13', 'photo13', 'user13', 'pass13');\n" +
             "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('uid14', 'photo14', 'user14', 'pass14');\n" +
