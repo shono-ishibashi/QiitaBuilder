@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -19,9 +20,12 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -250,12 +254,23 @@ class FeedbackServiceTest {
 
         Feedback actual = feedbackService.postFeedback(feedback);
 
-        // check
+        // 戻り値の確認
         assertEquals(1, actual.getFeedbackId());
         assertEquals(User.builder().userId(1).build(), actual.getPostedUser());
         assertNotNull(actual.getCreatedAt());
         assertEquals("sample", actual.getContent());
         assertEquals(0, actual.getDeleteFlag());
+
+        // DBへの書き込みが正常に行われているか
+        String sql = "SELECT * FROM feedbacks ORDER BY feedback_id";
+        SqlParameterSource param = new EmptySqlParameterSource();
+        List<Map<String, Object>> resultRecommends = namedParameterJdbcTemplate.queryForList(sql, param);
+
+        assertEquals(1, resultRecommends.get(0).get("feedback_id"));
+        assertEquals(1, resultRecommends.get(0).get("article_id"));
+        assertEquals(1, resultRecommends.get(0).get("user_id"));
+        assertEquals("sample", resultRecommends.get(0).get("content"));
+        assertEquals(0, resultRecommends.get(0).get("delete_flag"));
     }
 
     //// updateFeedback()
@@ -277,17 +292,27 @@ class FeedbackServiceTest {
                 .feedbackId(1)
                 .articleId(1)
                 .content("changed")
-                .updatedAt(updatedAt)
                 .deleteFlag(1)
                 .build();
         Feedback actual = feedbackService.updateFeedback(feedback);
-        // check
+        // 戻り値の確認
         assertEquals(1, actual.getFeedbackId());
         assertEquals(1, actual.getArticleId());
         assertEquals(User.builder().userId(1).build(), actual.getPostedUser());
         assertNotNull(actual.getCreatedAt());
         assertEquals("changed", actual.getContent());
         assertEquals(1, actual.getDeleteFlag());
+
+        // DBへの書き込みが正常に行われているか
+        String sql = "SELECT * FROM feedbacks ORDER BY feedback_id";
+        SqlParameterSource param = new EmptySqlParameterSource();
+        List<Map<String, Object>> resultRecommends = namedParameterJdbcTemplate.queryForList(sql, param);
+
+        assertEquals(1, resultRecommends.get(0).get("feedback_id"));
+        assertEquals(1, resultRecommends.get(0).get("article_id"));
+        assertEquals(1, resultRecommends.get(0).get("user_id"));
+        assertEquals("changed", resultRecommends.get(0).get("content"));
+        assertEquals(1, resultRecommends.get(0).get("delete_flag"));
     }
 
     @Test
@@ -303,6 +328,7 @@ class FeedbackServiceTest {
 
         // actual
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime createdAt = LocalDateTime.parse("2020-11-03 00:00", dtf);
         LocalDateTime updatedAt = LocalDateTime.parse("2020-11-05 00:00", dtf);
         Feedback feedback = Feedback.builder()
                 .feedbackId(1)
@@ -320,5 +346,17 @@ class FeedbackServiceTest {
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
+
+        // DBの状態が変更されていないか確認
+        String sql = "SELECT * FROM feedbacks ORDER BY feedback_id";
+        SqlParameterSource param = new EmptySqlParameterSource();
+        List<Map<String, Object>> resultFeedbacks = namedParameterJdbcTemplate.queryForList(sql, param);
+
+        assertEquals(1, resultFeedbacks.get(0).get("feedback_id"));
+        assertEquals(1, resultFeedbacks.get(0).get("article_id"));
+        assertEquals(2, resultFeedbacks.get(0).get("user_id"));
+        assertEquals(Timestamp.valueOf(createdAt), resultFeedbacks.get(0).get("created_at"));
+        assertEquals("feedback content1", resultFeedbacks.get(0).get("content"));
+        assertEquals(0, resultFeedbacks.get(0).get("delete_flag"));
     }
 }
