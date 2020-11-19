@@ -36,9 +36,9 @@ public class QiitaAPIRestController {
     }
 
     @RequestMapping(value = "/save-article-to-qiita/{articleId}",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
     public void saveArticleToQiita(@PathVariable("articleId") String articleId) {
         Integer integerArticleId;
-
         try {
             integerArticleId = Integer.parseInt(articleId);
         } catch (NumberFormatException e){

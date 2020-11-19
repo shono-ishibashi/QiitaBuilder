@@ -121,18 +121,18 @@ public class ArticleController {
     /////////////////////////////
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public Article postArticle(@RequestBody Article article) {
         if (
                 article.getTags().size() <= 0 ||
                         article.getTags().size() > 5 ||
                         article.getTitle().isEmpty() ||
+                        article.getContent().length() > 30000 ||
                         isNull(article.getTitle()) ||
                         article.getContent().isEmpty() ||
                         isNull(article.getContent())
         ) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-
         }
         return articleService.saveArticle(article);
     }
@@ -150,12 +150,12 @@ public class ArticleController {
                         article.getTags().size() <= 0 ||
                         article.getTags().size() > 5 ||
                         article.getTitle().isEmpty() ||
+                        article.getContent().length() > 30000 ||
                         isNull(article.getTitle()) ||
                         article.getContent().isEmpty() ||
                         isNull(article.getContent())
         ) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-
         }
         return articleService.saveArticle(article);
     }

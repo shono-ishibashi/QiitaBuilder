@@ -1581,4 +1581,31 @@ class ArticleMapperTest {
         Integer articleId=articleMapper.findByArticleIdAndUserId(1,1);
         assertEquals(null,articleId);
     }
+
+
+    @Test
+    void getQiitaArticleId_nonNull(){
+        String insertUsers = "INSERT INTO users (user_id) VALUES (1), (2)";
+        String insertArticles =
+                "INSERT INTO articles ( user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) " +
+                        "VALUES(1,NOW(),NOW(),'test title','content title','qiita_article_id',1)";
+
+        jdbcTemplate.execute(insertUsers);
+        jdbcTemplate.execute(insertArticles);
+
+        assertEquals("qiita_article_id",articleMapper.getQiitaArticleId(1));
+    }
+
+    @Test
+    void getQiitaArticleId_null(){
+        String insertUsers = "INSERT INTO users (user_id) VALUES (1), (2)";
+        String insertArticles =
+                "INSERT INTO articles ( user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) " +
+                        "VALUES(1,NOW(),NOW(),'test title','content title',null,1)";
+
+        jdbcTemplate.execute(insertUsers);
+        jdbcTemplate.execute(insertArticles);
+
+        assertNull(articleMapper.getQiitaArticleId(1));
+    }
 }
