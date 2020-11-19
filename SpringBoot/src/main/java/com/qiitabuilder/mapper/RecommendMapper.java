@@ -37,6 +37,13 @@ public interface RecommendMapper {
     Recommend findByArticleIdAndRecommendUserId(Integer articleId, Integer recommendUserId);
 
     /**
+     * loadメソッド
+     * @param recommendId
+     * @return
+     */
+    Recommend load(Integer recommendId);
+
+    /**
      * Recommendを新規作成する
      *
      * @param recommend Qiita推薦情報
