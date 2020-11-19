@@ -214,31 +214,434 @@ class ArticleMapperTest {
         }
     }
 
-    @Test
-    void searchArticles() {
+    private SearchArticleForm setSearchArticleForm(String sort, Integer pageSize, Integer offset, String searchWord, List<Integer> searchTag, Integer period, Integer toggleSearchWord, List<Integer> stateFlagList) {
+        SearchArticleForm searchArticleForm = new SearchArticleForm();
+        searchArticleForm.setSort(sort);
+        searchArticleForm.setPageSize(pageSize);
+        searchArticleForm.setOffset(offset);
+        searchArticleForm.setSearchWord(searchWord);
+        searchArticleForm.setSearchTag(searchTag);
+        searchArticleForm.setPeriod(period);
+        searchArticleForm.setToggleSearchWord(toggleSearchWord);
+        searchArticleForm.setStateFlagList(stateFlagList);
+        return searchArticleForm;
+    }
 
+    @Test
+    void searchArticles正常系() {
+        searchArticlesSqlTemplate(2);
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "", null, null, 0, Arrays.asList(1, 2));
+
+        List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
+        searchArticleForm.setArticlesIdList(articleIdList);
+        List<Article> articles = articleMapper.searchArticles(searchArticleForm);
+//      articles[0]のテスト
+        LocalDateTime createDate = LocalDateTime.of(2020, 11, 10, 00, 00, 00);
+        LocalDateTime updateDate = createDate.plusDays(1);
+        assertEquals(44, articles.get(0).getArticleId());
+        assertEquals("title44", articles.get(0).getTitle());
+        assertEquals(createDate, articles.get(0).getCreatedAt());
+        assertEquals(updateDate, articles.get(0).getUpdatedAt());
+        assertEquals(1, articles.get(0).getStateFlag());
+        assertEquals(4, articles.get(0).getTags().get(0).getTagId());
+        assertEquals(2, articles.get(0).getTags().get(1).getTagId());
+        assertEquals("php", articles.get(0).getTags().get(0).getTagName());
+        assertEquals("ruby", articles.get(0).getTags().get(1).getTagName());
+        assertEquals(3, articles.get(0).getFeedbackCount());
+        assertEquals(2, articles.get(0).getRegisteredMyArticleCount());
+        assertEquals(null, articles.get(0).getQiitaRecommendPoint());
+        assertEquals(8, articles.get(0).getPostedUser().getUserId());
+        assertEquals("しょーの", articles.get(0).getPostedUser().getDisplayName());
+        assertEquals("nnn", articles.get(0).getPostedUser().getPhotoUrl());
+        //      articles[1]のテスト
+        createDate = LocalDateTime.of(2020, 11, 10, 00, 00, 00);
+        updateDate = LocalDateTime.of(2020, 11, 10, 00, 00, 00);
+        assertEquals(157, articles.get(1).getArticleId());
+        assertEquals("title157", articles.get(1).getTitle());
+        assertEquals(createDate, articles.get(1).getCreatedAt());
+        assertEquals(updateDate, articles.get(1).getUpdatedAt());
+        assertEquals(2, articles.get(1).getStateFlag());
+        assertEquals(1, articles.get(1).getTags().get(0).getTagId());
+        assertEquals(5, articles.get(1).getTags().get(1).getTagId());
+        assertEquals("Java", articles.get(1).getTags().get(0).getTagName());
+        assertEquals("go", articles.get(1).getTags().get(1).getTagName());
+        assertEquals(null, articles.get(1).getFeedbackCount());
+        assertEquals(null, articles.get(1).getRegisteredMyArticleCount());
+        assertEquals(1, articles.get(1).getQiitaRecommendPoint());
+        assertEquals(31, articles.get(1).getPostedUser().getUserId());
+        assertEquals("user31", articles.get(1).getPostedUser().getDisplayName());
+        assertEquals("photo31", articles.get(1).getPostedUser().getPhotoUrl());
+        //      articles[2]のテスト
+        createDate = LocalDateTime.of(2020, 11, 10, 00, 00, 00);
+        updateDate = LocalDateTime.of(2020, 11, 11, 00, 00, 00);
+        assertEquals(176, articles.get(2).getArticleId());
+        assertEquals("title176", articles.get(2).getTitle());
+        assertEquals(createDate, articles.get(2).getCreatedAt());
+        assertEquals(updateDate, articles.get(2).getUpdatedAt());
+        assertEquals(1, articles.get(2).getStateFlag());
+        assertEquals(2, articles.get(2).getTags().get(0).getTagId());
+        assertEquals(1, articles.get(2).getTags().get(1).getTagId());
+        assertEquals("ruby", articles.get(2).getTags().get(0).getTagName());
+        assertEquals("Java", articles.get(2).getTags().get(1).getTagName());
+        assertEquals(null, articles.get(2).getFeedbackCount());
+        assertEquals(2, articles.get(2).getRegisteredMyArticleCount());
+        assertEquals(1, articles.get(2).getQiitaRecommendPoint());
+        assertEquals(33, articles.get(2).getPostedUser().getUserId());
+        assertEquals("user33", articles.get(2).getPostedUser().getDisplayName());
+        assertEquals("photo33", articles.get(2).getPostedUser().getPhotoUrl());
+        //      articles[3]のテスト
+        createDate = LocalDateTime.of(2020, 11, 9, 00, 00, 00);
+        updateDate = LocalDateTime.of(2020, 11, 10, 00, 00, 00);
+        assertEquals(168, articles.get(3).getArticleId());
+        assertEquals("title168", articles.get(3).getTitle());
+        assertEquals(createDate, articles.get(3).getCreatedAt());
+        assertEquals(updateDate, articles.get(3).getUpdatedAt());
+        assertEquals(1, articles.get(3).getStateFlag());
+        assertEquals(2, articles.get(3).getTags().get(0).getTagId());
+        assertEquals(4, articles.get(3).getTags().get(1).getTagId());
+        assertEquals("ruby", articles.get(3).getTags().get(0).getTagName());
+        assertEquals("php", articles.get(3).getTags().get(1).getTagName());
+        assertEquals(1, articles.get(3).getFeedbackCount());
+        assertEquals(2, articles.get(3).getRegisteredMyArticleCount());
+        assertEquals(1, articles.get(3).getQiitaRecommendPoint());
+        assertEquals(32, articles.get(3).getPostedUser().getUserId());
+        assertEquals("user32", articles.get(3).getPostedUser().getDisplayName());
+        assertEquals("photo32", articles.get(3).getPostedUser().getPhotoUrl());
+        //      articles[4]のテスト
+        createDate = LocalDateTime.of(2020, 11, 9, 00, 00, 00);
+        updateDate = LocalDateTime.of(2020, 11, 10, 00, 00, 00);
+        assertEquals(187, articles.get(4).getArticleId());
+        assertEquals("title187", articles.get(4).getTitle());
+        assertEquals(createDate, articles.get(4).getCreatedAt());
+        assertEquals(updateDate, articles.get(4).getUpdatedAt());
+        assertEquals(1, articles.get(4).getStateFlag());
+        assertEquals(5, articles.get(4).getTags().get(0).getTagId());
+        assertEquals(1, articles.get(4).getTags().get(1).getTagId());
+        assertEquals("go", articles.get(4).getTags().get(0).getTagName());
+        assertEquals("Java", articles.get(4).getTags().get(1).getTagName());
+        assertEquals(null, articles.get(4).getFeedbackCount());
+        assertEquals(null, articles.get(4).getRegisteredMyArticleCount());
+        assertEquals(null, articles.get(4).getQiitaRecommendPoint());
+        assertEquals(36, articles.get(4).getPostedUser().getUserId());
+        assertEquals("user36", articles.get(4).getPostedUser().getDisplayName());
+        assertEquals("photo36", articles.get(4).getPostedUser().getPhotoUrl());
+        //      articles[5]のテスト
+        createDate = LocalDateTime.of(2020, 11, 8, 00, 00, 00);
+        updateDate = LocalDateTime.of(2020, 11, 9, 00, 00, 00);
+        assertEquals(156, articles.get(5).getArticleId());
+        assertEquals("title156", articles.get(5).getTitle());
+        assertEquals(createDate, articles.get(5).getCreatedAt());
+        assertEquals(updateDate, articles.get(5).getUpdatedAt());
+        assertEquals(1, articles.get(5).getStateFlag());
+        assertEquals(4, articles.get(5).getTags().get(0).getTagId());
+        assertEquals(1, articles.get(5).getTags().get(1).getTagId());
+        assertEquals("php", articles.get(5).getTags().get(0).getTagName());
+        assertEquals("Java", articles.get(5).getTags().get(1).getTagName());
+        assertEquals(null, articles.get(5).getFeedbackCount());
+        assertEquals(2, articles.get(5).getRegisteredMyArticleCount());
+        assertEquals(1, articles.get(5).getQiitaRecommendPoint());
+        assertEquals(31, articles.get(5).getPostedUser().getUserId());
+        assertEquals("user31", articles.get(5).getPostedUser().getDisplayName());
+        assertEquals("photo31", articles.get(5).getPostedUser().getPhotoUrl());
+        //      articles[6]のテスト
+        createDate = LocalDateTime.of(2020, 11, 8, 00, 00, 00);
+        updateDate = LocalDateTime.of(2020, 11, 9, 00, 00, 00);
+        assertEquals(175, articles.get(6).getArticleId());
+        assertEquals("title175", articles.get(6).getTitle());
+        assertEquals(createDate, articles.get(6).getCreatedAt());
+        assertEquals(updateDate, articles.get(6).getUpdatedAt());
+        assertEquals(1, articles.get(6).getStateFlag());
+        assertEquals(3, articles.get(6).getTags().get(0).getTagId());
+        assertEquals(1, articles.get(6).getTags().get(1).getTagId());
+        assertEquals("javascript", articles.get(6).getTags().get(0).getTagName());
+        assertEquals("Java", articles.get(6).getTags().get(1).getTagName());
+        assertEquals(1, articles.get(6).getFeedbackCount());
+        assertEquals(null, articles.get(6).getRegisteredMyArticleCount());
+        assertEquals(null, articles.get(6).getQiitaRecommendPoint());
+        assertEquals(33, articles.get(6).getPostedUser().getUserId());
+        assertEquals("user33", articles.get(6).getPostedUser().getDisplayName());
+        assertEquals("photo33", articles.get(6).getPostedUser().getPhotoUrl());
+        //      articles[7]のテスト
+        createDate = LocalDateTime.of(2020, 11, 8, 00, 00, 00);
+        updateDate = LocalDateTime.of(2020, 11, 9, 00, 00, 00);
+        assertEquals(190, articles.get(7).getArticleId());
+        assertEquals("title190", articles.get(7).getTitle());
+        assertEquals(createDate, articles.get(7).getCreatedAt());
+        assertEquals(updateDate, articles.get(7).getUpdatedAt());
+        assertEquals(1, articles.get(7).getStateFlag());
+        assertEquals(2, articles.get(7).getTags().get(0).getTagId());
+        assertEquals(4, articles.get(7).getTags().get(1).getTagId());
+        assertEquals("ruby", articles.get(7).getTags().get(0).getTagName());
+        assertEquals("php", articles.get(7).getTags().get(1).getTagName());
+        assertEquals(2, articles.get(7).getFeedbackCount());
+        assertEquals(1, articles.get(7).getRegisteredMyArticleCount());
+        assertEquals(1, articles.get(7).getQiitaRecommendPoint());
+        assertEquals(37, articles.get(7).getPostedUser().getUserId());
+        assertEquals("user37", articles.get(7).getPostedUser().getDisplayName());
+        assertEquals("photo37", articles.get(7).getPostedUser().getPhotoUrl());
+        //      articles[8]のテスト
+        createDate = LocalDateTime.of(2020, 11, 7, 00, 00, 00);
+        updateDate = LocalDateTime.of(2020, 11, 8, 00, 00, 00);
+        assertEquals(167, articles.get(8).getArticleId());
+        assertEquals("title167", articles.get(8).getTitle());
+        assertEquals(createDate, articles.get(8).getCreatedAt());
+        assertEquals(updateDate, articles.get(8).getUpdatedAt());
+        assertEquals(1, articles.get(8).getStateFlag());
+        assertEquals(3, articles.get(8).getTags().get(0).getTagId());
+        assertEquals(5, articles.get(8).getTags().get(1).getTagId());
+        assertEquals("javascript", articles.get(8).getTags().get(0).getTagName());
+        assertEquals("go", articles.get(8).getTags().get(1).getTagName());
+        assertEquals(null, articles.get(8).getFeedbackCount());
+        assertEquals(null, articles.get(8).getRegisteredMyArticleCount());
+        assertEquals(null, articles.get(8).getQiitaRecommendPoint());
+        assertEquals(32, articles.get(8).getPostedUser().getUserId());
+        assertEquals("user32", articles.get(8).getPostedUser().getDisplayName());
+        assertEquals("photo32", articles.get(8).getPostedUser().getPhotoUrl());
+        //      articles[9]のテスト
+        createDate = LocalDateTime.of(2020, 11, 7, 00, 00, 00);
+        updateDate = LocalDateTime.of(2020, 11, 8, 00, 00, 00);
+        assertEquals(193, articles.get(9).getArticleId());
+        assertEquals("title193", articles.get(9).getTitle());
+        assertEquals(createDate, articles.get(9).getCreatedAt());
+        assertEquals(updateDate, articles.get(9).getUpdatedAt());
+        assertEquals(1, articles.get(9).getStateFlag());
+        assertEquals(2, articles.get(9).getTags().get(0).getTagId());
+        assertEquals(3, articles.get(9).getTags().get(1).getTagId());
+        assertEquals("ruby", articles.get(9).getTags().get(0).getTagName());
+        assertEquals("javascript", articles.get(9).getTags().get(1).getTagName());
+        assertEquals(1, articles.get(9).getFeedbackCount());
+        assertEquals(null, articles.get(9).getRegisteredMyArticleCount());
+        assertEquals(2, articles.get(9).getQiitaRecommendPoint());
+        assertEquals(39, articles.get(9).getPostedUser().getUserId());
+        assertEquals("user39", articles.get(9).getPostedUser().getDisplayName());
+        assertEquals("photo39", articles.get(9).getPostedUser().getPhotoUrl());
     }
 
 //    sortNum(0:新着順,1:更新順,2:qiita,3:my記事)
-//    preriod(0:週間:,1:月間)
-//    toggleSearchWord(0:記事タイトル,1:ユーザー名)
-
-    //    sortNum(0:新着順,1:更新順,2:qiita,3:my記事)
-//    preriod(0:週間:,1:月間)
+//    preriod(0:週間:,1:月間,2:全て)
 //    toggleSearchWord(0:記事タイトル,1:ユーザー名)
 
     @Test
-    void searchArticlesId正常系_TC11() {
-        searchArticlesSqlTemplate(2);
-        SearchArticleForm searchArticleForm = new SearchArticleForm();
+    void searchArticlesId正常系_TC1() {
+        searchArticlesSqlTemplate(0);
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "", null, 0, 0, Arrays.asList(1, 2));
+        List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
+//        記事数
+        assertEquals(10, articleIdList.size());
+//        取得記事
+        assertEquals(21, articleIdList.get(0));
+        assertEquals(19, articleIdList.get(1));
+        assertEquals(1, articleIdList.get(2));
+        assertEquals(2, articleIdList.get(3));
+        assertEquals(13, articleIdList.get(4));
+        assertEquals(6, articleIdList.get(5));
+        assertEquals(15, articleIdList.get(6));
+        assertEquals(8, articleIdList.get(7));
+        assertEquals(20, articleIdList.get(8));
+        assertEquals(11, articleIdList.get(9));
+    }
+
+    @Test
+    void searchArticlesId正常系_TC2() {
+        searchArticlesSqlTemplate(0);
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "title", null, 0, 0, Arrays.asList(1, 2));
+        List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
+//        記事数
+        assertEquals(10, articleIdList.size());
+//        取得記事
+        assertEquals(21, articleIdList.get(0));
+        assertEquals(19, articleIdList.get(1));
+        assertEquals(1, articleIdList.get(2));
+        assertEquals(2, articleIdList.get(3));
+        assertEquals(13, articleIdList.get(4));
+        assertEquals(6, articleIdList.get(5));
+        assertEquals(15, articleIdList.get(6));
+        assertEquals(8, articleIdList.get(7));
+        assertEquals(20, articleIdList.get(8));
+        assertEquals(11, articleIdList.get(9));
+    }
+
+    @Test
+    void searchArticlesId正常系_TC3() {
+        searchArticlesSqlTemplate(0);
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "title", Arrays.asList(1, 2), 0, 0, Arrays.asList(1, 2));
+        searchArticleForm.setSort("createdAt");
+        searchArticleForm.setPageSize(10);
+        searchArticleForm.setOffset(0);
+        searchArticleForm.setSearchWord("title");
+        searchArticleForm.setSearchTag(Arrays.asList(1, 2));
+        searchArticleForm.setPeriod(0);
+        searchArticleForm.setToggleSearchWord(0);
+        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+
+        List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
+//        記事数
+        assertEquals(10, articleIdList.size());
+//        取得記事
+        assertEquals(21, articleIdList.get(0));
+        assertEquals(19, articleIdList.get(1));
+        assertEquals(23, articleIdList.get(2));
+        assertEquals(20, articleIdList.get(3));
+        assertEquals(33, articleIdList.get(4));
+        assertEquals(8, articleIdList.get(5));
+        assertEquals(37, articleIdList.get(6));
+        assertEquals(11, articleIdList.get(7));
+        assertEquals(26, articleIdList.get(8));
+        assertEquals(15, articleIdList.get(9));
+    }
+
+    @Test
+    void searchArticlesId正常系_TC4() {
+        searchArticlesSqlTemplate(0);
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "たろ", Arrays.asList(1, 2), 0, 1, Arrays.asList(1, 2));
+        List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
+//        記事数
+        assertEquals(3, articleIdList.size());
+//        取得記事
+        assertEquals(38, articleIdList.get(0));
+        assertEquals(40, articleIdList.get(1));
+        assertEquals(39, articleIdList.get(2));
+    }
+
+    @Test
+    void searchArticlesId正常系_TC5() {
+        searchArticlesSqlTemplate(0);
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "たろ", Arrays.asList(1), 0, 1, Arrays.asList(1, 2));
+        searchArticleForm.setSort("createdAt");
+        searchArticleForm.setPageSize(10);
+        searchArticleForm.setOffset(0);
+        searchArticleForm.setSearchWord("たろ");
+        searchArticleForm.setSearchTag(Arrays.asList(1));
+        searchArticleForm.setPeriod(0);
+        searchArticleForm.setToggleSearchWord(1);
+        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+
+        List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
+//        記事数
+        assertEquals(2, articleIdList.size());
+//        取得記事
+        assertEquals(38, articleIdList.get(0));
+        assertEquals(40, articleIdList.get(1));
+    }
+
+    @Test
+    void searchArticlesId正常系_TC6() {
+        searchArticlesSqlTemplate(1);
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "", null, 1, 0, Arrays.asList(1, 2));
         searchArticleForm.setSort("createdAt");
         searchArticleForm.setPageSize(10);
         searchArticleForm.setOffset(0);
         searchArticleForm.setSearchWord("");
         searchArticleForm.setSearchTag(null);
-        searchArticleForm.setPeriod(null);
+        searchArticleForm.setPeriod(1);
         searchArticleForm.setToggleSearchWord(0);
         searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+
+        List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
+//        記事数
+        assertEquals(10, articleIdList.size());
+//        取得記事
+        assertEquals(25, articleIdList.get(0));
+        assertEquals(16, articleIdList.get(1));
+        assertEquals(26, articleIdList.get(2));
+        assertEquals(6, articleIdList.get(3));
+        assertEquals(30, articleIdList.get(4));
+        assertEquals(8, articleIdList.get(5));
+        assertEquals(11, articleIdList.get(6));
+        assertEquals(12, articleIdList.get(7));
+        assertEquals(14, articleIdList.get(8));
+        assertEquals(15, articleIdList.get(9));
+    }
+
+    @Test
+    void searchArticlesId正常系_TC7() {
+        searchArticlesSqlTemplate(1);
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "title", null, 1, 0, Arrays.asList(1, 2));
+        List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
+//        記事数
+        assertEquals(10, articleIdList.size());
+//        取得記事
+        assertEquals(25, articleIdList.get(0));
+        assertEquals(16, articleIdList.get(1));
+        assertEquals(26, articleIdList.get(2));
+        assertEquals(6, articleIdList.get(3));
+        assertEquals(30, articleIdList.get(4));
+        assertEquals(8, articleIdList.get(5));
+        assertEquals(11, articleIdList.get(6));
+        assertEquals(12, articleIdList.get(7));
+        assertEquals(14, articleIdList.get(8));
+        assertEquals(15, articleIdList.get(9));
+    }
+
+    @Test
+    void searchArticlesId正常系_TC8() {
+        searchArticlesSqlTemplate(1);
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "title", Arrays.asList(1, 2), 1, 0, Arrays.asList(1, 2));
+        List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
+//        記事数
+        assertEquals(10, articleIdList.size());
+//        取得記事
+        assertEquals(16, articleIdList.get(0));
+        assertEquals(8, articleIdList.get(1));
+        assertEquals(11, articleIdList.get(2));
+        assertEquals(26, articleIdList.get(3));
+        assertEquals(12, articleIdList.get(4));
+        assertEquals(15, articleIdList.get(5));
+        assertEquals(27, articleIdList.get(6));
+        assertEquals(39, articleIdList.get(7));
+        assertEquals(7, articleIdList.get(8));
+        assertEquals(3, articleIdList.get(9));
+    }
+
+    @Test
+    void searchArticlesId正常系_TC9() {
+        searchArticlesSqlTemplate(1);
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "たろ", null, 1, 1, Arrays.asList(1, 2));
+        List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
+//        記事数
+        assertEquals(2, articleIdList.size());
+//        取得記事
+        assertEquals(39, articleIdList.get(0));
+        assertEquals(40, articleIdList.get(1));
+    }
+
+    @Test
+    void searchArticlesId正常系_TC10() {
+        searchArticlesSqlTemplate(1);
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "たろ", Arrays.asList(1, 2), 1, 1, Arrays.asList(1, 2));
+        searchArticleForm.setSort("createdAt");
+        searchArticleForm.setPageSize(10);
+        searchArticleForm.setOffset(0);
+        searchArticleForm.setSearchWord("たろ");
+        searchArticleForm.setSearchTag(Arrays.asList(1, 2));
+        searchArticleForm.setPeriod(1);
+        searchArticleForm.setToggleSearchWord(1);
+        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+
+        List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
+//        記事数
+        assertEquals(2, articleIdList.size());
+//        取得記事
+        assertEquals(39, articleIdList.get(0));
+        assertEquals(40, articleIdList.get(1));
+    }
+
+    @Test
+    void searchArticlesId正常系_TC11() {
+        searchArticlesSqlTemplate(2);
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "", null, null, 0, Arrays.asList(1, 2));
 
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
 //        記事数
@@ -255,18 +658,12 @@ class ArticleMapperTest {
         assertEquals(167, articleIdList.get(8));
         assertEquals(193, articleIdList.get(9));
     }
+
     @Test
-    void searchArticlesId正常系_TC12(){
+    void searchArticlesId正常系_TC12() {
         searchArticlesSqlTemplate(2);
-        SearchArticleForm searchArticleForm = new SearchArticleForm();
-        searchArticleForm.setSort("updatedAt");
-        searchArticleForm.setPageSize(10);
-        searchArticleForm.setOffset(0);
-        searchArticleForm.setSearchWord("");
-        searchArticleForm.setSearchTag(null);
-        searchArticleForm.setPeriod(null);
-        searchArticleForm.setToggleSearchWord(0);
-        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("updatedAt", 10, 0, "", null, null, 0, Arrays.asList(1, 2));
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
         assertEquals(10, articleIdList.size());
         assertEquals(44, articleIdList.get(0));
@@ -280,18 +677,12 @@ class ArticleMapperTest {
         assertEquals(167, articleIdList.get(8));
         assertEquals(193, articleIdList.get(9));
     }
+
     @Test
-    void searchArticlesId正常系_TC13(){
+    void searchArticlesId正常系_TC13() {
         searchArticlesSqlTemplate(2);
-        SearchArticleForm searchArticleForm = new SearchArticleForm();
-        searchArticleForm.setSort("recommendCnt");
-        searchArticleForm.setPageSize(10);
-        searchArticleForm.setOffset(0);
-        searchArticleForm.setSearchWord("");
-        searchArticleForm.setSearchTag(null);
-        searchArticleForm.setPeriod(null);
-        searchArticleForm.setToggleSearchWord(0);
-        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("recommendCnt", 10, 0, "", null, null, 0, Arrays.asList(1, 2));
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
         assertEquals(10, articleIdList.size());
         assertEquals(46, articleIdList.get(0));
@@ -305,18 +696,12 @@ class ArticleMapperTest {
         assertEquals(23, articleIdList.get(8));
         assertEquals(11, articleIdList.get(9));
     }
+
     @Test
-    void searchArticlesId正常系_TC14(){
+    void searchArticlesId正常系_TC14() {
         searchArticlesSqlTemplate(2);
-        SearchArticleForm searchArticleForm = new SearchArticleForm();
-        searchArticleForm.setSort("myCnt");
-        searchArticleForm.setPageSize(10);
-        searchArticleForm.setOffset(0);
-        searchArticleForm.setSearchWord("");
-        searchArticleForm.setSearchTag(null);
-        searchArticleForm.setPeriod(null);
-        searchArticleForm.setToggleSearchWord(0);
-        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("myCnt", 10, 0, "", null, null, 0, Arrays.asList(1, 2));
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
         assertEquals(10, articleIdList.size());
         assertEquals(24, articleIdList.get(0));
@@ -330,18 +715,12 @@ class ArticleMapperTest {
         assertEquals(36, articleIdList.get(8));
         assertEquals(12, articleIdList.get(9));
     }
+
     @Test
-    void searchArticlesId正常系_TC15(){
+    void searchArticlesId正常系_TC15() {
         searchArticlesSqlTemplate(2);
-        SearchArticleForm searchArticleForm = new SearchArticleForm();
-        searchArticleForm.setSort("createdAt");
-        searchArticleForm.setPageSize(20);
-        searchArticleForm.setOffset(0);
-        searchArticleForm.setSearchWord("");
-        searchArticleForm.setSearchTag(null);
-        searchArticleForm.setPeriod(null);
-        searchArticleForm.setToggleSearchWord(0);
-        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 20, 0, "", null, null, 0, Arrays.asList(1, 2));
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
 //        記事数
         assertEquals(20, articleIdList.size());
@@ -367,18 +746,12 @@ class ArticleMapperTest {
         assertEquals(94, articleIdList.get(18));
         assertEquals(109, articleIdList.get(19));
     }
+
     @Test
-    void searchArticlesId正常系_TC16(){
+    void searchArticlesId正常系_TC16() {
         searchArticlesSqlTemplate(2);
-        SearchArticleForm searchArticleForm = new SearchArticleForm();
-        searchArticleForm.setSort("createdAt");
-        searchArticleForm.setPageSize(30);
-        searchArticleForm.setOffset(0);
-        searchArticleForm.setSearchWord("");
-        searchArticleForm.setSearchTag(null);
-        searchArticleForm.setPeriod(null);
-        searchArticleForm.setToggleSearchWord(0);
-        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 30, 0, "", null, null, 0, Arrays.asList(1, 2));
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
 //        記事数
         assertEquals(30, articleIdList.size());
@@ -415,18 +788,12 @@ class ArticleMapperTest {
         assertEquals(37, articleIdList.get(29));
 
     }
+
     @Test
-    void searchArticlesId正常系_TC17(){
+    void searchArticlesId正常系_TC17() {
         searchArticlesSqlTemplate(2);
-        SearchArticleForm searchArticleForm = new SearchArticleForm();
-        searchArticleForm.setSort("createdAt");
-        searchArticleForm.setPageSize(10);
-        searchArticleForm.setOffset(0);
-        searchArticleForm.setSearchWord("title");
-        searchArticleForm.setSearchTag(null);
-        searchArticleForm.setPeriod(null);
-        searchArticleForm.setToggleSearchWord(0);
-        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "title", null, null, 0, Arrays.asList(1, 2));
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
 //        記事数
         assertEquals(10, articleIdList.size());
@@ -442,18 +809,12 @@ class ArticleMapperTest {
         assertEquals(167, articleIdList.get(8));
         assertEquals(193, articleIdList.get(9));
     }
+
     @Test
-    void searchArticlesId正常系_TC18(){
+    void searchArticlesId正常系_TC18() {
         searchArticlesSqlTemplate(2);
-        SearchArticleForm searchArticleForm = new SearchArticleForm();
-        searchArticleForm.setSort("createdAt");
-        searchArticleForm.setPageSize(10);
-        searchArticleForm.setOffset(0);
-        searchArticleForm.setSearchWord("2");
-        searchArticleForm.setSearchTag(null);
-        searchArticleForm.setPeriod(null);
-        searchArticleForm.setToggleSearchWord(0);
-        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "2", null, null, 0, Arrays.asList(1, 2));
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
 //        記事数
         assertEquals(10, articleIdList.size());
@@ -469,89 +830,59 @@ class ArticleMapperTest {
         assertEquals(172, articleIdList.get(8));
         assertEquals(26, articleIdList.get(9));
     }
+
     @Test
-    void searchArticlesId正常系_TC19(){
+    void searchArticlesId正常系_TC19() {
         searchArticlesSqlTemplate(2);
-        String sql="INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) " +
+        String sql = "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) " +
                 "VALUES (1, '2020-10-03 00:00:00', '2020-10-04 00:00:00', " +
                 "'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', " +
                 "'#content2', null, 1);";
         jdbcTemplate.execute(sql);
-        SearchArticleForm searchArticleForm = new SearchArticleForm();
-        searchArticleForm.setSort("createdAt");
-        searchArticleForm.setPageSize(10);
-        searchArticleForm.setOffset(0);
-        searchArticleForm.setSearchWord("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-        searchArticleForm.setSearchTag(null);
-        searchArticleForm.setPeriod(null);
-        searchArticleForm.setToggleSearchWord(0);
-        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", null, null, 0, Arrays.asList(1, 2));
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
 //        記事数
         assertEquals(1, articleIdList.size());
 //        取得記事
         assertEquals(201, articleIdList.get(0));
     }
+
     @Test
-    void searchArticlesId正常系_TC20(){
+    void searchArticlesId正常系_TC20() {
         searchArticlesSqlTemplate(2);
-        SearchArticleForm searchArticleForm = new SearchArticleForm();
-        searchArticleForm.setSort("createdAt");
-        searchArticleForm.setPageSize(10);
-        searchArticleForm.setOffset(0);
-        searchArticleForm.setSearchWord("存在しない記事タイトル");
-        searchArticleForm.setSearchTag(null);
-        searchArticleForm.setPeriod(null);
-        searchArticleForm.setToggleSearchWord(0);
-        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "存在しない記事タイトル", null, null, 0, Arrays.asList(1, 2));
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
 //        記事数
         assertEquals(0, articleIdList.size());
     }
+
     @Test
-    void searchArticlesId正常系_TC21(){
+    void searchArticlesId正常系_TC21() {
         searchArticlesSqlTemplate(2);
-        SearchArticleForm searchArticleForm = new SearchArticleForm();
-        searchArticleForm.setSort("createdAt");
-        searchArticleForm.setPageSize(10);
-        searchArticleForm.setOffset(0);
-        searchArticleForm.setSearchWord("ん");
-        searchArticleForm.setSearchTag(null);
-        searchArticleForm.setPeriod(null);
-        searchArticleForm.setToggleSearchWord(0);
-        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "ん", null, null, 0, Arrays.asList(1, 2));
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
 //        記事数
         assertEquals(0, articleIdList.size());
     }
+
     @Test
-    void searchArticlesId正常系_TC22(){
+    void searchArticlesId正常系_TC22() {
         searchArticlesSqlTemplate(2);
-        SearchArticleForm searchArticleForm = new SearchArticleForm();
-        searchArticleForm.setSort("createdAt");
-        searchArticleForm.setPageSize(10);
-        searchArticleForm.setOffset(0);
-        searchArticleForm.setSearchWord("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
-        searchArticleForm.setSearchTag(null);
-        searchArticleForm.setPeriod(null);
-        searchArticleForm.setToggleSearchWord(0);
-        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", null, null, 0, Arrays.asList(1, 2));
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
 //        記事数
         assertEquals(0, articleIdList.size());
     }
+
     @Test
-    void searchArticlesId正常系_TC24(){
+    void searchArticlesId正常系_TC24() {
         searchArticlesSqlTemplate(2);
-        SearchArticleForm searchArticleForm = new SearchArticleForm();
-        searchArticleForm.setSort("createdAt");
-        searchArticleForm.setPageSize(10);
-        searchArticleForm.setOffset(0);
-        searchArticleForm.setSearchWord("12");
-        searchArticleForm.setSearchTag(null);
-        searchArticleForm.setPeriod(null);
-        searchArticleForm.setToggleSearchWord(1);
-        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "12", null, null, 1, Arrays.asList(1, 2));
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
 //        記事数
         assertEquals(9, articleIdList.size());
@@ -566,18 +897,12 @@ class ArticleMapperTest {
         assertEquals(61, articleIdList.get(7));
         assertEquals(60, articleIdList.get(8));
     }
+
     @Test
-    void searchArticlesId正常系_TC25(){
+    void searchArticlesId正常系_TC25() {
         searchArticlesSqlTemplate(2);
-        SearchArticleForm searchArticleForm = new SearchArticleForm();
-        searchArticleForm.setSort("createdAt");
-        searchArticleForm.setPageSize(10);
-        searchArticleForm.setOffset(0);
-        searchArticleForm.setSearchWord("1");
-        searchArticleForm.setSearchTag(null);
-        searchArticleForm.setPeriod(null);
-        searchArticleForm.setToggleSearchWord(1);
-        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "1", null, null, 1, Arrays.asList(1, 2));
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
 //        記事数
         assertEquals(10, articleIdList.size());
@@ -593,88 +918,58 @@ class ArticleMapperTest {
         assertEquals(68, articleIdList.get(8));
         assertEquals(154, articleIdList.get(9));
     }
+
     @Test
-    void searchArticlesId正常系_TC26(){
+    void searchArticlesId正常系_TC26() {
         searchArticlesSqlTemplate(2);
-        String userSql= "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('uid41', 'photo41', 'cccccccccccccccccccccccccccccc', 'pass41');";
-        String articleSql="INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (41, '2020-10-03 00:00:00', '2020-10-04 00:00:00', 'title41', '#content41', null, 1);";
+        String userSql = "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('uid41', 'photo41', 'cccccccccccccccccccccccccccccc', 'pass41');";
+        String articleSql = "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (41, '2020-10-03 00:00:00', '2020-10-04 00:00:00', 'title41', '#content41', null, 1);";
         jdbcTemplate.execute(userSql);
         jdbcTemplate.execute(articleSql);
-        SearchArticleForm searchArticleForm = new SearchArticleForm();
-        searchArticleForm.setSort("createdAt");
-        searchArticleForm.setPageSize(10);
-        searchArticleForm.setOffset(0);
-        searchArticleForm.setSearchWord("cccccccccccccccccccccccccccccc");
-        searchArticleForm.setSearchTag(null);
-        searchArticleForm.setPeriod(null);
-        searchArticleForm.setToggleSearchWord(1);
-        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "cccccccccccccccccccccccccccccc", null, null, 1, Arrays.asList(1, 2));
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
 //        記事数
         assertEquals(1, articleIdList.size());
 //        取得記事
         assertEquals(201, articleIdList.get(0));
     }
+
     @Test
-    void searchArticlesId正常系_TC27(){
+    void searchArticlesId正常系_TC27() {
         searchArticlesSqlTemplate(2);
-        SearchArticleForm searchArticleForm = new SearchArticleForm();
-        searchArticleForm.setSort("createdAt");
-        searchArticleForm.setPageSize(10);
-        searchArticleForm.setOffset(0);
-        searchArticleForm.setSearchWord("存在しないユーザー名");
-        searchArticleForm.setSearchTag(null);
-        searchArticleForm.setPeriod(null);
-        searchArticleForm.setToggleSearchWord(1);
-        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "存在しないユーザー名", null, null, 1, Arrays.asList(1, 2));
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
 //        記事数
         assertEquals(0, articleIdList.size());
     }
+
     @Test
-    void searchArticlesId正常系_TC28(){
+    void searchArticlesId正常系_TC28() {
         searchArticlesSqlTemplate(2);
-        SearchArticleForm searchArticleForm = new SearchArticleForm();
-        searchArticleForm.setSort("createdAt");
-        searchArticleForm.setPageSize(10);
-        searchArticleForm.setOffset(0);
-        searchArticleForm.setSearchWord("q");
-        searchArticleForm.setSearchTag(null);
-        searchArticleForm.setPeriod(null);
-        searchArticleForm.setToggleSearchWord(1);
-        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "q", null, null, 1, Arrays.asList(1, 2));
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
 //        記事数
         assertEquals(0, articleIdList.size());
     }
+
     @Test
-    void searchArticlesId正常系_TC29(){
+    void searchArticlesId正常系_TC29() {
         searchArticlesSqlTemplate(2);
-        SearchArticleForm searchArticleForm = new SearchArticleForm();
-        searchArticleForm.setSort("createdAt");
-        searchArticleForm.setPageSize(10);
-        searchArticleForm.setOffset(0);
-        searchArticleForm.setSearchWord("dddddddddddddddddddddddddddddd");
-        searchArticleForm.setSearchTag(null);
-        searchArticleForm.setPeriod(null);
-        searchArticleForm.setToggleSearchWord(1);
-        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "dddddddddddddddddddddddddddddd", null, null, 1, Arrays.asList(1, 2));
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
 //        記事数
         assertEquals(0, articleIdList.size());
     }
+
     @Test
-    void searchArticlesId正常系_TC31(){
+    void searchArticlesId正常系_TC31() {
         searchArticlesSqlTemplate(2);
-        SearchArticleForm searchArticleForm = new SearchArticleForm();
-        searchArticleForm.setSort("createdAt");
-        searchArticleForm.setPageSize(10);
-        searchArticleForm.setOffset(0);
-        searchArticleForm.setSearchWord("");
-        searchArticleForm.setSearchTag(Arrays.asList(1, 2));
-        searchArticleForm.setPeriod(null);
-        searchArticleForm.setToggleSearchWord(0);
-        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "", Arrays.asList(1, 2), null, 0, Arrays.asList(1, 2));
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
 //        記事数
         assertEquals(10, articleIdList.size());
@@ -690,18 +985,12 @@ class ArticleMapperTest {
         assertEquals(193, articleIdList.get(8));
         assertEquals(166, articleIdList.get(9));
     }
+
     @Test
-    void searchArticlesId正常系_TC32(){
+    void searchArticlesId正常系_TC32() {
         searchArticlesSqlTemplate(2);
-        SearchArticleForm searchArticleForm = new SearchArticleForm();
-        searchArticleForm.setSort("createdAt");
-        searchArticleForm.setPageSize(10);
-        searchArticleForm.setOffset(0);
-        searchArticleForm.setSearchWord("");
-        searchArticleForm.setSearchTag(Arrays.asList(3));
-        searchArticleForm.setPeriod(null);
-        searchArticleForm.setToggleSearchWord(0);
-        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "", Arrays.asList(3), null, 0, Arrays.asList(1, 2));
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
 //        記事数
         assertEquals(10, articleIdList.size());
@@ -717,18 +1006,12 @@ class ArticleMapperTest {
         assertEquals(37, articleIdList.get(8));
         assertEquals(154, articleIdList.get(9));
     }
+
     @Test
-    void searchArticlesId正常系_TC33(){
+    void searchArticlesId正常系_TC33() {
         searchArticlesSqlTemplate(2);
-        SearchArticleForm searchArticleForm = new SearchArticleForm();
-        searchArticleForm.setSort("createdAt");
-        searchArticleForm.setPageSize(10);
-        searchArticleForm.setOffset(0);
-        searchArticleForm.setSearchWord("");
-        searchArticleForm.setSearchTag(Arrays.asList(1,2,3,4,5));
-        searchArticleForm.setPeriod(null);
-        searchArticleForm.setToggleSearchWord(0);
-        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "", Arrays.asList(1, 2, 3, 4, 5), null, 0, Arrays.asList(1, 2));
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
 //        記事数
         assertEquals(10, articleIdList.size());
@@ -744,18 +1027,12 @@ class ArticleMapperTest {
         assertEquals(167, articleIdList.get(8));
         assertEquals(193, articleIdList.get(9));
     }
+
     @Test
-    void searchArticlesId正常系_TC35(){
+    void searchArticlesId正常系_TC35() {
         searchArticlesSqlTemplate(2);
-        SearchArticleForm searchArticleForm = new SearchArticleForm();
-        searchArticleForm.setSort("createdAt");
-        searchArticleForm.setPageSize(10);
-        searchArticleForm.setOffset(0);
-        searchArticleForm.setSearchWord("title");
-        searchArticleForm.setSearchTag(Arrays.asList(1,2));
-        searchArticleForm.setPeriod(null);
-        searchArticleForm.setToggleSearchWord(0);
-        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "title", Arrays.asList(1, 2), null, 0, Arrays.asList(1, 2));
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
 //        記事数
         assertEquals(10, articleIdList.size());
@@ -771,18 +1048,12 @@ class ArticleMapperTest {
         assertEquals(193, articleIdList.get(8));
         assertEquals(166, articleIdList.get(9));
     }
+
     @Test
-    void searchArticlesId正常系_TC36(){
+    void searchArticlesId正常系_TC36() {
         searchArticlesSqlTemplate(2);
-        SearchArticleForm searchArticleForm = new SearchArticleForm();
-        searchArticleForm.setSort("createdAt");
-        searchArticleForm.setPageSize(10);
-        searchArticleForm.setOffset(0);
-        searchArticleForm.setSearchWord("2");
-        searchArticleForm.setSearchTag(Arrays.asList(1,2));
-        searchArticleForm.setPeriod(null);
-        searchArticleForm.setToggleSearchWord(1);
-        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
+        SearchArticleForm searchArticleForm = setSearchArticleForm
+                ("createdAt", 10, 0, "2", Arrays.asList(1, 2), null, 1, Arrays.asList(1, 2));
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
 //        記事数
         assertEquals(10, articleIdList.size());
@@ -998,7 +1269,7 @@ class ArticleMapperTest {
         for (String sql : userSqlArr) {
             jdbcTemplate.execute(sql);
         }
-        for(String sql : articleSqlArr){
+        for (String sql : articleSqlArr) {
             jdbcTemplate.execute(sql);
         }
 
@@ -1219,8 +1490,9 @@ class ArticleMapperTest {
         assertEquals(article.getTags().get(0).getTagName(), "test_tag1");
         assertEquals(article.getTags().get(1).getTagName(), "test_tag2");
     }
+
     @Test
-    void getArticlesByUserId(){
+    void getArticlesByUserId() {
         String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
         String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
         String[] feedbackSqlArr = CollectionSQL.insertFeedbacks.split("\n", 0);
@@ -1272,8 +1544,8 @@ class ArticleMapperTest {
         assertEquals("Java", articles.get(11).getTags().get(0).getTagName());
         assertEquals(5, articles.get(11).getTags().get(1).getTagId());
         assertEquals("go", articles.get(11).getTags().get(1).getTagName());
-        assertEquals(5,articles.get(11).getFeedbackCount());
-        assertNull( articles.get(11).getRegisteredMyArticleCount());
+        assertEquals(5, articles.get(11).getFeedbackCount());
+        assertNull(articles.get(11).getRegisteredMyArticleCount());
         assertEquals(1, articles.get(11).getPostedUser().getUserId());
         assertEquals("a", articles.get(11).getPostedUser().getDisplayName());
         assertEquals("a", articles.get(11).getPostedUser().getPhotoUrl());
