@@ -54,7 +54,7 @@
     </select>
 
     <select id="getMostRecommendedArticleId" resultType="Integer">
-        # sortId =
+        # rankItemId =
         # 1 : FB投稿数Rank
         # 2 : 記事投稿数Rank, Qiita推薦累計数Rank
 
@@ -67,7 +67,7 @@
         FROM qiita_recommends AS qr
         WHERE qr.article_id IN (
         <choose>
-            <when test='sortId == "1"'>
+            <when test='rankItemId == "1"'>
                 SELECT fb.article_id
                 FROM feedbacks AS fb
                 WHERE fb.user_id = #{userId}
@@ -79,7 +79,7 @@
                 OR art.state_flag = 2
                 )
             </when>
-            <when test='sortId == "2"'>
+            <when test='rankItemId == "2"'>
                 SELECT art.article_id
                 FROM articles AS art
                 WHERE art.user_id = #{userId}
@@ -103,7 +103,7 @@
         FROM qiita_recommends
         WHERE article_id IN (
         <choose>
-            <when test='sortId == "1"'>
+            <when test='rankItemId == "1"'>
                 SELECT fb.article_id
                 FROM feedbacks AS fb
                 WHERE fb.user_id = #{userId}
@@ -115,7 +115,7 @@
                 OR art.state_flag = 2
                 )
             </when>
-            <when test='sortId == "2"'>
+            <when test='rankItemId == "2"'>
                 SELECT art.article_id
                 FROM articles AS art
                 WHERE art.user_id = #{userId}

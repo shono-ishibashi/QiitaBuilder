@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -286,9 +287,179 @@ class RecommendMapperTest {
         assertEquals(1, rankingUserList.get(34).getUser().getQiitaRecommendedAllCount());
     }
 
+//  rankItemId =
+//  1 : FB投稿数Rank
+//  2 : 記事投稿数Rank, Qiita推薦累計数Rank
     @Test
-    void getMostRecommendedArticleId() {
+    void getMostRecommendedArticleId_FBRank() {
+        String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
+        String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
+        String[] feedbackSqlArr = CollectionSQL.insertFeedbacks.split("\n", 0);
+        String[] qiitaRecommendSqlArr = CollectionSQL.insertQiitaRecommends.split("\n", 0);
+        for (String sql : userSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+        for (String sql : articleSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+        for (String sql : feedbackSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+        for (String sql : qiitaRecommendSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+        List<Integer> mostRecommendedArticleId;
 
+        ///////Qiita推薦された記事がある場合
+        //check項目
+        //Qiita推薦数同率の場合が考慮されているか
+        mostRecommendedArticleId = recommendMapper.getMostRecommendedArticleId(20, 1);
+        assertEquals(36, mostRecommendedArticleId.get(0));
+
+        ///////Qiita推薦された記事が無い場合
+        //check項目
+        //FBのdelete_flag=0が考慮されているか
+        //articleのstate_flagが考慮されているか
+        List<String> sqlArr = new ArrayList<>();
+        sqlArr.add("INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (195, 14, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content201', 1);");
+        sqlArr.add("INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (10, 1, 195);");
+        sqlArr.add("INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (10, 2, 195);");
+        sqlArr.forEach(sql -> jdbcTemplate.execute(sql));
+
+        mostRecommendedArticleId = recommendMapper.getMostRecommendedArticleId(14, 1);
+        assertNull(mostRecommendedArticleId.get(0));
+    }
+
+    @Test
+    void getMostRecommendedArticleId_PostedArticleCountRank_QiitaRecommendedCountRank() {
+        String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
+        String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
+        String[] feedbackSqlArr = CollectionSQL.insertFeedbacks.split("\n", 0);
+        String[] qiitaRecommendSqlArr = CollectionSQL.insertQiitaRecommends.split("\n", 0);
+        for (String sql : userSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+        for (String sql : articleSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+        for (String sql : feedbackSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+        for (String sql : qiitaRecommendSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+
+        List<Integer> mostRecommendedArticleId;
+
+        ///////Qiita推薦された記事がある場合
+        //check項目
+        //Qiita推薦数同率の場合が考慮されているか
+        mostRecommendedArticleId = recommendMapper.getMostRecommendedArticleId(15, 2);
+        assertEquals(86, mostRecommendedArticleId.get(0));
+        List<Integer> artIdList = jdbcTemplate.queryForList(
+                "SELECT article_id " +
+                        "FROM qiita_recommends " +
+                        "WHERE article_id IN ( " +
+                        "SELECT art.article_id " +
+                        "FROM articles AS art " +
+                        "WHERE art.user_id = 15 " +
+                        "AND (state_flag = 1 OR state_flag = 2) " +
+                        ") " +
+                        "GROUP BY article_id " +
+                        "ORDER BY article_id;", Integer.class);
+        assertEquals(83, artIdList.get(0));
+        assertEquals(84, artIdList.get(1));
+        assertEquals(85, artIdList.get(2));
+        assertEquals(86, artIdList.get(3));
+        assertEquals(2, jdbcTemplate.queryForObject("SELECT count(*) FROM qiita_recommends WHERE article_id = 83", Integer.class));
+        assertEquals(2, jdbcTemplate.queryForObject("SELECT count(*) FROM qiita_recommends WHERE article_id = 84", Integer.class));
+        assertEquals(1, jdbcTemplate.queryForObject("SELECT count(*) FROM qiita_recommends WHERE article_id = 85", Integer.class));
+        assertEquals(2, jdbcTemplate.queryForObject("SELECT count(*) FROM qiita_recommends WHERE article_id = 86", Integer.class));
+
+        //check項目
+        //articleのstate_flagが考慮されているか
+        List<String> sqlArr = new ArrayList<>();
+        sqlArr.add("INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (10, 1, 195);");
+        sqlArr.add("INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (10, 2, 195);");
+        sqlArr.add("INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (10, 3, 195);");
+        sqlArr.add("INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (10, 4, 195);");
+        sqlArr.add("INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (10, 6, 195);");
+        sqlArr.add("INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (10, 7, 195);");
+        sqlArr.add("DELETE FROM qiita_recommends WHERE article_id = 91;");
+        sqlArr.forEach(sql -> jdbcTemplate.execute(sql));
+
+        mostRecommendedArticleId = recommendMapper.getMostRecommendedArticleId(10, 2);
+        assertEquals(46, mostRecommendedArticleId.get(0));
+
+        ///////Qiita推薦された記事が無い場合
+        mostRecommendedArticleId = recommendMapper.getMostRecommendedArticleId(17 ,2);
+        assertNull(mostRecommendedArticleId.get(0));
+    }
+
+    @Test
+    void getMostRecommendedArticleId_指定rankItemId以外() {
+        String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
+        String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
+        String[] feedbackSqlArr = CollectionSQL.insertFeedbacks.split("\n", 0);
+        String[] qiitaRecommendSqlArr = CollectionSQL.insertQiitaRecommends.split("\n", 0);
+        for (String sql : userSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+        for (String sql : articleSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+        for (String sql : feedbackSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+        for (String sql : qiitaRecommendSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+
+        List<Integer> mostRecommendedArticleId;
+
+        ///////Qiita推薦された記事がある場合
+        //check項目
+        //Qiita推薦数同率の場合が考慮されているか
+        mostRecommendedArticleId = recommendMapper.getMostRecommendedArticleId(15, 3);
+        assertEquals(86, mostRecommendedArticleId.get(0));
+        List<Integer> artIdList = jdbcTemplate.queryForList(
+                "SELECT article_id " +
+                        "FROM qiita_recommends " +
+                        "WHERE article_id IN ( " +
+                        "SELECT art.article_id " +
+                        "FROM articles AS art " +
+                        "WHERE art.user_id = 15 " +
+                        "AND (state_flag = 1 OR state_flag = 2) " +
+                        ") " +
+                        "GROUP BY article_id " +
+                        "ORDER BY article_id;", Integer.class);
+        assertEquals(83, artIdList.get(0));
+        assertEquals(84, artIdList.get(1));
+        assertEquals(85, artIdList.get(2));
+        assertEquals(86, artIdList.get(3));
+        assertEquals(2, jdbcTemplate.queryForObject("SELECT count(*) FROM qiita_recommends WHERE article_id = 83", Integer.class));
+        assertEquals(2, jdbcTemplate.queryForObject("SELECT count(*) FROM qiita_recommends WHERE article_id = 84", Integer.class));
+        assertEquals(1, jdbcTemplate.queryForObject("SELECT count(*) FROM qiita_recommends WHERE article_id = 85", Integer.class));
+        assertEquals(2, jdbcTemplate.queryForObject("SELECT count(*) FROM qiita_recommends WHERE article_id = 86", Integer.class));
+
+        //check項目
+        //articleのstate_flagが考慮されているか
+        List<String> sqlArr = new ArrayList<>();
+        sqlArr.add("INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (10, 1, 195);");
+        sqlArr.add("INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (10, 2, 195);");
+        sqlArr.add("INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (10, 3, 195);");
+        sqlArr.add("INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (10, 4, 195);");
+        sqlArr.add("INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (10, 6, 195);");
+        sqlArr.add("INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (10, 7, 195);");
+        sqlArr.add("DELETE FROM qiita_recommends WHERE article_id = 91;");
+        sqlArr.forEach(sql -> jdbcTemplate.execute(sql));
+
+        mostRecommendedArticleId = recommendMapper.getMostRecommendedArticleId(10, 4);
+        assertEquals(46, mostRecommendedArticleId.get(0));
+
+        ///////Qiita推薦された記事が無い場合
+        mostRecommendedArticleId = recommendMapper.getMostRecommendedArticleId(17 ,5);
+        assertNull(mostRecommendedArticleId.get(0));
     }
 
     //// findByArticleIdAndRecommendUserId()
