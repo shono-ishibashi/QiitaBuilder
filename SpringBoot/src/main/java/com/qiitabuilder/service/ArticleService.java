@@ -118,6 +118,7 @@ public class ArticleService {
      *
      * @param article 更新もしくは追加するデータ
      */
+    @Transactional
     public Article saveArticle(Article article) {
 
         //ログイン中のユーザ情報をセット
@@ -146,6 +147,7 @@ public class ArticleService {
 
         } else {
             article.setQiitaArticleId(articleMapper.getQiitaArticleId(article.getArticleId()));
+
             //入力された記事を更新
             articleMapper.updateArticle(article);
 
