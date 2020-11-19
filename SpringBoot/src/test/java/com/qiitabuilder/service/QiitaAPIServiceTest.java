@@ -1,35 +1,27 @@
 package com.qiitabuilder.service;
 
-import com.qiitabuilder.domain.Article;
+import com.qiitabuilder.domain.QiitaConfiguration;
 import com.qiitabuilder.domain.User;
 import com.qiitabuilder.security.SimpleLoginUser;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.event.annotation.BeforeTestClass;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
@@ -192,16 +184,127 @@ class QiitaAPIServiceTest {
 
 
     @Test
-    void generateQiitaAPIAuthenticationURL() {
+    void generateQiitaAPIAuthenticationURLInsert() {
+        jdbcTemplate.execute("INSERT INTO users(user_id) VALUES (1)");
+        jdbcTemplate.execute("INSERT INTO articles " +
+                "(user_id,title, content, qiita_article_id, state_flag) " +
+                "VALUES (1,'test_title','test_content','qiita_article_id',1)");
+//        jdbcTemplate.execute("INSERT INTO qiita_configurations(user_id,state) VALUES (1,null)");
 
+        final String CLIENT_ID = "59ba99a3357cf730bbcab40fde87bb06f3876124";
+        final String SCOPE = "scope=read_qiita+write_qiita";
+        final String BASE_URL = "https://qiita.com/api/v2/oauth/authorize";
+
+
+        String paramClientId = "client_id=" + CLIENT_ID;
+        String paramScope = "scope=" + SCOPE;
+
+        String url = qiitaApiService.generateQiitaAPIAuthenticationURL();
+
+        List<String> splitedUrl = new ArrayList<>(Arrays.asList(url.split("[?&]")));
+
+        assertEquals(BASE_URL, splitedUrl.get(0));
+        assertEquals(paramClientId, splitedUrl.get(1));
+        assertEquals(paramScope, splitedUrl.get(2));
+        assertTrue(splitedUrl.get(3).matches("state=[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"));
+
+        Map<String, Object> result = jdbcTemplate.queryForMap("SELECT * FROM qiita_configurations WHERE user_id = 1");
+
+        assertEquals(splitedUrl.get(3), "state=" + result.get("state"));
+        assertTrue(result.get("state").toString().matches("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"));
     }
 
     @Test
-    void isAuthenticated() {
+    void generateQiitaAPIAuthenticationURLUpdate() {
+        jdbcTemplate.execute("INSERT INTO users(user_id) VALUES (1)");
+        jdbcTemplate.execute("INSERT INTO articles " +
+                "(user_id,title, content, qiita_article_id, state_flag) " +
+                "VALUES (1,'test_title','test_content','qiita_article_id',1)");
+        jdbcTemplate.execute("INSERT INTO qiita_configurations(user_id,state) VALUES (1,'state')");
+
+        final String CLIENT_ID = "59ba99a3357cf730bbcab40fde87bb06f3876124";
+        final String SCOPE = "scope=read_qiita+write_qiita";
+        final String BASE_URL = "https://qiita.com/api/v2/oauth/authorize";
+
+
+        String paramClientId = "client_id=" + CLIENT_ID;
+        String paramScope = "scope=" + SCOPE;
+
+        String url = qiitaApiService.generateQiitaAPIAuthenticationURL();
+
+        List<String> splitedUrl = new ArrayList<>(Arrays.asList(url.split("[?&]")));
+
+        assertEquals(BASE_URL, splitedUrl.get(0));
+        assertEquals(paramClientId, splitedUrl.get(1));
+        assertEquals(paramScope, splitedUrl.get(2));
+        assertTrue(splitedUrl.get(3).matches("state=[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"));
+
+        Map<String, Object> result = jdbcTemplate.queryForMap("SELECT * FROM qiita_configurations WHERE user_id = 1");
+
+        assertEquals(splitedUrl.get(3), "state=" + result.get("state"));
+        assertTrue(result.get("state").toString().matches("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"));
+    }
+
+    @Test
+    void isAuthenticatedTrue() {
+        QiitaConfiguration qiitaConfiguration = new QiitaConfiguration();
+        qiitaConfiguration.setUserId(1);
+        qiitaConfiguration.setCode("code");
+        qiitaConfiguration.setState("state");
+
+        jdbcTemplate.execute("INSERT INTO users(user_id) VALUES (1)");
+        jdbcTemplate.execute("INSERT INTO articles " +
+                "(user_id,title, content, qiita_article_id, state_flag) " +
+                "VALUES (1,'test_title','test_content','qiita_article_id',1)");
+
+        jdbcTemplate.execute("INSERT INTO qiita_configurations(user_id,state) VALUES (1,'state')");
+
+        assertTrue(qiitaApiService.isAuthenticated(qiitaConfiguration));
+        Map<String, Object> result = jdbcTemplate.queryForMap("SELECT * FROM qiita_configurations WHERE user_id = 1");
+
+        assertEquals("state", result.get("state"));
+    }
+
+    @Test
+    void isAuthenticatedFalse() {
+        QiitaConfiguration qiitaConfiguration = new QiitaConfiguration();
+        qiitaConfiguration.setUserId(1);
+        qiitaConfiguration.setCode("code");
+        qiitaConfiguration.setState("none");
+
+        jdbcTemplate.execute("INSERT INTO users(user_id) VALUES (1)");
+        jdbcTemplate.execute("INSERT INTO articles " +
+                "(user_id,title, content, qiita_article_id, state_flag) " +
+                "VALUES (1,'test_title','test_content','qiita_article_id',1)");
+
+        jdbcTemplate.execute("INSERT INTO qiita_configurations(user_id,state) VALUES (1,'state')");
+
+        assertFalse(qiitaApiService.isAuthenticated(qiitaConfiguration));
+        List<Map<String, Object>> result = jdbcTemplate.queryForList("SELECT * FROM qiita_configurations WHERE user_id = 1");
+
+        assertTrue(result.isEmpty());
     }
 
     @Test
     void saveToken() {
+        jdbcTemplate.execute("INSERT INTO users(user_id) VALUES (1)");
+        jdbcTemplate.execute("INSERT INTO articles " +
+                "(user_id,title, content, qiita_article_id, state_flag) " +
+                "VALUES (1,'test_title','test_content','qiita_article_id',1)");
+
+        jdbcTemplate.execute("INSERT INTO qiita_configurations(user_id) VALUES (1)");
+
+        final String URL = "https://qiita.com/api/v2/access_tokens";
+
+        MockRestServiceServer mockServer = MockRestServiceServer.bindTo(restTemplate).build();
+        mockServer.expect(requestTo(URL))
+                .andRespond(withSuccess("{\"token\":\"token_test\"}", MediaType.APPLICATION_JSON_UTF8));
+
+        qiitaApiService.saveToken();
+
+        Map<String, Object> result = jdbcTemplate.queryForMap("SELECT token FROM qiita_configurations");
+
+        assertEquals("token_test", result.get("token"));
     }
 
     @Test
@@ -309,13 +412,26 @@ class QiitaAPIServiceTest {
 
         Map<String, Object> result = jdbcTemplate.queryForMap("SELECT * FROM articles WHERE article_id = 1");
 
-        assertEquals("qiita_article_id",result.get("qiita_article_id"));
+        assertEquals("qiita_article_id", result.get("qiita_article_id"));
         assertEquals(2, result.get("state_flag"));
 
         mockServer.verify();
     }
 
     @Test
-    void isLinkedToQiita() {
+    void isLinkedToQiitaTrue() {
+
+        jdbcTemplate.execute("INSERT INTO users(user_id) VALUES(1)");
+        jdbcTemplate.execute("INSERT INTO qiita_configurations(user_id, token) VALUES(1,'token_test')");
+
+        assertTrue(qiitaApiService.isLinkedToQiita());
+    }
+
+    @Test
+    void isLinkedToQiitaFalse() {
+        jdbcTemplate.execute("INSERT INTO users(user_id) VALUES(1)");
+        jdbcTemplate.execute("INSERT INTO qiita_configurations(user_id, token) VALUES(1,null)");
+
+        assertFalse(qiitaApiService.isLinkedToQiita());
     }
 }
