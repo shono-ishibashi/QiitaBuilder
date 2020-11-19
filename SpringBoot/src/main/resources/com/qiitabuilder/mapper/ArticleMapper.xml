@@ -174,12 +174,10 @@
             ) as a_t_relation
             ON art.article_id = a_t_relation.atArticleId
         </if>
-        <if test="search.searchWord !=null　and search.toggleSearchWord==1">
+        <if test="search.searchWord !=null and search.toggleSearchWord==1">
             JOIN (SELECT users.user_id
             FROM users
-            <where>
-                display_name LIKE CONCAT('%', #{search.searchWord}, '%')
-            </where>
+            where display_name LIKE CONCAT('%', #{search.searchWord}, '%')
             ) as users
             ON art.user_id = users.user_id
         </if>
