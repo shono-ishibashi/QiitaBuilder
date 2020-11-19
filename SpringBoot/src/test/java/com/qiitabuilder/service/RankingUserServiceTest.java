@@ -1,9 +1,6 @@
 package com.qiitabuilder.service;
 
 import com.qiitabuilder.domain.RankingUser;
-import com.qiitabuilder.mapper.ArticleMapper;
-import com.qiitabuilder.mapper.FeedbackMapper;
-import com.qiitabuilder.mapper.RecommendMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,16 +21,6 @@ class RankingUserServiceTest {
 
     @Autowired
     private RankingUserService rankingUserService;
-
-    ////setRelationArticle(), setRank()の引数rankingUserListを生成する用
-    @Autowired
-    private FeedbackMapper feedbackMapper;
-    @Autowired
-    private ArticleMapper articleMapper;
-    @Autowired
-    private RecommendMapper recommendMapper;
-    ////
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
