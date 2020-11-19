@@ -505,6 +505,23 @@ class RecommendMapperTest {
         assertNull(recommend);
     }
 
+    //// load()
+    @Test
+    void loadのテスト正常系() {
+        // insert
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key 記事1
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key 記事2
+
+        jdbcTemplate.execute("INSERT INTO qiita_recommends(article_id, posted_user_id, recommend_user_id) VALUES(1, 1, 1)");
+
+        Recommend recommend = recommendMapper.load(1);
+        assertEquals(1, recommend.getRecommendId());
+        assertEquals(1, recommend.getArticleId());
+        assertEquals(1, recommend.getPostedUserId());
+        assertEquals(1, recommend.getRecommendUserId());
+    }
+
     //// insert()
     @Test
     void insertのテスト正常系() {

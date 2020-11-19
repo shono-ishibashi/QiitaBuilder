@@ -80,6 +80,13 @@ public class RecommendService {
      * @param recommendId
      */
     public void deleteRecommend(Integer recommendId) {
+        // 自分以外のMy記事情報を削除しようとする場合はステータスコード403を返す
+        SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Recommend recommend = recommendMapper.load(recommendId);
+        if (Objects.nonNull(recommend) && recommend.getRecommendUserId() != loginUser.getUser().getUserId()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
         // レコードの削除がなかった場合はConflictを投げる
         if (!recommendMapper.delete(recommendId)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);

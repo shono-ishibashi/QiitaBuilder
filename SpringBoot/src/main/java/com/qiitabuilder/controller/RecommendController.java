@@ -85,6 +85,7 @@ public class RecommendController {
      * Httpステータス
      * OK
      * BadRequest 入力値エラーの場合
+     * Forbidden 自分以外のデータの場合
      * Conflict DBに登録されていない場合
      *
      * @param recommendId
