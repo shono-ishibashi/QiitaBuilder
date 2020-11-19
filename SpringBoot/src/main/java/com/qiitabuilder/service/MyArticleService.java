@@ -82,6 +82,13 @@ public class MyArticleService {
      * @param myArticleId
      */
     public void deleteMyArticle(Integer myArticleId) {
+        // 自分以外のMy記事情報を削除しようとする場合はステータスコード403を返す
+        SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        MyArticle myArticle = myArticleMapper.load(myArticleId);
+        if (Objects.nonNull(myArticle) && myArticle.getRegisterUserId() != loginUser.getUser().getUserId()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
         // レコードの削除がなかった場合はConflictを投げる
         if (!myArticleMapper.delete(myArticleId)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);

@@ -30,6 +30,13 @@ public interface MyArticleMapper {
     MyArticle findByArticleIdAndRegisterUserId(Integer articleId, Integer registerUserId);
 
     /**
+     * loadメソッド
+     * @param myArticleId
+     * @return
+     */
+    MyArticle load(Integer myArticleId);
+
+    /**
      * MyArticleを新規作成する
      *
      * @param myArticle 　My記事情報

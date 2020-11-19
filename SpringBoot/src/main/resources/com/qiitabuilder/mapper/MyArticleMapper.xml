@@ -24,7 +24,7 @@
         </collection>
     </resultMap>
 
-    <resultMap id="findByArticleIdAndRegisterUserIdResult" type="com.qiitabuilder.domain.MyArticle">
+    <resultMap id="myArticleResultMap" type="com.qiitabuilder.domain.MyArticle">
         <id property="myArticleId" column="my_article_id"/>
         <result property="articleId" column="article_id"/>
         <result property="postedUserId" column="posted_user_id"/>
@@ -74,7 +74,7 @@
         ORDER BY art.created_at DESC, tag_id;
     </select>
 
-    <select id="findByArticleIdAndRegisterUserId" resultMap="findByArticleIdAndRegisterUserIdResult">
+    <select id="findByArticleIdAndRegisterUserId" resultMap="myArticleResultMap">
         SELECT *
         FROM my_articles
         WHERE article_id = #{articleId}
@@ -83,6 +83,12 @@
 
     <select id="getAutoIncrementKey" resultType="int">
         SELECT LAST_INSERT_ID();
+    </select>
+
+    <select id="load" resultMap="myArticleResultMap">
+        SELECT *
+        FROM my_articles
+        WHERE my_article_id = #{myArticleId}
     </select>
 
 
