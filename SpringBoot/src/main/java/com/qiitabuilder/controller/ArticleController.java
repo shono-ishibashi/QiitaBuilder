@@ -41,6 +41,7 @@ public class ArticleController {
     @ResponseStatus(HttpStatus.OK)
     public List<Article> searchArticles(@Validated @ModelAttribute SearchArticleForm searchArticleForm, BindingResult result) {
         if (result.hasErrors()) {
+            System.out.println("error");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         if (isNull(searchArticleForm.getStateFlagList())) {
