@@ -4,6 +4,8 @@ import com.qiitabuilder.domain.Article;
 import com.qiitabuilder.domain.Feedback;
 import com.qiitabuilder.domain.Tag;
 import com.qiitabuilder.domain.User;
+import com.qiitabuilder.form.SearchArticleForm;
+import com.qiitabuilder.mapper.CollectionSQL;
 import com.qiitabuilder.security.SimpleLoginUser;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -23,6 +25,7 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -186,16 +189,411 @@ class ArticleServiceTest {
         SecurityContextHolder.setContext(context);
     }
 
-    @Test
-    void searchArticles() {
+    private void searchArticlesSqlTemplate() {
+        String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
+        String[] articleSqlArr=CollectionSQL.insertArticles.split("\n", 0);
+        String[] feedbackSqlArr  = CollectionSQL.insertFeedbacks.split("\n", 0);
+        String[] qiitaRecommendSqlArr= CollectionSQL.insertQiitaRecommends.split("\n", 0);
+        String[] myArticlesSqlArr= CollectionSQL.insertMyArticles.split("\n", 0);
+        String[] tagsSqlArr = CollectionSQL.insertTags.split("\n", 0);
+        String[] articlesTagsRelationsSqlArr= CollectionSQL.insertArticlesTagsRelations.split("\n", 0);
+
+        for (String sql : userSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+        for (String sql : articleSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+        for (String sql : feedbackSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+        for (String sql : qiitaRecommendSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+        for (String sql : myArticlesSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+        for (String sql : tagsSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
+        for (String sql : articlesTagsRelationsSqlArr) {
+            jdbcTemplate.execute(sql);
+        }
     }
 
     @Test
-    void getTotalPage() {
+    void searchArticles_正常系_該当する記事が存在する() {
+        searchArticlesSqlTemplate();
+//       searchArticlesの引数を定義
+        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+                .sortNum(0)
+                .period(null)
+                .searchWord("")
+                .toggleSearchWord(0)
+                .pageSize(10)
+                .currentPage(1)
+                .stateFlagList( Arrays.asList(1, 2))
+                .build();
+        List<Article> articles=articleService.searchArticles(searchArticleForm);
+//        記事数
+        assertEquals(10,articles.size());
+        //      articles[0]のテスト
+        LocalDateTime createDate = LocalDateTime.of(2020, 11, 10, 00, 00, 00);
+        LocalDateTime updateDate = createDate.plusDays(1);
+        assertEquals(44, articles.get(0).getArticleId());
+        assertEquals("title44", articles.get(0).getTitle());
+        assertEquals(createDate, articles.get(0).getCreatedAt());
+        assertEquals(updateDate, articles.get(0).getUpdatedAt());
+        assertEquals(1, articles.get(0).getStateFlag());
+        assertEquals(4, articles.get(0).getTags().get(0).getTagId());
+        assertEquals(2, articles.get(0).getTags().get(1).getTagId());
+        assertEquals("php", articles.get(0).getTags().get(0).getTagName());
+        assertEquals("ruby", articles.get(0).getTags().get(1).getTagName());
+        assertEquals(3, articles.get(0).getFeedbackCount());
+        assertEquals(2, articles.get(0).getRegisteredMyArticleCount());
+        assertEquals(0, articles.get(0).getQiitaRecommendPoint());
+        assertEquals(8, articles.get(0).getPostedUser().getUserId());
+        assertEquals("しょーの", articles.get(0).getPostedUser().getDisplayName());
+        assertEquals("nnn", articles.get(0).getPostedUser().getPhotoUrl());
+        //      articles[1]のテスト
+        createDate = LocalDateTime.of(2020, 11, 10, 00, 00, 00);
+        updateDate = LocalDateTime.of(2020, 11, 10, 00, 00, 00);
+        assertEquals(157, articles.get(1).getArticleId());
+        assertEquals("title157", articles.get(1).getTitle());
+        assertEquals(createDate, articles.get(1).getCreatedAt());
+        assertEquals(updateDate, articles.get(1).getUpdatedAt());
+        assertEquals(2, articles.get(1).getStateFlag());
+        assertEquals(1, articles.get(1).getTags().get(0).getTagId());
+        assertEquals(5, articles.get(1).getTags().get(1).getTagId());
+        assertEquals("Java", articles.get(1).getTags().get(0).getTagName());
+        assertEquals("go", articles.get(1).getTags().get(1).getTagName());
+        assertEquals(0, articles.get(1).getFeedbackCount());
+        assertEquals(0, articles.get(1).getRegisteredMyArticleCount());
+        assertEquals(1, articles.get(1).getQiitaRecommendPoint());
+        assertEquals(31, articles.get(1).getPostedUser().getUserId());
+        assertEquals("user31", articles.get(1).getPostedUser().getDisplayName());
+        assertEquals("photo31", articles.get(1).getPostedUser().getPhotoUrl());
+        //      articles[2]のテスト
+        createDate = LocalDateTime.of(2020, 11, 10, 00, 00, 00);
+        updateDate = LocalDateTime.of(2020, 11, 11, 00, 00, 00);
+        assertEquals(176, articles.get(2).getArticleId());
+        assertEquals("title176", articles.get(2).getTitle());
+        assertEquals(createDate, articles.get(2).getCreatedAt());
+        assertEquals(updateDate, articles.get(2).getUpdatedAt());
+        assertEquals(1, articles.get(2).getStateFlag());
+        assertEquals(2, articles.get(2).getTags().get(0).getTagId());
+        assertEquals(1, articles.get(2).getTags().get(1).getTagId());
+        assertEquals("ruby", articles.get(2).getTags().get(0).getTagName());
+        assertEquals("Java", articles.get(2).getTags().get(1).getTagName());
+        assertEquals(0, articles.get(2).getFeedbackCount());
+        assertEquals(2, articles.get(2).getRegisteredMyArticleCount());
+        assertEquals(1, articles.get(2).getQiitaRecommendPoint());
+        assertEquals(33, articles.get(2).getPostedUser().getUserId());
+        assertEquals("user33", articles.get(2).getPostedUser().getDisplayName());
+        assertEquals("photo33", articles.get(2).getPostedUser().getPhotoUrl());
+        //      articles[3]のテスト
+        createDate = LocalDateTime.of(2020, 11, 9, 00, 00, 00);
+        updateDate = LocalDateTime.of(2020, 11, 10, 00, 00, 00);
+        assertEquals(168, articles.get(3).getArticleId());
+        assertEquals("title168", articles.get(3).getTitle());
+        assertEquals(createDate, articles.get(3).getCreatedAt());
+        assertEquals(updateDate, articles.get(3).getUpdatedAt());
+        assertEquals(1, articles.get(3).getStateFlag());
+        assertEquals(2, articles.get(3).getTags().get(0).getTagId());
+        assertEquals(4, articles.get(3).getTags().get(1).getTagId());
+        assertEquals("ruby", articles.get(3).getTags().get(0).getTagName());
+        assertEquals("php", articles.get(3).getTags().get(1).getTagName());
+        assertEquals(1, articles.get(3).getFeedbackCount());
+        assertEquals(2, articles.get(3).getRegisteredMyArticleCount());
+        assertEquals(1, articles.get(3).getQiitaRecommendPoint());
+        assertEquals(32, articles.get(3).getPostedUser().getUserId());
+        assertEquals("user32", articles.get(3).getPostedUser().getDisplayName());
+        assertEquals("photo32", articles.get(3).getPostedUser().getPhotoUrl());
+        //      articles[4]のテスト
+        createDate = LocalDateTime.of(2020, 11, 9, 00, 00, 00);
+        updateDate = LocalDateTime.of(2020, 11, 10, 00, 00, 00);
+        assertEquals(187, articles.get(4).getArticleId());
+        assertEquals("title187", articles.get(4).getTitle());
+        assertEquals(createDate, articles.get(4).getCreatedAt());
+        assertEquals(updateDate, articles.get(4).getUpdatedAt());
+        assertEquals(1, articles.get(4).getStateFlag());
+        assertEquals(5, articles.get(4).getTags().get(0).getTagId());
+        assertEquals(1, articles.get(4).getTags().get(1).getTagId());
+        assertEquals("go", articles.get(4).getTags().get(0).getTagName());
+        assertEquals("Java", articles.get(4).getTags().get(1).getTagName());
+        assertEquals(0, articles.get(4).getFeedbackCount());
+        assertEquals(0, articles.get(4).getRegisteredMyArticleCount());
+        assertEquals(0, articles.get(4).getQiitaRecommendPoint());
+        assertEquals(36, articles.get(4).getPostedUser().getUserId());
+        assertEquals("user36", articles.get(4).getPostedUser().getDisplayName());
+        assertEquals("photo36", articles.get(4).getPostedUser().getPhotoUrl());
+        //      articles[5]のテスト
+        createDate = LocalDateTime.of(2020, 11, 8, 00, 00, 00);
+        updateDate = LocalDateTime.of(2020, 11, 9, 00, 00, 00);
+        assertEquals(156, articles.get(5).getArticleId());
+        assertEquals("title156", articles.get(5).getTitle());
+        assertEquals(createDate, articles.get(5).getCreatedAt());
+        assertEquals(updateDate, articles.get(5).getUpdatedAt());
+        assertEquals(1, articles.get(5).getStateFlag());
+        assertEquals(4, articles.get(5).getTags().get(0).getTagId());
+        assertEquals(1, articles.get(5).getTags().get(1).getTagId());
+        assertEquals("php", articles.get(5).getTags().get(0).getTagName());
+        assertEquals("Java", articles.get(5).getTags().get(1).getTagName());
+        assertEquals(0, articles.get(5).getFeedbackCount());
+        assertEquals(2, articles.get(5).getRegisteredMyArticleCount());
+        assertEquals(1, articles.get(5).getQiitaRecommendPoint());
+        assertEquals(31, articles.get(5).getPostedUser().getUserId());
+        assertEquals("user31", articles.get(5).getPostedUser().getDisplayName());
+        assertEquals("photo31", articles.get(5).getPostedUser().getPhotoUrl());
+        //      articles[6]のテスト
+        createDate = LocalDateTime.of(2020, 11, 8, 00, 00, 00);
+        updateDate = LocalDateTime.of(2020, 11, 9, 00, 00, 00);
+        assertEquals(175, articles.get(6).getArticleId());
+        assertEquals("title175", articles.get(6).getTitle());
+        assertEquals(createDate, articles.get(6).getCreatedAt());
+        assertEquals(updateDate, articles.get(6).getUpdatedAt());
+        assertEquals(1, articles.get(6).getStateFlag());
+        assertEquals(3, articles.get(6).getTags().get(0).getTagId());
+        assertEquals(1, articles.get(6).getTags().get(1).getTagId());
+        assertEquals("javascript", articles.get(6).getTags().get(0).getTagName());
+        assertEquals("Java", articles.get(6).getTags().get(1).getTagName());
+        assertEquals(1, articles.get(6).getFeedbackCount());
+        assertEquals(0, articles.get(6).getRegisteredMyArticleCount());
+        assertEquals(0, articles.get(6).getQiitaRecommendPoint());
+        assertEquals(33, articles.get(6).getPostedUser().getUserId());
+        assertEquals("user33", articles.get(6).getPostedUser().getDisplayName());
+        assertEquals("photo33", articles.get(6).getPostedUser().getPhotoUrl());
+        //      articles[7]のテスト
+        createDate = LocalDateTime.of(2020, 11, 8, 00, 00, 00);
+        updateDate = LocalDateTime.of(2020, 11, 9, 00, 00, 00);
+        assertEquals(190, articles.get(7).getArticleId());
+        assertEquals("title190", articles.get(7).getTitle());
+        assertEquals(createDate, articles.get(7).getCreatedAt());
+        assertEquals(updateDate, articles.get(7).getUpdatedAt());
+        assertEquals(1, articles.get(7).getStateFlag());
+        assertEquals(2, articles.get(7).getTags().get(0).getTagId());
+        assertEquals(4, articles.get(7).getTags().get(1).getTagId());
+        assertEquals("ruby", articles.get(7).getTags().get(0).getTagName());
+        assertEquals("php", articles.get(7).getTags().get(1).getTagName());
+        assertEquals(2, articles.get(7).getFeedbackCount());
+        assertEquals(1, articles.get(7).getRegisteredMyArticleCount());
+        assertEquals(1, articles.get(7).getQiitaRecommendPoint());
+        assertEquals(37, articles.get(7).getPostedUser().getUserId());
+        assertEquals("user37", articles.get(7).getPostedUser().getDisplayName());
+        assertEquals("photo37", articles.get(7).getPostedUser().getPhotoUrl());
+        //      articles[8]のテスト
+        createDate = LocalDateTime.of(2020, 11, 7, 00, 00, 00);
+        updateDate = LocalDateTime.of(2020, 11, 8, 00, 00, 00);
+        assertEquals(167, articles.get(8).getArticleId());
+        assertEquals("title167", articles.get(8).getTitle());
+        assertEquals(createDate, articles.get(8).getCreatedAt());
+        assertEquals(updateDate, articles.get(8).getUpdatedAt());
+        assertEquals(1, articles.get(8).getStateFlag());
+        assertEquals(3, articles.get(8).getTags().get(0).getTagId());
+        assertEquals(5, articles.get(8).getTags().get(1).getTagId());
+        assertEquals("javascript", articles.get(8).getTags().get(0).getTagName());
+        assertEquals("go", articles.get(8).getTags().get(1).getTagName());
+        assertEquals(0, articles.get(8).getFeedbackCount());
+        assertEquals(0, articles.get(8).getRegisteredMyArticleCount());
+        assertEquals(0, articles.get(8).getQiitaRecommendPoint());
+        assertEquals(32, articles.get(8).getPostedUser().getUserId());
+        assertEquals("user32", articles.get(8).getPostedUser().getDisplayName());
+        assertEquals("photo32", articles.get(8).getPostedUser().getPhotoUrl());
+        //      articles[9]のテスト
+        createDate = LocalDateTime.of(2020, 11, 7, 00, 00, 00);
+        updateDate = LocalDateTime.of(2020, 11, 8, 00, 00, 00);
+        assertEquals(193, articles.get(9).getArticleId());
+        assertEquals("title193", articles.get(9).getTitle());
+        assertEquals(createDate, articles.get(9).getCreatedAt());
+        assertEquals(updateDate, articles.get(9).getUpdatedAt());
+        assertEquals(1, articles.get(9).getStateFlag());
+        assertEquals(2, articles.get(9).getTags().get(0).getTagId());
+        assertEquals(3, articles.get(9).getTags().get(1).getTagId());
+        assertEquals("ruby", articles.get(9).getTags().get(0).getTagName());
+        assertEquals("javascript", articles.get(9).getTags().get(1).getTagName());
+        assertEquals(1, articles.get(9).getFeedbackCount());
+        assertEquals(0, articles.get(9).getRegisteredMyArticleCount());
+        assertEquals(2, articles.get(9).getQiitaRecommendPoint());
+        assertEquals(39, articles.get(9).getPostedUser().getUserId());
+        assertEquals("user39", articles.get(9).getPostedUser().getDisplayName());
+        assertEquals("photo39", articles.get(9).getPostedUser().getPhotoUrl());
     }
 
     @Test
-    void searchCriteriaProcessing() {
+    void searchArticles_正常系_該当する記事が存在しない(){
+        searchArticlesSqlTemplate();
+        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+                .sortNum(0)
+                .period(null)
+                .searchWord("存在しないタイトル")
+                .toggleSearchWord(0)
+                .pageSize(10)
+                .currentPage(1)
+                .stateFlagList( Arrays.asList(1, 2))
+                .build();
+        List<Article> articles=articleService.searchArticles(searchArticleForm);
+        //        記事数
+        assertEquals(null,articles);
+    }
+
+//    pageSizeが10,取得件数が1件の時のtotalPage
+    @Test
+    void getTotalPage_正常系_pageSizeより取得記事数の方が少ない場合() {
+        String userInsertSql="INSERT INTO users (uid, photo_url, display_name, password) VALUES ('a', 'a', 'a', 'a');";
+        String articleInsertSql="INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, '2020-10-01 00:00:00', '2020-10-02 00:00:00', 'title1', '#content1', null, 1)";
+        jdbcTemplate.execute(userInsertSql);
+        jdbcTemplate.execute(articleInsertSql);
+//       searchArticlesの引数を定義
+        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+                .sortNum(0)
+                .period(null)
+                .searchWord("")
+                .toggleSearchWord(0)
+                .pageSize(10)
+                .currentPage(1)
+                .stateFlagList( Arrays.asList(1, 2))
+                .build();
+        Integer totalPage=articleService.getTotalPage(searchArticleForm);
+        assertEquals(1,totalPage);
+    }
+
+//    pageSizeが10件、取得件数が11件の時のtotalPage
+    @Test
+    void getTotalPage_正常系_取得した記事件数がpageSizeより多く取得した記事件数がpageSizeで割り切れない場合() {
+        String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
+        String[] articleSqlArr=CollectionSQL.insertArticles.split("\n", 0);
+        for(String sql:userSqlArr){
+            jdbcTemplate.execute(sql);
+        }
+        for(int i=0;i<11;i++){
+            jdbcTemplate.execute(articleSqlArr[i]);
+        }
+//       searchArticlesの引数を定義
+        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+                .sortNum(0)
+                .period(null)
+                .searchWord("")
+                .toggleSearchWord(0)
+                .pageSize(10)
+                .currentPage(1)
+                .stateFlagList( Arrays.asList(1, 2))
+                .build();
+        Integer totalPage=articleService.getTotalPage(searchArticleForm);
+        assertEquals(2,totalPage);
+    }
+//    pageSizeが10件、取得件数が10件の時のtotalPage
+    @Test
+    void getTotalPage_正常系_取得した記事件数がpageSizeで割り切れる場合() {
+        String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
+        String[] articleSqlArr=CollectionSQL.insertArticles.split("\n", 0);
+        for(String sql:userSqlArr){
+            jdbcTemplate.execute(sql);
+        }
+        for(int i=0;i<10;i++){
+            jdbcTemplate.execute(articleSqlArr[i]);
+        }
+//       searchArticlesの引数を定義
+        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+                .sortNum(0)
+                .period(null)
+                .searchWord("")
+                .toggleSearchWord(0)
+                .pageSize(10)
+                .currentPage(1)
+                .stateFlagList( Arrays.asList(1, 2))
+                .build();
+        Integer totalPage=articleService.getTotalPage(searchArticleForm);
+        assertEquals(1,totalPage);
+    }
+
+
+    @Test
+    void searchCriteriaProcessing_正常系_sortNumが0currentPageが1の時() {
+        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+                .sortNum(0)
+                .pageSize(10)
+                .currentPage(1)
+                .build();
+        articleService.searchCriteriaProcessing(searchArticleForm);
+        assertEquals("createdAt",searchArticleForm.getSort());
+        assertEquals(0,searchArticleForm.getOffset());
+    }
+    @Test
+    void searchCriteriaProcessing_正常系_sortNumが1currentPageが1の時() {
+        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+                .sortNum(1)
+                .pageSize(10)
+                .currentPage(1)
+                .build();
+        articleService.searchCriteriaProcessing(searchArticleForm);
+        assertEquals("updatedAt",searchArticleForm.getSort());
+        assertEquals(0,searchArticleForm.getOffset());
+    }
+    @Test
+    void searchCriteriaProcessing_正常系_sortNumが2currentPageが1の時() {
+        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+                .sortNum(2)
+                .pageSize(10)
+                .currentPage(1)
+                .build();
+        articleService.searchCriteriaProcessing(searchArticleForm);
+        assertEquals("recommendCnt",searchArticleForm.getSort());
+        assertEquals(0,searchArticleForm.getOffset());
+    }
+    @Test
+    void searchCriteriaProcessing_正常系_sortNumが3currentPageが1の時() {
+        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+                .sortNum(3)
+                .pageSize(10)
+                .currentPage(1)
+                .build();
+        articleService.searchCriteriaProcessing(searchArticleForm);
+        assertEquals("myCnt",searchArticleForm.getSort());
+        assertEquals(0,searchArticleForm.getOffset());
+    }
+    @Test
+    void searchCriteriaProcessing_正常系_sortNumが0currentPageが2の時() {
+        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+                .sortNum(0)
+                .pageSize(10)
+                .currentPage(2)
+                .build();
+        articleService.searchCriteriaProcessing(searchArticleForm);
+        assertEquals("createdAt",searchArticleForm.getSort());
+        assertEquals(10,searchArticleForm.getOffset());
+    }
+    @Test
+    void searchCriteriaProcessing_正常系_sortNumが1currentPageが2の時() {
+        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+                .sortNum(1)
+                .pageSize(10)
+                .currentPage(2)
+                .build();
+        articleService.searchCriteriaProcessing(searchArticleForm);
+        assertEquals("updatedAt",searchArticleForm.getSort());
+        assertEquals(10,searchArticleForm.getOffset());
+    }
+    @Test
+    void searchCriteriaProcessing_正常系_sortNumが2currentPageが2の時() {
+        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+                .sortNum(2)
+                .pageSize(10)
+                .currentPage(2)
+                .build();
+        articleService.searchCriteriaProcessing(searchArticleForm);
+        assertEquals("recommendCnt",searchArticleForm.getSort());
+        assertEquals(10,searchArticleForm.getOffset());
+    }
+    @Test
+    void searchCriteriaProcessing_正常系_sortNumが3currentPageが2の時() {
+        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+                .sortNum(3)
+                .pageSize(10)
+                .currentPage(2)
+                .build();
+        articleService.searchCriteriaProcessing(searchArticleForm);
+        assertEquals("myCnt",searchArticleForm.getSort());
+        assertEquals(10,searchArticleForm.getOffset());
     }
 
     @Test

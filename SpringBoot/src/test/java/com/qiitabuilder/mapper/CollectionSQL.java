@@ -6,7 +6,7 @@ import lombok.Data;
 public class CollectionSQL {
 
     //40件のuserをinsert
-    static String insertUsers = "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('a', 'a', 'a', 'a');\n" +
+    public static String insertUsers = "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('a', 'a', 'a', 'a');\n" +
             "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('b', 'b', 'b', 'b');\n" +
             "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('c', 'c', 'c', 'c');\n" +
             "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('d', 'd', 'd', 'd');\n" +
@@ -48,7 +48,7 @@ public class CollectionSQL {
             "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('uid40', 'photo40', 'user40', 'pass40');\n";
 
     //200件の記事をinsert
-    static String insertArticles = "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, '2020-10-01 00:00:00', '2020-10-02 00:00:00', 'title1', '#content1', null, 1);\n" +
+    public static String insertArticles = "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, '2020-10-01 00:00:00', '2020-10-02 00:00:00', 'title1', '#content1', null, 1);\n" +
             "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, '2020-10-03 00:00:00', '2020-10-04 00:00:00', 'title2', '#content2', null, 1);\n" +
             "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, '2020-10-05 00:00:00', '2020-10-06 00:00:00', 'title3', '#content3', 'qiita_id_3', 2);\n" +
             "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, '2020-10-07 00:00:00', '2020-10-08 00:00:00', 'title4', '#content4', null, 1);\n" +
@@ -250,7 +250,7 @@ public class CollectionSQL {
             "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (8, '2020-11-05 00:00:00', '2020-11-10 00:00:00', 'title200', '#content200', null, 9);";
 
     //200件のFBをinsert
-    static String insertFeedbacks = "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (13, 1, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content1', 0);\n" +
+    public static String insertFeedbacks = "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (13, 1, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content1', 0);\n" +
             "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (15, 1, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content2', 0);\n" +
             "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (17, 1, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content3', 0);\n" +
             "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (19, 1, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content4', 0);\n" +
@@ -454,7 +454,7 @@ public class CollectionSQL {
 
 
     //200件のQiita推薦をinsert
-    static String insertQiitaRecommends = "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (1, 2, 1);\n" +
+    public static String insertQiitaRecommends = "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (1, 2, 1);\n" +
             "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (1, 2, 3);\n" +
             "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (1, 2, 5);\n" +
             "INSERT INTO qiita_recommends (posted_user_id, recommend_user_id, article_id) VALUES (1, 2, 8);\n" +
@@ -654,14 +654,14 @@ public class CollectionSQL {
 
 
     //5件のタグ情報をinsert
-    static String insertTags = "INSERT INTO tags (tag_name) VALUES ('Java');\n" +
+    public static String insertTags = "INSERT INTO tags (tag_name) VALUES ('Java');\n" +
             "INSERT INTO tags (tag_name) VALUES ('ruby');\n" +
             "INSERT INTO tags (tag_name) VALUES ('javascript');\n" +
             "INSERT INTO tags (tag_name) VALUES ('php');\n" +
             "INSERT INTO tags (tag_name) VALUES ('go');";
 
     //400件の記事-タグ関係をinsert
-    static String insertArticlesTagsRelations = "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (1, 1, 5);\n" +
+    public static String insertArticlesTagsRelations = "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (1, 1, 5);\n" +
             "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (2, 1, 3);\n" +
             "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (3, 1, 1);\n" +
             "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (4, 1, 1);\n" +
@@ -1065,7 +1065,7 @@ public class CollectionSQL {
 
 
     //150件のMy記事情報をinsert
-    static String insertMyArticles = "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (2, 1, 2);\n" +
+    public static String insertMyArticles = "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (2, 1, 2);\n" +
             "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (4, 1, 2);\n" +
             "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (4, 1, 3);\n" +
             "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (6, 1, 2);\n" +
