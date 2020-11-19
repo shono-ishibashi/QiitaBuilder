@@ -27,6 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -152,6 +153,8 @@ class ArticleServiceTest {
                 "   constraint fk_qiitarecommends_recommend_userid\n" +
                 "       foreign key (recommend_user_id) references users (user_id)\n" +
                 ");\n");
+
+        setAuthenticationInfo();
     }
 
 
@@ -167,12 +170,7 @@ class ArticleServiceTest {
         jdbcTemplate.execute("DROP TABLE users");
     }
 
-    @BeforeAll
-    public static void beforeAll(){
-        setAuthenticationInfo();
-    }
-
-    static void setAuthenticationInfo() {
+    void setAuthenticationInfo() {
         User user = User.builder()
                 .userId(1)
                 .uid("test_uid")
@@ -597,8 +595,139 @@ class ArticleServiceTest {
     }
 
     @Test
-    void saveArticle() {
+    void saveArticle_正常系_insert_DBに存在するTagのみ選択された場合() {
+        List<Tag> tags = new ArrayList<>(Arrays.asList(new Tag(1, "tag1", null), new Tag(2, "tag2", null)));
+
+        jdbcTemplate.execute("INSERT INTO users (user_id) VALUES(1)");
+        jdbcTemplate.execute("INSERT INTO tags(tag_id, tag_name) VALUES(null,'tag1'),(null,'tag2')");
+
+
+        Article article = Article.builder()
+                .articleId(null)
+                .title("title_test")
+                .tags(tags)
+                .content("content_test")
+                .build();
+
+        articleService.saveArticle(article);
+
+        Map<String, Object> articleResult = jdbcTemplate.queryForMap("SELECT * FROM articles WHERE article_id = 1");
+        assertEquals(1, articleResult.get("article_id"));
+        assertEquals("title_test", articleResult.get("title"));
+        assertEquals("content_test", articleResult.get("content"));
+
+        List<Map<String, Object>> articlesTagsRelationsResult = jdbcTemplate.queryForList("SELECT * FROM articles_tags_relations WHERE article_id = 1");
+
+        assertEquals(1, articlesTagsRelationsResult.get(0).get("article_id"));
+        assertEquals(1, articlesTagsRelationsResult.get(0).get("tag_id"));
+
+        assertEquals(1, articlesTagsRelationsResult.get(1).get("article_id"));
+        assertEquals(2, articlesTagsRelationsResult.get(1).get("tag_id"));
+
     }
+
+    @Test
+    void saveArticle_正常系_insert_DBに存在しないTagを選択された場合() {
+        List<Tag> tags = new ArrayList<>(Arrays.asList(new Tag(null, "tag1", null), new Tag(null, "tag2", null)));
+
+        jdbcTemplate.execute("INSERT INTO users (user_id) VALUES(1)");
+
+        Article article = Article.builder()
+                .articleId(null)
+                .title("title_test")
+                .tags(tags)
+                .content("content_test")
+                .build();
+
+        articleService.saveArticle(article);
+
+        Map<String, Object> articleResult = jdbcTemplate.queryForMap("SELECT * FROM articles WHERE article_id = 1");
+        assertEquals(1, articleResult.get("article_id"));
+        assertEquals("title_test", articleResult.get("title"));
+        assertEquals("content_test", articleResult.get("content"));
+
+        List<Map<String, Object>> articlesTagsRelationsResult = jdbcTemplate.queryForList("SELECT * FROM articles_tags_relations WHERE article_id = 1");
+
+        List<Map<String, Object>> tagsResult = jdbcTemplate.queryForList("SELECT * FROM tags ORDER BY tag_id");
+
+        assertEquals(1, articlesTagsRelationsResult.get(0).get("article_id"));
+        assertEquals(1, articlesTagsRelationsResult.get(0).get("tag_id"));
+
+        assertEquals(1, articlesTagsRelationsResult.get(1).get("article_id"));
+        assertEquals(2, articlesTagsRelationsResult.get(1).get("tag_id"));
+
+        assertEquals("tag1", tagsResult.get(0).get("tag_name"));
+        assertEquals("tag2", tagsResult.get(1).get("tag_name"));
+    }
+
+    @Test
+    void saveArticle_正常系_update_関連するTagを追加する場合() {
+        List<Tag> tags = new ArrayList<>(Arrays.asList(new Tag(1, "tag1", null), new Tag(null, "tag2", null)));
+
+        jdbcTemplate.execute("INSERT INTO users (user_id) VALUES(1)");
+        jdbcTemplate.execute("INSERT INTO articles (article_id, user_id, title, content, qiita_article_id, state_flag) VALUES(1,1,'title_test','content_test',null,1)");
+        jdbcTemplate.execute("INSERT INTO tags(tag_id, tag_name) VALUES(1,'tag1')");
+
+        Article article = Article.builder()
+                .articleId(1)
+                .title("title_test_edited")
+                .tags(tags)
+                .content("content_test_edited")
+                .build();
+
+        articleService.saveArticle(article);
+
+        Map<String, Object> articleResult = jdbcTemplate.queryForMap("SELECT * FROM articles WHERE article_id = 1");
+        assertEquals(1, articleResult.get("article_id"));
+        assertEquals("title_test_edited", articleResult.get("title"));
+        assertEquals("content_test_edited", articleResult.get("content"));
+
+        List<Map<String, Object>> articlesTagsRelationsResult = jdbcTemplate.queryForList("SELECT * FROM articles_tags_relations WHERE article_id = 1");
+
+        List<Map<String, Object>> tagsResult = jdbcTemplate.queryForList("SELECT * FROM tags ORDER BY tag_id");
+
+        assertEquals(1, articlesTagsRelationsResult.get(0).get("article_id"));
+        assertEquals(1, articlesTagsRelationsResult.get(0).get("tag_id"));
+
+        assertEquals(1, articlesTagsRelationsResult.get(1).get("article_id"));
+        assertEquals(2, articlesTagsRelationsResult.get(1).get("tag_id"));
+
+        assertEquals("tag1", tagsResult.get(0).get("tag_name"));
+        assertEquals("tag2", tagsResult.get(1).get("tag_name"));
+    }
+
+    @Test
+    void saveArticle_正常系_update_関連するTagを削除する場合() {
+        List<Tag> tags = new ArrayList<>(Arrays.asList(new Tag(1, "tag1", null)));
+
+        jdbcTemplate.execute("INSERT INTO users (user_id) VALUES(1)");
+        jdbcTemplate.execute("INSERT INTO articles (article_id, user_id, title, content, qiita_article_id, state_flag) VALUES(1,1,'title_test','content_test',null,1)");
+        jdbcTemplate.execute("INSERT INTO tags(tag_id, tag_name) VALUES(1,'tag1') , (2,'tag2')");
+
+        Article article = Article.builder()
+                .articleId(1)
+                .title("title_test_edited")
+                .tags(tags)
+                .content("content_test_edited")
+                .build();
+
+        articleService.saveArticle(article);
+
+        Map<String, Object> articleResult = jdbcTemplate.queryForMap("SELECT * FROM articles WHERE article_id = 1");
+        assertEquals(1, articleResult.get("article_id"));
+        assertEquals("title_test_edited", articleResult.get("title"));
+        assertEquals("content_test_edited", articleResult.get("content"));
+
+        List<Map<String, Object>> articlesTagsRelationsResult = jdbcTemplate.queryForList("SELECT * FROM articles_tags_relations WHERE article_id = 1");
+
+        List<Map<String, Object>> tagsResult = jdbcTemplate.queryForList("SELECT * FROM tags ORDER BY tag_id");
+
+        assertEquals(1, articlesTagsRelationsResult.get(0).get("article_id"));
+        assertEquals(1, articlesTagsRelationsResult.get(0).get("tag_id"));
+
+        assertEquals(1,articlesTagsRelationsResult.size());
+    }
+
 
     // getArticle()
     @Test
@@ -679,6 +808,7 @@ class ArticleServiceTest {
         assertEquals(expected.getRegisteredMyArticleCount(), actual.getRegisteredMyArticleCount());
         assertEquals(expected.getTags().get(0), actual.getTags().get(0));
     }
+
     @Test
     void getArticle異常系_QiitaRecommendPointがNullの場合() {
         // set up
