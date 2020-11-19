@@ -1,13 +1,14 @@
 package com.qiitabuilder.service;
 
+import com.qiitabuilder.domain.Article;
+import com.qiitabuilder.domain.Feedback;
+import com.qiitabuilder.domain.Tag;
 import com.qiitabuilder.domain.User;
-import com.qiitabuilder.mapper.ArticleMapper;
 import com.qiitabuilder.security.SimpleLoginUser;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,7 +19,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.test.context.event.annotation.BeforeTestClass;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -197,8 +202,160 @@ class ArticleServiceTest {
     void saveArticle() {
     }
 
+    // getArticle()
     @Test
-    void getArticle() {
+    void getArticle正常系() {
+        // set up
+        String insertUser1 = "INSERT INTO users (user_id, uid, photo_url, display_name, password) VALUES (1, 'a', 'a', 'a', 'a');";
+        String insertUser2 = "INSERT INTO users (user_id, uid, photo_url, display_name, password) VALUES (2, 'b', 'b', 'b', 'b');";
+
+        String insertArt1 = "INSERT INTO articles (article_id, user_id, created_at, updated_at, title, content, state_flag) VALUES (1, 1, '2020-10-01 00:00:00', '2020-10-02 00:00:00', 'title1', '#content1', 1);";
+        String insertFeed1 = "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (1, 2, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content1', 0);";
+
+        String insertMyArt = "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (1, 1, 2);";
+        String insertRec = "INSERT INTO qiita_recommends (article_id, posted_user_id, recommend_user_id) VALUES (1, 1, 2);";
+        String insertTag1 = "INSERT INTO tags (tag_name) VALUES ('Java');";
+        String insertTagRel1 = "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (1, 1, 1);";
+
+        jdbcTemplate.execute(insertUser1);
+        jdbcTemplate.execute(insertUser2);
+        jdbcTemplate.execute(insertArt1);
+        jdbcTemplate.execute(insertFeed1);
+        jdbcTemplate.execute(insertMyArt);
+        jdbcTemplate.execute(insertRec);
+        jdbcTemplate.execute(insertTag1);
+        jdbcTemplate.execute(insertTagRel1);
+
+        User user1 = User.builder().userId(1).displayName("a").photoUrl("a").uid("a").build();
+        User user2 = User.builder().userId(2).displayName("b").photoUrl("b").uid("b").build();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime createdAtArt1 = LocalDateTime.parse("2020-10-01 00:00", dtf);
+        LocalDateTime updatedAtArt1 = LocalDateTime.parse("2020-10-02 00:00", dtf);
+        LocalDateTime createdAtFeed1 = LocalDateTime.parse("2020-11-03 00:00", dtf);
+        LocalDateTime updatedAtFeed1 = LocalDateTime.parse("2020-11-04 00:00", dtf);
+
+        Feedback feed1 = Feedback.builder()
+                .feedbackId(1)
+                .articleId(1)
+                .postedUser(user2)
+                .createdAt(createdAtFeed1)
+                .updatedAt(updatedAtFeed1)
+                .content("feedback content1")
+                .deleteFlag(0)
+                .build();
+        List<Feedback> feedbacks = new ArrayList<>();
+        feedbacks.add(feed1);
+
+        Tag tag1 = Tag.builder().tagId(1).tagName("Java").build();
+        List<Tag> tags = new ArrayList<>();
+        tags.add(tag1);
+
+        Article expected = Article.builder()
+                .articleId(1)
+                .postedUser(user1)
+                .createdAt(createdAtArt1)
+                .updatedAt(updatedAtArt1)
+                .title("title1")
+                .content("#content1")
+                .stateFlag(1)
+                .feedbacks(feedbacks)
+                .feedbackCount(1)
+                .qiitaRecommendPoint(1)
+                .registeredMyArticleCount(1)
+                .tags(tags)
+                .build();
+
+        // check
+        Article actual = articleService.getArticle(1);
+
+        assertEquals(expected.getArticleId(), actual.getArticleId());
+        assertEquals(expected.getPostedUser(), actual.getPostedUser());
+        assertEquals(expected.getCreatedAt(), actual.getCreatedAt());
+        assertEquals(expected.getUpdatedAt(), actual.getUpdatedAt());
+        assertEquals(expected.getTitle(), actual.getTitle());
+        assertEquals(expected.getContent(), actual.getContent());
+        assertEquals(expected.getStateFlag(), actual.getStateFlag());
+        assertEquals(expected.getFeedbacks().get(0), actual.getFeedbacks().get(0));
+        assertEquals(expected.getFeedbackCount(), actual.getFeedbackCount());
+        assertEquals(expected.getQiitaRecommendPoint(), actual.getQiitaRecommendPoint());
+        assertEquals(expected.getRegisteredMyArticleCount(), actual.getRegisteredMyArticleCount());
+        assertEquals(expected.getTags().get(0), actual.getTags().get(0));
+    }
+    @Test
+    void getArticle異常系_QiitaRecommendPointがNullの場合() {
+        // set up
+        String insertUser1 = "INSERT INTO users (user_id, uid, photo_url, display_name, password) VALUES (1, 'a', 'a', 'a', 'a');";
+        String insertUser2 = "INSERT INTO users (user_id, uid, photo_url, display_name, password) VALUES (2, 'b', 'b', 'b', 'b');";
+
+        String insertArt1 = "INSERT INTO articles (article_id, user_id, created_at, updated_at, title, content, state_flag) VALUES (1, 1, '2020-10-01 00:00:00', '2020-10-02 00:00:00', 'title1', '#content1', 1);";
+        String insertFeed1 = "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (1, 2, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content1', 0);";
+
+        String insertMyArt = "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (1, 1, 2);";
+        String insertTag1 = "INSERT INTO tags (tag_name) VALUES ('Java');";
+        String insertTagRel1 = "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (1, 1, 1);";
+
+        jdbcTemplate.execute(insertUser1);
+        jdbcTemplate.execute(insertUser2);
+        jdbcTemplate.execute(insertArt1);
+        jdbcTemplate.execute(insertFeed1);
+        jdbcTemplate.execute(insertMyArt);
+        jdbcTemplate.execute(insertTag1);
+        jdbcTemplate.execute(insertTagRel1);
+
+        User user1 = User.builder().userId(1).displayName("a").photoUrl("a").uid("a").build();
+        User user2 = User.builder().userId(2).displayName("b").photoUrl("b").uid("b").build();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime createdAtArt1 = LocalDateTime.parse("2020-10-01 00:00", dtf);
+        LocalDateTime updatedAtArt1 = LocalDateTime.parse("2020-10-02 00:00", dtf);
+        LocalDateTime createdAtFeed1 = LocalDateTime.parse("2020-11-03 00:00", dtf);
+        LocalDateTime updatedAtFeed1 = LocalDateTime.parse("2020-11-04 00:00", dtf);
+
+        Feedback feed1 = Feedback.builder()
+                .feedbackId(1)
+                .articleId(1)
+                .postedUser(user2)
+                .createdAt(createdAtFeed1)
+                .updatedAt(updatedAtFeed1)
+                .content("feedback content1")
+                .deleteFlag(0)
+                .build();
+        List<Feedback> feedbacks = new ArrayList<>();
+        feedbacks.add(feed1);
+
+        Tag tag1 = Tag.builder().tagId(1).tagName("Java").build();
+        List<Tag> tags = new ArrayList<>();
+        tags.add(tag1);
+
+        Article expected = Article.builder()
+                .articleId(1)
+                .postedUser(user1)
+                .createdAt(createdAtArt1)
+                .updatedAt(updatedAtArt1)
+                .title("title1")
+                .content("#content1")
+                .stateFlag(1)
+                .feedbacks(feedbacks)
+                .feedbackCount(1)
+                .qiitaRecommendPoint(0)
+                .registeredMyArticleCount(1)
+                .tags(tags)
+                .build();
+
+        // qiitaRecommendPointが0になっているか確認
+        Article actual = articleService.getArticle(1);
+
+        assertEquals(expected.getArticleId(), actual.getArticleId());
+        assertEquals(expected.getPostedUser(), actual.getPostedUser());
+        assertEquals(expected.getCreatedAt(), actual.getCreatedAt());
+        assertEquals(expected.getUpdatedAt(), actual.getUpdatedAt());
+        assertEquals(expected.getTitle(), actual.getTitle());
+        assertEquals(expected.getContent(), actual.getContent());
+        assertEquals(expected.getStateFlag(), actual.getStateFlag());
+        assertEquals(expected.getFeedbacks().get(0), actual.getFeedbacks().get(0));
+        assertEquals(expected.getFeedbackCount(), actual.getFeedbackCount());
+        assertEquals(expected.getQiitaRecommendPoint(), actual.getQiitaRecommendPoint());
+        assertEquals(expected.getRegisteredMyArticleCount(), actual.getRegisteredMyArticleCount());
+        assertEquals(expected.getTags().get(0), actual.getTags().get(0));
     }
 
     @Test
