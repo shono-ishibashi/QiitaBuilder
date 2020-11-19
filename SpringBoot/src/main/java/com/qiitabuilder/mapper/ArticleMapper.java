@@ -15,6 +15,7 @@ public interface ArticleMapper {
 
     /**
      * 記事のIDを元に表示する記事の一覧を取得.
+     * searchArticlesIdがない場合は呼び出されないので考慮する必要はない
      *
      * @param searchArticleForm フォーム
      * @return 記事情報一覧

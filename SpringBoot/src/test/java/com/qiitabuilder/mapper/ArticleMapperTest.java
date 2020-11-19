@@ -236,6 +236,8 @@ class ArticleMapperTest {
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
         searchArticleForm.setArticlesIdList(articleIdList);
         List<Article> articles = articleMapper.searchArticles(searchArticleForm);
+        //        記事数
+        assertEquals(10,articles.size());
 //      articles[0]のテスト
         LocalDateTime createDate = LocalDateTime.of(2020, 11, 10, 00, 00, 00);
         LocalDateTime updateDate = createDate.plusDays(1);
