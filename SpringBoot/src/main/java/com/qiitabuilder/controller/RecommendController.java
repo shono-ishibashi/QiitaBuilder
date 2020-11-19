@@ -58,9 +58,15 @@ public class RecommendController {
     @PostMapping("")
     @ResponseStatus(HttpStatus.OK)
     public Recommend postRecommend(@RequestBody Recommend recommend) {
+        //// エラーハンドリング
+        // 入力値エラーの場合はBadRequestを返す
         if (Objects.isNull(recommend.getArticleId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
+        if (!String.valueOf(recommend.getArticleId()).matches("^\\d+$")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
         return recommendService.postRecommend(recommend);
     }
 
@@ -86,6 +92,10 @@ public class RecommendController {
     @DeleteMapping("/{recommendId}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteRecommend(@PathVariable("recommendId") String recommendId) {
-        recommendService.deleteRecommend(recommendId);
+        // 入力値エラーの場合はBadRequestを返す
+        if (!recommendId.matches("^\\d+$")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        recommendService.deleteRecommend(Integer.parseInt(recommendId));
     }
 }
