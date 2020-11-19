@@ -1551,4 +1551,32 @@ class ArticleMapperTest {
         assertEquals("a", articles.get(11).getPostedUser().getPhotoUrl());
         assertEquals(2, articles.get(11).getQiitaRecommendPoint());
     }
+
+    @Test
+    void findByArticleIdAndUserId_正常系_存在する記事IDとユーザーIDに該当する記事が存在する(){
+        String userInsertSql="INSERT INTO users (uid, photo_url, display_name, password) VALUES ('a', 'a', 'a', 'a');";
+        String articleInsertSql="INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, '2020-10-01 00:00:00', '2020-10-02 00:00:00', 'title1', '#content1', null, 1)";
+        jdbcTemplate.execute(userInsertSql);
+        jdbcTemplate.execute(articleInsertSql);
+        Integer articleId=articleMapper.findByArticleIdAndUserId(1,1);
+        assertEquals(1,articleId);
+    }
+    @Test
+    void findByArticleIdAndUserId_正常系_存在する記事IDとユーザーIDに該当する記事が存在しない(){
+        String userInsertSql="INSERT INTO users (uid, photo_url, display_name, password) VALUES ('a', 'a', 'a', 'a');";
+        String user2InsertSql="INSERT INTO users (uid, photo_url, display_name, password) VALUES ('b', 'b', 'b', 'b');";
+        String articleInsertSql="INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, '2020-10-01 00:00:00', '2020-10-02 00:00:00', 'title1', '#content1', null, 1)";
+        jdbcTemplate.execute(userInsertSql);
+        jdbcTemplate.execute(user2InsertSql);
+        jdbcTemplate.execute(articleInsertSql);
+        Integer articleId=articleMapper.findByArticleIdAndUserId(1,2);
+        assertEquals(null,articleId);
+    }
+    @Test
+    void findByArticleIdAndUserId_正常系_存在しない記事IDとユーザーIDに該当する記事が存在しない(){
+        String userInsertSql="INSERT INTO users (uid, photo_url, display_name, password) VALUES ('a', 'a', 'a', 'a');";
+        jdbcTemplate.execute(userInsertSql);
+        Integer articleId=articleMapper.findByArticleIdAndUserId(1,1);
+        assertEquals(null,articleId);
+    }
 }
