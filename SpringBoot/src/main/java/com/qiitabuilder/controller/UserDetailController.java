@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Objects;
+
 @RestController
 @RequestMapping(value = "/user/detail")
 public class UserDetailController {
@@ -22,6 +24,7 @@ public class UserDetailController {
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public User fetchUserDetails(Integer userId) {
+        if (Objects.isNull(userId)) return null;
         return userDetailService.fetchUserDetails(userId);
     }
 }
