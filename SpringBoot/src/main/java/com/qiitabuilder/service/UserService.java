@@ -16,13 +16,6 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public User findByUserId(Integer userId) {
-        return null;
-    }
-
-    public User findByUid(String uid) {
-        return null;
-    }
 
     public void insertUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -31,9 +24,5 @@ public class UserService {
 
     public Integer findUserIdByUid(String uid) {
         return userMapper.findUserIdByUid(uid);
-    }
-
-    public void test() {
-        System.out.println(userMapper.selectTest());
     }
 }
