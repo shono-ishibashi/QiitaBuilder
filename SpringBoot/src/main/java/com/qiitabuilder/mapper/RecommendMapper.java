@@ -22,10 +22,10 @@ public interface RecommendMapper {
      * 最もQiita推薦数の多い記事IDを取得する.
      *
      * @param userId ユーザーID
-     * @param sortId 　1:FBした数ランキングの場合、2:投稿数及びQiita推薦累計数ランキングの場合
+     * @param rankItemId 　1:FBした数ランキングの場合、2:投稿数及びQiita推薦累計数ランキングの場合
      * @return 記事ID一覧
      */
-    List<Integer> getMostRecommendedArticleId(Integer userId, Integer sortId);
+    List<Integer> getMostRecommendedArticleId(Integer userId, Integer rankItemId);
 
     /**
      * 検索条件に一致するレコードを取得する
