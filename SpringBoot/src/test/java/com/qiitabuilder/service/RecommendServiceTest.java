@@ -369,36 +369,27 @@ class RecommendServiceTest {
         assertEquals(1, result.get(0).get("recommend_id"));
         assertEquals(1, result.get(0).get("article_id"));
         assertEquals(2, result.get(0).get("posted_user_id"));
-        assertEquals(1, result.get(0).get("recommend_user_id"));    }
-    //    @Test
-//    void deleteRecommend異常系_recommendIdがログインユーザーのものではない場合() {
-//        // insert
-//        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
-//        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
-//        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key 記事
-//        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(2);"); // Foreign key 記事
-//
-//        jdbcTemplate.execute("INSERT INTO qiita_recommends(article_id, posted_user_id, recommend_user_id) VALUES(1, 1, 2)");
-//
-//
-//        // ステータスコード403をスローするか確認
-//        Exception exception = assertThrows(org.springframework.web.server.ResponseStatusException.class, () -> {
-//            recommendService.deleteRecommend(1);
-//        });
-//        String expectedMessage = "403 FORBIDDEN";
-//        String actualMessage = exception.getMessage();
-//
-//        assertTrue(actualMessage.contains(expectedMessage));
-//    }
-    @Test
-    void fetchRecommend() {
+        assertEquals(1, result.get(0).get("recommend_user_id"));
     }
 
     @Test
-    void postRecommend() {
-    }
+    void deleteRecommend異常系_recommendIdがログインユーザーのものではない場合() {
+        // insert
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key 記事
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(2);"); // Foreign key 記事
 
-    @Test
-    void deleteRecommend() {
+        jdbcTemplate.execute("INSERT INTO qiita_recommends(article_id, posted_user_id, recommend_user_id) VALUES(1, 1, 2)");
+
+
+        // ステータスコード403をスローするか確認
+        Exception exception = assertThrows(org.springframework.web.server.ResponseStatusException.class, () -> {
+            recommendService.deleteRecommend(1);
+        });
+        String expectedMessage = "403 FORBIDDEN";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 }
