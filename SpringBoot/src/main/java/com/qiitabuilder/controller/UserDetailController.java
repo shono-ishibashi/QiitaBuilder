@@ -3,9 +3,12 @@ package com.qiitabuilder.controller;
 import com.qiitabuilder.domain.User;
 import com.qiitabuilder.service.UserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Objects;
 
@@ -23,8 +26,9 @@ public class UserDetailController {
      * @return　取得したいユーザー情報
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
     public User fetchUserDetails(Integer userId) {
-        if (Objects.isNull(userId)) return null;
+        if (Objects.isNull(userId)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         return userDetailService.fetchUserDetails(userId);
     }
 }

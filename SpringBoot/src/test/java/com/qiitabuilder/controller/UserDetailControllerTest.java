@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
 class UserDetailControllerTest {
 
@@ -14,7 +15,12 @@ class UserDetailControllerTest {
 
     @Test
     void fetchUserDetails_Nullチェック() {
-        User user=userDetailController.fetchUserDetails(null);
-        assertNull(user);
+        try {
+            User user = userDetailController.fetchUserDetails(null);
+        } catch (org.springframework.web.server.ResponseStatusException ex) {
+            assertTrue(true);
+        }catch (Exception e){
+            assertTrue(false);
+        }
     }
 }

@@ -171,8 +171,9 @@ public class ArticleController {
      * @return　フィードバックした記事の一覧
      */
     @RequestMapping(value = "/feedbacked", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
     public List<Article> getFeedbackedArticlesByUserId(Integer userId) {
-        if (Objects.isNull(userId)) return null;
+        if (Objects.isNull(userId)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         return articleService.getFeedbackedArticlesByUserId(userId);
     }
 
@@ -184,8 +185,9 @@ public class ArticleController {
      * @return　My記事登録した記事の一覧
      */
     @RequestMapping(value = "/my-articles", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
     public List<Article> getMyArticlesByUserId(Integer userId) {
-        if (Objects.isNull(userId)) return null;
+        if (Objects.isNull(userId)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         return articleService.getMyArticlesByUserId(userId);
     }
 
@@ -196,8 +198,9 @@ public class ArticleController {
      * @return List<Article> (ユーザーが投稿した記事一覧)
      */
     @RequestMapping(value = "/posted", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
     public List<Article> getArticlesByUserId(Integer userId) {
-        if (Objects.isNull(userId)) return null;
+        if (Objects.isNull(userId)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         return articleService.getArticlesByUserId(userId);
     }
 }
