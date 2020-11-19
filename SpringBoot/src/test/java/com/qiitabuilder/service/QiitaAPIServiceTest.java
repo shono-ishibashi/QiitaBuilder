@@ -202,6 +202,24 @@ class QiitaAPIServiceTest {
 
     @Test
     void saveToken() {
+        jdbcTemplate.execute("INSERT INTO users(user_id) VALUES (1)");
+        jdbcTemplate.execute("INSERT INTO articles " +
+                "(user_id,title, content, qiita_article_id, state_flag) " +
+                "VALUES (1,'test_title','test_content','qiita_article_id',1)");
+
+        jdbcTemplate.execute("INSERT INTO qiita_configurations(user_id) VALUES (1)");
+
+        final String URL = "https://qiita.com/api/v2/access_tokens";
+
+        MockRestServiceServer mockServer = MockRestServiceServer.bindTo(restTemplate).build();
+        mockServer.expect(requestTo(URL))
+                .andRespond(withSuccess("{\"token\":\"token_test\"}", MediaType.APPLICATION_JSON_UTF8));
+
+        qiitaApiService.saveToken();
+
+        Map<String, Object> result = jdbcTemplate.queryForMap("SELECT token FROM qiita_configurations");
+
+        assertEquals("token_test", result.get("token"));
     }
 
     @Test
@@ -309,13 +327,26 @@ class QiitaAPIServiceTest {
 
         Map<String, Object> result = jdbcTemplate.queryForMap("SELECT * FROM articles WHERE article_id = 1");
 
-        assertEquals("qiita_article_id",result.get("qiita_article_id"));
+        assertEquals("qiita_article_id", result.get("qiita_article_id"));
         assertEquals(2, result.get("state_flag"));
 
         mockServer.verify();
     }
 
     @Test
-    void isLinkedToQiita() {
+    void isLinkedToQiitaTrue() {
+
+        jdbcTemplate.execute("INSERT INTO users(user_id) VALUES(1)");
+        jdbcTemplate.execute("INSERT INTO qiita_configurations(user_id, token) VALUES(1,'token_test')");
+
+        assertTrue(qiitaApiService.isLinkedToQiita());
+    }
+
+    @Test
+    void isLinkedToQiitaFalse() {
+        jdbcTemplate.execute("INSERT INTO users(user_id) VALUES(1)");
+        jdbcTemplate.execute("INSERT INTO qiita_configurations(user_id, token) VALUES(1,null)");
+
+        assertFalse(qiitaApiService.isLinkedToQiita());
     }
 }
