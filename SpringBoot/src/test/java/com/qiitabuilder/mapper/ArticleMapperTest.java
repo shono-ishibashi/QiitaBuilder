@@ -2,7 +2,6 @@ package com.qiitabuilder.mapper;
 
 import com.qiitabuilder.domain.*;
 import com.qiitabuilder.form.SearchArticleForm;
-import org.apache.ibatis.annotations.Insert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -1188,10 +1187,6 @@ class ArticleMapperTest {
         assertEquals(expected.getQiitaRecommendPoint(), actual.getQiitaRecommendPoint());
         assertEquals(expected.getRegisteredMyArticleCount(), actual.getRegisteredMyArticleCount());
         assertEquals(expected.getTags().get(0), actual.getTags().get(0));
-    }
-
-    @Test
-    void getArticleAndFeedback() {
     }
 
     @Test
