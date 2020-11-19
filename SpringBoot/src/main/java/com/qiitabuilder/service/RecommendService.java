@@ -60,12 +60,6 @@ public class RecommendService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
-        //// エラーハンドリング
-        // 入力値エラーの場合はBadRequestを返す
-        if (!String.valueOf(recommend.getArticleId()).matches("^\\d+$")) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-
         // すでにDBに登録されている場合はConflictを投げる
         Recommend insertedRecommend = recommendMapper.findByArticleIdAndRecommendUserId(recommend.getArticleId(), recommend.getRecommendUserId());
         if (Objects.nonNull(insertedRecommend)) {
@@ -85,13 +79,9 @@ public class RecommendService {
      *
      * @param recommendId
      */
-    public void deleteRecommend(String recommendId) {
-        // 入力値エラーの場合はBadRequestを返す
-        if (!recommendId.matches("^\\d+$")) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
+    public void deleteRecommend(Integer recommendId) {
         // レコードの削除がなかった場合はConflictを投げる
-        if (!recommendMapper.delete(Integer.parseInt(recommendId))) {
+        if (!recommendMapper.delete(recommendId)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
     }

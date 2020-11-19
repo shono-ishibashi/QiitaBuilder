@@ -331,7 +331,7 @@ class RecommendServiceTest {
 
         jdbcTemplate.execute("INSERT INTO qiita_recommends(article_id, posted_user_id, recommend_user_id) VALUES(1, 2, 1)");
 
-        recommendService.deleteRecommend("1");
+        recommendService.deleteRecommend(1);
 
         // check
         String sql = "SELECT * FROM qiita_recommends WHERE recommend_id = 1";
@@ -353,7 +353,7 @@ class RecommendServiceTest {
 
         // ステータスコード409をスローするか確認
         Exception exception = assertThrows(org.springframework.web.server.ResponseStatusException.class, () -> {
-            recommendService.deleteRecommend("2");
+            recommendService.deleteRecommend(2);
         });
         String expectedMessage = "409 CONFLICT";
         String actualMessage = exception.getMessage();
