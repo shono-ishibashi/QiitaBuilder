@@ -201,7 +201,7 @@ class MyArticleServiceTest {
         jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
         jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key 記事1
 
-        // 403エラーをスローするか確認
+        // ステータスコード204をスローするか確認
         Exception exception = assertThrows(org.springframework.web.server.ResponseStatusException.class, () -> {
             MyArticle myArticle = myArticleService.fetchMyArticle(1);
         });
@@ -244,10 +244,21 @@ class MyArticleServiceTest {
 
         MyArticle actual = myArticleService.postMyArticle(myArticle);
 
+        // 戻り値の確認
         assertEquals(1, actual.getMyArticleId());
         assertEquals(1, actual.getArticleId());
         assertEquals(2, actual.getPostedUserId());
         assertEquals(1, actual.getRegisterUserId());
+
+        // DBへの書き込みが正常に行われているか確認
+        String sql = "SELECT * FROM my_articles ORDER BY my_article_id";
+        SqlParameterSource param = new EmptySqlParameterSource();
+        List<Map<String, Object>> resultMyArticles = namedParameterJdbcTemplate.queryForList(sql, param);
+
+        assertEquals(1, resultMyArticles.get(0).get("my_article_id"));
+        assertEquals(1, resultMyArticles.get(0).get("article_id"));
+        assertEquals(2, resultMyArticles.get(0).get("posted_user_id"));
+        assertEquals(1, resultMyArticles.get(0).get("register_user_id"));
     }
 
     @Test
@@ -266,9 +277,15 @@ class MyArticleServiceTest {
         });
         String expectedMessage = "400 BAD_REQUEST";
         String actualMessage = exception.getMessage();
-        System.out.println(actualMessage);
 
         assertTrue(actualMessage.contains(expectedMessage));
+
+        // DBへの書き込みが実行されていないか確認
+        String sql = "SELECT * FROM my_articles ORDER BY my_article_id";
+        SqlParameterSource param = new EmptySqlParameterSource();
+        List<Map<String, Object>> resultMyArticles = namedParameterJdbcTemplate.queryForList(sql, param);
+
+        assertTrue(resultMyArticles.isEmpty());
     }
 
     @Test
@@ -290,9 +307,19 @@ class MyArticleServiceTest {
         });
         String expectedMessage = "409 CONFLICT";
         String actualMessage = exception.getMessage();
-        System.out.println(actualMessage);
 
         assertTrue(actualMessage.contains(expectedMessage));
+
+        // DBの状態が変更されていないか確認
+        String sql = "SELECT * FROM my_articles ORDER BY my_article_id";
+        SqlParameterSource param = new EmptySqlParameterSource();
+        List<Map<String, Object>> resultMyArticles = namedParameterJdbcTemplate.queryForList(sql, param);
+
+        assertTrue(resultMyArticles.size() == 1);
+        assertEquals(1, resultMyArticles.get(0).get("my_article_id"));
+        assertEquals(1, resultMyArticles.get(0).get("article_id"));
+        assertEquals(2, resultMyArticles.get(0).get("posted_user_id"));
+        assertEquals(1, resultMyArticles.get(0).get("register_user_id"));
     }
 
     //// deleteMyArticle()
@@ -316,23 +343,34 @@ class MyArticleServiceTest {
 
         assertTrue(actual.isEmpty());
     }
+
     @Test
     void deleteMyArticle異常系_myArticleIdが存在しない場合() {
         // insert
         jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
         jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
         jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(2);"); // Foreign key 記事
+        jdbcTemplate.execute("INSERT INTO my_articles(article_id, posted_user_id, register_user_id) VALUES(1, 2, 1)");
 
         // ステータスコード409をスローするか確認
         Exception exception = assertThrows(org.springframework.web.server.ResponseStatusException.class, () -> {
-            myArticleService.deleteMyArticle(1);
+            myArticleService.deleteMyArticle(2);
         });
         String expectedMessage = "409 CONFLICT";
         String actualMessage = exception.getMessage();
-        System.out.println(actualMessage);
 
         assertTrue(actualMessage.contains(expectedMessage));
-    }
+
+        // DBの状態が変更されていないか確認
+        String sql = "SELECT * FROM my_articles ORDER BY my_article_id";
+        SqlParameterSource param = new EmptySqlParameterSource();
+        List<Map<String, Object>> resultMyArticles = namedParameterJdbcTemplate.queryForList(sql, param);
+
+        assertTrue(resultMyArticles.size() == 1);
+        assertEquals(1, resultMyArticles.get(0).get("my_article_id"));
+        assertEquals(1, resultMyArticles.get(0).get("article_id"));
+        assertEquals(2, resultMyArticles.get(0).get("posted_user_id"));
+        assertEquals(1, resultMyArticles.get(0).get("register_user_id"));    }
 //    @Test
 //    void deleteMyArticle異常系_myArticleIdがログインユーザーのものではない場合() {
 //        // insert
@@ -350,7 +388,6 @@ class MyArticleServiceTest {
 //        });
 //        String expectedMessage = "403 FORBIDDEN";
 //        String actualMessage = exception.getMessage();
-//        System.out.println(actualMessage);
 //
 //        assertTrue(actualMessage.contains(expectedMessage));
 //    }
