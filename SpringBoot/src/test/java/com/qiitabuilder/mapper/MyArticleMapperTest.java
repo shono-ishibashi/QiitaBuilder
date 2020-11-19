@@ -240,6 +240,23 @@ class MyArticleMapperTest {
         assertEquals(1, myArticle.getRegisterUserId());
     }
 
+    //// load()
+    @Test
+    void loadのテスト正常系() {
+        // insert
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key 記事1
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key 記事2
+
+        jdbcTemplate.execute("INSERT INTO my_articles(article_id, posted_user_id, register_user_id) VALUES(1, 1, 1)");
+
+        MyArticle myArticle = myArticleMapper.load(1);
+        assertEquals(1, myArticle.getMyArticleId());
+        assertEquals(1, myArticle.getArticleId());
+        assertEquals(1, myArticle.getPostedUserId());
+        assertEquals(1, myArticle.getRegisterUserId());
+    }
+
     @Test
     void findByArticleIdAndRegisterUserIdのテスト異常系_MyArticleが存在しない場合() {
         // insert
