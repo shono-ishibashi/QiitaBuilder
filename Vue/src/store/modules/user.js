@@ -1,5 +1,6 @@
 import axios from 'axios';
 import qs from 'qs';
+import router from "@/router";
 
 export default {
     namespaced: true,
@@ -23,8 +24,8 @@ export default {
         articleCardDisplay: null,
     },
     getters: {
-        uid(state){
-          return state.uid
+        uid(state) {
+            return state.uid
         },
         userId(state) {
             return state.userDetail.userId
@@ -113,8 +114,8 @@ export default {
         setChartDisplay(state, chartDiaplay) {
             state.chartDisplay = chartDiaplay;
         },
-        setUserId(state, userId){
-            state.userDetail.userId=userId;
+        setUserId(state, userId) {
+            state.userDetail.userId = userId;
         }
     },
     actions: {
@@ -149,6 +150,9 @@ export default {
                 },
             }).then(res => {
                 commit("setUserDetail", res.data);
+            }).catch((error) => {
+                console.log(error)
+                router.push({path: '/article'})
             })
         },
         async fetchPostedArticles({commit, rootGetters, rootState}, userId) {
@@ -176,6 +180,7 @@ export default {
                     commit("setPostedArticles", res.data)
                 }).catch((error) => {
                     console.log(error)
+                    router.push({path: '/article'})
                 })
         },
         async fetchFeedbackArticles({commit, rootGetters, rootState}, userId) {
@@ -190,6 +195,9 @@ export default {
                 },
             }).then(res => {
                 commit("setFeedbackArticles", res.data);
+            }).catch((error) => {
+                console.log(error)
+                router.push({path: '/article'})
             })
         },
         async fetchMyArticles({commit, rootGetters, rootState}, userId) {
@@ -203,9 +211,12 @@ export default {
                 },
             }).then(res => {
                 commit("setMyArticles", res.data);
+            }).catch((error) => {
+                console.log(error)
+                router.push({path: '/article'})
             })
         },
-        async findUserIdByUid({commit, rootGetters, rootState}, uid){
+        async findUserIdByUid({commit, rootGetters, rootState}, uid) {
             const url = rootGetters.API_URL + 'userId';
             let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
 
@@ -216,6 +227,9 @@ export default {
                 },
             }).then(res => {
                 commit("setUserId", res.data);
+            }).catch((error) => {
+                console.log(error)
+                router.push({path: '/article'})
             })
         }
     }
