@@ -3,8 +3,10 @@ package com.qiitabuilder.controller;
 import com.qiitabuilder.domain.RankingUser;
 import com.qiitabuilder.service.RankingUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -22,6 +24,7 @@ public class RankingUserController {
      * @return ランキングユーザー一覧
      */
     @GetMapping("/FBCount")
+    @ResponseStatus(HttpStatus.OK)
     public List<RankingUser> fetchFBCountRank() {
         return rankingUserService.fetchFBCountRank();
     }
@@ -32,6 +35,7 @@ public class RankingUserController {
      * @return ランキングユーザー一覧
      */
     @GetMapping("/articleCount")
+    @ResponseStatus(HttpStatus.OK)
     public List<RankingUser> fetchArticleCountRank() {
         return rankingUserService.fetchArticleCountRank();
     }
@@ -42,6 +46,7 @@ public class RankingUserController {
      * @return ランキングユーザー一覧
      */
     @GetMapping("/qiitaRecommendedCount")
+    @ResponseStatus(HttpStatus.OK)
     public List<RankingUser> fetchQiitaCountRank() {
         return rankingUserService.fetchQiitaCountRank();
     }

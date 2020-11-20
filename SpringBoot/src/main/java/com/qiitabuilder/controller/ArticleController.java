@@ -127,7 +127,8 @@ public class ArticleController {
                 article.getTags().size() == 0 ||
                         article.getTags().size() > 5 ||
                         article.getTitle().isEmpty() ||
-                        article.getContent().length() > 30000 ||
+                        article.getTitle().length() > 255 ||
+                        article.getContent().length() > 20000 ||
                         isNull(article.getTitle()) ||
                         article.getContent().isEmpty() ||
                         isNull(article.getContent())
@@ -149,11 +150,12 @@ public class ArticleController {
                 isNull(article.getArticleId()) ||
                         article.getTags().size() <= 0 ||
                         article.getTags().size() > 5 ||
-                        article.getTitle().isEmpty() ||
-                        article.getContent().length() > 30000 ||
                         isNull(article.getTitle()) ||
-                        article.getContent().isEmpty() ||
-                        isNull(article.getContent())
+                        article.getTitle().isEmpty() ||
+                        article.getTitle().length() > 255 ||
+                        isNull(article.getContent()) ||
+                        article.getContent().length() > 20000 ||
+                        article.getContent().isEmpty()
         ) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
