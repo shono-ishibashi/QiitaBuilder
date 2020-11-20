@@ -4,8 +4,12 @@ import com.qiitabuilder.domain.User;
 import com.qiitabuilder.mapper.UserMapper;
 import com.qiitabuilder.security.SimpleLoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Objects;
 
 @Service
 public class UserDetailService {
@@ -20,6 +24,7 @@ public class UserDetailService {
      */
     public User fetchUserDetails(Integer userId) {
         User user=userMapper.fetchUserDetails(userId);
+        if (Objects.isNull(user)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (user.getUid().equals(loginUser.getUser().getUid())){
             user.setIsLoginUser(true);

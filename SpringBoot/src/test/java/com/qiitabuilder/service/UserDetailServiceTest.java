@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,6 +15,8 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -148,8 +151,6 @@ class UserDetailServiceTest {
         jdbcTemplate.execute("DROP TABLE users");
     }
 
-    final String URL = "https://qiita.com/api/v2/items";
-
     @BeforeEach
     public void beforeAll() {
         setAuthenticationInfo();
@@ -179,5 +180,16 @@ class UserDetailServiceTest {
         jdbcTemplate.execute("INSERT INTO users(user_id, uid, password) VALUES (1, 'test_uid_1', 'test_password_1'), (2, 'test_uid_2', 'test_password_2')");
         User user=userDetailService.fetchUserDetails(2);
         assertFalse(user.getIsLoginUser());
+    }
+    @Test
+    void fetchUserDetails_異常系_DBに存在しないユーザーの処理(){
+        jdbcTemplate.execute("INSERT INTO users(user_id, uid, password) VALUES (1, 'test_uid_1', 'test_password_1')");
+        try {
+            userDetailService.fetchUserDetails(2);
+        }catch (ResponseStatusException ex){
+            assertTrue(true);
+        }catch (Exception e){
+            assertTrue(false);
+        }
     }
 }
