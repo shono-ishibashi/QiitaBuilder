@@ -1,23 +1,45 @@
 package com.qiitabuilder.controller;
 
 import com.qiitabuilder.domain.Article;
+import com.qiitabuilder.service.ArticleService;
+import com.qiitabuilder.service.UserDetailService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
 class ArticleControllerTest {
-    @Autowired
-    private ArticleController articleController;
+
+    @Mock
+    private ArticleService articleService;
+    @InjectMocks
+    ArticleController articleController;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    private MockMvc mockMvc;
+
+    @BeforeEach
+    public void setUp() {
+        mockMvc = MockMvcBuilders.standaloneSetup(articleController)
+                .build();
+        MockitoAnnotations.initMocks(this);
+    }
 
     @BeforeEach
     private void beforeEach() {
@@ -164,50 +186,13 @@ class ArticleControllerTest {
     }
 
     @Test
-    void getFeedbackedArticlesByUserId_nullチェック() {
-        String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
-        String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
-        String[] feedbackSqlArr = CollectionSQL.insertFeedbacks.split("\n", 0);
-        String[] qiitaRecommendSqlArr = CollectionSQL.insertQiitaRecommends.split("\n", 0);
-        String[] tagSqlArr = CollectionSQL.insertTags.split("\n", 0);
-        String[] tagRelationSqlArr = CollectionSQL.insertArticlesTagsRelations.split("\n", 0);
-        String[] myArticleSqlArr = CollectionSQL.insertMyArticles.split("\n", 0);
-
-        Arrays.stream(userSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-        Arrays.stream(articleSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-        Arrays.stream(feedbackSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-        Arrays.stream(qiitaRecommendSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-        Arrays.stream(tagSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-        Arrays.stream(tagRelationSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-        Arrays.stream(myArticleSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-
-        List<Article> articleList=articleController.getFeedbackedArticlesByUserId(null);
-        assertNull(articleList);
-    }
-    @Test
-    void getFeedbackedArticlesByUserId_notNullチェック() {
-        String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
-        String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
-        String[] feedbackSqlArr = CollectionSQL.insertFeedbacks.split("\n", 0);
-        String[] qiitaRecommendSqlArr = CollectionSQL.insertQiitaRecommends.split("\n", 0);
-        String[] tagSqlArr = CollectionSQL.insertTags.split("\n", 0);
-        String[] tagRelationSqlArr = CollectionSQL.insertArticlesTagsRelations.split("\n", 0);
-        String[] myArticleSqlArr = CollectionSQL.insertMyArticles.split("\n", 0);
-
-        Arrays.stream(userSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-        Arrays.stream(articleSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-        Arrays.stream(feedbackSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-        Arrays.stream(qiitaRecommendSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-        Arrays.stream(tagSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-        Arrays.stream(tagRelationSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-        Arrays.stream(myArticleSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-
-        List<Article> articleList=articleController.getFeedbackedArticlesByUserId(1);
-        assertNotNull(articleList);
+    void getFeedbackedArticlesByUserId_userIdがnullの処理() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/article/feedbacked/"))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
     }
 
     @Test
-    void getMyArticlesByUserId_nullチェック() {
+    void getFeedbackedArticlesByUserId_正常系() throws Exception {
         String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
         String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
         String[] feedbackSqlArr = CollectionSQL.insertFeedbacks.split("\n", 0);
@@ -224,54 +209,18 @@ class ArticleControllerTest {
         Arrays.stream(tagRelationSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
         Arrays.stream(myArticleSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
 
-        List<Article> articleList=articleController.getMyArticlesByUserId(null);
-        assertNull(articleList);
-    }
-    @Test
-    void getMyArticlesByUserId_notNullチェック() {
-        String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
-        String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
-        String[] feedbackSqlArr = CollectionSQL.insertFeedbacks.split("\n", 0);
-        String[] qiitaRecommendSqlArr = CollectionSQL.insertQiitaRecommends.split("\n", 0);
-        String[] tagSqlArr = CollectionSQL.insertTags.split("\n", 0);
-        String[] tagRelationSqlArr = CollectionSQL.insertArticlesTagsRelations.split("\n", 0);
-        String[] myArticleSqlArr = CollectionSQL.insertMyArticles.split("\n", 0);
-
-        Arrays.stream(userSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-        Arrays.stream(articleSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-        Arrays.stream(feedbackSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-        Arrays.stream(qiitaRecommendSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-        Arrays.stream(tagSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-        Arrays.stream(tagRelationSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-        Arrays.stream(myArticleSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-
-        List<Article> articleList=articleController.getMyArticlesByUserId(1);
-        assertNotNull(articleList);
+        mockMvc.perform(MockMvcRequestBuilders.get("/article/feedbacked/?userId=1"))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
     }
 
     @Test
-    void  getArticlesByUserId_nullチェック(){
-        String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
-        String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
-        String[] feedbackSqlArr = CollectionSQL.insertFeedbacks.split("\n", 0);
-        String[] qiitaRecommendSqlArr = CollectionSQL.insertQiitaRecommends.split("\n", 0);
-        String[] tagSqlArr = CollectionSQL.insertTags.split("\n", 0);
-        String[] tagRelationSqlArr = CollectionSQL.insertArticlesTagsRelations.split("\n", 0);
-        String[] myArticleSqlArr = CollectionSQL.insertMyArticles.split("\n", 0);
-
-        Arrays.stream(userSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-        Arrays.stream(articleSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-        Arrays.stream(feedbackSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-        Arrays.stream(qiitaRecommendSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-        Arrays.stream(tagSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-        Arrays.stream(tagRelationSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-        Arrays.stream(myArticleSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
-
-        List<Article> articleList=articleController.getArticlesByUserId(null);
-        assertNull(articleList);
+    void getMyArticlesByUserId_userIdがnullの処理() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/article/my-articles/"))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
     }
+
     @Test
-    void  getArticlesByUserId_notNullチェック(){
+    void getMyArticlesByUserId_正常系() throws Exception {
         String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
         String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
         String[] feedbackSqlArr = CollectionSQL.insertFeedbacks.split("\n", 0);
@@ -288,7 +237,35 @@ class ArticleControllerTest {
         Arrays.stream(tagRelationSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
         Arrays.stream(myArticleSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
 
-        List<Article> articleList=articleController.getArticlesByUserId(1);
-        assertNotNull(articleList);
+        mockMvc.perform(MockMvcRequestBuilders.get("/article/my-articles/?userId=1"))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+    }
+
+    @Test
+    void getArticlesByUserId_userIdがnullの処理() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/article/posted/"))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
+    @Test
+    void getArticlesByUserId_正常系() throws Exception {
+        String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
+        String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
+        String[] feedbackSqlArr = CollectionSQL.insertFeedbacks.split("\n", 0);
+        String[] qiitaRecommendSqlArr = CollectionSQL.insertQiitaRecommends.split("\n", 0);
+        String[] tagSqlArr = CollectionSQL.insertTags.split("\n", 0);
+        String[] tagRelationSqlArr = CollectionSQL.insertArticlesTagsRelations.split("\n", 0);
+        String[] myArticleSqlArr = CollectionSQL.insertMyArticles.split("\n", 0);
+
+        Arrays.stream(userSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+        Arrays.stream(articleSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+        Arrays.stream(feedbackSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+        Arrays.stream(qiitaRecommendSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+        Arrays.stream(tagSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+        Arrays.stream(tagRelationSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+        Arrays.stream(myArticleSqlArr).forEach((sql) -> jdbcTemplate.execute(sql));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/article/posted/?userId=1"))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
     }
 }

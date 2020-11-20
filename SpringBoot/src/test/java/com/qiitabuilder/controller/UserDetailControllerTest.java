@@ -30,22 +30,21 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureMockMvc
 class UserDetailControllerTest {
 
-    @Autowired
-    private WebApplicationContext context;
     @Mock
     private UserDetailService userDetailService;
     @InjectMocks
     UserDetailController userDetailController;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     private MockMvc mockMvc;
+
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(userDetailController)
                 .build();
         MockitoAnnotations.initMocks(this);
     }
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     private void beforeEach() {
@@ -173,13 +172,14 @@ class UserDetailControllerTest {
     }
 
     @Test
-    void fetchUserDetails_Nullチェック() throws Exception{
+    void fetchUserDetails_userIdがNullの処理() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/user/detail/"))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError());
 
     }
+
     @Test
-    void fetchUserDetails() throws Exception {
+    void fetchUserDetails_正常系() throws Exception {
         String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
         String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
         String[] feedbackSqlArr = CollectionSQL.insertFeedbacks.split("\n", 0);
