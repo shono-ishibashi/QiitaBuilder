@@ -60,6 +60,68 @@ class ArticleControllerTest {
     }
 
     @Test
+    void postArticle_非ログイン() throws Exception {
+        List<Tag> tags = new ArrayList<>(Arrays.asList(new Tag(1, "tag1", null), new Tag(2, "tag2", null)));
+
+
+        Article article = Article.builder()
+                .articleId(null)
+                .title("title_test")
+                .tags(tags)
+                .content("content_test")
+                .build();
+
+        Article expectBody = Article.builder()
+                .articleId(1)
+                .title("title_test")
+                .tags(tags)
+                .content("content_test")
+                .build();
+
+
+        doReturn(expectBody).when(articleService).saveArticle(article);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(article);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/article/")
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().is(401));
+    }
+
+    @Test
+    void editArticle_非ログイン() throws Exception {
+        List<Tag> tags = new ArrayList<>(Arrays.asList(new Tag(1, "tag1", null), new Tag(2, "tag2", null)));
+
+
+        Article article = Article.builder()
+                .articleId(null)
+                .title("title_test")
+                .tags(tags)
+                .content("content_test")
+                .build();
+
+        Article expectBody = Article.builder()
+                .articleId(null)
+                .title("title_test")
+                .tags(tags)
+                .content("content_test")
+                .build();
+
+
+        doReturn(expectBody).when(articleService).saveArticle(article);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(article);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/article/")
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().is(401));
+    }
+
+    @Test
     void postArticle_正常系() throws Exception {
         List<Tag> tags = new ArrayList<>(Arrays.asList(new Tag(1, "tag1", null), new Tag(2, "tag2", null)));
 
