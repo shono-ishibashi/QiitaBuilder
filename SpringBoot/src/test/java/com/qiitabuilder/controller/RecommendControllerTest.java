@@ -101,7 +101,7 @@ class RecommendControllerTest {
     // postRecommend()
     @Test
     @WithMockUser
-    void postRecommend正常系()throws Exception {
+    void postRecommend正常系() throws Exception {
         // リクエストボディーとレスポンスボディー作成
         Recommend req = Recommend.builder()
                 .articleId(1)
@@ -126,6 +126,7 @@ class RecommendControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(resBody));
     }
+
     @Test
     @WithMockUser
     void postRecommend異常系_ボディーがNullの場合() throws Exception {
