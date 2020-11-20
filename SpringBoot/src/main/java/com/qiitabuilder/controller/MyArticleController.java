@@ -64,9 +64,6 @@ public class MyArticleController {
         if (Objects.isNull(myArticle.getArticleId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        if (!String.valueOf(myArticle.getArticleId()).matches("^\\d+$")) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
 
         return myArticleService.postMyArticle(myArticle);
     }
