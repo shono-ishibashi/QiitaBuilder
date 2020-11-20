@@ -124,7 +124,7 @@ public class ArticleController {
     @ResponseStatus(HttpStatus.CREATED)
     public Article postArticle(@RequestBody Article article) {
         if (
-                article.getTags().size() <= 0 ||
+                article.getTags().size() == 0 ||
                         article.getTags().size() > 5 ||
                         article.getTitle().isEmpty() ||
                         article.getContent().length() > 30000 ||
