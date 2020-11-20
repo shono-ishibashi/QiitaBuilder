@@ -115,7 +115,6 @@ class MyArticleControllerTest {
 
         // Serviceの挙動を指定
         doReturn(res).when(myArticleService).postMyArticle(req);
-        System.out.println(reqBody);
 
         mockMvc
                 .perform(post(BASE_URL)
@@ -158,8 +157,6 @@ class MyArticleControllerTest {
     @WithMockUser
     void postMyArticle異常系_articleIdが文字列の場合() throws Exception {
         String reqBody = "{\"articleId\":\"test\"}";
-
-        System.out.println(reqBody);
 
         mockMvc
                 .perform(post(BASE_URL)
