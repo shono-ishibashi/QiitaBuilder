@@ -45,30 +45,30 @@
                feed_cnt_table.feed_cnt           AS feedback_count,
                art_qiita_cnt_table.art_qiita_cnt AS posted_article_count,
                recommend_cnt_table.recommend_cnt AS qiita_recommended_all_count
-        FROM qiita_builder.users AS u
+        FROM users AS u
                  LEFT OUTER JOIN (SELECT tag_id, posted_user_id, count(a_t_relation.tag_id) AS tag_cnt
-                                  FROM qiita_builder.articles_tags_relations AS a_t_relation
-                                           LEFT JOIN qiita_builder.articles as art
+                                  FROM articles_tags_relations AS a_t_relation
+                                           LEFT JOIN articles as art
                                                      ON a_t_relation.article_id = art.article_id
                                   WHERE posted_user_id = #{userId}
                                     AND art.state_flag != 9
                                     AND art.state_flag != 0
                                   GROUP BY a_t_relation.tag_id) AS tag_cnt_table
                                  ON u.user_id = tag_cnt_table.posted_user_id
-                 LEFT OUTER JOIN qiita_builder.tags AS tags
+                 LEFT OUTER JOIN tags AS tags
                                  ON tag_cnt_table.tag_id = tags.tag_id
                  LEFT OUTER JOIN (SELECT user_id, count(feed.user_id) AS feed_cnt
-                                  FROM qiita_builder.feedbacks AS feed
+                                  FROM feedbacks AS feed
                                   WHERE feed.delete_flag != 1
                                   GROUP BY feed.user_id) AS feed_cnt_table
                                  ON u.user_id = feed_cnt_table.user_id
                  LEFT OUTER JOIN (SELECT user_id, count(art.user_id) AS art_qiita_cnt
-                                  FROM qiita_builder.articles AS art
+                                  FROM articles AS art
                                   WHERE art.state_flag = 2
                                   GROUP BY art.user_id) AS art_qiita_cnt_table
                                  ON u.user_id = art_qiita_cnt_table.user_id
                  LEFT OUTER JOIN (SELECT posted_user_id, count(recommend.posted_user_id) AS recommend_cnt
-                                  FROM qiita_builder.qiita_recommends AS recommend
+                                  FROM qiita_recommends AS recommend
                                   GROUP BY recommend.posted_user_id) AS recommend_cnt_table
                                  ON u.user_id = recommend_cnt_table.posted_user_id
         WHERE u.user_id = #{userId}

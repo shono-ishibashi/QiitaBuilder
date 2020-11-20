@@ -29,6 +29,7 @@ class UserDetailServiceTest {
 
     @BeforeEach
     private void beforeEach() {
+        beforeAfter();
         jdbcTemplate.execute("create table users\n" +
                 "(\n" +
                 "   user_id      int auto_increment\n" +
@@ -141,14 +142,14 @@ class UserDetailServiceTest {
 
     @AfterEach
     private void beforeAfter() {
-        jdbcTemplate.execute("DROP TABLE qiita_recommends");
-        jdbcTemplate.execute("DROP TABLE qiita_configurations");
-        jdbcTemplate.execute("DROP TABLE my_articles");
-        jdbcTemplate.execute("DROP TABLE feedbacks");
-        jdbcTemplate.execute("DROP TABLE articles_tags_relations");
-        jdbcTemplate.execute("DROP TABLE tags");
-        jdbcTemplate.execute("DROP TABLE articles");
-        jdbcTemplate.execute("DROP TABLE users");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS qiita_recommends");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS qiita_configurations");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS my_articles");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS feedbacks");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS articles_tags_relations");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS tags");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS articles");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS users");
     }
 
     @BeforeEach
