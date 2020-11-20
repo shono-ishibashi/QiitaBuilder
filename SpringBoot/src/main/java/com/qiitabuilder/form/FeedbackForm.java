@@ -19,6 +19,7 @@ public class FeedbackForm {
     private Integer articleId;
 
     @NotBlank
+    @Size(max = 20000)
     private String content;
 
     @NotNull
