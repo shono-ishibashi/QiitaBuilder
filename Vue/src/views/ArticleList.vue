@@ -178,9 +178,9 @@ export default {
         {key: 3, state: "My記事登録順"}
       ],
       periodList: [
+        {key: null, state: "全て"},
         {key: 0, state: "週間"},
         {key: 1, state: "月間"},
-        {key: null, state: "全て"},
       ],
       title_limit_length: value => value.length <= 100 || "100文字以内で入力してください",
       user_limit_length: value => value.length <= 30 || "30文字以内で入力してください",
@@ -251,6 +251,7 @@ export default {
     reset() {
       this.searchCriteria.searchWord = ""
       this.searchCriteria.searchTag = []
+      this.searchCriteria.currentPage = 1
       this.fetchArticles(this.searchCriteria)
     },
     toggleSearchWordBox() {
