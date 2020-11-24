@@ -41,14 +41,9 @@ public class ArticleController {
     @ResponseStatus(HttpStatus.OK)
     public List<Article> searchArticles(@Validated @ModelAttribute SearchArticleForm searchArticleForm, BindingResult result) {
         if (result.hasErrors()) {
-            System.out.println("error");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        if (isNull(searchArticleForm.getStateFlagList())) {
-            searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
-        } else if (searchArticleForm.getStateFlagList().get(0) == 10) {
-            searchArticleForm.setStateFlagList(Arrays.asList(0, 1, 2));
-        }
+        searchArticleForm.setStateFlagList(Arrays.asList(1, 2));
         return articleService.searchArticles(searchArticleForm);
     }
 
@@ -113,7 +108,11 @@ public class ArticleController {
         if (result.hasErrors()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        return articleService.findByArticleIdAndUserId(existArticleForm.getArticleId(), existArticleForm.getUserId());
+        Integer articleId = articleService.findByArticleIdAndUserId(existArticleForm.getArticleId(), existArticleForm.getUserId());
+        if (Objects.isNull(articleId)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        return articleId;
     }
 
     /////////////////////////////

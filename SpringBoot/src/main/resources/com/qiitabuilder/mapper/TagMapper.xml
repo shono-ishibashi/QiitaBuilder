@@ -25,7 +25,8 @@
         SELECT tag_id
         FROM articles_tags_relations
         WHERE article_id = #{articleId}
-          AND posted_user_id = #{userId};
+          AND posted_user_id = #{userId}
+        ORDER BY tag_id;
     </select>
 
 
