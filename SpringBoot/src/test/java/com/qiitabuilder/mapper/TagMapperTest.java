@@ -65,10 +65,6 @@ class TagMapperTest {
     }
 
     @Test
-    void postTag() {
-    }
-
-    @Test
     void findAllArticleTag() {
     }
 
