@@ -151,21 +151,21 @@ export default {
         articleId:article,
         userId:this.userId
       }
-      const findArticleId=await axios.get(this.API_URL+'article/isExist',{
+      console.log(params)
+      await axios.get(this.API_URL+'article/isExist',{
         params: params,
         headers: {
           "Authorization": this.apiToken,
           "Content-Type": "application/json"
         },
+      }).then(()=>{
+        this.resetArticle()
+        this.fetchTags()
+        this.fetchArticle(this.slug);
+      }).catch(()=>{
+        this.$router.push('/article')
+        this.toggleErrorTransitionDialog()
       })
-      if(findArticleId!=null){
-        await this.resetArticle()
-        await this.fetchTags()
-        await this.fetchArticle(this.slug);
-      }else{
-        await this.$router.push('/article')
-        await this.toggleErrorTransitionDialog()
-      }
     }
   },
   computed: {
