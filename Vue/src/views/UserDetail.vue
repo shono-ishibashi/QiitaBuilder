@@ -276,7 +276,7 @@ export default {
     },
     apiToken: async function () {
       if (this.$route.params['userId'] === '0') {
-        if (!this.loginUser.uid)this.$router.push({path: '/article'});
+        if (!this.loginUser.uid) await this.$router.push({name: "articleList"});
         await this.findUserIdByUid(this.loginUser.uid);
         //DBに存在しないユーザーIDが渡された場合記事一覧に戻る
         /*if (this.userId === 0 || this.userId) {
@@ -290,7 +290,7 @@ export default {
         await this.fetchUserDetail(this.$route.params['userId']);
         //DBに存在しないユーザーIDが渡された場合記事一覧に戻る
         if (this.userId === 0) {
-          await this.$router.push({path: '/article'})
+          await this.$router.push({name: "articleList"})
         }
         await this.fetchFeedbackArticles(this.$route.params['userId']);
         await this.fetchMyArticles(this.$route.params['userId']);

@@ -135,7 +135,7 @@ export default {
       required: value => value && !!value || "必ず入力してください",
       blank: value => {
         const pattern = /\S/g
-        return pattern.test(value[value.length-1]) || "空文字のみの入力はできません"
+        return pattern.test(value[value.length - 1]) || "空文字のみの入力はできません"
       },
       title_limit_length: value => value && value.length <= 100 || "100文字以内で入力してください",
       tags_max_size: value => value && value.length <= 5 || "5つまで入力してください",
@@ -144,14 +144,13 @@ export default {
   },
   watch: {
     async apiToken() {
-      const uid=await this.loginUser.uid
+      const uid = await this.loginUser.uid
       await this.findUserIdByUid(uid)
       const article=await this.slug
       const params= await {
         articleId:article,
         userId:this.userId
       }
-      console.log(params)
       await axios.get(this.API_URL+'article/isExist',{
         params: params,
         headers: {
@@ -173,7 +172,7 @@ export default {
     ...mapState("article", ["article"]),
     ...mapGetters("auth", ["loginUser"]),
     ...mapGetters(["API_URL"]),
-    ...mapGetters("user",["userId"]),
+    ...mapGetters("user", ["userId"]),
     slug() {
       return this.$route.params.articleId;
     },
@@ -207,7 +206,7 @@ export default {
   },
   methods: {
     ...mapActions("article", ["fetchArticle", "saveArticle", "resetArticle"]),
-    ...mapActions("articles", ["fetchTags","toggleErrorTransitionDialog"]),
+    ...mapActions("articles", ["fetchTags", "toggleErrorTransitionDialog"]),
     ...mapActions("user", ["findUserIdByUid"]),
     //記事を投稿or更新するメソッド
     async postArticle(state) {
@@ -223,7 +222,7 @@ export default {
           }
         }
         await this.saveArticle(this.article)
-        await this.$router.push('/article')
+        await this.$router.push({name: "articleList"})
         await this.resetArticle()
       } else {
         this.$refs.edit_form.validate()

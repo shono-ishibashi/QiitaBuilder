@@ -4,12 +4,12 @@
     <v-list-item class="articleCard">
       <v-list-item-avatar>
         <v-avatar class="grey lighten-1" dark>
-                <img
-                    :src="article.postedUser.photoUrl"
-                     @click="toUserDetail(article.postedUser.userId)"
-                     style="cursor: pointer;"
-                    alt=""
-                />
+          <img
+              :src="article.postedUser.photoUrl"
+              @click="toUserDetail(article.postedUser.userId)"
+              style="cursor: pointer;"
+              alt=""
+          />
         </v-avatar>
       </v-list-item-avatar>
       <v-list-item-avatar>
@@ -27,19 +27,20 @@
       <v-list-item-content>
         <div class="title-field">
           <v-list-item-title
-            class="title"
-            style="cursor: pointer;"
-            @click="toDetail(article.articleId)"
-          >{{article.title|truncate}}</v-list-item-title>
+              class="title"
+              style="cursor: pointer;"
+              @click="toDetail(article.articleId)"
+          >{{ article.title|truncate }}
+          </v-list-item-title>
           <v-list-item-subtitle class="tag-field">
             <v-chip-group active-class="primary--text">
               <v-chip
-                v-for="tag in article.tags"
-                :key="tag.tagId"
-                color="#5bc8ac"
-                small
-                dark
-                @click="findByTagId(tag.tagId)"
+                  v-for="tag in article.tags"
+                  :key="tag.tagId"
+                  color="#5bc8ac"
+                  small
+                  dark
+                  @click="findByTagId(tag.tagId)"
               >
                 {{ tag.tagName }}
               </v-chip>
@@ -160,8 +161,8 @@ export default {
   methods: {
     ...mapActions("articles", ["fetchArticles"]),
     findByTagId(tagId) {
-      if(this.$route.path !== '/article'){
-        this.$router.push({name: 'ArticleList'})
+      if (this.$route.name !== 'articleList') {
+        this.$router.push({name: "articleList"})
       }
       this.searchCriteria.searchTag = [tagId];
       this.fetchArticles(this.searchCriteria);

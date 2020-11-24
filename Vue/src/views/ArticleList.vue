@@ -189,11 +189,11 @@ export default {
   created() {
   },
   computed: {
-    ...mapState("articles", ["articles", "tags", "totalPage", "searchCriteria","errorTransistionDialog"]),
+    ...mapState("articles", ["articles", "tags", "totalPage", "searchCriteria", "errorTransistionDialog"]),
     apiToken() {
       return this.$store.getters["auth/apiToken"];
     },
-    errorDialog:{
+    errorDialog: {
       get() {
         return this.errorTransistionDialog
       },
@@ -206,7 +206,7 @@ export default {
     ArticleCard
   },
   methods: {
-    ...mapActions("articles", ["fetchArticles", "fetchTags","toggleErrorTransitionDialog"]),
+    ...mapActions("articles", ["fetchArticles", "fetchTags", "toggleErrorTransitionDialog"]),
     changePeriod(key) {
       this.searchCriteria.period = key
     },
