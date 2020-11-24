@@ -7,7 +7,6 @@
         height="70px"
         class="app-bar"
     >
-
       <v-toolbar-title
           style="font-weight:bold;font-size:30px;cursor: pointer;"
           @click="toArticleList"
@@ -91,12 +90,12 @@ export default {
     ...mapActions("auth", ["logout"]),
     ...mapActions("article", ["resetArticle"]),
     toArticleList() {
-      this.$router.push('/article', () => {
+      this.$router.push({name: "articleList"}, () => {
       })
     },
     toArticleNew() {
       this.resetArticle()
-      this.$router.push('/article/new', () => {
+      this.$router.push({name: "articleNew"}, () => {
       })
     },
     toRanking() {

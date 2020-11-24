@@ -95,7 +95,7 @@ export default {
       required: value => value && !!value || "必ず入力してください",
       blank: value => {
         const pattern = /\S/g
-        return pattern.test(value[value.length-1]) || "空文字のみの入力はできません"
+        return pattern.test(value[value.length - 1]) || "空文字のみの入力はできません"
       },
       title_limit_length: value => value && value.length <= 100 || "100文字以内で入力してください",
       tags_max_size: value => value && value.length <= 5 || "5つまで入力してください",
@@ -134,7 +134,7 @@ export default {
           }
         }
         await this.saveArticle(this.article)
-        await this.$router.push('/article')
+        await this.$router.push({name: "articleList"})
       } else {
         this.$refs.form.validate()
       }

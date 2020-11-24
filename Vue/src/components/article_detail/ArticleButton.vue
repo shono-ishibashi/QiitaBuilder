@@ -6,15 +6,15 @@
         <v-tooltip top v-if="recommendId">
           <template v-slot:activator="{ on, attrs }">
             <v-btn
-              v-bind="attrs"
-              v-on="on"
-              class="mx-2"
-              dark
-              block
-              elevation="2"
-              large
-              color="green"
-              @click="toggleRecommend"
+                v-bind="attrs"
+                v-on="on"
+                class="mx-2"
+                dark
+                block
+                elevation="2"
+                large
+                color="green"
+                @click="toggleRecommend"
             >
               <v-icon dark>
                 mdi-thumb-up
@@ -29,15 +29,15 @@
         <v-tooltip top v-if="!recommendId">
           <template v-slot:activator="{ on, attrs }">
             <v-btn
-              v-bind="attrs"
-              v-on="on"
-              class="mx-2"
-              block
-              elevation="2"
-              large
-              outlined
-              color="green"
-              @click="toggleRecommend"
+                v-bind="attrs"
+                v-on="on"
+                class="mx-2"
+                block
+                elevation="2"
+                large
+                outlined
+                color="green"
+                @click="toggleRecommend"
             >
               <v-icon color="green">
                 mdi-thumb-up
@@ -55,15 +55,15 @@
         <v-tooltip top v-if="myArticleId">
           <template v-slot:activator="{ on, attrs }">
             <v-btn
-              v-bind="attrs"
-              v-on="on"
-              class="mx-2"
-              dark
-              block
-              elevation="2"
-              large
-              color="pink"
-              @click="toggleMyArticle"
+                v-bind="attrs"
+                v-on="on"
+                class="mx-2"
+                dark
+                block
+                elevation="2"
+                large
+                color="pink"
+                @click="toggleMyArticle"
             >
               <v-icon dark>
                 mdi-heart
@@ -76,14 +76,14 @@
         <v-tooltip top v-if="!myArticleId">
           <template v-slot:activator="{ on, attrs }">
             <v-btn
-              v-bind="attrs"
-              v-on="on"
-              class="mx-2"
-              block
-              elevation="2"
-              large
-              outlined
-              @click="toggleMyArticle"
+                v-bind="attrs"
+                v-on="on"
+                class="mx-2"
+                block
+                elevation="2"
+                large
+                outlined
+                @click="toggleMyArticle"
             >
               <v-icon color="blue-grey">
                 mdi-heart

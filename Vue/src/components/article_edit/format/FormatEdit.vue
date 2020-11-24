@@ -1,7 +1,7 @@
 <template>
-<v-container class="edit">
-  <Edit :height="800"></Edit>
-</v-container>
+  <v-container class="edit">
+    <Edit :height="800"></Edit>
+  </v-container>
 </template>
 
 <script>
@@ -9,17 +9,16 @@ import Edit from '../Edit'
 
 export default {
   name: "FormatEdit",
-  data(){
-    return{
-    }
+  data() {
+    return {}
   },
-  components:{Edit}
+  components: {Edit}
 }
 </script>
 
 <style scoped>
-.edit{
-  position:sticky;
-  top:8%;
+.edit {
+  position: sticky;
+  top: 8%;
 }
 </style>

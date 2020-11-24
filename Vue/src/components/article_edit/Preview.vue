@@ -1,18 +1,18 @@
 <template>
   <v-container fluid class="preview">
     <Editor
-      mode="viewer"
-      ref="editor"
-      hint="Hint"
-      :outline="true"
-      :render-config="renderConfig"
-      v-model="content"
+        mode="viewer"
+        ref="editor"
+        hint="Hint"
+        :outline="true"
+        :render-config="renderConfig"
+        v-model="content"
     />
   </v-container>
 </template>
 
 <script>
-import { Editor } from "vuetify-markdown-editor";
+import {Editor} from "vuetify-markdown-editor";
 
 export default {
   components: {
@@ -30,7 +30,7 @@ export default {
     };
   },
   computed: {
-    content(){
+    content() {
       return this.$store.state.article.article.content;
     }
   },
@@ -42,6 +42,6 @@ export default {
   background-color: #ffffff;
   border: 4px solid #a9a9a9;
   min-height: 700px;
-  height:auto !important;
+  height: auto !important;
 }
 </style>

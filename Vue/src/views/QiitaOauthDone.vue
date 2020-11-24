@@ -104,7 +104,7 @@ export default {
           await localStorage.removeItem('articleId');
 
         } else {
-          await this.$router.push({name: 'ArticleList'});
+          await this.$router.push({name: "articleList"});
         }
       }
     }

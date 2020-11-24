@@ -1,7 +1,7 @@
 <template>
-<v-container>
+  <v-container>
     <Preview class="preview"></Preview>
-</v-container>
+  </v-container>
 </template>
 
 <script>
@@ -14,8 +14,8 @@ export default {
 </script>
 
 <style scoped>
-.preview{
-  position:sticky;
-  top:8%;
+.preview {
+  position: sticky;
+  top: 8%;
 }
 </style>

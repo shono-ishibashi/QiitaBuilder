@@ -10,10 +10,10 @@
     </v-row>
 
     <Feedback
-      v-for="feedback in feedbacks"
-      :feedback="feedback"
-      :key="feedback.feedbackId"
-      @editFeedback="editFeedback"
+        v-for="feedback in feedbacks"
+        :feedback="feedback"
+        :key="feedback.feedbackId"
+        @editFeedback="editFeedback"
     ></Feedback>
   </v-container>
 </template>
@@ -22,7 +22,7 @@
 import Feedback from "./Feedback";
 
 export default {
-  name:"Feedbacks",
+  name: "Feedbacks",
   components: {
     Feedback,
   },

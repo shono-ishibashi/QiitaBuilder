@@ -45,17 +45,17 @@
 <script>
 export default {
   name: "Footer",
-  data(){
-    return{
-      links:[
-          'About',
-          'ご利用規格',
-          'プライバシー',
-          'ガイドライン',
-          'ご意見'
+  data() {
+    return {
+      links: [
+        'About',
+        'ご利用規格',
+        'プライバシー',
+        'ガイドライン',
+        'ご意見'
       ],
-      rakusUrl:"https://www.rakus-partners.co.jp/",
-      qiitaUrl:"https://qiita.com/"
+      rakusUrl: "https://www.rakus-partners.co.jp/",
+      qiitaUrl: "https://qiita.com/"
     }
   }
 }

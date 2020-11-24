@@ -58,8 +58,8 @@ export default {
 
 .feedback-area {
   background-color: #5bc8ac;
-  border:2px solid #008b8b;
-  border-radius:15px;
+  border: 2px solid #008b8b;
+  border-radius: 15px;
   padding: 20px;
   height: 330px;
   overflow: scroll;

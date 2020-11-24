@@ -5,7 +5,8 @@
       <v-icon>mdi-message-text-outline</v-icon>
       <v-spacer></v-spacer>
       <v-toolbar-title
-        >コメントを{{ feedback.feedbackId | postOrEdit }}する</v-toolbar-title
+      >コメントを{{ feedback.feedbackId | postOrEdit }}する
+      </v-toolbar-title
       >
       <v-spacer></v-spacer>
       <v-btn color="" icon @click="closeEditor">
@@ -17,9 +18,9 @@
         <v-col cols="2">
           <v-avatar size="36px" color="green">
             <img
-              v-if="loginUser.photoURL"
-              :src="loginUser.photoURL"
-              alt="user-icon"
+                v-if="loginUser.photoURL"
+                :src="loginUser.photoURL"
+                alt="user-icon"
             />
             <v-icon v-else dark size="36px">
               mdi-account-circle
@@ -42,32 +43,32 @@
       <v-form v-show="tab == 0" ref="form" v-model="valid">
         <v-container>
           <v-textarea
-            background-color="grey lighten-2"
-            color="green darken-2"
-            solo
-            v-model="feedback.content"
-            :rules="[required]"
-            label="テキストを入力"
+              background-color="grey lighten-2"
+              color="green darken-2"
+              solo
+              v-model="feedback.content"
+              :rules="[required]"
+              label="テキストを入力"
           ></v-textarea>
         </v-container>
       </v-form>
       <v-container v-show="tab == 1">
         <Editor
-          mode="viewer"
-          ref="editor"
-          hint="Hint"
-          :outline="true"
-          :render-config="renderConfig"
-          v-model="feedback.content"
+            mode="viewer"
+            ref="editor"
+            hint="Hint"
+            :outline="true"
+            :render-config="renderConfig"
+            v-model="feedback.content"
         />
       </v-container>
       <!-- 投稿ボタン -->
       <v-card-actions>
         <v-btn
-          color="green"
-          class="white--text"
-          :disabled="!valid"
-          @click="saveFeedback"
+            color="green"
+            class="white--text"
+            :disabled="!valid"
+            @click="saveFeedback"
         >
           {{ feedback.feedbackId | postOrEdit }}する
         </v-btn>
@@ -77,7 +78,7 @@
 </template>
 
 <script>
-import { Editor } from "vuetify-markdown-editor";
+import {Editor} from "vuetify-markdown-editor";
 
 export default {
   components: {
@@ -103,7 +104,7 @@ export default {
     this.loginUser = this.$store.state.auth.loginUser;
   },
   filters: {
-    postOrEdit: function(value) {
+    postOrEdit: function (value) {
       if (!value) return "投稿";
       return "更新";
     },

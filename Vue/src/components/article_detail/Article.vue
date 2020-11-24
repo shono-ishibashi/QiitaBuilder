@@ -5,10 +5,10 @@
         <v-col cols="1" sm="1" md="1">
           <v-avatar size="42px" color="green" class="avatar">
             <img
-              v-if="article.postedUser.photoUrl"
-              :src="article.postedUser.photoUrl"
-              alt="user-icon"
-              @click="toUserDetail(article.postedUser.userId)"
+                v-if="article.postedUser.photoUrl"
+                :src="article.postedUser.photoUrl"
+                alt="user-icon"
+                @click="toUserDetail(article.postedUser.userId)"
             />
             <v-icon v-else dark size="42px">
               mdi-account-circle
@@ -17,7 +17,7 @@
         </v-col>
         <v-col class="" cols="2" sm="2" md="2">
           <v-btn @click="toUserDetail(article.postedUser.userId)" text>
-          <strong>@{{ article.postedUser.displayName }}</strong>
+            <strong>@{{ article.postedUser.displayName }}</strong>
           </v-btn>
         </v-col>
         <!-- 投稿日または更新日 -->
@@ -29,30 +29,30 @@
           <v-menu offset-y v-if="loginUser.uid == article.postedUser.uid">
             <template v-slot:activator="{ attrs, on }">
               <v-btn
-                v-bind="attrs"
-                v-on="on"
-                color="green"
-                outlined
-                style="text-transform: none;"
+                  v-bind="attrs"
+                  v-on="on"
+                  color="green"
+                  outlined
+                  style="text-transform: none;"
               >
                 {{ article.stateFlag | naming }} ▼
               </v-btn>
             </template>
             <v-list>
               <v-list-item
-                v-for="(item, index) in qiitaMenus"
-                :key="index"
-                @click.stop="item.action"
+                  v-for="(item, index) in qiitaMenus"
+                  :key="index"
+                  @click.stop="item.action"
               >
                 <v-list-item-title v-text="item.name"></v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
           <v-btn
-            v-if="loginUser.uid != article.postedUser.uid"
-            color="green"
-            outlined
-            style="text-transform: none; cursor: default;"
+              v-if="loginUser.uid != article.postedUser.uid"
+              color="green"
+              outlined
+              style="text-transform: none; cursor: default;"
           >
             {{ article.stateFlag | naming }}
           </v-btn>
@@ -60,10 +60,10 @@
 
         <!-- 記事メニュー -->
         <v-col
-          class=""
-          sm="2"
-          md="2"
-          v-if="loginUser.uid == article.postedUser.uid"
+            class=""
+            sm="2"
+            md="2"
+            v-if="loginUser.uid == article.postedUser.uid"
         >
           <v-menu offset-y>
             <template v-slot:activator="{ attrs, on }">
@@ -73,9 +73,9 @@
             </template>
             <v-list>
               <v-list-item
-                v-for="(item, index) in menus"
-                :key="index"
-                @click="item.action"
+                  v-for="(item, index) in menus"
+                  :key="index"
+                  @click="item.action"
               >
                 <v-list-item-title v-text="item.name"></v-list-item-title>
               </v-list-item>
@@ -85,12 +85,12 @@
       </v-row>
       <v-row>
         <v-col cols="12">
-          <Button 
-          :myArticleId="myArticleId"
-          :recommendId="recommendId"
-          :qiitaRecommendPoint="article.qiitaRecommendPoint"
-          @toggleMyArticle="toggleMyArticle"
-          @toggleRecommend="toggleRecommend"
+          <Button
+              :myArticleId="myArticleId"
+              :recommendId="recommendId"
+              :qiitaRecommendPoint="article.qiitaRecommendPoint"
+              @toggleMyArticle="toggleMyArticle"
+              @toggleRecommend="toggleRecommend"
           />
         </v-col>
       </v-row>
@@ -98,11 +98,11 @@
       <h1>{{ article.title }}</h1>
       <v-chip-group active-class="primary--text">
         <v-chip
-          v-for="tag in article.tags"
-          :key="tag.tagId"
-          @click="findByTagId(tag.tagId)"
-          color="#5bc8ac"
-          dark
+            v-for="tag in article.tags"
+            :key="tag.tagId"
+            @click="findByTagId(tag.tagId)"
+            color="#5bc8ac"
+            dark
         >
           {{ tag.tagName }}
         </v-chip>
@@ -110,12 +110,12 @@
     </v-container>
     <v-container>
       <Editor
-        mode="viewer"
-        ref="editor"
-        hint="Hint"
-        :outline="true"
-        :render-config="renderConfig"
-        v-model="article.content"
+          mode="viewer"
+          ref="editor"
+          hint="Hint"
+          :outline="true"
+          :render-config="renderConfig"
+          v-model="article.content"
       />
     </v-container>
     <v-dialog v-model="dialog" max-width="290">
@@ -141,7 +141,7 @@
 </template>
 
 <script>
-import { Editor } from "vuetify-markdown-editor";
+import {Editor} from "vuetify-markdown-editor";
 import Button from "./ArticleButton";
 import {mapActions, mapState} from "vuex";
 
@@ -153,8 +153,8 @@ export default {
   data() {
     return {
       menus: [
-        { name: "記事を編集する", action: this.toEdit },
-        { name: "記事を削除する", action: this.toggleDialog },
+        {name: "記事を編集する", action: this.toEdit},
+        {name: "記事を削除する", action: this.toggleDialog},
       ],
       dateFormat: ["年", "月", "日"],
       dialog: false,
@@ -169,17 +169,17 @@ export default {
   computed: {
     lastEditAt() {
       if (this.article.updatedAt) {
-        return { time: this.article.updatedAt, text: "に更新" };
+        return {time: this.article.updatedAt, text: "に更新"};
       }
-      return { time: this.article.createdAt, text: "に作成" };
+      return {time: this.article.createdAt, text: "に作成"};
     },
     loginUser() {
       return this.$store.state.auth.loginUser;
     },
     qiitaMenus() {
       if (this.article.stateFlag == 2)
-        return [{ name: "Qiitaを更新する", action: this.updateQiita }];
-      return [{ name: "Qiitaに投稿する", action: this.postQiita }];
+        return [{name: "Qiitaを更新する", action: this.updateQiita}];
+      return [{name: "Qiitaに投稿する", action: this.postQiita}];
     },
     ...mapState("articles", ["searchCriteria"]),
   },
@@ -192,11 +192,11 @@ export default {
     // this.$vuetify.theme.dark = true;
   },
   filters: {
-    naming: function(value) {
+    naming: function (value) {
       if (value == 2) return "Qiitaに投稿済み";
       return "Qiitaに未投稿";
     },
-    date: function(value) {
+    date: function (value) {
       if (!value) return "";
       var ymd = value.split("T")[0].split("-");
       return ymd[0] + "年" + ymd[1] + "月" + ymd[2] + "日";
@@ -213,30 +213,30 @@ export default {
       this.dialog = !this.dialog;
     },
     toEdit() {
-      this.$router.push({ name: "articleEdit" });
+      this.$router.push({name: "articleEdit"});
     },
     toUserDetail(userId) {
       this.$router.push({name: 'userDetail', params: {userId: userId}});
     },
     findByTagId(tagId) {
-      this.$router.push({name: 'ArticleList'})
+      this.$router.push({name: "articleList"})
       this.searchCriteria.searchTag = [tagId];
       this.fetchArticles(this.searchCriteria);
     },
     ...mapActions("articles", ["fetchArticles"]),
     async deleteArticle() {
-      this.$router.push({ name: "ArticleList" });
+      await this.$router.push({name: "articleList"});
       const item = this.article;
       item.stateFlag = 9;
       await this.$store.dispatch("article/saveArticle", item);
     },
     async updateQiita() {
       await this.postArticleToQiita(this.article.articleId);
-      await this.$router.push('/article/'+ this.article.articleId + '?isPostedArticleToQiita=true');
+      await this.$router.push('/article/' + this.article.articleId + '?isPostedArticleToQiita=true');
     },
     async postQiita() {
       await this.postArticleToQiita(this.article.articleId);
-      await this.$router.push('/article/'+ this.article.articleId + '?isPostedArticleToQiita=true');
+      await this.$router.push('/article/' + this.article.articleId + '?isPostedArticleToQiita=true');
     },
   },
 };
