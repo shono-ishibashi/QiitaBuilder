@@ -70,8 +70,7 @@ public class FeedbackController {
      * HTTP ステータス
      * OK
      * BadRequest 入力値エラーの場合
-     * NotFound フィードバックIDが存在しない場合
-     * Conflict 記事IDが存在しない場合
+     * Conflict 記事IDが存在しない場合 & フィードバックIDが存在しない場合
      *
      * @param form
      * @return
@@ -84,10 +83,10 @@ public class FeedbackController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
-        // フィードバックIDが存在しない場合はNotFoundを返す
+        // フィードバックIDが存在しない場合はConflictを返す
         Feedback inserted = feedbackService.fetchFeedback(form.getFeedbackId());
         if (Objects.isNull(inserted)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
 
         // 記事IDが存在しない場合はConflictを返す

@@ -189,12 +189,12 @@ class ArticleServiceTest {
 
     private void searchArticlesSqlTemplate() {
         String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
-        String[] articleSqlArr=CollectionSQL.insertArticles.split("\n", 0);
-        String[] feedbackSqlArr  = CollectionSQL.insertFeedbacks.split("\n", 0);
-        String[] qiitaRecommendSqlArr= CollectionSQL.insertQiitaRecommends.split("\n", 0);
-        String[] myArticlesSqlArr= CollectionSQL.insertMyArticles.split("\n", 0);
+        String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
+        String[] feedbackSqlArr = CollectionSQL.insertFeedbacks.split("\n", 0);
+        String[] qiitaRecommendSqlArr = CollectionSQL.insertQiitaRecommends.split("\n", 0);
+        String[] myArticlesSqlArr = CollectionSQL.insertMyArticles.split("\n", 0);
         String[] tagsSqlArr = CollectionSQL.insertTags.split("\n", 0);
-        String[] articlesTagsRelationsSqlArr= CollectionSQL.insertArticlesTagsRelations.split("\n", 0);
+        String[] articlesTagsRelationsSqlArr = CollectionSQL.insertArticlesTagsRelations.split("\n", 0);
 
         for (String sql : userSqlArr) {
             jdbcTemplate.execute(sql);
@@ -223,18 +223,18 @@ class ArticleServiceTest {
     void searchArticles_正常系_該当する記事が存在する() {
         searchArticlesSqlTemplate();
 //       searchArticlesの引数を定義
-        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+        SearchArticleForm searchArticleForm = SearchArticleForm.builder()
                 .sortNum(0)
                 .period(null)
                 .searchWord("")
                 .toggleSearchWord(0)
                 .pageSize(10)
                 .currentPage(1)
-                .stateFlagList( Arrays.asList(1, 2))
+                .stateFlagList(Arrays.asList(1, 2))
                 .build();
-        List<Article> articles=articleService.searchArticles(searchArticleForm);
+        List<Article> articles = articleService.searchArticles(searchArticleForm);
 //        記事数
-        assertEquals(10,articles.size());
+        assertEquals(10, articles.size());
         //      articles[0]のテスト
         LocalDateTime createDate = LocalDateTime.of(2020, 11, 10, 00, 00, 00);
         LocalDateTime updateDate = createDate.plusDays(1);
@@ -418,180 +418,188 @@ class ArticleServiceTest {
     }
 
     @Test
-    void searchArticles_正常系_該当する記事が存在しない(){
+    void searchArticles_正常系_該当する記事が存在しない() {
         searchArticlesSqlTemplate();
-        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+        SearchArticleForm searchArticleForm = SearchArticleForm.builder()
                 .sortNum(0)
                 .period(null)
                 .searchWord("存在しないタイトル")
                 .toggleSearchWord(0)
                 .pageSize(10)
                 .currentPage(1)
-                .stateFlagList( Arrays.asList(1, 2))
+                .stateFlagList(Arrays.asList(1, 2))
                 .build();
-        List<Article> articles=articleService.searchArticles(searchArticleForm);
+        List<Article> articles = articleService.searchArticles(searchArticleForm);
         //        記事数
-        assertEquals(null,articles);
+        assertEquals(null, articles);
     }
 
-//    pageSizeが10,取得件数が1件の時のtotalPage
+    //    pageSizeが10,取得件数が1件の時のtotalPage
     @Test
     void getTotalPage_正常系_pageSizeより取得記事数の方が少ない場合() {
-        String userInsertSql="INSERT INTO users (uid, photo_url, display_name, password) VALUES ('a', 'a', 'a', 'a');";
-        String articleInsertSql="INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, '2020-10-01 00:00:00', '2020-10-02 00:00:00', 'title1', '#content1', null, 1)";
+        String userInsertSql = "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('a', 'a', 'a', 'a');";
+        String articleInsertSql = "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, '2020-10-01 00:00:00', '2020-10-02 00:00:00', 'title1', '#content1', null, 1)";
         jdbcTemplate.execute(userInsertSql);
         jdbcTemplate.execute(articleInsertSql);
 //       searchArticlesの引数を定義
-        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+        SearchArticleForm searchArticleForm = SearchArticleForm.builder()
                 .sortNum(0)
                 .period(null)
                 .searchWord("")
                 .toggleSearchWord(0)
                 .pageSize(10)
                 .currentPage(1)
-                .stateFlagList( Arrays.asList(1, 2))
+                .stateFlagList(Arrays.asList(1, 2))
                 .build();
-        Integer totalPage=articleService.getTotalPage(searchArticleForm);
-        assertEquals(1,totalPage);
+        Integer totalPage = articleService.getTotalPage(searchArticleForm);
+        assertEquals(1, totalPage);
     }
 
-//    pageSizeが10件、取得件数が11件の時のtotalPage
+    //    pageSizeが10件、取得件数が11件の時のtotalPage
     @Test
     void getTotalPage_正常系_取得した記事件数がpageSizeより多く取得した記事件数がpageSizeで割り切れない場合() {
         String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
-        String[] articleSqlArr=CollectionSQL.insertArticles.split("\n", 0);
-        for(String sql:userSqlArr){
+        String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
+        for (String sql : userSqlArr) {
             jdbcTemplate.execute(sql);
         }
-        for(int i=0;i<11;i++){
+        for (int i = 0; i < 11; i++) {
             jdbcTemplate.execute(articleSqlArr[i]);
         }
 //       searchArticlesの引数を定義
-        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+        SearchArticleForm searchArticleForm = SearchArticleForm.builder()
                 .sortNum(0)
                 .period(null)
                 .searchWord("")
                 .toggleSearchWord(0)
                 .pageSize(10)
                 .currentPage(1)
-                .stateFlagList( Arrays.asList(1, 2))
+                .stateFlagList(Arrays.asList(1, 2))
                 .build();
-        Integer totalPage=articleService.getTotalPage(searchArticleForm);
-        assertEquals(2,totalPage);
+        Integer totalPage = articleService.getTotalPage(searchArticleForm);
+        assertEquals(2, totalPage);
     }
-//    pageSizeが10件、取得件数が10件の時のtotalPage
+
+    //    pageSizeが10件、取得件数が10件の時のtotalPage
     @Test
     void getTotalPage_正常系_取得した記事件数がpageSizeで割り切れる場合() {
         String[] userSqlArr = CollectionSQL.insertUsers.split("\n", 0);
-        String[] articleSqlArr=CollectionSQL.insertArticles.split("\n", 0);
-        for(String sql:userSqlArr){
+        String[] articleSqlArr = CollectionSQL.insertArticles.split("\n", 0);
+        for (String sql : userSqlArr) {
             jdbcTemplate.execute(sql);
         }
-        for(int i=0;i<10;i++){
+        for (int i = 0; i < 10; i++) {
             jdbcTemplate.execute(articleSqlArr[i]);
         }
 //       searchArticlesの引数を定義
-        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+        SearchArticleForm searchArticleForm = SearchArticleForm.builder()
                 .sortNum(0)
                 .period(null)
                 .searchWord("")
                 .toggleSearchWord(0)
                 .pageSize(10)
                 .currentPage(1)
-                .stateFlagList( Arrays.asList(1, 2))
+                .stateFlagList(Arrays.asList(1, 2))
                 .build();
-        Integer totalPage=articleService.getTotalPage(searchArticleForm);
-        assertEquals(1,totalPage);
+        Integer totalPage = articleService.getTotalPage(searchArticleForm);
+        assertEquals(1, totalPage);
     }
 
 
     @Test
     void searchCriteriaProcessing_正常系_sortNumが0currentPageが1の時() {
-        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+        SearchArticleForm searchArticleForm = SearchArticleForm.builder()
                 .sortNum(0)
                 .pageSize(10)
                 .currentPage(1)
                 .build();
         articleService.searchCriteriaProcessing(searchArticleForm);
-        assertEquals("createdAt",searchArticleForm.getSort());
-        assertEquals(0,searchArticleForm.getOffset());
+        assertEquals("createdAt", searchArticleForm.getSort());
+        assertEquals(0, searchArticleForm.getOffset());
     }
+
     @Test
     void searchCriteriaProcessing_正常系_sortNumが1currentPageが1の時() {
-        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+        SearchArticleForm searchArticleForm = SearchArticleForm.builder()
                 .sortNum(1)
                 .pageSize(10)
                 .currentPage(1)
                 .build();
         articleService.searchCriteriaProcessing(searchArticleForm);
-        assertEquals("updatedAt",searchArticleForm.getSort());
-        assertEquals(0,searchArticleForm.getOffset());
+        assertEquals("updatedAt", searchArticleForm.getSort());
+        assertEquals(0, searchArticleForm.getOffset());
     }
+
     @Test
     void searchCriteriaProcessing_正常系_sortNumが2currentPageが1の時() {
-        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+        SearchArticleForm searchArticleForm = SearchArticleForm.builder()
                 .sortNum(2)
                 .pageSize(10)
                 .currentPage(1)
                 .build();
         articleService.searchCriteriaProcessing(searchArticleForm);
-        assertEquals("recommendCnt",searchArticleForm.getSort());
-        assertEquals(0,searchArticleForm.getOffset());
+        assertEquals("recommendCnt", searchArticleForm.getSort());
+        assertEquals(0, searchArticleForm.getOffset());
     }
+
     @Test
     void searchCriteriaProcessing_正常系_sortNumが3currentPageが1の時() {
-        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+        SearchArticleForm searchArticleForm = SearchArticleForm.builder()
                 .sortNum(3)
                 .pageSize(10)
                 .currentPage(1)
                 .build();
         articleService.searchCriteriaProcessing(searchArticleForm);
-        assertEquals("myCnt",searchArticleForm.getSort());
-        assertEquals(0,searchArticleForm.getOffset());
+        assertEquals("myCnt", searchArticleForm.getSort());
+        assertEquals(0, searchArticleForm.getOffset());
     }
+
     @Test
     void searchCriteriaProcessing_正常系_sortNumが0currentPageが2の時() {
-        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+        SearchArticleForm searchArticleForm = SearchArticleForm.builder()
                 .sortNum(0)
                 .pageSize(10)
                 .currentPage(2)
                 .build();
         articleService.searchCriteriaProcessing(searchArticleForm);
-        assertEquals("createdAt",searchArticleForm.getSort());
-        assertEquals(10,searchArticleForm.getOffset());
+        assertEquals("createdAt", searchArticleForm.getSort());
+        assertEquals(10, searchArticleForm.getOffset());
     }
+
     @Test
     void searchCriteriaProcessing_正常系_sortNumが1currentPageが2の時() {
-        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+        SearchArticleForm searchArticleForm = SearchArticleForm.builder()
                 .sortNum(1)
                 .pageSize(10)
                 .currentPage(2)
                 .build();
         articleService.searchCriteriaProcessing(searchArticleForm);
-        assertEquals("updatedAt",searchArticleForm.getSort());
-        assertEquals(10,searchArticleForm.getOffset());
+        assertEquals("updatedAt", searchArticleForm.getSort());
+        assertEquals(10, searchArticleForm.getOffset());
     }
+
     @Test
     void searchCriteriaProcessing_正常系_sortNumが2currentPageが2の時() {
-        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+        SearchArticleForm searchArticleForm = SearchArticleForm.builder()
                 .sortNum(2)
                 .pageSize(10)
                 .currentPage(2)
                 .build();
         articleService.searchCriteriaProcessing(searchArticleForm);
-        assertEquals("recommendCnt",searchArticleForm.getSort());
-        assertEquals(10,searchArticleForm.getOffset());
+        assertEquals("recommendCnt", searchArticleForm.getSort());
+        assertEquals(10, searchArticleForm.getOffset());
     }
+
     @Test
     void searchCriteriaProcessing_正常系_sortNumが3currentPageが2の時() {
-        SearchArticleForm searchArticleForm=SearchArticleForm.builder()
+        SearchArticleForm searchArticleForm = SearchArticleForm.builder()
                 .sortNum(3)
                 .pageSize(10)
                 .currentPage(2)
                 .build();
         articleService.searchCriteriaProcessing(searchArticleForm);
-        assertEquals("myCnt",searchArticleForm.getSort());
-        assertEquals(10,searchArticleForm.getOffset());
+        assertEquals("myCnt", searchArticleForm.getSort());
+        assertEquals(10, searchArticleForm.getOffset());
     }
 
     @Test
@@ -725,7 +733,7 @@ class ArticleServiceTest {
         assertEquals(1, articlesTagsRelationsResult.get(0).get("article_id"));
         assertEquals(1, articlesTagsRelationsResult.get(0).get("tag_id"));
 
-        assertEquals(1,articlesTagsRelationsResult.size());
+        assertEquals(1, articlesTagsRelationsResult.size());
     }
 
 
@@ -887,38 +895,50 @@ class ArticleServiceTest {
     }
 
     @Test
-    void findByArticleIdAndUserId_正常系_存在する記事IDとユーザーIDに該当する記事が存在する(){
-        String userInsertSql="INSERT INTO users (uid, photo_url, display_name, password) VALUES ('a', 'a', 'a', 'a');";
-        String articleInsertSql="INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, '2020-10-01 00:00:00', '2020-10-02 00:00:00', 'title1', '#content1', null, 1)";
+    void findByArticleIdAndUserId_正常系_存在する記事IDとユーザーIDに該当する記事が存在する() {
+        String userInsertSql = "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('a', 'a', 'a', 'a');";
+        String articleInsertSql = "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, '2020-10-01 00:00:00', '2020-10-02 00:00:00', 'title1', '#content1', null, 1)";
         jdbcTemplate.execute(userInsertSql);
         jdbcTemplate.execute(articleInsertSql);
-        Integer articleId=articleService.findByArticleIdAndUserId(1,1);
-        assertEquals(1,articleId);
+        Integer articleId = articleService.findByArticleIdAndUserId(1, 1);
+        assertEquals(1, articleId);
     }
+
     @Test
-    void findByArticleIdAndUserId_正常系_存在する記事IDとユーザーIDに該当する記事が存在しない(){
-        String userInsertSql="INSERT INTO users (uid, photo_url, display_name, password) VALUES ('a', 'a', 'a', 'a');";
-        String user2InsertSql="INSERT INTO users (uid, photo_url, display_name, password) VALUES ('b', 'b', 'b', 'b');";
-        String articleInsertSql="INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, '2020-10-01 00:00:00', '2020-10-02 00:00:00', 'title1', '#content1', null, 1)";
+    void findByArticleIdAndUserId_正常系_存在する記事IDとユーザーIDに該当する記事が存在しない() {
+        String userInsertSql = "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('a', 'a', 'a', 'a');";
+        String user2InsertSql = "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('b', 'b', 'b', 'b');";
+        String articleInsertSql = "INSERT INTO articles (user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) VALUES (1, '2020-10-01 00:00:00', '2020-10-02 00:00:00', 'title1', '#content1', null, 1)";
         jdbcTemplate.execute(userInsertSql);
         jdbcTemplate.execute(user2InsertSql);
         jdbcTemplate.execute(articleInsertSql);
-        Integer articleId=articleService.findByArticleIdAndUserId(1,2);
-        assertEquals(null,articleId);
+        Integer articleId = articleService.findByArticleIdAndUserId(1, 2);
+        assertEquals(null, articleId);
     }
+
     @Test
-    void findByArticleIdAndUserId_正常系_存在しない記事IDとユーザーIDに該当する記事が存在しない(){
-        String userInsertSql="INSERT INTO users (uid, photo_url, display_name, password) VALUES ('a', 'a', 'a', 'a');";
+    void findByArticleIdAndUserId_正常系_存在しない記事IDとユーザーIDに該当する記事が存在しない() {
+        String userInsertSql = "INSERT INTO users (uid, photo_url, display_name, password) VALUES ('a', 'a', 'a', 'a');";
         jdbcTemplate.execute(userInsertSql);
-        Integer articleId=articleService.findByArticleIdAndUserId(1,1);
-        assertEquals(null,articleId);
+        Integer articleId = articleService.findByArticleIdAndUserId(1, 1);
+        assertEquals(null, articleId);
     }
 
     @Test
     void getFeedbackedArticlesByUserId() {
+        //Mapperからの値をそのまま返すメソッド
+        assertTrue(true);
     }
 
     @Test
     void getMyArticlesByUserId() {
+        //Mapperからの値をそのまま返すメソッド
+        assertTrue(true);
+    }
+
+    @Test
+    void getPostedArticlesByUserId() {
+        //Mapperからの値をそのまま返すメソッド
+        assertTrue(true);
     }
 }

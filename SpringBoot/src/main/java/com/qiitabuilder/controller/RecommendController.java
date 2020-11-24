@@ -63,9 +63,6 @@ public class RecommendController {
         if (Objects.isNull(recommend.getArticleId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        if (!String.valueOf(recommend.getArticleId()).matches("^\\d+$")) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
 
         return recommendService.postRecommend(recommend);
     }

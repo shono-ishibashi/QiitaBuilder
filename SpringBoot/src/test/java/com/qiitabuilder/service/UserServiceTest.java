@@ -27,4 +27,10 @@ class UserServiceTest {
     @Test
     void test1() {
     }
+
+    @Test
+    void findUserIdByUid(){
+        //Mapperからの値をreturnするだけのメソッド
+        assertTrue(true);
+    }
 }

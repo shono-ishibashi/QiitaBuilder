@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,6 +15,8 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -26,6 +29,7 @@ class UserDetailServiceTest {
 
     @BeforeEach
     private void beforeEach() {
+        beforeAfter();
         jdbcTemplate.execute("create table users\n" +
                 "(\n" +
                 "   user_id      int auto_increment\n" +
@@ -138,17 +142,15 @@ class UserDetailServiceTest {
 
     @AfterEach
     private void beforeAfter() {
-        jdbcTemplate.execute("DROP TABLE qiita_recommends");
-        jdbcTemplate.execute("DROP TABLE qiita_configurations");
-        jdbcTemplate.execute("DROP TABLE my_articles");
-        jdbcTemplate.execute("DROP TABLE feedbacks");
-        jdbcTemplate.execute("DROP TABLE articles_tags_relations");
-        jdbcTemplate.execute("DROP TABLE tags");
-        jdbcTemplate.execute("DROP TABLE articles");
-        jdbcTemplate.execute("DROP TABLE users");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS qiita_recommends");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS qiita_configurations");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS my_articles");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS feedbacks");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS articles_tags_relations");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS tags");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS articles");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS users");
     }
-
-    final String URL = "https://qiita.com/api/v2/items";
 
     @BeforeEach
     public void beforeAll() {
@@ -179,5 +181,16 @@ class UserDetailServiceTest {
         jdbcTemplate.execute("INSERT INTO users(user_id, uid, password) VALUES (1, 'test_uid_1', 'test_password_1'), (2, 'test_uid_2', 'test_password_2')");
         User user=userDetailService.fetchUserDetails(2);
         assertFalse(user.getIsLoginUser());
+    }
+    @Test
+    void fetchUserDetails_異常系_DBに存在しないユーザーの処理(){
+        jdbcTemplate.execute("INSERT INTO users(user_id, uid, password) VALUES (1, 'test_uid_1', 'test_password_1')");
+        try {
+            userDetailService.fetchUserDetails(2);
+        }catch (ResponseStatusException ex){
+            assertTrue(true);
+        }catch (Exception e){
+            assertTrue(false);
+        }
     }
 }

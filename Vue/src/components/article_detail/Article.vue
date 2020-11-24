@@ -3,11 +3,12 @@
     <v-container class="area">
       <v-row align="center" class="spacer">
         <v-col cols="1" sm="1" md="1">
-          <v-avatar size="42px" color="green">
+          <v-avatar size="42px" color="green" class="avatar">
             <img
               v-if="article.postedUser.photoUrl"
               :src="article.postedUser.photoUrl"
               alt="user-icon"
+              @click="toUserDetail(article.postedUser.userId)"
             />
             <v-icon v-else dark size="42px">
               mdi-account-circle
@@ -15,7 +16,9 @@
           </v-avatar>
         </v-col>
         <v-col class="" cols="2" sm="2" md="2">
+          <v-btn @click="toUserDetail(article.postedUser.userId)" text>
           <strong>@{{ article.postedUser.displayName }}</strong>
+          </v-btn>
         </v-col>
         <!-- 投稿日または更新日 -->
         <v-col class="hidden-xs-only" sm="4" md="4">
@@ -97,6 +100,7 @@
         <v-chip
           v-for="tag in article.tags"
           :key="tag.tagId"
+          @click="findByTagId(tag.tagId)"
           color="#5bc8ac"
           dark
         >
@@ -139,6 +143,7 @@
 <script>
 import { Editor } from "vuetify-markdown-editor";
 import Button from "./ArticleButton";
+import {mapActions, mapState} from "vuex";
 
 export default {
   components: {
@@ -176,6 +181,7 @@ export default {
         return [{ name: "Qiitaを更新する", action: this.updateQiita }];
       return [{ name: "Qiitaに投稿する", action: this.postQiita }];
     },
+    ...mapState("articles", ["searchCriteria"]),
   },
   props: ["article", "myArticleId", "recommendId"],
   mounted() {
@@ -209,6 +215,15 @@ export default {
     toEdit() {
       this.$router.push({ name: "articleEdit" });
     },
+    toUserDetail(userId) {
+      this.$router.push({name: 'userDetail', params: {userId: userId}});
+    },
+    findByTagId(tagId) {
+      this.$router.push({name: 'ArticleList'})
+      this.searchCriteria.searchTag = [tagId];
+      this.fetchArticles(this.searchCriteria);
+    },
+    ...mapActions("articles", ["fetchArticles"]),
     async deleteArticle() {
       this.$router.push({ name: "ArticleList" });
       const item = this.article;
@@ -230,5 +245,9 @@ export default {
 <style scoped>
 .area {
   padding: 20px;
+}
+
+.avatar {
+  cursor: pointer;
 }
 </style>
