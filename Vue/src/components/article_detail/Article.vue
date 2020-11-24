@@ -97,6 +97,7 @@
         <v-chip
           v-for="tag in article.tags"
           :key="tag.tagId"
+          @click="findByTagId(tag.tagId)"
           color="#5bc8ac"
           dark
         >
@@ -139,6 +140,7 @@
 <script>
 import { Editor } from "vuetify-markdown-editor";
 import Button from "./ArticleButton";
+import {mapActions, mapState} from "vuex";
 
 export default {
   components: {
@@ -176,6 +178,7 @@ export default {
         return [{ name: "Qiitaを更新する", action: this.updateQiita }];
       return [{ name: "Qiitaに投稿する", action: this.postQiita }];
     },
+    ...mapState("articles", ["searchCriteria"]),
   },
   props: ["article", "myArticleId", "recommendId"],
   mounted() {
@@ -209,6 +212,12 @@ export default {
     toEdit() {
       this.$router.push({ name: "articleEdit" });
     },
+    findByTagId(tagId) {
+      this.$router.push({name: 'ArticleList'})
+      this.searchCriteria.searchTag = [tagId];
+      this.fetchArticles(this.searchCriteria);
+    },
+    ...mapActions("articles", ["fetchArticles"]),
     async deleteArticle() {
       this.$router.push({ name: "ArticleList" });
       const item = this.article;
