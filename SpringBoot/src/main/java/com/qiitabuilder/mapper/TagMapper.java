@@ -14,13 +14,8 @@ public interface TagMapper {
     //Tagをすべて取得
     List<Tag> findAll();
 
-    //Tagを追加
-    void postTag(Tag tag);
-
     //記事に投稿に関連しているTagのIDを取得
     List<Integer> findAllArticleTag(Integer userId, Integer articleId);
-
-    List<Tag> findByUserId(Integer userId);
 
     //記事とTagの関係を追加
     void insertArticleTag(Integer userId, Integer tagId, Integer articleId);
