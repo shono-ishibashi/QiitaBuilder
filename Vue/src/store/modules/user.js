@@ -1,5 +1,4 @@
 import axios from 'axios';
-import qs from 'qs';
 import router from "@/router";
 
 export default {
@@ -156,22 +155,11 @@ export default {
             })
         },
         async fetchPostedArticles({commit, rootGetters, rootState}, userId) {
-            const url = rootGetters.API_URL + 'article/'
+            const url = rootGetters.API_URL + 'article/posted'
             let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
-            let searchArticleForm = {
-                sortNum: 1,
-                pageSize: 0,
-                currentPage: 0,
-                userId: userId,
-                stateFlagList: [10],
-            }
-            //let paramsSerializer = (params) => qs.stringify(params);
 
             await axios.get(url, {
-                params: searchArticleForm,
-                paramsSerializer: params => {
-                    return qs.stringify(params)
-                },
+                params: {userId},
                 headers: {
                     Authorization: apiToken,
                 },
