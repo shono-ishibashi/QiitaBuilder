@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import ArticleList from '../views/ArticleList'
 import firebase from "firebase";
 import store from "../store/index";
 import axios from "axios";
@@ -9,46 +8,46 @@ Vue.use(VueRouter)
 
 const routes = [
 
-  {
-    path:'/article',
-    name:'ArticleList',
-    component:ArticleList
-  },
-  {
-    path:'/article/new',
-    name:'articleNew',
-    component:()=>import(/* webpackChunkName: "articleNew" */'../views/ArticleNew')
-  },
-  {
-    path: '/article/:articleId',
-    name: 'articleDetail',
-    component: () => import(/* webpackChunkName: "articleDetail" */ '../views/ArticleDetail.vue')
-  },
-  {
-    path:'/article/:articleId/edit',
-    name:'articleEdit',
-    component:()=>import(/* webpackChunkName: "articleEdit" */'../views/ArticleEdit')
-  },
-  {
-    path: '/login',
-    name: 'login',
-    component: () => import(/* webpackChunkName: "login" */ '../views/Login.vue')
-  },
-  {
-    path: '/qiita-0auth-done',
-    name: 'qiita-0auth-done',
-    component: () => import(/* webpackChunkName: "login" */ '../views/QiitaOauthDone.vue')
-  },
-  {
-    path: '/user/ranking',
-    name: 'ranking',
-    component: () => import(/* webpackChunkName: "ranking" */ '../views/Ranking.vue')
-  },
-  {
-    path: '/user/:userId',
-    name: 'userDetail',
-    component: () => import(/* webpackChunkName: "articleDetail" */ '../views/UserDetail.vue')
-  },
+    {
+        path: '/article',
+        name: 'articleList',
+        component: () => import(/* webpackChunkName: "articleList" */'../views/ArticleList')
+    },
+    {
+        path: '/article/new',
+        name: 'articleNew',
+        component: () => import(/* webpackChunkName: "articleNew" */'../views/ArticleNew')
+    },
+    {
+        path: '/article/:articleId',
+        name: 'articleDetail',
+        component: () => import(/* webpackChunkName: "articleDetail" */ '../views/ArticleDetail.vue')
+    },
+    {
+        path: '/article/:articleId/edit',
+        name: 'articleEdit',
+        component: () => import(/* webpackChunkName: "articleEdit" */'../views/ArticleEdit')
+    },
+    {
+        path: '/login',
+        name: 'login',
+        component: () => import(/* webpackChunkName: "login" */ '../views/Login.vue')
+    },
+    {
+        path: '/qiita-0auth-done',
+        name: 'qiita-0auth-done',
+        component: () => import(/* webpackChunkName: "login" */ '../views/QiitaOauthDone.vue')
+    },
+    {
+        path: '/user/ranking',
+        name: 'ranking',
+        component: () => import(/* webpackChunkName: "ranking" */ '../views/Ranking.vue')
+    },
+    {
+        path: '/user/:userId',
+        name: 'userDetail',
+        component: () => import(/* webpackChunkName: "articleDetail" */ '../views/UserDetail.vue')
+    },
 ]
 
 const router = new VueRouter({
