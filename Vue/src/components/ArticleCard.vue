@@ -165,7 +165,9 @@ export default {
         this.$router.push({name: "articleList"})
       }
       this.searchCriteria.searchTag = [tagId];
+      this.searchCriteria.currentPage = 1;
       this.fetchArticles(this.searchCriteria);
+      this.scrollTop()
     },
     toDetail(articleId) {
       this.$router.push({
@@ -178,7 +180,13 @@ export default {
         name: "userDetail",
         params: {userId},
       });
-    }
+    },
+    scrollTop() {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    },
   },
 };
 </script>

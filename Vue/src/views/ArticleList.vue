@@ -1,7 +1,6 @@
 <template>
   <div class="articleList">
-    <v-row>
-      <v-col cols="3"></v-col>
+    <v-row justify="center" align-content="center">
       <v-col cols="6">
         <v-card class="searchForm" outline-color="#008b8b">
           <v-form ref="search_form">
@@ -66,10 +65,23 @@
           </v-form>
         </v-card>
       </v-col>
-      <v-col cols="3"></v-col>
     </v-row>
+
+    <!--    <v-row justify="center" align-content="center">-->
+    <!--      <v-col cols="8" v-if="articles.length!=0">-->
+    <!--        <v-pagination-->
+    <!--            v-model="searchCriteria.currentPage"-->
+    <!--            :length="totalPage"-->
+    <!--            :total-visible="7"-->
+    <!--            color="#5bc8ac"-->
+    <!--            class="control-margin"-->
+    <!--            circle-->
+    <!--        ></v-pagination>-->
+    <!--      </v-col>-->
+    <!--    </v-row>-->
+
     <v-row aline="center" justify="center">
-      <v-list class="list">
+      <v-list class="list control-margin">
         <v-subheader>
           <v-tabs
               fixed-tabs
@@ -85,8 +97,19 @@
               item-value="key"
               item-text="state"
               item-color="green"
+              label="並び替え"
               color="#5bc8ac"
               v-model="searchCriteria.sortNum">
+          </v-select>
+          <v-select
+              :items="displayCountList"
+              item-text="text"
+              item-value="value"
+              v-model="searchCriteria.pageSize"
+              label="表示件数"
+              color="#5bc8ac"
+              item-color="green"
+          >
           </v-select>
         </v-subheader>
         <v-container
@@ -100,28 +123,19 @@
                      :index="index"></ArticleCard>
       </v-list>
     </v-row>
-    <v-row>
-      <v-col cols="2"></v-col>
-      <v-col cols="2">
-        <v-select
-            :items="pageSizeList"
-            v-model="searchCriteria.pageSize"
-            label="ページ表示数"
-            color="#5bc8ac"
-            item-color="green"
-        >
-        </v-select>
-      </v-col>
+    <v-row justify="center" align-content="center">
       <v-col cols="8" v-if="articles.length!=0">
         <v-pagination
             v-model="searchCriteria.currentPage"
             :length="totalPage"
             :total-visible="7"
             color="#5bc8ac"
+            class="control-margin"
             circle
         ></v-pagination>
       </v-col>
     </v-row>
+
     <v-dialog v-model="errorDialog" width="400">
       <v-card>
         <v-card-title>
@@ -146,7 +160,17 @@ export default {
   name: "ArticleList",
   data() {
     return {
-      pageSizeList: [10, 20, 30],
+      displayCountList: [
+        {
+          text: '10件',
+          value: 10
+        }, {
+          text: '20件',
+          value: 20
+        }, {
+          text: '30件',
+          value: 30
+        }],
       sortList: [
         {key: 0, state: "新着順"},
         {key: 1, state: "更新順"},
@@ -165,25 +189,25 @@ export default {
   },
   watch: {
     ['searchCriteria.sortNum']() {
-      this.searchCriteria.currentPage = 1
-      this.fetchArticles(this.searchCriteria)
+      this.searchCriteria.currentPage = 1;
+      this.fetchArticles(this.searchCriteria);
     },
     ['searchCriteria.period']() {
-      this.searchCriteria.currentPage = 1
-      this.fetchArticles(this.searchCriteria)
+      this.searchCriteria.currentPage = 1;
+      this.fetchArticles(this.searchCriteria);
     },
     ['searchCriteria.pageSize']() {
-      this.searchCriteria.currentPage = 1
-      this.fetchArticles(this.searchCriteria)
-      this.scrollTop()
+      this.searchCriteria.currentPage = 1;
+      this.fetchArticles(this.searchCriteria);
+      this.scrollTop();
     },
     ['searchCriteria.currentPage']() {
-      this.fetchArticles(this.searchCriteria)
-      this.scrollTop()
+      this.fetchArticles(this.searchCriteria);
+      this.scrollTop();
     },
     apiToken() {
-      this.fetchArticles(this.searchCriteria)
-      this.fetchTags()
+      this.fetchArticles(this.searchCriteria);
+      this.fetchTags();
     }
   },
   created() {
@@ -246,7 +270,8 @@ export default {
 }
 
 .searchForm {
-  margin-top: 70px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .no-article-field {
@@ -261,4 +286,12 @@ export default {
   padding-bottom: 40px;
   /*background-color:#f5f5f5;*/
 }
+
+.control-margin {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
 </style>
