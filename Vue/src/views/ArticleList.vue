@@ -124,7 +124,7 @@
       </v-list>
     </v-row>
     <v-row justify="center" align-content="center">
-      <v-col cols="8" v-if="articles.length!=0">
+      <v-col cols="8" v-if="articles.length!==0">
         <v-pagination
             v-model="searchCriteria.currentPage"
             :length="totalPage"
@@ -203,7 +203,9 @@ export default {
     },
     ['searchCriteria.currentPage']() {
       this.fetchArticles(this.searchCriteria);
-      this.scrollTop();
+      setTimeout(() => {
+        this.scrollTop();
+      }, 50)
     },
     apiToken() {
       this.fetchArticles(this.searchCriteria);
