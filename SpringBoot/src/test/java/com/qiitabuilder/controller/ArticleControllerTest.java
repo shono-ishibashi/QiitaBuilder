@@ -1,9 +1,17 @@
 package com.qiitabuilder.controller;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.qiitabuilder.domain.Article;
 import com.qiitabuilder.domain.Tag;
 import com.qiitabuilder.domain.User;
+import com.qiitabuilder.form.ExistArticleForm;
+import com.qiitabuilder.form.SearchArticleForm;
 import com.qiitabuilder.security.SimpleLoginUser;
 import com.qiitabuilder.service.ArticleService;
 import org.junit.jupiter.api.Test;
@@ -12,17 +20,24 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import javax.swing.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.Mockito.doReturn;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 
@@ -33,11 +48,13 @@ class ArticleControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    private String SEARCHARTICLES_BASE_URL = "/article/";
+
     // Service層をモックする
     @MockBean
     private ArticleService articleService;
 
-    private SimpleLoginUser createLoginUser(){
+    private SimpleLoginUser createLoginUser() {
         User user = new User();
         user.setUserId(1);
         user.setUid("uid");
@@ -48,11 +65,246 @@ class ArticleControllerTest {
 
 
     @Test
-    void searchArticles() {
+    void searchArticles＿非ログイン時() throws Exception {
+        List<Article> articles = new ArrayList<>();
+        List<Tag> tags = new ArrayList<>(Arrays.asList(new Tag(1, "tag1", null), new Tag(2, "tag2", null)));
+        for (int i = 0; i < 10; i++) {
+            User user = User.builder()
+                    .userId(i + 1)
+                    .displayName("user" + i + 1)
+                    .photoUrl("photo" + i + 1)
+                    .uid("uid" + i + 1)
+                    .password("pass" + i + 1)
+                    .build();
+            Article article = Article.builder()
+                    .articleId(i + 1)
+                    .title("title_test" + i + 1)
+                    .createdAt(LocalDateTime.of(2020,11,1+i,1,0))
+                    .updatedAt(LocalDateTime.of(2020,11,1+i,1,0))
+                    .stateFlag(1)
+                    .qiitaRecommendPoint(i)
+                    .registeredMyArticleCount(i)
+                    .feedbackCount(i)
+                    .tags(tags)
+                    .postedUser(user)
+                    .build();
+            articles.add(article);
+        }
+        SearchArticleForm searchArticleForm = SearchArticleForm.builder()
+                .sortNum(0)
+                .period(null)
+                .searchWord("")
+                .toggleSearchWord(0)
+                .pageSize(10)
+                .currentPage(1)
+                .stateFlagList(Arrays.asList(1, 2))
+                .build();
+        doReturn(articles).when(articleService).searchArticles(searchArticleForm);
+
+        ObjectMapper mapper = new ObjectMapper();
+        JavaTimeModule jtm = new JavaTimeModule();
+
+        jtm.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
+        mapper.registerModule(jtm);
+        String resBody = mapper.writeValueAsString(articles);
+        System.out.println(resBody);
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("sortNum", "0");
+        params.add("period", null);
+        params.add("searchWord", "");
+        params.add("toggleSearchWord", "0");
+        params.add("pageSize", "10");
+        params.add("currentPage", "1");
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get(SEARCHARTICLES_BASE_URL)
+                        .params(params)
+        )
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    }
+    @Test
+    void searchArticles＿正常系() throws Exception {
+        List<Article> articles = new ArrayList<>();
+        List<Tag> tags = new ArrayList<>(Arrays.asList(new Tag(1, "tag1", null), new Tag(2, "tag2", null)));
+        for (int i = 0; i < 10; i++) {
+            User user = User.builder()
+                    .userId(i + 1)
+                    .displayName("user" + i + 1)
+                    .photoUrl("photo" + i + 1)
+                    .uid("uid" + i + 1)
+                    .password("pass" + i + 1)
+                    .build();
+            Article article = Article.builder()
+                    .articleId(i + 1)
+                    .title("title_test" + i + 1)
+                    .createdAt(LocalDateTime.of(2020,11,1+i,1,0))
+                    .updatedAt(LocalDateTime.of(2020,11,1+i,1,0))
+                    .stateFlag(1)
+                    .qiitaRecommendPoint(i)
+                    .registeredMyArticleCount(i)
+                    .feedbackCount(i)
+                    .tags(tags)
+                    .postedUser(user)
+                    .build();
+            articles.add(article);
+        }
+        SearchArticleForm searchArticleForm = SearchArticleForm.builder()
+                .sortNum(0)
+                .period(null)
+                .searchWord("")
+                .toggleSearchWord(0)
+                .pageSize(10)
+                .currentPage(1)
+                .stateFlagList(Arrays.asList(1, 2))
+                .build();
+        doReturn(articles).when(articleService).searchArticles(searchArticleForm);
+
+        ObjectMapper mapper = new ObjectMapper();
+        JavaTimeModule jtm = new JavaTimeModule();
+
+        jtm.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
+        mapper.registerModule(jtm);
+        String resBody = mapper.writeValueAsString(articles);
+        System.out.println(resBody);
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("sortNum", "0");
+        params.add("period", null);
+        params.add("searchWord", "");
+        params.add("toggleSearchWord", "0");
+        params.add("pageSize", "10");
+        params.add("currentPage", "1");
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get(SEARCHARTICLES_BASE_URL)
+                        .params(params)
+                        .with(SecurityMockMvcRequestPostProcessors.user(createLoginUser()))
+        )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(resBody));
+    }
+//    リクエストパラメータに「sortNum」,「pageSize」,「currentPage」が含まれていない
+    @Test
+    void searchArticles＿異常系_validtionError() throws Exception {
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("period", null);
+        params.add("searchWord", "");
+        params.add("toggleSearchWord", "0");
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get(SEARCHARTICLES_BASE_URL)
+                        .params(params)
+                        .with(SecurityMockMvcRequestPostProcessors.user(createLoginUser()))
+        )
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
-    void totalPage() {
+    void totalPage_正常系() throws Exception {
+        SearchArticleForm searchArticleForm = SearchArticleForm.builder()
+                .sortNum(0)
+                .period(null)
+                .searchWord("")
+                .toggleSearchWord(0)
+                .pageSize(10)
+                .currentPage(1)
+                .stateFlagList(Arrays.asList(1, 2))
+                .build();
+        doReturn(1).when(articleService).getTotalPage(searchArticleForm);
+
+        ObjectMapper mapper = new ObjectMapper();
+        JavaTimeModule jtm = new JavaTimeModule();
+
+        jtm.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
+        mapper.registerModule(jtm);
+        String resBody = mapper.writeValueAsString(1);
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("sortNum", "0");
+        params.add("period", null);
+        params.add("searchWord", "");
+        params.add("toggleSearchWord", "0");
+        params.add("pageSize", "10");
+        params.add("currentPage", "1");
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get(SEARCHARTICLES_BASE_URL +"/totalPage")
+                        .params(params)
+                        .with(SecurityMockMvcRequestPostProcessors.user(createLoginUser()))
+        )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("1"));
+    }
+
+    //    リクエストパラメータに「sortNum」,「pageSize」,「currentPage」が含まれていない
+    @Test
+    void totalPage_異常系_validtionError() throws Exception {
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("period", null);
+        params.add("searchWord", "");
+        params.add("toggleSearchWord", "0");
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get(SEARCHARTICLES_BASE_URL +"/totalPage")
+                        .params(params)
+                        .with(SecurityMockMvcRequestPostProcessors.user(createLoginUser()))
+        )
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    void findByArticleIdAndUserId_正常系() throws Exception {
+        ExistArticleForm existArticleForm=new ExistArticleForm();
+        existArticleForm.setArticleId(1);
+        existArticleForm.setUserId(1);
+        doReturn(1).when(articleService).findByArticleIdAndUserId(existArticleForm.getArticleId(), existArticleForm.getUserId());
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("articleId", "1");
+        params.add("userId", "1");
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get(SEARCHARTICLES_BASE_URL+"/isExist")
+                .params(params)
+                .with(SecurityMockMvcRequestPostProcessors.user(createLoginUser()))
+        )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json("1"));
+    }
+    @Test
+    void findByArticleIdAndUserId_異常系_articleIdがnullの時() throws Exception {
+        ExistArticleForm existArticleForm=new ExistArticleForm();
+        existArticleForm.setArticleId(2);
+        existArticleForm.setUserId(1);
+        doReturn(null).when(articleService).findByArticleIdAndUserId(existArticleForm.getArticleId(), existArticleForm.getUserId());
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("articleId", "2");
+        params.add("userId", "1");
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get(SEARCHARTICLES_BASE_URL+"/isExist")
+                .params(params)
+                .with(SecurityMockMvcRequestPostProcessors.user(createLoginUser()))
+        )
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+//    paramにuserIdがない場合
+    @Test
+    void findByArticleIdAndUserId_異常系_validationError() throws Exception {
+        ExistArticleForm existArticleForm=new ExistArticleForm();
+        existArticleForm.setArticleId(1);
+        doReturn(1).when(articleService).findByArticleIdAndUserId(existArticleForm.getArticleId(), existArticleForm.getUserId());
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("articleId", "1");
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get(SEARCHARTICLES_BASE_URL+"/isExist")
+                        .params(params)
+                        .with(SecurityMockMvcRequestPostProcessors.user(createLoginUser()))
+        )
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
@@ -189,11 +441,11 @@ class ArticleControllerTest {
         List<Tag> tags = new ArrayList<>(
                 Arrays.asList(
                         new Tag(1, "tag1", null)
-                        ,new Tag(2, "tag2", null)
-                        ,new Tag(3, "tag3", null)
-                        ,new Tag(4, "tag4", null)
-                        ,new Tag(5, "tag5", null)
-                        ,new Tag(6, "tag6", null)
+                        , new Tag(2, "tag2", null)
+                        , new Tag(3, "tag3", null)
+                        , new Tag(4, "tag4", null)
+                        , new Tag(5, "tag5", null)
+                        , new Tag(6, "tag6", null)
                 ));
 
         Article article = Article.builder()
@@ -251,6 +503,7 @@ class ArticleControllerTest {
                 .with(SecurityMockMvcRequestPostProcessors.user(createLoginUser())))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
+
     @Test
     void postArticle_異常系_titleがnullの場合() throws Exception {
         List<Tag> tags = new ArrayList<>();
@@ -279,6 +532,7 @@ class ArticleControllerTest {
                 .with(SecurityMockMvcRequestPostProcessors.user(createLoginUser())))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
+
     @Test
     void postArticle_異常系_contentが空文字の場合() throws Exception {
         List<Tag> tags = new ArrayList<>();
@@ -308,6 +562,7 @@ class ArticleControllerTest {
                 .with(SecurityMockMvcRequestPostProcessors.user(createLoginUser())))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
+
     @Test
     void postArticle_異常系_contentがnullの場合() throws Exception {
         List<Tag> tags = new ArrayList<>();
@@ -336,6 +591,7 @@ class ArticleControllerTest {
                 .with(SecurityMockMvcRequestPostProcessors.user(createLoginUser())))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
+
     @Test
     void postArticle_異常系_contentが20001字の場合() throws Exception {
         List<Tag> tags = new ArrayList<>();
@@ -395,8 +651,6 @@ class ArticleControllerTest {
                 .with(SecurityMockMvcRequestPostProcessors.user(createLoginUser())))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
-
-
 
 
     @Test
@@ -467,11 +721,11 @@ class ArticleControllerTest {
         List<Tag> tags = new ArrayList<>(
                 Arrays.asList(
                         new Tag(1, "tag1", null)
-                        ,new Tag(2, "tag2", null)
-                        ,new Tag(3, "tag3", null)
-                        ,new Tag(4, "tag4", null)
-                        ,new Tag(5, "tag5", null)
-                        ,new Tag(6, "tag6", null)
+                        , new Tag(2, "tag2", null)
+                        , new Tag(3, "tag3", null)
+                        , new Tag(4, "tag4", null)
+                        , new Tag(5, "tag5", null)
+                        , new Tag(6, "tag6", null)
                 ));
 
         Article article = Article.builder()
@@ -529,6 +783,7 @@ class ArticleControllerTest {
                 .with(SecurityMockMvcRequestPostProcessors.user(createLoginUser())))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
+
     @Test
     void editArticle_異常系_titleがnullの場合() throws Exception {
         List<Tag> tags = new ArrayList<>(Arrays.asList(new Tag(1, "tag1", null), new Tag(2, "tag2", null)));
@@ -557,6 +812,7 @@ class ArticleControllerTest {
                 .with(SecurityMockMvcRequestPostProcessors.user(createLoginUser())))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
+
     @Test
     void editArticle_異常系_contentが空文字の場合() throws Exception {
         List<Tag> tags = new ArrayList<>(Arrays.asList(new Tag(1, "tag1", null), new Tag(2, "tag2", null)));
@@ -615,6 +871,7 @@ class ArticleControllerTest {
                 .with(SecurityMockMvcRequestPostProcessors.user(createLoginUser())))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
+
     @Test
     void editArticle_異常系_contentが20001字の場合() throws Exception {
         List<Tag> tags = new ArrayList<>();
@@ -674,6 +931,7 @@ class ArticleControllerTest {
                 .with(SecurityMockMvcRequestPostProcessors.user(createLoginUser())))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
+
     @Test
     void editArticle_異常系_idがnullの場合() throws Exception {
         List<Tag> tags = new ArrayList<>();
