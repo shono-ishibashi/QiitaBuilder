@@ -152,7 +152,7 @@
         </foreach>
         ORDER BY ${search.sort} DESC
         ,art.article_id desc
-        ,tagName
+        ,tagId
     </select>
 
     <select id="searchArticlesId" resultType="_int">
