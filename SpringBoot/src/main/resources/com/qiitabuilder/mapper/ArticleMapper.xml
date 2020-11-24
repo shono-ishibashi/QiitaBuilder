@@ -151,6 +151,8 @@
             #{articleId}
         </foreach>
         ORDER BY ${search.sort} DESC
+        ,art.article_id desc
+        ,tagName
     </select>
 
     <select id="searchArticlesId" resultType="_int">
@@ -171,6 +173,7 @@
                 #{tag}
             </foreach>
             GROUP BY atArticleId
+            HAVING COUNT(article_id) = #{search.tagLength}
             ) as a_t_relation
             ON art.article_id = a_t_relation.atArticleId
         </if>
@@ -209,7 +212,8 @@
                 </if>
             </if>
         </where>
-        order by ${search.sort} desc
+        ORDER BY ${search.sort} desc
+        ,art.article_id desc
         <if test="search.pageSize != 0">
             LIMIT #{search.pageSize} OFFSET #{search.offset}
         </if>

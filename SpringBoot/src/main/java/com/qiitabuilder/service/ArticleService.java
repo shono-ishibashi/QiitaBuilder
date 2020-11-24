@@ -51,6 +51,7 @@ public class ArticleService {
         } else {
             return null;
         }
+
         List<Article> articles = articleMapper.searchArticles(searchArticleForm);
 
 //        qiita推奨数、my記事登録数がnullのものを0に置き換える
@@ -109,6 +110,9 @@ public class ArticleService {
         } else {
             Integer offset = (searchArticleForm.getPageSize() * (searchArticleForm.getCurrentPage() - 1));
             searchArticleForm.setOffset(offset);
+        }
+        if(Objects.nonNull(searchArticleForm.getSearchTag())){
+            searchArticleForm.setTagLength(searchArticleForm.getSearchTag().size());
         }
         return searchArticleForm;
     }

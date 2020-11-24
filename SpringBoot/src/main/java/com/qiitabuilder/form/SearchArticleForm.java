@@ -43,6 +43,8 @@ public class SearchArticleForm {
 
     private String sort;
 
+    private Integer tagLength;
+
     private List<Integer> articlesIdList;
 
     private List<Integer> stateFlagList;

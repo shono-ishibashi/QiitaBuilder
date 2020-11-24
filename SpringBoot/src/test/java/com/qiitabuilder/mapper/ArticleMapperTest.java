@@ -240,22 +240,22 @@ class ArticleMapperTest {
         assertEquals(10,articles.size());
 //      articles[0]のテスト
         LocalDateTime createDate = LocalDateTime.of(2020, 11, 10, 00, 00, 00);
-        LocalDateTime updateDate = createDate.plusDays(1);
-        assertEquals(44, articles.get(0).getArticleId());
-        assertEquals("title44", articles.get(0).getTitle());
+        LocalDateTime updateDate = LocalDateTime.of(2020, 11, 11, 00, 00, 00);
+        assertEquals(176, articles.get(0).getArticleId());
+        assertEquals("title176", articles.get(0).getTitle());
         assertEquals(createDate, articles.get(0).getCreatedAt());
         assertEquals(updateDate, articles.get(0).getUpdatedAt());
         assertEquals(1, articles.get(0).getStateFlag());
-        assertEquals(4, articles.get(0).getTags().get(0).getTagId());
-        assertEquals(2, articles.get(0).getTags().get(1).getTagId());
-        assertEquals("php", articles.get(0).getTags().get(0).getTagName());
-        assertEquals("ruby", articles.get(0).getTags().get(1).getTagName());
-        assertEquals(3, articles.get(0).getFeedbackCount());
+        assertEquals(2, articles.get(0).getTags().get(0).getTagId());
+        assertEquals(1, articles.get(0).getTags().get(1).getTagId());
+        assertEquals("ruby", articles.get(0).getTags().get(0).getTagName());
+        assertEquals("Java", articles.get(0).getTags().get(1).getTagName());
+        assertEquals(null, articles.get(0).getFeedbackCount());
         assertEquals(2, articles.get(0).getRegisteredMyArticleCount());
-        assertEquals(null, articles.get(0).getQiitaRecommendPoint());
-        assertEquals(8, articles.get(0).getPostedUser().getUserId());
-        assertEquals("しょーの", articles.get(0).getPostedUser().getDisplayName());
-        assertEquals("nnn", articles.get(0).getPostedUser().getPhotoUrl());
+        assertEquals(1, articles.get(0).getQiitaRecommendPoint());
+        assertEquals(33, articles.get(0).getPostedUser().getUserId());
+        assertEquals("user33", articles.get(0).getPostedUser().getDisplayName());
+        assertEquals("photo33", articles.get(0).getPostedUser().getPhotoUrl());
         //      articles[1]のテスト
         createDate = LocalDateTime.of(2020, 11, 10, 00, 00, 00);
         updateDate = LocalDateTime.of(2020, 11, 10, 00, 00, 00);
@@ -276,76 +276,76 @@ class ArticleMapperTest {
         assertEquals("photo31", articles.get(1).getPostedUser().getPhotoUrl());
         //      articles[2]のテスト
         createDate = LocalDateTime.of(2020, 11, 10, 00, 00, 00);
-        updateDate = LocalDateTime.of(2020, 11, 11, 00, 00, 00);
-        assertEquals(176, articles.get(2).getArticleId());
-        assertEquals("title176", articles.get(2).getTitle());
+        updateDate = createDate.plusDays(1);
+        assertEquals(44, articles.get(2).getArticleId());
+        assertEquals("title44", articles.get(2).getTitle());
         assertEquals(createDate, articles.get(2).getCreatedAt());
         assertEquals(updateDate, articles.get(2).getUpdatedAt());
         assertEquals(1, articles.get(2).getStateFlag());
-        assertEquals(2, articles.get(2).getTags().get(0).getTagId());
-        assertEquals(1, articles.get(2).getTags().get(1).getTagId());
-        assertEquals("ruby", articles.get(2).getTags().get(0).getTagName());
-        assertEquals("Java", articles.get(2).getTags().get(1).getTagName());
-        assertEquals(null, articles.get(2).getFeedbackCount());
+        assertEquals(4, articles.get(2).getTags().get(0).getTagId());
+        assertEquals(2, articles.get(2).getTags().get(1).getTagId());
+        assertEquals("php", articles.get(2).getTags().get(0).getTagName());
+        assertEquals("ruby", articles.get(2).getTags().get(1).getTagName());
+        assertEquals(3, articles.get(2).getFeedbackCount());
         assertEquals(2, articles.get(2).getRegisteredMyArticleCount());
-        assertEquals(1, articles.get(2).getQiitaRecommendPoint());
-        assertEquals(33, articles.get(2).getPostedUser().getUserId());
-        assertEquals("user33", articles.get(2).getPostedUser().getDisplayName());
-        assertEquals("photo33", articles.get(2).getPostedUser().getPhotoUrl());
+        assertEquals(null, articles.get(2).getQiitaRecommendPoint());
+        assertEquals(8, articles.get(2).getPostedUser().getUserId());
+        assertEquals("しょーの", articles.get(2).getPostedUser().getDisplayName());
+        assertEquals("nnn", articles.get(2).getPostedUser().getPhotoUrl());
         //      articles[3]のテスト
         createDate = LocalDateTime.of(2020, 11, 9, 00, 00, 00);
         updateDate = LocalDateTime.of(2020, 11, 10, 00, 00, 00);
-        assertEquals(168, articles.get(3).getArticleId());
-        assertEquals("title168", articles.get(3).getTitle());
+        assertEquals(187, articles.get(3).getArticleId());
+        assertEquals("title187", articles.get(3).getTitle());
         assertEquals(createDate, articles.get(3).getCreatedAt());
         assertEquals(updateDate, articles.get(3).getUpdatedAt());
         assertEquals(1, articles.get(3).getStateFlag());
-        assertEquals(2, articles.get(3).getTags().get(0).getTagId());
-        assertEquals(4, articles.get(3).getTags().get(1).getTagId());
-        assertEquals("ruby", articles.get(3).getTags().get(0).getTagName());
-        assertEquals("php", articles.get(3).getTags().get(1).getTagName());
-        assertEquals(1, articles.get(3).getFeedbackCount());
-        assertEquals(2, articles.get(3).getRegisteredMyArticleCount());
-        assertEquals(1, articles.get(3).getQiitaRecommendPoint());
-        assertEquals(32, articles.get(3).getPostedUser().getUserId());
-        assertEquals("user32", articles.get(3).getPostedUser().getDisplayName());
-        assertEquals("photo32", articles.get(3).getPostedUser().getPhotoUrl());
+        assertEquals(5, articles.get(3).getTags().get(0).getTagId());
+        assertEquals(1, articles.get(3).getTags().get(1).getTagId());
+        assertEquals("go", articles.get(3).getTags().get(0).getTagName());
+        assertEquals("Java", articles.get(3).getTags().get(1).getTagName());
+        assertEquals(null, articles.get(3).getFeedbackCount());
+        assertEquals(null, articles.get(3).getRegisteredMyArticleCount());
+        assertEquals(null, articles.get(3).getQiitaRecommendPoint());
+        assertEquals(36, articles.get(3).getPostedUser().getUserId());
+        assertEquals("user36", articles.get(3).getPostedUser().getDisplayName());
+        assertEquals("photo36", articles.get(3).getPostedUser().getPhotoUrl());
         //      articles[4]のテスト
         createDate = LocalDateTime.of(2020, 11, 9, 00, 00, 00);
         updateDate = LocalDateTime.of(2020, 11, 10, 00, 00, 00);
-        assertEquals(187, articles.get(4).getArticleId());
-        assertEquals("title187", articles.get(4).getTitle());
+        assertEquals(168, articles.get(4).getArticleId());
+        assertEquals("title168", articles.get(4).getTitle());
         assertEquals(createDate, articles.get(4).getCreatedAt());
         assertEquals(updateDate, articles.get(4).getUpdatedAt());
         assertEquals(1, articles.get(4).getStateFlag());
-        assertEquals(5, articles.get(4).getTags().get(0).getTagId());
-        assertEquals(1, articles.get(4).getTags().get(1).getTagId());
-        assertEquals("go", articles.get(4).getTags().get(0).getTagName());
-        assertEquals("Java", articles.get(4).getTags().get(1).getTagName());
-        assertEquals(null, articles.get(4).getFeedbackCount());
-        assertEquals(null, articles.get(4).getRegisteredMyArticleCount());
-        assertEquals(null, articles.get(4).getQiitaRecommendPoint());
-        assertEquals(36, articles.get(4).getPostedUser().getUserId());
-        assertEquals("user36", articles.get(4).getPostedUser().getDisplayName());
-        assertEquals("photo36", articles.get(4).getPostedUser().getPhotoUrl());
+        assertEquals(2, articles.get(4).getTags().get(0).getTagId());
+        assertEquals(4, articles.get(4).getTags().get(1).getTagId());
+        assertEquals("ruby", articles.get(4).getTags().get(0).getTagName());
+        assertEquals("php", articles.get(4).getTags().get(1).getTagName());
+        assertEquals(1, articles.get(4).getFeedbackCount());
+        assertEquals(2, articles.get(4).getRegisteredMyArticleCount());
+        assertEquals(1, articles.get(4).getQiitaRecommendPoint());
+        assertEquals(32, articles.get(4).getPostedUser().getUserId());
+        assertEquals("user32", articles.get(4).getPostedUser().getDisplayName());
+        assertEquals("photo32", articles.get(4).getPostedUser().getPhotoUrl());
         //      articles[5]のテスト
         createDate = LocalDateTime.of(2020, 11, 8, 00, 00, 00);
         updateDate = LocalDateTime.of(2020, 11, 9, 00, 00, 00);
-        assertEquals(156, articles.get(5).getArticleId());
-        assertEquals("title156", articles.get(5).getTitle());
+        assertEquals(190, articles.get(5).getArticleId());
+        assertEquals("title190", articles.get(5).getTitle());
         assertEquals(createDate, articles.get(5).getCreatedAt());
         assertEquals(updateDate, articles.get(5).getUpdatedAt());
         assertEquals(1, articles.get(5).getStateFlag());
-        assertEquals(4, articles.get(5).getTags().get(0).getTagId());
-        assertEquals(1, articles.get(5).getTags().get(1).getTagId());
-        assertEquals("php", articles.get(5).getTags().get(0).getTagName());
-        assertEquals("Java", articles.get(5).getTags().get(1).getTagName());
-        assertEquals(null, articles.get(5).getFeedbackCount());
-        assertEquals(2, articles.get(5).getRegisteredMyArticleCount());
+        assertEquals(2, articles.get(5).getTags().get(0).getTagId());
+        assertEquals(4, articles.get(5).getTags().get(1).getTagId());
+        assertEquals("ruby", articles.get(5).getTags().get(0).getTagName());
+        assertEquals("php", articles.get(5).getTags().get(1).getTagName());
+        assertEquals(2, articles.get(5).getFeedbackCount());
+        assertEquals(1, articles.get(5).getRegisteredMyArticleCount());
         assertEquals(1, articles.get(5).getQiitaRecommendPoint());
-        assertEquals(31, articles.get(5).getPostedUser().getUserId());
-        assertEquals("user31", articles.get(5).getPostedUser().getDisplayName());
-        assertEquals("photo31", articles.get(5).getPostedUser().getPhotoUrl());
+        assertEquals(37, articles.get(5).getPostedUser().getUserId());
+        assertEquals("user37", articles.get(5).getPostedUser().getDisplayName());
+        assertEquals("photo37", articles.get(5).getPostedUser().getPhotoUrl());
         //      articles[6]のテスト
         createDate = LocalDateTime.of(2020, 11, 8, 00, 00, 00);
         updateDate = LocalDateTime.of(2020, 11, 9, 00, 00, 00);
@@ -367,57 +367,57 @@ class ArticleMapperTest {
         //      articles[7]のテスト
         createDate = LocalDateTime.of(2020, 11, 8, 00, 00, 00);
         updateDate = LocalDateTime.of(2020, 11, 9, 00, 00, 00);
-        assertEquals(190, articles.get(7).getArticleId());
-        assertEquals("title190", articles.get(7).getTitle());
+        assertEquals(156, articles.get(7).getArticleId());
+        assertEquals("title156", articles.get(7).getTitle());
         assertEquals(createDate, articles.get(7).getCreatedAt());
         assertEquals(updateDate, articles.get(7).getUpdatedAt());
         assertEquals(1, articles.get(7).getStateFlag());
-        assertEquals(2, articles.get(7).getTags().get(0).getTagId());
-        assertEquals(4, articles.get(7).getTags().get(1).getTagId());
-        assertEquals("ruby", articles.get(7).getTags().get(0).getTagName());
-        assertEquals("php", articles.get(7).getTags().get(1).getTagName());
-        assertEquals(2, articles.get(7).getFeedbackCount());
-        assertEquals(1, articles.get(7).getRegisteredMyArticleCount());
+        assertEquals(4, articles.get(7).getTags().get(0).getTagId());
+        assertEquals(1, articles.get(7).getTags().get(1).getTagId());
+        assertEquals("php", articles.get(7).getTags().get(0).getTagName());
+        assertEquals("Java", articles.get(7).getTags().get(1).getTagName());
+        assertEquals(null, articles.get(7).getFeedbackCount());
+        assertEquals(2, articles.get(7).getRegisteredMyArticleCount());
         assertEquals(1, articles.get(7).getQiitaRecommendPoint());
-        assertEquals(37, articles.get(7).getPostedUser().getUserId());
-        assertEquals("user37", articles.get(7).getPostedUser().getDisplayName());
-        assertEquals("photo37", articles.get(7).getPostedUser().getPhotoUrl());
+        assertEquals(31, articles.get(7).getPostedUser().getUserId());
+        assertEquals("user31", articles.get(7).getPostedUser().getDisplayName());
+        assertEquals("photo31", articles.get(7).getPostedUser().getPhotoUrl());
         //      articles[8]のテスト
         createDate = LocalDateTime.of(2020, 11, 7, 00, 00, 00);
         updateDate = LocalDateTime.of(2020, 11, 8, 00, 00, 00);
-        assertEquals(167, articles.get(8).getArticleId());
-        assertEquals("title167", articles.get(8).getTitle());
+        assertEquals(193, articles.get(8).getArticleId());
+        assertEquals("title193", articles.get(8).getTitle());
         assertEquals(createDate, articles.get(8).getCreatedAt());
         assertEquals(updateDate, articles.get(8).getUpdatedAt());
         assertEquals(1, articles.get(8).getStateFlag());
-        assertEquals(3, articles.get(8).getTags().get(0).getTagId());
-        assertEquals(5, articles.get(8).getTags().get(1).getTagId());
-        assertEquals("javascript", articles.get(8).getTags().get(0).getTagName());
-        assertEquals("go", articles.get(8).getTags().get(1).getTagName());
-        assertEquals(null, articles.get(8).getFeedbackCount());
+        assertEquals(2, articles.get(8).getTags().get(0).getTagId());
+        assertEquals(3, articles.get(8).getTags().get(1).getTagId());
+        assertEquals("ruby", articles.get(8).getTags().get(0).getTagName());
+        assertEquals("javascript", articles.get(8).getTags().get(1).getTagName());
+        assertEquals(1, articles.get(8).getFeedbackCount());
         assertEquals(null, articles.get(8).getRegisteredMyArticleCount());
-        assertEquals(null, articles.get(8).getQiitaRecommendPoint());
-        assertEquals(32, articles.get(8).getPostedUser().getUserId());
-        assertEquals("user32", articles.get(8).getPostedUser().getDisplayName());
-        assertEquals("photo32", articles.get(8).getPostedUser().getPhotoUrl());
+        assertEquals(2, articles.get(8).getQiitaRecommendPoint());
+        assertEquals(39, articles.get(8).getPostedUser().getUserId());
+        assertEquals("user39", articles.get(8).getPostedUser().getDisplayName());
+        assertEquals("photo39", articles.get(8).getPostedUser().getPhotoUrl());
         //      articles[9]のテスト
         createDate = LocalDateTime.of(2020, 11, 7, 00, 00, 00);
         updateDate = LocalDateTime.of(2020, 11, 8, 00, 00, 00);
-        assertEquals(193, articles.get(9).getArticleId());
-        assertEquals("title193", articles.get(9).getTitle());
+        assertEquals(183, articles.get(9).getArticleId());
+        assertEquals("title183", articles.get(9).getTitle());
         assertEquals(createDate, articles.get(9).getCreatedAt());
         assertEquals(updateDate, articles.get(9).getUpdatedAt());
         assertEquals(1, articles.get(9).getStateFlag());
-        assertEquals(2, articles.get(9).getTags().get(0).getTagId());
-        assertEquals(3, articles.get(9).getTags().get(1).getTagId());
-        assertEquals("ruby", articles.get(9).getTags().get(0).getTagName());
-        assertEquals("javascript", articles.get(9).getTags().get(1).getTagName());
+        assertEquals(4, articles.get(9).getTags().get(0).getTagId());
+        assertEquals(5, articles.get(9).getTags().get(1).getTagId());
+        assertEquals("php", articles.get(9).getTags().get(0).getTagName());
+        assertEquals("go", articles.get(9).getTags().get(1).getTagName());
         assertEquals(1, articles.get(9).getFeedbackCount());
         assertEquals(null, articles.get(9).getRegisteredMyArticleCount());
-        assertEquals(2, articles.get(9).getQiitaRecommendPoint());
-        assertEquals(39, articles.get(9).getPostedUser().getUserId());
-        assertEquals("user39", articles.get(9).getPostedUser().getDisplayName());
-        assertEquals("photo39", articles.get(9).getPostedUser().getPhotoUrl());
+        assertEquals(1, articles.get(9).getQiitaRecommendPoint());
+        assertEquals(34, articles.get(9).getPostedUser().getUserId());
+        assertEquals("user34", articles.get(9).getPostedUser().getDisplayName());
+        assertEquals("photo34", articles.get(9).getPostedUser().getPhotoUrl());
     }
 
 //    sortNum(0:新着順,1:更新順,2:qiita,3:my記事)
@@ -435,12 +435,12 @@ class ArticleMapperTest {
 //        取得記事
         assertEquals(21, articleIdList.get(0));
         assertEquals(19, articleIdList.get(1));
-        assertEquals(1, articleIdList.get(2));
-        assertEquals(2, articleIdList.get(3));
-        assertEquals(13, articleIdList.get(4));
-        assertEquals(6, articleIdList.get(5));
-        assertEquals(15, articleIdList.get(6));
-        assertEquals(8, articleIdList.get(7));
+        assertEquals(43, articleIdList.get(2));
+        assertEquals(40, articleIdList.get(3));
+        assertEquals(38, articleIdList.get(4));
+        assertEquals(37, articleIdList.get(5));
+        assertEquals(33, articleIdList.get(6));
+        assertEquals(30, articleIdList.get(7));
         assertEquals(20, articleIdList.get(8));
         assertEquals(11, articleIdList.get(9));
     }
@@ -649,16 +649,16 @@ class ArticleMapperTest {
 //        記事数
         assertEquals(10, articleIdList.size());
 //        取得記事
-        assertEquals(157, articleIdList.get(0));
-        assertEquals(44, articleIdList.get(1));
-        assertEquals(176, articleIdList.get(2));
+        assertEquals(176, articleIdList.get(0));
+        assertEquals(157, articleIdList.get(1));
+        assertEquals(44, articleIdList.get(2));
         assertEquals(187, articleIdList.get(3));
         assertEquals(168, articleIdList.get(4));
-        assertEquals(156, articleIdList.get(5));
-        assertEquals(190, articleIdList.get(6));
-        assertEquals(175, articleIdList.get(7));
-        assertEquals(167, articleIdList.get(8));
-        assertEquals(193, articleIdList.get(9));
+        assertEquals(190, articleIdList.get(5));
+        assertEquals(175, articleIdList.get(6));
+        assertEquals(156, articleIdList.get(7));
+        assertEquals(193, articleIdList.get(8));
+        assertEquals(183, articleIdList.get(9));
     }
 
     @Test
@@ -668,16 +668,16 @@ class ArticleMapperTest {
                 ("updatedAt", 10, 0, "", null, null, 0, Arrays.asList(1, 2));
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
         assertEquals(10, articleIdList.size());
-        assertEquals(44, articleIdList.get(0));
-        assertEquals(176, articleIdList.get(1));
-        assertEquals(157, articleIdList.get(2));
-        assertEquals(187, articleIdList.get(3));
-        assertEquals(168, articleIdList.get(4));
-        assertEquals(156, articleIdList.get(5));
-        assertEquals(190, articleIdList.get(6));
-        assertEquals(175, articleIdList.get(7));
-        assertEquals(167, articleIdList.get(8));
-        assertEquals(193, articleIdList.get(9));
+        assertEquals(176, articleIdList.get(0));
+        assertEquals(44, articleIdList.get(1));
+        assertEquals(187, articleIdList.get(2));
+        assertEquals(168, articleIdList.get(3));
+        assertEquals(157, articleIdList.get(4));
+        assertEquals(190, articleIdList.get(5));
+        assertEquals(175, articleIdList.get(6));
+        assertEquals(156, articleIdList.get(7));
+        assertEquals(193, articleIdList.get(8));
+        assertEquals(183, articleIdList.get(9));
     }
 
     @Test
@@ -688,15 +688,15 @@ class ArticleMapperTest {
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
         assertEquals(10, articleIdList.size());
         assertEquals(46, articleIdList.get(0));
-        assertEquals(38, articleIdList.get(1));
+        assertEquals(45, articleIdList.get(1));
         assertEquals(43, articleIdList.get(2));
-        assertEquals(22, articleIdList.get(3));
-        assertEquals(39, articleIdList.get(4));
-        assertEquals(45, articleIdList.get(5));
-        assertEquals(42, articleIdList.get(6));
-        assertEquals(28, articleIdList.get(7));
-        assertEquals(23, articleIdList.get(8));
-        assertEquals(11, articleIdList.get(9));
+        assertEquals(39, articleIdList.get(3));
+        assertEquals(38, articleIdList.get(4));
+        assertEquals(22, articleIdList.get(5));
+        assertEquals(119, articleIdList.get(6));
+        assertEquals(95, articleIdList.get(7));
+        assertEquals(42, articleIdList.get(8));
+        assertEquals(41, articleIdList.get(9));
     }
 
     @Test
@@ -706,16 +706,16 @@ class ArticleMapperTest {
                 ("myCnt", 10, 0, "", null, null, 0, Arrays.asList(1, 2));
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
         assertEquals(10, articleIdList.size());
-        assertEquals(24, articleIdList.get(0));
-        assertEquals(32, articleIdList.get(1));
-        assertEquals(16, articleIdList.get(2));
-        assertEquals(4, articleIdList.get(3));
-        assertEquals(20, articleIdList.get(4));
-        assertEquals(40, articleIdList.get(5));
-        assertEquals(8, articleIdList.get(6));
-        assertEquals(28, articleIdList.get(7));
-        assertEquals(36, articleIdList.get(8));
-        assertEquals(12, articleIdList.get(9));
+        assertEquals(192, articleIdList.get(0));
+        assertEquals(188, articleIdList.get(1));
+        assertEquals(184, articleIdList.get(2));
+        assertEquals(180, articleIdList.get(3));
+        assertEquals(176, articleIdList.get(4));
+        assertEquals(172, articleIdList.get(5));
+        assertEquals(168, articleIdList.get(6));
+        assertEquals(164, articleIdList.get(7));
+        assertEquals(160, articleIdList.get(8));
+        assertEquals(156, articleIdList.get(9));
     }
 
     @Test
@@ -732,21 +732,21 @@ class ArticleMapperTest {
         assertEquals(44, articleIdList.get(2));
         assertEquals(187, articleIdList.get(3));
         assertEquals(168, articleIdList.get(4));
-        assertEquals(156, articleIdList.get(5));
-        assertEquals(190, articleIdList.get(6));
-        assertEquals(175, articleIdList.get(7));
+        assertEquals(190, articleIdList.get(5));
+        assertEquals(175, articleIdList.get(6));
+        assertEquals(156, articleIdList.get(7));
         assertEquals(193, articleIdList.get(8));
-        assertEquals(167, articleIdList.get(9));
-        assertEquals(183, articleIdList.get(10));
+        assertEquals(183, articleIdList.get(9));
+        assertEquals(167, articleIdList.get(10));
         assertEquals(182, articleIdList.get(11));
         assertEquals(166, articleIdList.get(12));
-        assertEquals(155, articleIdList.get(13));
+        assertEquals(186, articleIdList.get(13));
         assertEquals(174, articleIdList.get(14));
-        assertEquals(28, articleIdList.get(15));
-        assertEquals(186, articleIdList.get(16));
-        assertEquals(59, articleIdList.get(17));
+        assertEquals(155, articleIdList.get(15));
+        assertEquals(28, articleIdList.get(16));
+        assertEquals(109, articleIdList.get(17));
         assertEquals(94, articleIdList.get(18));
-        assertEquals(109, articleIdList.get(19));
+        assertEquals(59, articleIdList.get(19));
     }
 
     @Test
@@ -761,33 +761,33 @@ class ArticleMapperTest {
         assertEquals(176, articleIdList.get(0));
         assertEquals(157, articleIdList.get(1));
         assertEquals(44, articleIdList.get(2));
-        assertEquals(168, articleIdList.get(3));
-        assertEquals(187, articleIdList.get(4));
-        assertEquals(175, articleIdList.get(5));
-        assertEquals(190, articleIdList.get(6));
+        assertEquals(187, articleIdList.get(3));
+        assertEquals(168, articleIdList.get(4));
+        assertEquals(190, articleIdList.get(5));
+        assertEquals(175, articleIdList.get(6));
         assertEquals(156, articleIdList.get(7));
-        assertEquals(167, articleIdList.get(8));
-        assertEquals(193, articleIdList.get(9));
-        assertEquals(183, articleIdList.get(10));
-        assertEquals(166, articleIdList.get(11));
-        assertEquals(182, articleIdList.get(12));
-        assertEquals(155, articleIdList.get(13));
-        assertEquals(186, articleIdList.get(14));
-        assertEquals(174, articleIdList.get(15));
+        assertEquals(193, articleIdList.get(8));
+        assertEquals(183, articleIdList.get(9));
+        assertEquals(167, articleIdList.get(10));
+        assertEquals(182, articleIdList.get(11));
+        assertEquals(166, articleIdList.get(12));
+        assertEquals(186, articleIdList.get(13));
+        assertEquals(174, articleIdList.get(14));
+        assertEquals(155, articleIdList.get(15));
         assertEquals(28, articleIdList.get(16));
-        assertEquals(94, articleIdList.get(17));
-        assertEquals(109, articleIdList.get(18));
-        assertEquals(21, articleIdList.get(19));
-        assertEquals(59, articleIdList.get(20));
-        assertEquals(58, articleIdList.get(21));
+        assertEquals(109, articleIdList.get(17));
+        assertEquals(94, articleIdList.get(18));
+        assertEquals(59, articleIdList.get(19));
+        assertEquals(21, articleIdList.get(20));
+        assertEquals(139, articleIdList.get(21));
         assertEquals(86, articleIdList.get(22));
-        assertEquals(139, articleIdList.get(23));
-        assertEquals(68, articleIdList.get(24));
-        assertEquals(81, articleIdList.get(25));
+        assertEquals(58, articleIdList.get(23));
+        assertEquals(173, articleIdList.get(24));
+        assertEquals(138, articleIdList.get(25));
         assertEquals(108, articleIdList.get(26));
-        assertEquals(138, articleIdList.get(27));
-        assertEquals(20, articleIdList.get(28));
-        assertEquals(37, articleIdList.get(29));
+        assertEquals(81, articleIdList.get(27));
+        assertEquals(68, articleIdList.get(28));
+        assertEquals(57, articleIdList.get(29));
 
     }
 
@@ -800,16 +800,16 @@ class ArticleMapperTest {
 //        記事数
         assertEquals(10, articleIdList.size());
 //        取得記事
-        assertEquals(157, articleIdList.get(0));
-        assertEquals(44, articleIdList.get(1));
-        assertEquals(176, articleIdList.get(2));
+        assertEquals(176, articleIdList.get(0));
+        assertEquals(157, articleIdList.get(1));
+        assertEquals(44, articleIdList.get(2));
         assertEquals(187, articleIdList.get(3));
         assertEquals(168, articleIdList.get(4));
-        assertEquals(156, articleIdList.get(5));
-        assertEquals(190, articleIdList.get(6));
-        assertEquals(175, articleIdList.get(7));
-        assertEquals(167, articleIdList.get(8));
-        assertEquals(193, articleIdList.get(9));
+        assertEquals(190, articleIdList.get(5));
+        assertEquals(175, articleIdList.get(6));
+        assertEquals(156, articleIdList.get(7));
+        assertEquals(193, articleIdList.get(8));
+        assertEquals(183, articleIdList.get(9));
     }
 
     @Test
@@ -826,8 +826,8 @@ class ArticleMapperTest {
         assertEquals(21, articleIdList.get(2));
         assertEquals(20, articleIdList.get(3));
         assertEquals(192, articleIdList.get(4));
-        assertEquals(42, articleIdList.get(5));
-        assertEquals(132, articleIdList.get(6));
+        assertEquals(132, articleIdList.get(5));
+        assertEquals(42, articleIdList.get(6));
         assertEquals(27, articleIdList.get(7));
         assertEquals(172, articleIdList.get(8));
         assertEquals(26, articleIdList.get(9));
@@ -912,8 +912,8 @@ class ArticleMapperTest {
         assertEquals(157, articleIdList.get(0));
         assertEquals(156, articleIdList.get(1));
         assertEquals(155, articleIdList.get(2));
-        assertEquals(94, articleIdList.get(3));
-        assertEquals(109, articleIdList.get(4));
+        assertEquals(109, articleIdList.get(3));
+        assertEquals(94, articleIdList.get(4));
         assertEquals(86, articleIdList.get(5));
         assertEquals(108, articleIdList.get(6));
         assertEquals(81, articleIdList.get(7));
@@ -976,14 +976,14 @@ class ArticleMapperTest {
 //        記事数
         assertEquals(10, articleIdList.size());
 //        取得記事
-        assertEquals(44, articleIdList.get(0));
+        assertEquals(176, articleIdList.get(0));
         assertEquals(157, articleIdList.get(1));
-        assertEquals(176, articleIdList.get(2));
-        assertEquals(168, articleIdList.get(3));
-        assertEquals(187, articleIdList.get(4));
+        assertEquals(44, articleIdList.get(2));
+        assertEquals(187, articleIdList.get(3));
+        assertEquals(168, articleIdList.get(4));
         assertEquals(190, articleIdList.get(5));
-        assertEquals(156, articleIdList.get(6));
-        assertEquals(175, articleIdList.get(7));
+        assertEquals(175, articleIdList.get(6));
+        assertEquals(156, articleIdList.get(7));
         assertEquals(193, articleIdList.get(8));
         assertEquals(166, articleIdList.get(9));
     }
@@ -998,11 +998,11 @@ class ArticleMapperTest {
         assertEquals(10, articleIdList.size());
 //        取得記事
         assertEquals(175, articleIdList.get(0));
-        assertEquals(167, articleIdList.get(1));
-        assertEquals(193, articleIdList.get(2));
-        assertEquals(28, articleIdList.get(3));
-        assertEquals(174, articleIdList.get(4));
-        assertEquals(155, articleIdList.get(5));
+        assertEquals(193, articleIdList.get(1));
+        assertEquals(167, articleIdList.get(2));
+        assertEquals(174, articleIdList.get(3));
+        assertEquals(155, articleIdList.get(4));
+        assertEquals(28, articleIdList.get(5));
         assertEquals(58, articleIdList.get(6));
         assertEquals(108, articleIdList.get(7));
         assertEquals(37, articleIdList.get(8));
@@ -1018,16 +1018,16 @@ class ArticleMapperTest {
 //        記事数
         assertEquals(10, articleIdList.size());
 //        取得記事
-        assertEquals(157, articleIdList.get(0));
-        assertEquals(44, articleIdList.get(1));
-        assertEquals(176, articleIdList.get(2));
+        assertEquals(176, articleIdList.get(0));
+        assertEquals(156, articleIdList.get(1));
+        assertEquals(44, articleIdList.get(2));
         assertEquals(187, articleIdList.get(3));
         assertEquals(168, articleIdList.get(4));
-        assertEquals(156, articleIdList.get(5));
-        assertEquals(190, articleIdList.get(6));
-        assertEquals(175, articleIdList.get(7));
-        assertEquals(167, articleIdList.get(8));
-        assertEquals(193, articleIdList.get(9));
+        assertEquals(190, articleIdList.get(5));
+        assertEquals(175, articleIdList.get(6));
+        assertEquals(156, articleIdList.get(7));
+        assertEquals(193, articleIdList.get(8));
+        assertEquals(183, articleIdList.get(9));
     }
 
     @Test
@@ -1039,14 +1039,14 @@ class ArticleMapperTest {
 //        記事数
         assertEquals(10, articleIdList.size());
 //        取得記事
-        assertEquals(44, articleIdList.get(0));
+        assertEquals(176, articleIdList.get(0));
         assertEquals(157, articleIdList.get(1));
-        assertEquals(176, articleIdList.get(2));
-        assertEquals(168, articleIdList.get(3));
-        assertEquals(187, articleIdList.get(4));
+        assertEquals(44, articleIdList.get(2));
+        assertEquals(187, articleIdList.get(3));
+        assertEquals(168, articleIdList.get(4));
         assertEquals(190, articleIdList.get(5));
-        assertEquals(156, articleIdList.get(6));
-        assertEquals(175, articleIdList.get(7));
+        assertEquals(175, articleIdList.get(6));
+        assertEquals(156, articleIdList.get(7));
         assertEquals(193, articleIdList.get(8));
         assertEquals(166, articleIdList.get(9));
     }
