@@ -6,6 +6,12 @@
     <v-snackbar v-model="nonValidUser" timeout="2000">
       自分の記事にQiita推薦はできません
     </v-snackbar>
+    <v-snackbar v-model="nonValidToken" timeout="5000">
+      トークンが失効しました。ログインからやり直してください。
+    </v-snackbar>
+    <v-snackbar v-model="processFailure" timeout="5000">
+      処理に失敗しました。ページを再読み込みしてください。
+    </v-snackbar>
     <v-row>
       <v-col class="hidden-xs-only hidden-sm-only" :md="mdPlacement.buttons">
         <v-row id="qiita_btn">
@@ -164,6 +170,8 @@ export default {
       //snackbarに使用するメソッド
       isPostedArticleToQiita: false,
       nonValidUser: false,
+      nonValidToken: false,
+      processFailure: false,
     };
   },
   computed: {
@@ -195,12 +203,18 @@ export default {
   },
   watch: {
     apiToken: function() {
-      this.fetchArticle(this.slug).catch(() => {
-        this.$router.push({ name: "404" });
+      this.fetchArticle(this.slug).catch((error) => {
+        this.errorHandle(error);
       });
-      this.fetchMyArticle(this.slug);
-      this.fetchRecommend(this.slug);
-      this.$store.dispatch("auth/checkIsLinkedToQiita");
+      this.fetchMyArticle(this.slug).catch((error) => {
+        this.errorHandle(error);
+      });
+      this.fetchRecommend(this.slug).catch((error) => {
+        this.errorHandle(error);
+      });
+      this.$store.dispatch("auth/checkIsLinkedToQiita").catch((error) => {
+        this.errorHandle(error);
+      });
       if (this.$route.query.isPostedArticleToQiita) {
         this.isPostedArticleToQiita = true;
       }
@@ -216,6 +230,16 @@ export default {
         top: 0,
         behavior: "auto",
       });
+    },
+    errorHandle(error) {
+      const status = error.response.status;
+      if (status == 404) {
+        this.$router.push({ name: "404" });
+      } else if (status == 401) {
+        this.nonValidToken = true;
+      } else {
+        this.processFailure = true;
+      }
     },
     closeEditor() {
       if (!this.propsFeedback.feedbackId) {
@@ -233,9 +257,17 @@ export default {
     postFeedback() {
       if (!this.propsFeedback.feedbackId) {
         this.propsFeedback.articleId = this.article.articleId;
-        this.$store.dispatch("article/postFeedback", this.propsFeedback);
+        this.$store
+          .dispatch("article/postFeedback", this.propsFeedback)
+          .catch((error) => {
+            this.errorHandle(error);
+          });
       } else {
-        this.$store.dispatch("article/updateFeedback", this.propsFeedback);
+        this.$store
+          .dispatch("article/updateFeedback", this.propsFeedback)
+          .catch((error) => {
+            this.errorHandle(error);
+          });
       }
       this.closeEditor();
     },
@@ -255,12 +287,17 @@ export default {
     },
     toggleMyArticle() {
       if (this.myArticleId) {
-        this.$store.dispatch("article/deleteMyArticle", this.myArticleId);
+        this.$store
+          .dispatch("article/deleteMyArticle", this.myArticleId)
+          .catch((error) => {
+            this.errorHandle(error);
+          });
       } else {
-        this.$store.dispatch(
-          "article/registerMyArticle",
-          this.article.articleId
-        );
+        this.$store
+          .dispatch("article/registerMyArticle", this.article.articleId)
+          .catch((error) => {
+            this.errorHandle(error);
+          });
       }
     },
     toggleRecommend() {
@@ -269,12 +306,17 @@ export default {
         return;
       }
       if (this.recommendId) {
-        this.$store.dispatch("article/deleteRecommend", this.recommendId);
+        this.$store
+          .dispatch("article/deleteRecommend", this.recommendId)
+          .catch((error) => {
+            this.errorHandle(error);
+          });
       } else {
-        this.$store.dispatch(
-          "article/registerRecommend",
-          this.article.articleId
-        );
+        this.$store
+          .dispatch("article/registerRecommend", this.article.articleId)
+          .catch((error) => {
+            this.errorHandle(error);
+          });
       }
     },
     ...mapActions("article", [

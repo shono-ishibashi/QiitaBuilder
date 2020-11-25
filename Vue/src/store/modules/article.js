@@ -128,14 +128,18 @@ export default {
           Authorization: apiToken,
         },
       };
-
-      try {
-        const res = await axios.post(url, feedback, requestConfig);
-        const item = res.data;
-        commit("addFeedback", item);
-      } catch (error) {
-        console.log(error);
-      }
+      await new Promise((resolve, reject) => {
+        axios
+          .post(url, feedback, requestConfig)
+          .then((res) => {
+            commit("addFeedback", res.data);
+            resolve(res);
+          })
+          .catch((error) => {
+            console.log(error);
+            reject(error);
+          });
+      });
     },
     async updateFeedback({ commit, rootGetters }, feedback) {
       const url = rootGetters.API_URL + "feedback";
@@ -145,13 +149,18 @@ export default {
           Authorization: apiToken,
         },
       };
-
-      try {
-        const res = await axios.put(url, feedback, requestConfig);
-        commit("updateFeedback", res.data);
-      } catch (error) {
-        console.log(error);
-      }
+      await new Promise((resolve, reject) => {
+        axios
+          .put(url, feedback, requestConfig)
+          .then((res) => {
+            commit("updateFeedback", res.data);
+            resolve(res);
+          })
+          .catch((error) => {
+            console.log(error);
+            reject(error);
+          });
+      });
     },
     async deleteFeedback({ commit, rootGetters }, feedback) {
       const url = rootGetters.API_URL + "feedback";
@@ -163,13 +172,18 @@ export default {
       };
       // 削除フラグ
       feedback.deleteFlag = 1;
-
-      try {
-        await axios.put(url, feedback, requestConfig);
-        commit("removeFeedback", feedback.feedbackId);
-      } catch (error) {
-        console.log(error);
-      }
+      await new Promise((resolve, reject) => {
+        axios
+          .put(url, feedback, requestConfig)
+          .then((res) => {
+            commit("removeFeedback", feedback.feedbackId);
+            resolve(res);
+          })
+          .catch((error) => {
+            console.log(error);
+            reject(error);
+          });
+      });
     },
     // MyArticle
     async fetchMyArticle({ commit, rootGetters }, articleId) {
@@ -180,12 +194,18 @@ export default {
           Authorization: apiToken,
         },
       };
-      try {
-        const res = await axios.get(url, requestConfig);
-        commit("setMyArticleId", res.data.myArticleId);
-      } catch (error) {
-        console.log(error);
-      }
+      await new Promise((resolve, reject) => {
+        axios
+          .get(url, requestConfig)
+          .then((res) => {
+            commit("setMyArticleId", res.data.myArticleId);
+            resolve(res);
+          })
+          .catch((error) => {
+            console.log(error);
+            reject(error);
+          });
+      });
     },
     async registerMyArticle({ commit, rootGetters }, articleId) {
       const url = rootGetters.API_URL + "my-article";
@@ -198,12 +218,18 @@ export default {
           Authorization: apiToken,
         },
       };
-      try {
-        const res = await axios.post(url, requestBody, requestConfig);
-        commit("setMyArticleId", res.data.myArticleId);
-      } catch (error) {
-        console.log(error);
-      }
+      await new Promise((resolve, reject) => {
+        axios
+          .post(url, requestBody, requestConfig)
+          .then((res) => {
+            commit("setMyArticleId", res.data.myArticleId);
+            resolve(res);
+          })
+          .catch((error) => {
+            console.log(error);
+            reject(error);
+          });
+      });
     },
     async deleteMyArticle({ commit, rootGetters }, myArticleId) {
       const url = rootGetters.API_URL + "my-article/" + myArticleId;
@@ -213,12 +239,18 @@ export default {
           Authorization: apiToken,
         },
       };
-      try {
-        await axios.delete(url, requestConfig);
-        commit("setMyArticleId", null);
-      } catch (error) {
-        console.log(error);
-      }
+      await new Promise((resolve, reject) => {
+        axios
+          .delete(url, requestConfig)
+          .then((res) => {
+            commit("setMyArticleId", null);
+            resolve(res);
+          })
+          .catch((error) => {
+            console.log(error);
+            reject(error);
+          });
+      });
     },
     // Recommend
     async fetchRecommend({ commit, rootGetters }, articleId) {
@@ -229,12 +261,18 @@ export default {
           Authorization: apiToken,
         },
       };
-      try {
-        const res = await axios.get(url, requestConfig);
-        commit("setRecommendId", res.data.recommendId);
-      } catch (error) {
-        console.log(error);
-      }
+      await new Promise((resolve, reject) => {
+        axios
+          .get(url, requestConfig)
+          .then((res) => {
+            commit("setRecommendId", res.data.recommendId);
+            resolve(res);
+          })
+          .catch((error) => {
+            console.log(error);
+            reject(error);
+          });
+      });
     },
     async registerRecommend({ commit, rootGetters }, articleId) {
       const url = rootGetters.API_URL + "recommend";
@@ -247,13 +285,19 @@ export default {
           Authorization: apiToken,
         },
       };
-      try {
-        const res = await axios.post(url, requestBody, requestConfig);
-        commit("setRecommendId", res.data.recommendId);
-        commit("incrementQiitaRecommendPoint");
-      } catch (error) {
-        console.log(error);
-      }
+      await new Promise((resolve, reject) => {
+        axios
+          .post(url, requestBody, requestConfig)
+          .then((res) => {
+            commit("setRecommendId", res.data.recommendId);
+            commit("incrementQiitaRecommendPoint");
+            resolve(res);
+          })
+          .catch((error) => {
+            console.log(error);
+            reject(error);
+          });
+      });
     },
     async deleteRecommend({ commit, rootGetters }, recommendId) {
       const url = rootGetters.API_URL + "recommend/" + recommendId;
@@ -263,13 +307,19 @@ export default {
           Authorization: apiToken,
         },
       };
-      try {
-        await axios.delete(url, requestConfig);
-        commit("setRecommendId", null);
-        commit("decrementQiitaRecommendPoint");
-      } catch (error) {
-        console.log(error);
-      }
+      await new Promise((resolve, reject) => {
+        axios
+          .delete(url, requestConfig)
+          .then((res) => {
+            commit("setRecommendId", null);
+            commit("decrementQiitaRecommendPoint");
+            resolve(res);
+          })
+          .catch((error) => {
+            console.log(error);
+            reject(error);
+          });
+      });
     },
   },
   getters: {
