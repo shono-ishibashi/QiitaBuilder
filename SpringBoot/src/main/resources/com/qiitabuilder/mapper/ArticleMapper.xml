@@ -46,6 +46,7 @@
             <result column="fee_created_at" property="createdAt"/>
             <result column="fee_updated_at" property="updatedAt"/>
             <result column="fee_content" property="content"/>
+            <result column="fee_feedback_version" property="feedbackVersion"/>
             <result column="fee_delete_flag" property="deleteFlag"/>
             <association property="postedUser" javaType="com.qiitabuilder.domain.User">
                 <id column="fee_use_user_id" property="userId"/>
@@ -238,6 +239,7 @@
                fee.created_at       AS fee_created_at,
                fee.updated_at       AS fee_updated_at,
                fee.content          AS fee_content,
+               fee.feedback_version AS fee_feedback_version,
                fee.delete_flag      AS fee_delete_flag,
 
                fee_use.user_id      AS fee_use_user_id,

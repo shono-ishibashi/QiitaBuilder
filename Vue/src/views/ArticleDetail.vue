@@ -280,6 +280,7 @@ export default {
         createdAt: feedback.createdAt,
         deleteFlag: feedback.deleteFlag,
         feedbackId: feedback.feedbackId,
+        feedbackVersion: feedback.feedbackVersion,
         postedUser: feedback.postedUser,
         updatedAt: feedback.updatedAt,
       };
