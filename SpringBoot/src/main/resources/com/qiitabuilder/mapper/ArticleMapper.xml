@@ -130,7 +130,7 @@
         FROM articles as art
         LEFT OUTER JOIN articles_tags_relations as a_t_relation
         ON art.article_id = a_t_relation.article_id
-        LEFT OUTER JOIN tags as tags
+        LEFT OUTER JOIN tags
         ON a_t_relation.tag_id = tags.tag_id
         LEFT OUTER JOIN (SELECT article_id, count(feed.article_id) as feed_cnt
         FROM feedbacks as feed
@@ -428,23 +428,23 @@
     </select>
 
     <select id="getArticlesByUserId" resultMap="articlesMap">
-        SELECT art.article_id                    AS articleId,
-               art.title                         AS title,
-               art.created_at                    AS createdAt,
-               art.updated_at                    AS updatedAt,
-               art.state_flag                    AS stateFlag,
-               tags.tag_id                       AS tagId,
-               tags.tag_name                     AS tagName,
-               feed_cnt_table.feed_cnt           AS feedCnt,
-               my_cnt_table.my_cnt               AS myCnt,
-               users.user_id                     AS userId,
-               users.display_name                AS displayName,
-               users.photo_url                   AS photoUrl,
-               recommend_cnt_table.recommend_cnt AS recommendCnt
+        SELECT art.article_id                                                                AS articleId,
+               art.title                                                                     AS title,
+               art.created_at                                                                AS createdAt,
+               art.updated_at                                                                AS updatedAt,
+               art.state_flag                                                                AS stateFlag,
+               tags.tag_id                                                                   AS tagId,
+               tags.tag_name                                                                 AS tagName,
+               IF(feed_cnt_table.feed_cnt, feed_cnt_table.feed_cnt, 0)                       AS feedCnt,
+               IF(my_cnt_table.my_cnt, my_cnt_table.my_cnt, 0)                               AS myCnt,
+               users.user_id                                                                 AS userId,
+               users.display_name                                                            AS displayName,
+               users.photo_url                                                               AS photoUrl,
+               IF(recommend_cnt_table.recommend_cnt, recommend_cnt_table.recommend_cnt, 0) AS recommendCnt
         FROM articles AS art
                  LEFT OUTER JOIN articles_tags_relations AS a_t_relation
                                  ON art.article_id = a_t_relation.article_id
-                 LEFT OUTER JOIN tags AS tags
+                 LEFT OUTER JOIN tags
                                  ON a_t_relation.tag_id = tags.tag_id
                  LEFT OUTER JOIN (SELECT article_id,
                                          count(feed.article_id) AS feed_cnt
