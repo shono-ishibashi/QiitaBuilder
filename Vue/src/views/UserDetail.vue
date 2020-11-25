@@ -15,7 +15,7 @@
           style="font-weight: bold">{{ userDetail.displayName }}</span></v-col>
       <v-col cols="6" class="contentWrap">
         <v-btn @click="toQiitaAPIAuthentication" v-if="userDetail.isLoginUser" color="#5bc8ac" elevation="2"
-               style="font-weight: bold">Qiita連携
+               style="font-weight: bold" dark>Qiita連携
         </v-btn>
       </v-col>
 
@@ -74,9 +74,10 @@
                 </v-col>
                 <v-col>
                   <v-card-actions>
-                    <v-btn @click="searchWithConditions" color="#5bc8ac" elevation="2" style="font-weight: bold">検索
+                    <v-btn @click="searchWithConditions" color="#5bc8ac" elevation="2" style="font-weight: bold" dark>検索
                     </v-btn>
-                    <v-btn @click="resetConditions" color="#ff6347" elevation="2" style="font-weight: bold">リセット</v-btn>
+                    <v-btn @click="resetConditions" color="#ff6347" elevation="2" style="font-weight: bold" dark>リセット
+                    </v-btn>
                   </v-card-actions>
                 </v-col>
               </v-row>
@@ -87,6 +88,7 @@
                       <v-form ref="search_form">
                         <v-text-field
                             v-model="conditions.title"
+                            color="#5bc8ac"
                             label="記事タイトルを入力"
                             :rules="[title_limit_length]"
                         ></v-text-field>

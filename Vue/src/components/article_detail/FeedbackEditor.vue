@@ -40,7 +40,7 @@
     </v-tabs>
     <!-- 入力欄/プレビュー -->
     <v-card>
-      <v-form v-show="tab == 0" ref="form" v-model="valid">
+      <v-form v-show="tab === 0" ref="form" v-model="valid">
         <v-container>
           <v-textarea
               background-color="grey lighten-2"
@@ -52,7 +52,7 @@
           ></v-textarea>
         </v-container>
       </v-form>
-      <v-container v-show="tab == 1">
+      <v-container v-show="tab === 1">
         <Editor
             mode="viewer"
             ref="editor"
@@ -103,6 +103,9 @@ export default {
   created() {
     this.loginUser = this.$store.state.auth.loginUser;
   },
+  beforeUpdate() {
+    this.resetValidation()
+  },
   filters: {
     postOrEdit: function (value) {
       if (!value) return "投稿";
@@ -118,6 +121,7 @@ export default {
       if (this.valid) {
         this.$emit("postFeedback");
       }
+      this.feedback.content=undefined
     },
     resetValidation() {
       this.$refs.form.resetValidation();

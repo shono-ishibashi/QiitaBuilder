@@ -26,7 +26,7 @@
         </v-col>
         <!-- Qiita投稿状況 -->
         <v-col class="" sm="3" md="3">
-          <v-menu offset-y v-if="loginUser.uid == article.postedUser.uid">
+          <v-menu offset-y v-if="loginUser.uid == article.postedUser.uid&&article.stateFlag!==0">
             <template v-slot:activator="{ attrs, on }">
               <v-btn
                   v-bind="attrs"

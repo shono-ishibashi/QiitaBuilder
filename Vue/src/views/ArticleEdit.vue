@@ -1,6 +1,7 @@
 <template>
   <v-container id="article-edit-field" fluid>
     <div class="edit-field">
+      <!--      タイトル、タグ入力欄-->
       <v-form ref="edit_form" v-model="valid" lazy-validation>
         <v-row>
           <v-col cols="8" class="title-tag-form">
@@ -31,14 +32,25 @@
             >
             </v-combobox>
           </v-col>
+          <!--          記事投稿または下書き保存するフィールド-->
           <v-col cols="4">
-            <div class="article-edit-action-field">
-              <v-row v-if="this.slug!=null" justify="center">
+            <!--            この中を変更、statusflugが0の時はarticleNewと同じボタン表示にする-->
+            <div class="article-edit-action-field" v-if="article.stateFlag===0">
+              <v-row justify="center">
+                <v-btn @click="postArticle(1)" class="btn" outlined color="#008b8b">記事を公開</v-btn>
+              </v-row>
+              <v-row justify="center" style="margin-top: 40px;">
+                <v-btn @click="postArticle(0)" class="btn" outlined color="#008b8b">下書き保存
+                </v-btn>
+              </v-row>
+            </div>
+            <div class="article-edit-action-field" v-if="article.stateFlag===1||article.stateFlag===2">
+              <v-row justify="center">
                 <v-btn @click="postArticle(article.stateFlag)" class="btn" outlined color="#008b8b">Qiita Builder
                   に記事を更新
                 </v-btn>
               </v-row>
-              <v-row v-if="this.slug!=null" justify="center" class="post-article-toQiita-btn">
+              <v-row justify="center" class="post-article-toQiita-btn">
                 <v-btn @click.stop="toggleQiitaDialog" width="220" class="btn" outlined color="#008b8b">{{
                     postToQiita
                   }}
@@ -47,6 +59,8 @@
             </div>
           </v-col>
         </v-row>
+        <!--        stateflugが0の時の挙動-->
+        <!--          編集フォーマット選択タブフィールド-->
         <v-tabs
             color="#5bc8ac"
             background-color="#f5f5f5"
@@ -68,7 +82,7 @@
             編集 & プレビュー
           </v-tab>
           <v-tab
-              v-if="slug!=null"
+              v-if="article.stateFlag!==0"
               @click="changeFormat(3)"
           >
             編集 & プレビュー & FB
@@ -146,22 +160,22 @@ export default {
     async apiToken() {
       const uid = await this.loginUser.uid
       await this.findUserIdByUid(uid)
-      const article=await this.slug
-      const params= await {
-        articleId:article,
-        userId:this.userId
+      const article = await this.slug
+      const params = await {
+        articleId: article,
+        userId: this.userId
       }
-      await axios.get(this.API_URL+'article/isExist',{
+      await axios.get(this.API_URL + 'article/isExist', {
         params: params,
         headers: {
           "Authorization": this.apiToken,
           "Content-Type": "application/json"
         },
-      }).then(()=>{
+      }).then(() => {
         this.resetArticle()
         this.fetchTags()
         this.fetchArticle(this.slug);
-      }).catch(()=>{
+      }).catch(() => {
         this.$router.push('/article')
         this.toggleErrorTransitionDialog()
       })

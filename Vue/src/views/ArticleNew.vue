@@ -1,6 +1,7 @@
 <template>
   <v-container id="article-edit-field" fluid>
     <div class="edit-field">
+<!--      タイトル、タグ入力欄-->
       <v-form ref="form" v-model="valid" lazy-validation>
         <v-row>
           <v-col cols="8" class="title-tag-form">
@@ -31,6 +32,7 @@
             >
             </v-combobox>
           </v-col>
+<!--          記事投稿または下書き保存するフィールド-->
           <v-col cols="4">
             <div class="article-edit-action-field">
               <v-row v-if="this.slug==null" justify="center">
@@ -42,6 +44,7 @@
               </v-row>
             </div>
           </v-col>
+<!--          編集フォーマット選択タブフィールド-->
         </v-row>
         <v-tabs
             color="#5bc8ac"
