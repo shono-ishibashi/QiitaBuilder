@@ -111,7 +111,7 @@ public class ArticleService {
             Integer offset = (searchArticleForm.getPageSize() * (searchArticleForm.getCurrentPage() - 1));
             searchArticleForm.setOffset(offset);
         }
-        if(Objects.nonNull(searchArticleForm.getSearchTag())){
+        if (Objects.nonNull(searchArticleForm.getSearchTag())) {
             searchArticleForm.setTagLength(searchArticleForm.getSearchTag().size());
         }
         return searchArticleForm;
@@ -152,8 +152,16 @@ public class ArticleService {
         } else {
             article.setQiitaArticleId(articleMapper.getQiitaArticleId(article.getArticleId()));
 
+            //更新前の記事
+            Article beforeUpdateArticle = articleMapper.load(article.getArticleId());
+
             //入力された記事を更新
-            articleMapper.updateArticle(article);
+            //更新前の状態が下書き記事かどうか
+            if (Objects.equals(beforeUpdateArticle.getStateFlag(), 0)) {
+                articleMapper.updateDraftArticle(article);
+            } else {
+                articleMapper.updateArticle(article);
+            }
 
             //入力されたtagのIDのList
             List<Integer> tagIdsInPostedArticle
