@@ -14,7 +14,7 @@
     </v-snackbar>
     <v-row>
       <v-col class="hidden-xs-only hidden-sm-only" :md="mdPlacement.buttons">
-        <v-row id="qiita_btn">
+        <v-row v-if="article.stateFlag!==0"  id="qiita_btn">
           <!-- Qiitaボタン -->
           <v-col
             cols="12"
@@ -113,10 +113,10 @@
             @toggleMyArticle="toggleMyArticle"
             @toggleRecommend="toggleRecommend"
           />
-          <Feedbacks :feedbacks="feedbacks" @editFeedback="editFeedback" />
+          <Feedbacks :feedbacks="feedbacks" @editFeedback="editFeedback" v-if="article.stateFlag!==0"/>
         </v-sheet>
       </v-col>
-      <v-col cols="12" sm="12" :md="mdPlacement.editor">
+      <v-col v-if="article.stateFlag!==0" cols="12" sm="12" :md="mdPlacement.editor">
         <span v-show="EditorIsOpen">
           <FeedbackEditor
             class="sticky"

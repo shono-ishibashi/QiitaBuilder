@@ -1,6 +1,6 @@
 <template>
   <v-container class="edit">
-    <Edit :height="800"></Edit>
+    <Edit :height="700"></Edit>
   </v-container>
 </template>
 
