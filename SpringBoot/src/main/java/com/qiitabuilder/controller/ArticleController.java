@@ -116,7 +116,7 @@ public class ArticleController {
     }
 
     /////////////////////////////
-    //// POST
+    //// POST&
     /////////////////////////////
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
