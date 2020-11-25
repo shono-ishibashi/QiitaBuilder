@@ -67,6 +67,10 @@ public class FeedbackService {
         if (current.getPostedUser().getUserId() != loginUser.getUser().getUserId()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
+        // versionが異なる場合(排他制御)はConflictを返す
+        if (current.getFeedbackVersion() != feedback.getFeedbackVersion()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT);
+        }
 
         // 現在時刻をセット
         feedback.setUpdatedAt(LocalDateTime.now());

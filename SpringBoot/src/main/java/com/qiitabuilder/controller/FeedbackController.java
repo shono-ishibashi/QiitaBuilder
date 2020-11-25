@@ -70,7 +70,7 @@ public class FeedbackController {
      * HTTP ステータス
      * OK
      * BadRequest 入力値エラーの場合
-     * Conflict 記事IDが存在しない場合 & フィードバックIDが存在しない場合
+     * Conflict 記事IDが存在しない場合 & フィードバックIDが存在しない場合 & versionが異なる場合(排他制御)
      *
      * @param form
      * @return
@@ -98,6 +98,7 @@ public class FeedbackController {
         feedback.setFeedbackId(form.getFeedbackId());
         feedback.setArticleId(form.getArticleId());
         feedback.setContent(form.getContent());
+        feedback.setFeedbackVersion(form.getFeedbackVersion());
         feedback.setDeleteFlag(form.getDeleteFlag());
 
         return feedbackService.updateFeedback(feedback);
