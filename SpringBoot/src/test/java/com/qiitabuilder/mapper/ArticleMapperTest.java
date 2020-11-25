@@ -1505,7 +1505,7 @@ class ArticleMapperTest {
         assertEquals(5, articles.get(11).getTags().get(1).getTagId());
         assertEquals("go", articles.get(11).getTags().get(1).getTagName());
         assertEquals(5, articles.get(11).getFeedbackCount());
-        assertNull(articles.get(11).getRegisteredMyArticleCount());
+        assertEquals(0, articles.get(11).getRegisteredMyArticleCount());
         assertEquals(1, articles.get(11).getPostedUser().getUserId());
         assertEquals("a", articles.get(11).getPostedUser().getDisplayName());
         assertEquals("a", articles.get(11).getPostedUser().getPhotoUrl());
