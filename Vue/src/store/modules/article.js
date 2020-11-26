@@ -93,9 +93,7 @@ export default {
             } else if (response.status === 403 && response.data.message === errorLocation) {
               alert('この記事を更新する権限はありません。');
               //======================404======================
-            } else if (response.status === 404 &&
-              response.data.message === errorLocation
-            ) {
+            } else if (response.status === 404 && response.data.message === errorLocation) {
               if (confirm('Qiitaの記事が見つからないため、更新できませんでした。\nQiitaに再投稿しますか？')) {
                 commit("updateStateFlag", 2);
                 dispatch('postArticleToQiita', articleId);
