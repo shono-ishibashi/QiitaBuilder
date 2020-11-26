@@ -29,6 +29,7 @@ class FeedbackFormTest {
         feedbackForm.setFeedbackId(1);
         feedbackForm.setArticleId(1);
         feedbackForm.setContent("content");
+        feedbackForm.setFeedbackVersion(1);
         feedbackForm.setDeleteFlag(0);
     }
 
@@ -210,4 +211,41 @@ class FeedbackFormTest {
             assertTrue(v.getConstraintDescriptor().getAnnotation() instanceof Min);
         }
     }
-}
+
+    // feedbackVersion
+    @Test
+    void feedbackVersion_正常系_min_境界値() {
+        feedbackForm.setFeedbackVersion(1);
+        Set<ConstraintViolation<FeedbackForm>> violations = validator.validate(feedbackForm);
+        assertEquals(0, violations.size());
+    }
+
+    @Test
+    void feedbackVersion_異常系_notnull() {
+        feedbackForm.setFeedbackVersion(null);
+        Set<ConstraintViolation<FeedbackForm>> violations = validator.validate(feedbackForm);
+        assertEquals(1, violations.size());
+        for (ConstraintViolation<FeedbackForm> v : violations) {
+            assertTrue(v.getConstraintDescriptor().getAnnotation() instanceof NotNull);
+        }
+    }
+
+    @Test
+    void feedbackVersion_異常系_min_境界値() {
+        feedbackForm.setFeedbackVersion(0);
+        Set<ConstraintViolation<FeedbackForm>> violations = validator.validate(feedbackForm);
+        assertEquals(1, violations.size());
+        for (ConstraintViolation<FeedbackForm> v : violations) {
+            assertTrue(v.getConstraintDescriptor().getAnnotation() instanceof Min);
+        }
+    }
+
+    @Test
+    void feedbackVersion_異常系_min() {
+        feedbackForm.setFeedbackVersion(-10);
+        Set<ConstraintViolation<FeedbackForm>> violations = validator.validate(feedbackForm);
+        assertEquals(1, violations.size());
+        for (ConstraintViolation<FeedbackForm> v : violations) {
+            assertTrue(v.getConstraintDescriptor().getAnnotation() instanceof Min);
+        }
+    }}
