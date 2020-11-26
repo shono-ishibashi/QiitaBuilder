@@ -151,7 +151,7 @@ export default {
                 commit("setUserDetail", res.data);
             }).catch((error) => {
                 console.log(error)
-                router.push({ name: "500" })
+                router.push({ name: "404" })
             })
         },
         async fetchPostedArticles({ commit, rootGetters, rootState }, userId) {
