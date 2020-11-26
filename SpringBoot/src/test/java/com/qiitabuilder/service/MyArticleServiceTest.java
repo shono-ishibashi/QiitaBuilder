@@ -111,6 +111,7 @@ class MyArticleServiceTest {
                 "   created_at  datetime null,\n" +
                 "   updated_at  datetime null,\n" +
                 "   content     text     null,\n" +
+                "   feedback_version int not null default 1,\n" +
                 "   delete_flag int      null,\n" +
                 "   constraint fk_feedbacks_articleid\n" +
                 "       foreign key (article_id) references articles (article_id),\n" +
