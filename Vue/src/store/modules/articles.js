@@ -16,6 +16,7 @@ export default {
         },
         totalPage: undefined,
         tags: [],
+        // 遷移エラー時に表示するダイアログ
         errorTransistionDialog: false,
     },
     mutations: {

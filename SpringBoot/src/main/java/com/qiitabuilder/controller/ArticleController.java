@@ -145,6 +145,7 @@ public class ArticleController {
     @RequestMapping(value = "/", method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.OK)
     public Article editArticle(@RequestBody Article article) {
+//        requestbodyのvalidation
         if (
                 isNull(article.getArticleId()) ||
                         article.getTags().size() <= 0 ||
@@ -154,7 +155,8 @@ public class ArticleController {
                         article.getTitle().length() > 255 ||
                         isNull(article.getContent()) ||
                         article.getContent().length() > 20000 ||
-                        article.getContent().isEmpty()
+                        article.getContent().isEmpty() ||
+                        isNull(article.getArticleVersion())
         ) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }

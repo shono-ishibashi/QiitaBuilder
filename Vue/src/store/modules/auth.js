@@ -9,6 +9,7 @@ export default {
     loginUser: null,
     apiToken: "",
     isLinkedToQiita: null,
+      nonValidToken: false,
   },
   mutations: {
     setLoginUser(state, loginUser) {

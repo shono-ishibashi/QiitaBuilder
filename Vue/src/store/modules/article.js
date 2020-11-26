@@ -11,12 +11,14 @@ export default {
       title: "",
       content: "",
       stateFlag: undefined,
+      articleVersion: undefined,
       tags: undefined,
       feedbacks: [],
       qiitaRecommendPoint: null,
     },
     myArticleId: null,
     recommendId: null,
+    processFailure: false,
   },
   mutations: {
     setArticle(state, article) {
@@ -32,6 +34,7 @@ export default {
         title: "",
         content: "",
         state_flag: undefined,
+        
         tags: undefined,
       };
     },
@@ -67,6 +70,9 @@ export default {
     },
     updateStateFlag(state, stateFlag) {
       state.article.stateFlag = stateFlag;
+    },
+    toggleProcessFailure(state) {
+      state.processFailure = !state.processFailure
     }
   },
   actions: {
@@ -135,31 +141,55 @@ export default {
       });
     },
     async saveArticle({rootGetters}, article) {
-      const articleEditUrl = rootGetters.API_URL + "article/";
-      const apiToken = await rootGetters["auth/apiToken"];
-      const requestBody = {
-        articleId: article.articleId,
-        content: article.content,
-        title: article.title,
-        stateFlag: article.stateFlag,
-        tags: article.tags,
-      };
-      if (article.articleId == null) {
-        await axios.post(articleEditUrl, requestBody, {
-          headers: {
-            Authorization: apiToken,
-            "Content-Type": "application/json",
-          },
-        });
-      } else {
-        await axios.put(articleEditUrl, requestBody, {
-          headers: {
-            Authorization: apiToken,
-            "Content-Type": "application/json",
-          },
-        });
-      }
-    },
+            const articleEditUrl = rootGetters.API_URL + "article/";
+            const apiToken = await rootGetters["auth/apiToken"];
+            const insertRequestBody = {
+                articleId: article.articleId,
+                content: article.content,
+                title: article.title,
+                stateFlag: article.stateFlag,
+                tags: article.tags,
+            };
+            const updateRequestBody = {
+                articleId: article.articleId,
+                content: article.content,
+                title: article.title,
+                stateFlag: article.stateFlag,
+                articleVersion: article.articleVersion,
+                tags: article.tags,
+            }
+            const requestConfig = {
+                headers: {
+                    Authorization: apiToken,
+                    "Content-Type": "application/json",
+                }
+            }
+            //insert処理
+            if (article.articleId == null) {
+                await new Promise((resolve, reject) => {
+                    axios.post(articleEditUrl, insertRequestBody, requestConfig)
+                        .then((res) => {
+                            resolve(res)
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            reject(error)
+                        })
+                })
+                //  update処理
+            } else {
+                await new Promise((resolve, reject) => {
+                    axios.put(articleEditUrl, updateRequestBody, requestConfig)
+                        .then((res) => {
+                            resolve(res)
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            reject(error)
+                        })
+                })
+            }
+        },
     resetArticle({commit}) {
       commit("resetArticle");
     },
@@ -321,55 +351,58 @@ export default {
           });
       });
     },
-    async registerRecommend({commit, rootGetters}, articleId) {
-      const url = rootGetters.API_URL + "recommend";
-      const requestBody = {
-        articleId: articleId,
-      };
-      const apiToken = rootGetters["auth/apiToken"];
-      const requestConfig = {
-        headers: {
-          Authorization: apiToken,
+        async registerRecommend({commit, rootGetters}, articleId) {
+            const url = rootGetters.API_URL + "recommend";
+            const requestBody = {
+                articleId: articleId,
+            };
+            const apiToken = rootGetters["auth/apiToken"];
+            const requestConfig = {
+                headers: {
+                    Authorization: apiToken,
+                },
+            };
+            await new Promise((resolve, reject) => {
+                axios
+                    .post(url, requestBody, requestConfig)
+                    .then((res) => {
+                        commit("setRecommendId", res.data.recommendId);
+                        commit("incrementQiitaRecommendPoint");
+                        resolve(res);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                        reject(error);
+                    });
+            });
         },
-      };
-      await new Promise((resolve, reject) => {
-        axios
-          .post(url, requestBody, requestConfig)
-          .then((res) => {
-            commit("setRecommendId", res.data.recommendId);
-            commit("incrementQiitaRecommendPoint");
-            resolve(res);
-          })
-          .catch((error) => {
-            console.log(error);
-            reject(error);
-          });
-      });
-    },
-    async deleteRecommend({commit, rootGetters}, recommendId) {
-      const url = rootGetters.API_URL + "recommend/" + recommendId;
-      const apiToken = rootGetters["auth/apiToken"];
-      const requestConfig = {
-        headers: {
-          Authorization: apiToken,
+        async deleteRecommend({commit, rootGetters}, recommendId) {
+            const url = rootGetters.API_URL + "recommend/" + recommendId;
+            const apiToken = rootGetters["auth/apiToken"];
+            const requestConfig = {
+                headers: {
+                    Authorization: apiToken,
+                },
+            };
+            await new Promise((resolve, reject) => {
+                axios
+                    .delete(url, requestConfig)
+                    .then((res) => {
+                        commit("setRecommendId", null);
+                        commit("decrementQiitaRecommendPoint");
+                        resolve(res);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                        reject(error);
+                    });
+            });
         },
-      };
-      await new Promise((resolve, reject) => {
-        axios
-          .delete(url, requestConfig)
-          .then((res) => {
-            commit("setRecommendId", null);
-            commit("decrementQiitaRecommendPoint");
-            resolve(res);
-          })
-          .catch((error) => {
-            console.log(error);
-            reject(error);
-          });
-      });
+        toggleProcessFailure({commit}) {
+            commit("toggleProcessFailure");
+        }
     },
-  },
-  getters: {
-    compiledMarkdown: (state) => marked(state.article.content),
-  },
+    getters: {
+        compiledMarkdown: (state) => marked(state.article.content),
+    },
 };
