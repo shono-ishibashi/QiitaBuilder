@@ -89,7 +89,6 @@ export default {
   watch: {
     async apiToken() {
 
-
       //リダイレクトでstate,code が存在するなら
       if (await this.$route.query.state && await this.$route.query.code) {
         await this.authenticateQiitaAPI();
@@ -99,8 +98,8 @@ export default {
 
           await this.$store.dispatch("auth/checkIsLinkedToQiita");
 
-          await this.postArticleToQiita(articleId);
-          await this.$router.push('/article/' + articleId + '?isPostedArticleToQiita=true');
+          await this.$store.dispatch('article/postArticleToQiita', articleId);
+          await this.$router.push('/article/' + articleId);
           await localStorage.removeItem('articleId');
 
         } else {

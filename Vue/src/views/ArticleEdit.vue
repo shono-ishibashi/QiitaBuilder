@@ -146,22 +146,22 @@ export default {
     async apiToken() {
       const uid = await this.loginUser.uid
       await this.findUserIdByUid(uid)
-      const article=await this.slug
-      const params= await {
-        articleId:article,
-        userId:this.userId
+      const article = await this.slug
+      const params = await {
+        articleId: article,
+        userId: this.userId
       }
-      await axios.get(this.API_URL+'article/isExist',{
+      await axios.get(this.API_URL + 'article/isExist', {
         params: params,
         headers: {
           "Authorization": this.apiToken,
           "Content-Type": "application/json"
         },
-      }).then(()=>{
+      }).then(() => {
         this.resetArticle()
         this.fetchTags()
         this.fetchArticle(this.slug);
-      }).catch(()=>{
+      }).catch(() => {
         this.$router.push('/article')
         this.toggleErrorTransitionDialog()
       })
@@ -247,8 +247,8 @@ export default {
     },
     //qiitaに投稿or更新するメソッド
     async postedToQiita(article) {
-      await this.postArticle(article.stateFlag)
-      await this.postArticleToQiita(article.articleId)
+      await this.postArticle(article.stateFlag);
+      await this.$store.dispatch("article/postArticleToQiita", article.articleId);
     },
   },
 

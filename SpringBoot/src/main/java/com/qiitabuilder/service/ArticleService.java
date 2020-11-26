@@ -146,6 +146,7 @@ public class ArticleService {
             });
 
         } else {
+
             article.setQiitaArticleId(articleMapper.getQiitaArticleId(article.getArticleId()));
 
             //入力された記事を更新

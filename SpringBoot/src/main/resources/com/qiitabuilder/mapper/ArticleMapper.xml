@@ -491,11 +491,9 @@
     <!-- ****** UPDATE ****** -->
     <update id="updateArticle">
         UPDATE articles
-        SET user_id          = #{postedUser.userId},
-            updated_at       = NOW(),
+        SET updated_at       = NOW(),
             title            = #{title},
             content          = #{content},
-            qiita_article_id = #{qiitaArticleId},
             state_flag       = #{stateFlag},
             qiita_article_id = #{qiitaArticleId}
         WHERE article_id = #{articleId}
