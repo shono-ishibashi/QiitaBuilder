@@ -1,8 +1,5 @@
 <template>
   <v-app class="grey lighten-3 area">
-    <v-snackbar v-model="isPostedArticleToQiita">
-      Qiitaへ記事を投稿しました!!!
-    </v-snackbar>
     <v-snackbar v-model="nonValidUser" timeout="2000">
       自分の記事にQiita推薦はできません
     </v-snackbar>
@@ -161,8 +158,6 @@ export default {
         deleteFlag: 0,
       },
       propsFeedback: {},
-      //snackbarに使用するメソッド
-      isPostedArticleToQiita: false,
       nonValidUser: false,
     };
   },
