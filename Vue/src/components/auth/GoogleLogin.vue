@@ -21,7 +21,7 @@
                      justify="center"
                      style="height: 50px;"
               >
-                <v-btn class="login-btn" @click="loginRakus" style="text-transform: none;" width="50%">
+                <v-btn class="login-btn" @click="loginRakus" style="text-transform: none;" width="50%" id="rakus_login_btn">
                   <svg
                       width="18px"
                       height="18px"
@@ -53,7 +53,7 @@
                      justify="center"
                      style="height: 50px;"
               >
-                <v-btn class="login-btn" @click="loginPartners" style="text-transform: none;" width="50%">
+                <v-btn class="login-btn" @click="loginPartners" style="text-transform: none;" width="50%" id="rp_login_btn">
                   <svg
                       width="18px"
                       height="18px"

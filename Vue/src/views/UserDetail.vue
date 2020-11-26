@@ -1,154 +1,202 @@
 <template>
-  <v-container :class="{'d-flex':windowWidthClass}">
-    <v-row justify="center" align-content="center">
-      <v-col cols=6 class="contentWrap">
-        <v-avatar size="140">
-          <img :src="userDetail.photoUrl" alt=""/></v-avatar>
-      </v-col>
-      <v-col cols=6 align-self="center">
-        <Pie class="chart" :chart-data="chartDisplay" :options="chartOptions" v-if="userDetail.usedTags.length!==0"/>
-        <v-card v-if="userDetail.usedTags.length===0" height="80%" class="contentWrap">
-          タグの使用履歴がありません
-        </v-card>
-      </v-col>
-      <v-col cols="6" style="font-size: large" class="contentWrap"><span
-          style="font-weight: bold">{{ userDetail.displayName }}</span></v-col>
-      <v-col cols="6" class="contentWrap">
-        <v-btn @click="toQiitaAPIAuthentication" v-if="userDetail.isLoginUser" color="#5bc8ac" elevation="2"
-               style="font-weight: bold">Qiita連携
-        </v-btn>
+  <v-container :class="{'d-flex':windowWidthClass}" fluid>
+    <v-row>
+      <v-col cols="12" sm="12" md="6">
+        <v-row>
+          <v-col cols="6" class="contentWrap"><span
+              style="font-weight: bold; font-size: x-large;">@{{ userDetail.displayName }}</span></v-col>
+          <v-col cols="6" class="contentWrap">
+            <v-btn @click="toQiitaAPIAuthentication" v-if="userDetail.isLoginUser" color="#5bc8ac" elevation="2"
+                   style="font-weight: bold" dark>Qiita連携
+            </v-btn>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols=6 class="contentWrap">
+            <v-avatar size="140">
+              <img :src="userDetail.photoUrl" alt=""/></v-avatar>
+          </v-col>
+          <v-col cols=6 align-self="center">
+            <Pie class="chart" :chart-data="chartDisplay" :options="chartOptions"
+                 v-if="userDetail.usedTags.length!==0"/>
+            <v-alert
+                v-if="userDetail.usedTags.length===0"
+                text
+                dense
+                color="teal"
+                border="left"
+                class="contentWrap"
+            >
+              タグの使用履歴がありません
+            </v-alert>
+          </v-col>
+        </v-row>
+
+        <v-row align-content="center" justify="center" class="box16">
+          <v-col cols="4" class="box6">
+            <v-row align-content="center" justify="center">
+              Qiita投稿数 / Builder投稿数
+            </v-row>
+            <v-row align-content="center" justify="center" class="count">
+              {{ userDetail.postedArticleCount }} / {{ notDraftArticles.length }}
+            </v-row>
+          </v-col>
+          <v-col cols="3" class="box6">
+            <v-row align-content="center" justify="center">
+              FB数
+            </v-row>
+            <v-row align-content="center" justify="center" class="count">
+              {{ userDetail.feedbackCount }}
+            </v-row>
+          </v-col>
+          <v-col cols="3" class="box6">
+            <v-row align-content="center" justify="center">
+              総獲得推奨数
+            </v-row>
+            <v-row align-content="center" justify="center" class="count">
+              {{ userDetail.qiitaRecommendedAllCount }}
+            </v-row>
+          </v-col>
+        </v-row>
       </v-col>
 
-
-      <v-col cols=5>
-        <v-card>
-          <v-layout justify-center>
-            Qiita投稿数 / Builder投稿数<br></v-layout>
-          <v-layout justify-center>
-            {{ userDetail.postedArticleCount }} / {{ notDraftArticles.length }}
-          </v-layout>
-        </v-card>
-      </v-col>
-      <v-col cols=3>
-        <v-card>
-          <v-layout justify-center>FB数</v-layout>
-          <v-layout justify-center>
-            {{ userDetail.feedbackCount }}
-          </v-layout>
-        </v-card>
-      </v-col>
-      <v-col cols="4">
-        <v-card>
-          <v-layout justify-center>総獲得推奨数</v-layout>
-          <v-layout justify-center>
-            {{ userDetail.qiitaRecommendedAllCount }}
-          </v-layout>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <v-container>
-      <v-tabs v-model="activeListTab" v-if="userDetail.isLoginUser">
-        <v-tab v-for="tab of loginListTabs" :key="tab.id" @click="changeList(tab.id)">{{ tab.name }}</v-tab>
-      </v-tabs>
-      <v-tabs v-model="activeListTab" v-if="!(userDetail.isLoginUser)">
-        <v-tab v-for="tab of notLoginListTabs" :key="tab.id" @click="changeList(tab.id)">{{ tab.name }}</v-tab>
-      </v-tabs>
-
-      <v-card outlined>
+      <v-col cols="12" sm="12" md="6">
         <v-container>
-          <v-row>
-            <v-tabs v-model="activeStateTab" v-show="displayListNum!==0">
-              <v-tab v-for="tab of stateTabs" :key="tab.id" @click="changeListState(tab.id)">
-                {{ tab.name }}
-              </v-tab>
-            </v-tabs>
+          <v-tabs v-model="activeListTab" v-if="userDetail.isLoginUser" color="#5bc8ac">
+            <v-tab v-for="tab of loginListTabs" :key="tab.id" @click="changeList(tab.id)">{{ tab.name }}</v-tab>
+          </v-tabs>
+          <v-tabs v-model="activeListTab" v-if="!(userDetail.isLoginUser)" color="#5bc8ac">
+            <v-tab v-for="tab of notLoginListTabs" :key="tab.id" @click="changeList(tab.id)">{{ tab.name }}</v-tab>
+          </v-tabs>
 
-            <v-card class="contentWrap" outline-color="#008b8b">
+          <v-card outlined>
+            <v-container fluid>
               <v-row>
-                <v-col>
-                  <v-card-title>
-                    <v-icon>mdi-magnify</v-icon>
-                    検索フォーム
-                  </v-card-title>
+                <v-col cols="9" style="padding: 0">
+                  <v-tabs v-model="activeStateTab" v-show="displayListNum!==0" color="#5bc8ac">
+                    <v-tab v-for="tab of stateTabs" :key="tab.id" @click="changeListState(tab.id)">
+                      {{ tab.name }}
+                    </v-tab>
+                  </v-tabs>
                 </v-col>
-                <v-col>
-                  <v-card-actions>
-                    <v-btn @click="searchWithConditions" color="#5bc8ac" elevation="2" style="font-weight: bold">検索
-                    </v-btn>
-                    <v-btn @click="resetConditions" color="#ff6347" elevation="2" style="font-weight: bold">リセット</v-btn>
-                  </v-card-actions>
+                <v-col cols="2" style="padding: 0">
+                  <v-select
+                      :items="sortList"
+                      item-value="key"
+                      item-text="state"
+                      item-color="green"
+                      color="#5bc8ac"
+                      v-model="sortNum"
+                      style="padding: 0"
+                  >
+                  </v-select>
                 </v-col>
               </v-row>
-              <v-card-text>
-                <v-row>
-                  <v-col>
-                    <v-row>
-                      <v-form ref="search_form">
-                        <v-text-field
-                            v-model="conditions.title"
-                            label="記事タイトルを入力"
-                            :rules="[title_limit_length]"
-                        ></v-text-field>
-                      </v-form>
-                    </v-row>
-                  </v-col>
-                  <v-col>
-                    <v-form ref="search_form">
-                      <v-autocomplete
-                          v-model="conditions.conditionTags"
-                          :items="usedTags"
-                          :rules="[tags_limit_length]"
-                          item-value="tagId"
-                          item-text="tagName"
-                          item-color="green"
-                          label="タグを選択"
-                          color="#5bc8ac"
-                          chips
-                          deletable-chips
-                          multiple
-                          small-chips
-                      >
-                      </v-autocomplete>
-                    </v-form>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-            </v-card>
+              <v-row justify="center" align-content="center">
+                <v-col cols="12">
+                  <v-card class="contentWrap" outline-color="#008b8b" outlined>
+                    <v-card-text style="padding: 0 2px">
+                      <v-row justify="center" align-content="center" style="padding: 0 30px">
 
-            <v-layout justify-center>
-              <v-col cols="4">
-                <v-select
-                    :items="sortList"
-                    item-value="key"
-                    item-text="state"
-                    item-color="green"
-                    color="#5bc8ac"
-                    v-model="sortNum"
-                >
-                </v-select>
-              </v-col>
-            </v-layout>
-            <v-col cols="12">
-              <ArticleCard v-for="(article,index) in sortedArticles" :key="article.articleId" :article="article"
-                           :is="articleCardDisplay" :index="index">
-              </ArticleCard>
-              <v-card v-if="sortedArticles.length===0" class="contentWrap">
-                該当する記事がありません
-              </v-card>
-              <v-pagination
-                  v-model="page"
-                  :length="length"
-                  prev-icon="mdi-menu-left"
-                  next-icon="mdi-menu-right"
-                  dark
-              ></v-pagination>
+                        <v-col cols="1" align-self="center" style="padding: 0;">
+                          <v-icon>mdi-magnify</v-icon>
+                        </v-col>
+                        <v-col cols="4" style="padding: 0">
+                          <v-form ref="search_form">
+                            <v-text-field
+                                v-model="conditions.title"
+                                label="記事タイトルを入力"
+                                :rules="[title_limit_length]"
+                                color="#5bc8ac"
+                            ></v-text-field>
+                          </v-form>
+                        </v-col>
+                        <v-col cols="4" style="padding: 0">
+                          <v-form ref="search_form">
+                            <v-autocomplete
+                                v-model="conditions.conditionTags"
+                                :items="usedTags"
+                                :rules="[tags_limit_length]"
+                                item-value="tagId"
+                                item-text="tagName"
+                                item-color="green"
+                                label="タグを選択"
+                                color="#5bc8ac"
+                                chips
+                                deletable-chips
+                                multiple
+                                small-chips
+                                style="margin-top: 8px; margin-left: 2px"
+                            >
+                            </v-autocomplete>
+                          </v-form>
+                        </v-col>
+                        <v-col cols="3">
+                          <v-card-actions>
+                            <v-btn
+                                @click="searchWithConditions"
+                                color="#5bc8ac"
+                                elevation="2"
+                                small
+                                dark
+                            >
+                              検索
+                            </v-btn>
+                            <v-btn
+                                @click="resetConditions"
+                                color="#ff6347"
+                                elevation="2"
+                                small
+                                dark
+                            >
+                              リセット
+                            </v-btn>
+                          </v-card-actions>
+                        </v-col>
 
-            </v-col>
-          </v-row>
+                      </v-row>
+                    </v-card-text>
+                  </v-card>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12">
+                  <v-row align-content="center" justify="center">
+                    <v-col cols="12">
+                      <ArticleCard v-for="(article,index) in sortedArticles" :key="article.articleId" :article="article"
+                                   :is="articleCardDisplay" :index="index" style="margin: 0; padding: 0;">
+                      </ArticleCard>
+                    </v-col>
+                  </v-row>
+                  <v-row justify="center" align-content="center">
+                    <v-alert
+                        width="60%"
+                        text
+                        dense
+                        color="teal"
+                        icon="mdi-emoticon-confused"
+                        border="left"
+                        v-if="sortedArticles.length===0"
+                        class="contentWrap"
+                    >
+                      該当する記事がありません
+                    </v-alert>
+                  </v-row>
+                  <v-row justify="center" align-content="center">
+                    <v-pagination
+                        v-model="page"
+                        :length="length"
+                        color="#5bc8ac"
+                        circle
+                    ></v-pagination>
+                  </v-row>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card>
         </v-container>
-      </v-card>
-    </v-container>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -273,6 +321,15 @@ export default {
   watch: {
     sortNum() {
       this.page = 1;//sort変更時computedによる並び替え変更が行われるのでページが変更されないため、ここで1pに変えている
+    },
+    page(){
+      setTimeout(() => {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+
+      }, 100)
     },
     apiToken: async function () {
       if (this.$route.params['userId'] === '0') {
@@ -466,5 +523,25 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.count {
+  font-size: x-large;
+  font-weight: bold;
+}
+
+.box16 {
+  padding: 0.5em 1em;
+  margin: 2em 0;
+  background: -webkit-repeating-linear-gradient(-45deg, #f0f8ff, #f0f8ff 3px, #e9f4ff 3px, #e9f4ff 7px);
+  background: repeating-linear-gradient(-45deg, #f0f8ff, #f0f8ff 3px, #e9f4ff 3px, #e9f4ff 7px);
+}
+
+.box6 {
+  padding: 0.5em 1em;
+  margin: 2em 0.25em;
+  background: #f0f7ff;
+  border: dashed 2px #5bc8ac; /*点線*/
+  border-radius: 10px;
 }
 </style>

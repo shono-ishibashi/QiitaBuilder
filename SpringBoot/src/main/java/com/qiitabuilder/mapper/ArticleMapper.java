@@ -69,6 +69,13 @@ public interface ArticleMapper {
     void updateArticle(Article article);
 
     /**
+     * 下書き記事を更新する。
+     *
+     * @param article
+     */
+    void updateDraftArticle(Article article);
+
+    /**
      * 記事IDを基に記事情報,記事に関するフィードバックを取得する
      *
      * @param articleId 記事ID

@@ -7,7 +7,7 @@ export default {
         articles: [],
         searchCriteria: {
             sortNum: 0,
-            period: 0,
+            period: null,
             searchWord: "",
             toggleSearchWord: 0,
             searchTag: [],
@@ -16,7 +16,7 @@ export default {
         },
         totalPage: undefined,
         tags: [],
-        errorTransistionDialog:false,
+        errorTransistionDialog: false,
     },
     mutations: {
         setArticles(state, articles) {
@@ -28,8 +28,8 @@ export default {
         setTotalPage(state, totalPage) {
             state.totalPage = totalPage
         },
-        toggleErrorTransitionDialog(state){
-            state.errorTransistionDialog=!state.errorTransistionDialog
+        toggleErrorTransitionDialog(state) {
+            state.errorTransistionDialog = !state.errorTransistionDialog
         },
     },
     actions: {
@@ -40,7 +40,7 @@ export default {
             const params = {
                 sortNum: newSearchCriteria.sortNum,
                 pageSize: newSearchCriteria.pageSize,
-                currentPage: newSearchCriteria.currentPage,
+                currentPage: 1,
                 searchWord: newSearchCriteria.searchWord,
                 toggleSearchWord: newSearchCriteria.toggleSearchWord,
                 searchTag: newSearchCriteria.searchTag,
@@ -83,7 +83,7 @@ export default {
                     commit("setTags", res.data)
                 })
         },
-        toggleErrorTransitionDialog({commit}){
+        toggleErrorTransitionDialog({commit}) {
             commit("toggleErrorTransitionDialog")
         }
     }

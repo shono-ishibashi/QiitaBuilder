@@ -23,6 +23,9 @@ public class FeedbackForm {
     private String content;
 
     @NotNull
+    private Integer feedbackVersion;
+
+    @NotNull
     @Min(0)
     @Max(1)
     private Integer deleteFlag;

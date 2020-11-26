@@ -51,6 +51,7 @@ public class ArticleService {
         } else {
             return null;
         }
+
         List<Article> articles = articleMapper.searchArticles(searchArticleForm);
 
 //        qiita推奨数、my記事登録数がnullのものを0に置き換える
@@ -110,6 +111,9 @@ public class ArticleService {
             Integer offset = (searchArticleForm.getPageSize() * (searchArticleForm.getCurrentPage() - 1));
             searchArticleForm.setOffset(offset);
         }
+        if (Objects.nonNull(searchArticleForm.getSearchTag())) {
+            searchArticleForm.setTagLength(searchArticleForm.getSearchTag().size());
+        }
         return searchArticleForm;
     }
 
@@ -149,8 +153,16 @@ public class ArticleService {
 
             article.setQiitaArticleId(articleMapper.getQiitaArticleId(article.getArticleId()));
 
+            //更新前の記事
+            Article beforeUpdateArticle = articleMapper.load(article.getArticleId());
+
             //入力された記事を更新
-            articleMapper.updateArticle(article);
+            //更新前の状態が下書き記事かどうか
+            if (Objects.equals(beforeUpdateArticle.getStateFlag(), 0)) {
+                articleMapper.updateDraftArticle(article);
+            } else {
+                articleMapper.updateArticle(article);
+            }
 
             //入力されたtagのIDのList
             List<Integer> tagIdsInPostedArticle

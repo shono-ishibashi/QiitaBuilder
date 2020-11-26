@@ -61,7 +61,7 @@
                      @receive-index="toUserDetail($event)"></ChartArea>
         </v-row>
         <v-row>
-          <h3 v-if="users.length">
+          <h3 v-if="rankUsersLength">
             <v-icon color="#5bc8ac">
               mdi-book-open-blank-variant
             </v-icon>
@@ -82,7 +82,7 @@
       </v-col>
 
     </v-row>
-    <v-row align-content="center" justify="center" v-if="!users.length">
+    <v-row align-content="center" justify="center" v-if="rankUsersLength === 0">
       <v-alert
           text
           dense
@@ -130,7 +130,7 @@ export default {
         }
       ],
 
-      //選択されているランキング項目
+      //選択されているランキング項目（初期表示：FBした数）
       selectRankItemId: 1,
 
       //表示件数リスト
@@ -156,7 +156,10 @@ export default {
       isDisplay: true,
 
       //UserListコンポーネントに渡すランキング項目ID
-      rankItemId: 1
+      rankItemId: 1,
+
+      //ランキングユーザー数
+      rankUsersLength: null
     }
   },
 
@@ -186,6 +189,7 @@ export default {
     selectRankItemId: {
       async handler() {
         await this.fetchRankingUser(this.selectRankItemId);
+        this.rankUsersLength = Number(this.users.length);
         await this.$nextTick();
 
         this.isDisplay = false;
@@ -203,8 +207,11 @@ export default {
         this.rankItemId = this.selectRankItemId
       }
     },
-    apiToken: function () {
-      this.fetchRankingUser(this.selectRankItemId);
+    apiToken: {
+      async handler() {
+        await this.fetchRankingUser(this.selectRankItemId);
+        this.rankUsersLength = Number(this.users.length);
+      }
     }
   },
 

@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -64,8 +65,12 @@ public class FeedbackService {
 
         // FBの投稿者とログインユーザーが一致しない場合はHttpStatus403を返す
         Feedback current = fetchFeedback(feedback.getFeedbackId());
-        if (current.getPostedUser().getUserId() != loginUser.getUser().getUserId()) {
+        if (!Objects.equals(current.getPostedUser().getUserId(),loginUser.getUser().getUserId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+        // versionが異なる場合(排他制御)はConflictを返す
+        if (current.getFeedbackVersion() != feedback.getFeedbackVersion()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
 
         // 現在時刻をセット
