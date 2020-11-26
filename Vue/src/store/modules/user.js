@@ -118,7 +118,7 @@ export default {
         }
     },
     actions: {
-        async setArticlesAndTags({commit}, articles) {
+        async setArticlesAndTags({ commit }, articles) {
             await commit("clearDisplayArticles");
             await commit("clearUsedTag");
             if (articles.length !== 0) {
@@ -126,24 +126,24 @@ export default {
                 await articles.forEach((art) => commit("setUsedTags", art.tags));
             }
         },
-        async setArticles({commit}, articles) {
+        async setArticles({ commit }, articles) {
             await commit("clearDisplayArticles");
             if (articles.length !== 0) {
                 await commit("setDisplayArticles", articles);
             }
         },
-        setArticleCardDisplay({commit}, articleCard) {
+        setArticleCardDisplay({ commit }, articleCard) {
             commit("setArticleCardDisplay", articleCard)
         },
-        setChartDisplay({commit}, chartDiaplay) {
+        setChartDisplay({ commit }, chartDiaplay) {
             commit("setChartDisplay", chartDiaplay)
         },
-        async fetchUserDetail({commit, rootGetters, rootState}, userId) {
+        async fetchUserDetail({ commit, rootGetters, rootState }, userId) {
             const url = rootGetters.API_URL + 'user/detail/';
             let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
 
             await axios.get(url, {
-                params: {userId},
+                params: { userId },
                 headers: {
                     Authorization: apiToken,
                 },
@@ -151,15 +151,15 @@ export default {
                 commit("setUserDetail", res.data);
             }).catch((error) => {
                 console.log(error)
-                router.push({name: 'articleList'})
+                router.push({ name: "500" })
             })
         },
-        async fetchPostedArticles({commit, rootGetters, rootState}, userId) {
+        async fetchPostedArticles({ commit, rootGetters, rootState }, userId) {
             const url = rootGetters.API_URL + 'article/posted'
             let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
 
             await axios.get(url, {
-                params: {userId},
+                params: { userId },
                 headers: {
                     Authorization: apiToken,
                 },
@@ -168,16 +168,16 @@ export default {
                     commit("setPostedArticles", res.data)
                 }).catch((error) => {
                     console.log(error)
-                    router.push({path: '/article'})
+                    router.push({ name: "500" })
                 })
         },
-        async fetchFeedbackArticles({commit, rootGetters, rootState}, userId) {
+        async fetchFeedbackArticles({ commit, rootGetters, rootState }, userId) {
             const url = rootGetters.API_URL + 'article/feedbacked';
             let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
 
 
             await axios.get(url, {
-                params: {userId},
+                params: { userId },
                 headers: {
                     Authorization: apiToken,
                 },
@@ -185,15 +185,15 @@ export default {
                 commit("setFeedbackArticles", res.data);
             }).catch((error) => {
                 console.log(error)
-                router.push({path: '/article'})
+                router.push({ name: "500" })
             })
         },
-        async fetchMyArticles({commit, rootGetters, rootState}, userId) {
+        async fetchMyArticles({ commit, rootGetters, rootState }, userId) {
             const url = rootGetters.API_URL + 'article/my-articles';
             let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
 
             await axios.get(url, {
-                params: {userId},
+                params: { userId },
                 headers: {
                     Authorization: apiToken,
                 },
@@ -201,15 +201,15 @@ export default {
                 commit("setMyArticles", res.data);
             }).catch((error) => {
                 console.log(error)
-                router.push({path: '/article'})
+                router.push({ name: "500" })
             })
         },
-        async findUserIdByUid({commit, rootGetters, rootState}, uid) {
+        async findUserIdByUid({ commit, rootGetters, rootState }, uid) {
             const url = rootGetters.API_URL + 'userId';
             let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
 
             await axios.get(url, {
-                params: {uid},
+                params: { uid },
                 headers: {
                     Authorization: apiToken,
                 },
@@ -217,7 +217,7 @@ export default {
                 commit("setUserId", res.data);
             }).catch((error) => {
                 console.log(error)
-                router.push({path: '/article'})
+                router.push({ name: "500" })
             })
         }
     }
