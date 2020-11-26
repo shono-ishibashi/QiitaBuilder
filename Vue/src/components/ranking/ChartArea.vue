@@ -109,13 +109,6 @@ export default {
           break;
       }
       const suggestedMax = () => {
-        //let result;
-        // if (countMax % 5 === 0) {
-        //   result = (countMax / 5) * 5;
-        // } else {
-        //   result = (Math.floor(countMax / 5) + 1) * 5;
-        // }
-        // return result;
         return (Math.floor(countMax / 5) + 1) * 5;
       }
 
