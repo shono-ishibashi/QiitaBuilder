@@ -322,6 +322,15 @@ export default {
     sortNum() {
       this.page = 1;//sort変更時computedによる並び替え変更が行われるのでページが変更されないため、ここで1pに変えている
     },
+    page(){
+      setTimeout(() => {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+
+      }, 100)
+    },
     apiToken: async function () {
       if (this.$route.params['userId'] === '0') {
         if (!this.loginUser.uid) await this.$router.push({name: "articleList"});
