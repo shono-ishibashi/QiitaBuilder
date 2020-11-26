@@ -221,16 +221,6 @@ class FeedbackFormTest {
     }
 
     @Test
-    void feedbackVersion_異常系_notnull() {
-        feedbackForm.setFeedbackVersion(null);
-        Set<ConstraintViolation<FeedbackForm>> violations = validator.validate(feedbackForm);
-        assertEquals(1, violations.size());
-        for (ConstraintViolation<FeedbackForm> v : violations) {
-            assertTrue(v.getConstraintDescriptor().getAnnotation() instanceof NotNull);
-        }
-    }
-
-    @Test
     void feedbackVersion_異常系_min_境界値() {
         feedbackForm.setFeedbackVersion(0);
         Set<ConstraintViolation<FeedbackForm>> violations = validator.validate(feedbackForm);

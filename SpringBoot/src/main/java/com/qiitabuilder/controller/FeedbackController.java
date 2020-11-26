@@ -79,7 +79,7 @@ public class FeedbackController {
     @ResponseStatus(HttpStatus.OK)
     public Feedback updateFeedback(@Validated @RequestBody FeedbackForm form, BindingResult result) {
         // 入力値エラーの場合はBadRequestを返す
-        if (result.hasErrors() || Objects.isNull(form.getFeedbackId())) {
+        if (result.hasErrors() || Objects.isNull(form.getFeedbackId()) || Objects.isNull(form.getFeedbackVersion())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
