@@ -22,7 +22,7 @@ public class FeedbackForm {
     @Size(max = 20000)
     private String content;
 
-    @NotNull
+    @Min(1)
     private Integer feedbackVersion;
 
     @NotNull

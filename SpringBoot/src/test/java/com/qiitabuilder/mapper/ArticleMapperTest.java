@@ -95,6 +95,7 @@ class ArticleMapperTest {
                 "   created_at  datetime null,\n" +
                 "   updated_at  datetime null,\n" +
                 "   content     text     null,\n" +
+                "   feedback_version int not null default 1,\n" +
                 "   delete_flag int      null,\n" +
                 "   constraint fk_feedbacks_articleid\n" +
                 "       foreign key (article_id) references articles (article_id),\n" +
@@ -1379,6 +1380,7 @@ class ArticleMapperTest {
                 .createdAt(createdAtFeed1)
                 .updatedAt(updatedAtFeed1)
                 .content("feedback content1")
+                .feedbackVersion(1)
                 .deleteFlag(0)
                 .build();
         List<Feedback> feedbacks = new ArrayList<>();
