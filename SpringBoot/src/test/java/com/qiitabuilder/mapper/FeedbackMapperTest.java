@@ -98,6 +98,7 @@ class FeedbackMapperTest {
                 "   created_at  datetime null,\n" +
                 "   updated_at  datetime null,\n" +
                 "   content     text     null,\n" +
+                "   feedback_version int not null default 1,\n" +
                 "   delete_flag int      null,\n" +
                 "   constraint fk_feedbacks_articleid\n" +
                 "       foreign key (article_id) references articles (article_id),\n" +
@@ -195,6 +196,7 @@ class FeedbackMapperTest {
         assertEquals(1, resultRecommends.get(0).get("user_id"));
         assertEquals(tsNow, resultRecommends.get(0).get("created_at"));
         assertEquals("sample", resultRecommends.get(0).get("content"));
+        assertEquals(1, resultRecommends.get(0).get("feedback_version"));
         assertEquals(0, resultRecommends.get(0).get("delete_flag"));
     }
 
@@ -276,6 +278,7 @@ class FeedbackMapperTest {
         assertEquals(Timestamp.valueOf(ldtnow), resultFeedbacks.get(0).get("created_at"));
         assertEquals(Timestamp.valueOf(ldtnow.plusHours(3)), resultFeedbacks.get(0).get("updated_at"));
         assertEquals("changed", resultFeedbacks.get(0).get("content"));
+        assertEquals(2, resultFeedbacks.get(0).get("feedback_version"));
         assertEquals(1, resultFeedbacks.get(0).get("delete_flag"));
     }
 
@@ -536,6 +539,7 @@ class FeedbackMapperTest {
         assertEquals(ldtnow, actualResult.getCreatedAt());
         assertEquals(ldtnow.plusHours(3), actualResult.getUpdatedAt());
         assertEquals("sample", actualResult.getContent());
+        assertEquals(1, actualResult.getFeedbackVersion());
         assertEquals(0, actualResult.getDeleteFlag());
     }
 
