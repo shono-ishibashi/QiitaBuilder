@@ -116,6 +116,7 @@ class FeedbackServiceTest {
                 "   created_at  datetime null,\n" +
                 "   updated_at  datetime null,\n" +
                 "   content     text     null,\n" +
+                "   feedback_version int not null default 1,\n" +
                 "   delete_flag int      null,\n" +
                 "   constraint fk_feedbacks_articleid\n" +
                 "       foreign key (article_id) references articles (article_id),\n" +
@@ -223,6 +224,7 @@ class FeedbackServiceTest {
         assertEquals(ldtnow, actualResult.getCreatedAt());
         assertEquals(ldtnow.plusHours(3), actualResult.getUpdatedAt());
         assertEquals("sample", actualResult.getContent());
+        assertEquals(1, actualResult.getFeedbackVersion());
         assertEquals(0, actualResult.getDeleteFlag());
     }
 
@@ -259,6 +261,7 @@ class FeedbackServiceTest {
         assertEquals(User.builder().userId(1).build(), actual.getPostedUser());
         assertNotNull(actual.getCreatedAt());
         assertEquals("sample", actual.getContent());
+        assertEquals(1, actual.getFeedbackVersion());
         assertEquals(0, actual.getDeleteFlag());
 
         // DBへの書き込みが正常に行われているか
@@ -270,6 +273,7 @@ class FeedbackServiceTest {
         assertEquals(1, resultRecommends.get(0).get("article_id"));
         assertEquals(1, resultRecommends.get(0).get("user_id"));
         assertEquals("sample", resultRecommends.get(0).get("content"));
+        assertEquals(1, resultRecommends.get(0).get("feedback_version"));
         assertEquals(0, resultRecommends.get(0).get("delete_flag"));
     }
 
@@ -291,6 +295,7 @@ class FeedbackServiceTest {
         Feedback feedback = Feedback.builder()
                 .feedbackId(1)
                 .articleId(1)
+                .feedbackVersion(1)
                 .content("changed")
                 .deleteFlag(1)
                 .build();
@@ -301,6 +306,7 @@ class FeedbackServiceTest {
         assertEquals(User.builder().userId(1).build(), actual.getPostedUser());
         assertNotNull(actual.getCreatedAt());
         assertEquals("changed", actual.getContent());
+        assertEquals(2, actual.getFeedbackVersion());
         assertEquals(1, actual.getDeleteFlag());
 
         // DBへの書き込みが正常に行われているか
@@ -312,6 +318,7 @@ class FeedbackServiceTest {
         assertEquals(1, resultRecommends.get(0).get("article_id"));
         assertEquals(1, resultRecommends.get(0).get("user_id"));
         assertEquals("changed", resultRecommends.get(0).get("content"));
+        assertEquals(2, resultRecommends.get(0).get("feedback_version"));
         assertEquals(1, resultRecommends.get(0).get("delete_flag"));
     }
 
@@ -357,6 +364,52 @@ class FeedbackServiceTest {
         assertEquals(2, resultFeedbacks.get(0).get("user_id"));
         assertEquals(Timestamp.valueOf(createdAt), resultFeedbacks.get(0).get("created_at"));
         assertEquals("feedback content1", resultFeedbacks.get(0).get("content"));
+        assertEquals(0, resultFeedbacks.get(0).get("delete_flag"));
+    }
+    @Test
+    void updateFeedback異常系_FBのVerionが一致しない場合() {
+        // set up
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO users() VALUES();"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(1);"); // Foreign key
+        jdbcTemplate.execute("INSERT INTO articles(user_id) VALUES(2);"); // Foreign key
+
+        String insertFeed1 = "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (1, 1, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content1', 0);";
+        jdbcTemplate.execute(insertFeed1);
+
+        // actual
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime createdAt = LocalDateTime.parse("2020-11-03 00:00", dtf);
+        LocalDateTime updatedAt = LocalDateTime.parse("2020-11-05 00:00", dtf);
+        Feedback feedback = Feedback.builder()
+                .feedbackId(1)
+                .articleId(1)
+                .content("changed")
+                .feedbackVersion(10)
+                .updatedAt(updatedAt)
+                .deleteFlag(1)
+                .build();
+
+        // 409エラーをスローするか確認
+        Exception exception = assertThrows(org.springframework.web.server.ResponseStatusException.class, () -> {
+            Feedback actual = feedbackService.updateFeedback(feedback);
+        });
+        String expectedMessage = "409 CONFLICT";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+
+        // DBの状態が変更されていないか確認
+        String sql = "SELECT * FROM feedbacks ORDER BY feedback_id";
+        SqlParameterSource param = new EmptySqlParameterSource();
+        List<Map<String, Object>> resultFeedbacks = namedParameterJdbcTemplate.queryForList(sql, param);
+
+        assertEquals(1, resultFeedbacks.get(0).get("feedback_id"));
+        assertEquals(1, resultFeedbacks.get(0).get("article_id"));
+        assertEquals(1, resultFeedbacks.get(0).get("user_id"));
+        assertEquals(Timestamp.valueOf(createdAt), resultFeedbacks.get(0).get("created_at"));
+        assertEquals("feedback content1", resultFeedbacks.get(0).get("content"));
+        assertEquals(1, resultFeedbacks.get(0).get("feedback_version"));
         assertEquals(0, resultFeedbacks.get(0).get("delete_flag"));
     }
 }

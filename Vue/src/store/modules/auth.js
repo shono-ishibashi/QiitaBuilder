@@ -1,5 +1,5 @@
 import firebase from "firebase/app";
-import { v4 as uuidv4 } from "uuid";
+import {v4 as uuidv4} from "uuid";
 import axios from "axios";
 import router from "@/router";
 
@@ -23,7 +23,7 @@ export default {
     },
   },
   actions: {
-    async googleLoginPartners({ commit, rootGetters }) {
+    async googleLoginPartners({commit, rootGetters}) {
       //firebase google authログイン
       const provider = await new firebase.auth.GoogleAuthProvider();
       provider.setCustomParameters({
@@ -53,7 +53,7 @@ export default {
                 await db
                   .collection("users")
                   .doc(loginUser.uid)
-                  .set({ password: password })
+                  .set({password: password})
                   .then(() => {
                     axios
                       .post(rootGetters.API_URL, {
@@ -70,7 +70,7 @@ export default {
             });
         });
     },
-    async googleLoginRakus({ commit, rootGetters }) {
+    async googleLoginRakus({commit, rootGetters}) {
       //firebase google authログイン
       const provider = await new firebase.auth.GoogleAuthProvider();
       provider.setCustomParameters({
@@ -100,7 +100,7 @@ export default {
                 await db
                   .collection("users")
                   .doc(loginUser.uid)
-                  .set({ password: password })
+                  .set({password: password})
                   .then(() => {
                     axios
                       .post(rootGetters.API_URL, {
@@ -117,7 +117,7 @@ export default {
             });
         });
     },
-    async loginRESTAPI({ commit, rootGetters }, loginUser) {
+    async loginRESTAPI({commit, rootGetters}, loginUser) {
       //RESTAPI ログイン
       console.log("loginRESTAPI");
       const db = await firebase.firestore();
@@ -139,7 +139,7 @@ export default {
             .post(
               request,
               {},
-              { headers: { "Content-Type": "application/json" } }
+              {headers: {"Content-Type": "application/json"}}
             )
             .then((response) => {
               //Vuexにjwt tokenを追加
@@ -148,7 +148,7 @@ export default {
             .catch((error) => console.log(error.status));
         });
     },
-    async checkIsLinkedToQiita({ commit, getters, rootGetters }) {
+    async checkIsLinkedToQiita({commit, getters, rootGetters}) {
       const url = rootGetters.API_URL + "qiita/is-linked-to-qiita";
       const apiToken = getters.apiToken;
       const requestConfig = {
@@ -157,21 +157,23 @@ export default {
         },
       };
       await new Promise((resolve, reject) => {
-        try {
-          const res = axios.get(url, requestConfig);
-          commit("setIsLinkedToQiita", res.data);
-          resolve(res);
-        } catch (error) {
-          console.log(error);
-          reject(error);
-        }
+        axios
+          .get(url, requestConfig)
+          .then((res) => {
+            commit("setIsLinkedToQiita", res.data);
+            resolve(res);
+          })
+          .catch((error) => {
+            console.log(error);
+            reject(error);
+          });
       });
     },
-    logout({ commit, rootGetters }) {
+    logout({commit, rootGetters}) {
       firebase
         .auth()
         .signOut()
-        .then(function() {
+        .then(function () {
           commit("setLoginUser", null);
           commit("setAPIToken", null);
           axios.post(rootGetters.API_URL + "logout").then(() => {

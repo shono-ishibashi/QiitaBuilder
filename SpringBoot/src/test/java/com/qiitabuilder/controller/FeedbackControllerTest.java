@@ -229,6 +229,7 @@ class FeedbackControllerTest {
                 .feedbackId(1)
                 .articleId(1)
                 .content("feedback1")
+                .feedbackVersion(1)
                 .deleteFlag(0)
                 .build();
         ObjectMapper mapper = new ObjectMapper();
@@ -479,12 +480,14 @@ class FeedbackControllerTest {
                 .feedbackId(1)
                 .articleId(2)
                 .content("feedback changed")
+                .feedbackVersion(1)
                 .deleteFlag(1)
                 .build();
         Feedback res = Feedback.builder()
                 .feedbackId(1)
                 .articleId(2)
                 .content("feedback changed")
+                .feedbackVersion(2)
                 .deleteFlag(1)
                 .build();
         ObjectMapper mapper = new ObjectMapper();
@@ -652,12 +655,14 @@ class FeedbackControllerTest {
                 .feedbackId(1)
                 .articleId(1)
                 .content("feedback changed")
+                .feedbackVersion(1)
                 .deleteFlag(1)
                 .build();
         Feedback res = Feedback.builder()
                 .feedbackId(1)
                 .articleId(1)
                 .content("feedback1")
+                .feedbackVersion(1)
                 .deleteFlag(0)
                 .build();
         ObjectMapper mapper = new ObjectMapper();
@@ -684,12 +689,14 @@ class FeedbackControllerTest {
                 .feedbackId(1)
                 .articleId(null)
                 .content("feedback changed")
+                .feedbackVersion(1)
                 .deleteFlag(1)
                 .build();
         Feedback res = Feedback.builder()
                 .feedbackId(1)
                 .articleId(1)
                 .content("feedback1")
+                .feedbackVersion(1)
                 .deleteFlag(0)
                 .build();
         ObjectMapper mapper = new ObjectMapper();
@@ -777,6 +784,7 @@ class FeedbackControllerTest {
                 .feedbackId(1)
                 .articleId(1)
                 .content("feedback changed")
+                .feedbackVersion(1)
                 .deleteFlag(0)
                 .build();
 
@@ -784,6 +792,7 @@ class FeedbackControllerTest {
                 .feedbackId(1)
                 .articleId(1)
                 .content("feedback1")
+                .feedbackVersion(2)
                 .deleteFlag(0)
                 .build();
         ObjectMapper mapper = new ObjectMapper();

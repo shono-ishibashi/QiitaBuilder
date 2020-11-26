@@ -51,7 +51,12 @@ const routes = [
     {
         path: '/404',
         name: '404',
-        component: () => import(/* webpackChunkName: "articleDetail" */ '../views/error/404.vue')
+        component: () => import(/* webpackChunkName: "404" */ '../views/error/404.vue')
+    },
+    {
+        path: '/500',
+        name: '500',
+        component: () => import(/* webpackChunkName: "500" */ '../views/error/500.vue')
     },
 ]
 

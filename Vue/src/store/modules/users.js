@@ -1,4 +1,5 @@
 import axios from "axios";
+import router from "@/router";
 
 export default {
     namespaced: true,
@@ -46,7 +47,10 @@ export default {
                 .then(rankingUserList => {
                     commit("resetRankingUsers");
                     commit("setRankingUsers", rankingUserList.data);
-                }).catch(err => console.log("エラーだよ", err));
+                }).catch(err => {
+                    console.log(err);
+                    router.push({name: "404"})
+                });
         }
     },
 
@@ -65,7 +69,7 @@ export default {
         relationArticles: (state) => {
             const relationArticles = [];
             state.rankingUsers.forEach(rankUser => {
-                if(null !== rankUser.relationArticle){
+                if (null !== rankUser.relationArticle) {
                     relationArticles.push(rankUser.relationArticle);
                 }
             })

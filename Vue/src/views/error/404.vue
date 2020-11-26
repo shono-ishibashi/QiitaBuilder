@@ -12,3 +12,9 @@
     >
   </v-container>
 </template>
+
+<script>
+export default {
+  name: "error404"
+}
+</script>

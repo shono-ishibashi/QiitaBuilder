@@ -152,6 +152,7 @@ public class ArticleService {
             });
 
         } else {
+
             article.setQiitaArticleId(articleMapper.getQiitaArticleId(article.getArticleId()));
 
             //現在の記事

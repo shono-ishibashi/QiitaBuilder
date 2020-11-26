@@ -58,9 +58,8 @@ public interface ArticleMapper {
      * 記事を投稿する.
      *
      * @param article 記事情報
-     * @return 記事ID（自動採番）
      */
-    Integer insertArticle(Article article);
+    void insertArticle(Article article);
 
     /**
      * 記事を更新する.

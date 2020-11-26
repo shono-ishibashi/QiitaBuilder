@@ -9,8 +9,10 @@ server:
   port: 8080
   servlet:
     context-path: /qiita_builder
+  error:
+    include-message: always
 
 logging:
   level:
     org.springframework.web.client.RestTemplate: DEBUG
-
+    com.qiitabuilder.mapper.ArticleMapper: DEBUG
