@@ -1,5 +1,11 @@
 <template>
   <v-container id="article-edit-field" fluid>
+    <v-snackbar v-model="nonValidToken" timeout="5000">
+      トークンが失効しました。ログインからやり直してください。
+    </v-snackbar>
+    <v-snackbar v-model="processFailure" timeout="5000">
+      処理に失敗しました。ページを再読み込みしてください。
+    </v-snackbar>
     <div class="edit-field">
       <!--      タイトル、タグ入力欄-->
       <v-form ref="edit_form" v-model="valid" lazy-validation>
@@ -146,6 +152,8 @@ export default {
       currentView: Edit,
       selectedFormat: 0,
       qiitaDialog: false,
+      nonValidToken: false,
+      processFailure: false,
       required: value => value && !!value || "必ず入力してください",
       blank: value => {
         const pattern = /\S/g
@@ -159,7 +167,9 @@ export default {
   watch: {
     async apiToken() {
       const uid = await this.loginUser.uid
-      await this.findUserIdByUid(uid)
+      await this.findUserIdByUid(uid).catch((error) => {
+        this.errorHandle(error);
+      })
       const article = await this.slug
       const params = await {
         articleId: article,
@@ -171,18 +181,31 @@ export default {
           "Authorization": this.apiToken,
           "Content-Type": "application/json"
         },
-      }).then(() => {
-        this.resetArticle()
-        this.fetchTags()
-        this.fetchArticle(this.slug);
-      }).catch(() => {
-        this.$router.push('/article')
-        this.toggleErrorTransitionDialog()
       })
+          .then(() => {
+            this.resetArticle()
+            this.fetchTags()
+            this.fetchArticle(this.slug)
+                .then(() => {
+                  if (this.article.stateFlag === 9) {
+                    this.toggleErrorTransitionDialog()
+                    this.$router.push('/article')
+                  }
+                })
+                .catch((error) => {
+                  this.errorHandle(error);
+                })
+          })
+          .catch(() => {
+            this.toggleErrorTransitionDialog()
+            this.fetchArticles(this.searchCriteria);
+            this.fetchTags();
+            this.$router.push('/article')
+          })
     }
   },
   computed: {
-    ...mapState("articles", ["tags"]),
+    ...mapState("articles", ["tags", "searchCriteria"]),
     ...mapState("article", ["article"]),
     ...mapGetters("auth", ["loginUser"]),
     ...mapGetters(["API_URL"]),
@@ -220,12 +243,14 @@ export default {
   },
   methods: {
     ...mapActions("article", ["fetchArticle", "saveArticle", "resetArticle"]),
-    ...mapActions("articles", ["fetchTags", "toggleErrorTransitionDialog"]),
+    ...mapActions("articles", ["fetchArticles", "fetchTags", "toggleErrorTransitionDialog"]),
     ...mapActions("user", ["findUserIdByUid"]),
     //記事を投稿or更新するメソッド
     async postArticle(state) {
       //validationチェック
       if (this.$refs.edit_form.validate()) {
+        //更新前のstateFlag
+        const beforeStateFlag = this.article.stateFlag
         this.article.stateFlag = state
         //タグが登録されていないものにはtagIdにnullをset
         for (var i = 0; i < this.article.tags.length; i++) {
@@ -235,9 +260,14 @@ export default {
             })
           }
         }
-        await this.saveArticle(this.article)
-        await this.$router.push({name: "articleList"})
-        await this.resetArticle()
+        try {
+          await this.saveArticle(this.article)
+          await this.$router.push({name: "articleList"})
+          await this.resetArticle()
+        } catch (error) {
+          this.article.stateFlag = beforeStateFlag
+          this.errorHandle(error);
+        }
       } else {
         this.$refs.edit_form.validate()
       }
@@ -253,6 +283,16 @@ export default {
         this.currentView = EditAndPreview
       } else if (key === 3) {
         this.currentView = EditAndPreviewAndFeedback
+      }
+    },
+    errorHandle(error) {
+      const status = error.response.status;
+      if (status == 404) {
+        this.$router.push({name: "404"});
+      } else if (status == 401) {
+        this.nonValidToken = true;
+      } else {
+        this.processFailure = true;
       }
     },
     //qiita投稿or更新ボタンを押下した時にモーダルを変更するメソッド

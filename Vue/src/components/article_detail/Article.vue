@@ -167,6 +167,7 @@ export default {
     };
   },
   computed: {
+    ...mapState("article", ["processFailure"]),
     lastEditAt() {
       if (this.article.updatedAt) {
         return {time: this.article.updatedAt, text: "に更新"};
@@ -203,6 +204,8 @@ export default {
     },
   },
   methods: {
+    ...mapActions("article", ["toggleProcessFailure"]),
+    ...mapActions("articles", ["fetchArticles"]),
     toggleRecommend() {
       this.$emit("toggleRecommend");
     },
@@ -223,12 +226,20 @@ export default {
       this.searchCriteria.searchTag = [tagId];
       this.fetchArticles(this.searchCriteria);
     },
-    ...mapActions("articles", ["fetchArticles"]),
     async deleteArticle() {
-      await this.$router.push({name: "articleList"});
+      // 削除前のstateFlag
+      const beforeStateFlag=this.article.stateFlag
       const item = this.article;
       item.stateFlag = 9;
-      await this.$store.dispatch("article/saveArticle", item);
+      await this.$store.dispatch("article/saveArticle", item)
+          .then(() => {
+            this.$router.push({name: "articleList"});
+          })
+          .catch((error) => {
+            this.article.stateFlag=beforeStateFlag
+            this.toggleDialog()
+            this.errorHandle(error)
+          })
     },
     async updateQiita() {
       await this.postArticleToQiita(this.article.articleId);
@@ -237,6 +248,16 @@ export default {
     async postQiita() {
       await this.postArticleToQiita(this.article.articleId);
       await this.$router.push('/article/' + this.article.articleId + '?isPostedArticleToQiita=true');
+    },
+    errorHandle(error) {
+      const status = error.response.status;
+      if (status == 404) {
+        this.$router.push({name: "404"});
+      } else if (status == 401) {
+        this.nonValidToken = true;
+      } else {
+        this.toggleProcessFailure()
+      }
     },
   },
 };
