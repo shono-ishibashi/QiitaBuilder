@@ -27,6 +27,8 @@ public class Article {
 
     private Integer stateFlag;
 
+    private Integer articleVersion;
+
     private String qiitaArticleId;
 
     private List<Tag> tags;

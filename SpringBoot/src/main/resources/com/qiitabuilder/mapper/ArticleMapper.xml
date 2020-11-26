@@ -31,6 +31,7 @@
         <result property="updatedAt" column="art_updated_at"/>
         <result property="content" column="art_content"/>
         <result property="stateFlag" column="art_state_flag"/>
+        <result property="articleVersion" column="art_article_version"/>
         <result column="feed_cnt" property="feedbackCount"/>
         <result column="my_cnt" property="registeredMyArticleCount"/>
         <result column="recommend_cnt" property="qiitaRecommendPoint"/>
@@ -99,6 +100,7 @@
         <result property="feedbackCount" column="fb_count"/>
         <result property="qiitaArticleId" column="qiita_article_id"/>
         <result property="stateFlag" column="state_flag"/>
+        <result property="articleVersion" column="article_version"/>
 
         <collection property="tags" ofType="com.qiitabuilder.domain.Tag">
             <result property="tagId" column="tag_id"/>
@@ -228,6 +230,7 @@
                art.updated_at       AS art_updated_at,
                art.content          AS art_content,
                art.state_flag       AS art_state_flag,
+               art.article_version  AS art_article_version,
 
                art_use.user_id      AS art_use_user_id,
                art_use.uid          AS art_use_uid,
@@ -409,6 +412,7 @@
                articles.content          as content,
                articles.qiita_article_id as qiita_article_id,
                articles.state_flag       as state_flag,
+               articles.article_version  as article_version,
 
                tags.tag_id               as tag_id,
                tags.tag_name             as tag_name
@@ -430,18 +434,18 @@
     </select>
 
     <select id="getArticlesByUserId" resultMap="articlesMap">
-        SELECT art.article_id                                                                AS articleId,
-               art.title                                                                     AS title,
-               art.created_at                                                                AS createdAt,
-               art.updated_at                                                                AS updatedAt,
-               art.state_flag                                                                AS stateFlag,
-               tags.tag_id                                                                   AS tagId,
-               tags.tag_name                                                                 AS tagName,
-               IF(feed_cnt_table.feed_cnt, feed_cnt_table.feed_cnt, 0)                       AS feedCnt,
-               IF(my_cnt_table.my_cnt, my_cnt_table.my_cnt, 0)                               AS myCnt,
-               users.user_id                                                                 AS userId,
-               users.display_name                                                            AS displayName,
-               users.photo_url                                                               AS photoUrl,
+        SELECT art.article_id                                                              AS articleId,
+               art.title                                                                   AS title,
+               art.created_at                                                              AS createdAt,
+               art.updated_at                                                              AS updatedAt,
+               art.state_flag                                                              AS stateFlag,
+               tags.tag_id                                                                 AS tagId,
+               tags.tag_name                                                               AS tagName,
+               IF(feed_cnt_table.feed_cnt, feed_cnt_table.feed_cnt, 0)                     AS feedCnt,
+               IF(my_cnt_table.my_cnt, my_cnt_table.my_cnt, 0)                             AS myCnt,
+               users.user_id                                                               AS userId,
+               users.display_name                                                          AS displayName,
+               users.photo_url                                                             AS photoUrl,
                IF(recommend_cnt_table.recommend_cnt, recommend_cnt_table.recommend_cnt, 0) AS recommendCnt
         FROM articles AS art
                  LEFT OUTER JOIN articles_tags_relations AS a_t_relation
@@ -503,6 +507,7 @@
             content          = #{content},
             qiita_article_id = #{qiitaArticleId},
             state_flag       = #{stateFlag},
+            article_version = article_version + 1,
             qiita_article_id = #{qiitaArticleId}
         WHERE article_id = #{articleId}
           AND user_id = #{postedUser.userId}
@@ -518,6 +523,7 @@
             content          = #{content},
             qiita_article_id = #{qiitaArticleId},
             state_flag       = #{stateFlag},
+            article_version = article_version + 1,
             qiita_article_id = #{qiitaArticleId}
         WHERE article_id = #{articleId}
           AND user_id = #{postedUser.userId}

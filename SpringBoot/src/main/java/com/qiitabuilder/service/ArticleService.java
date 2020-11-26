@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.qiitabuilder.domain.Tag;
 import com.qiitabuilder.mapper.TagMapper;
 import com.qiitabuilder.security.SimpleLoginUser;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -152,12 +154,20 @@ public class ArticleService {
         } else {
             article.setQiitaArticleId(articleMapper.getQiitaArticleId(article.getArticleId()));
 
-            //更新前の記事
-            Article beforeUpdateArticle = articleMapper.load(article.getArticleId());
+            //現在の記事
+            Article currentArticle = articleMapper.load(article.getArticleId());
+            System.out.println(currentArticle);
+
+            // versionが異なる場合(排他制御)はConflictを返す
+            System.out.println(currentArticle.getArticleVersion());
+            System.out.println(article.getArticleVersion());
+            if(!Objects.equals(currentArticle.getArticleVersion(),article.getArticleVersion())){
+                throw new ResponseStatusException(HttpStatus.CONFLICT);
+            }
 
             //入力された記事を更新
             //更新前の状態が下書き記事かどうか
-            if (Objects.equals(beforeUpdateArticle.getStateFlag(), 0)) {
+            if (Objects.equals(currentArticle.getStateFlag(), 0)) {
                 articleMapper.updateDraftArticle(article);
             } else {
                 articleMapper.updateArticle(article);
