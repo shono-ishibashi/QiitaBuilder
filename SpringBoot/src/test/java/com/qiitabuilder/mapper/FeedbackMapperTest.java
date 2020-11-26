@@ -606,7 +606,7 @@ class FeedbackMapperTest {
         assertEquals(5, articles.get(4).getTags().get(1).getTagId());
         assertEquals("go", articles.get(4).getTags().get(1).getTagName());
         assertEquals(1,articles.get(4).getFeedbackCount());
-        assertNull( articles.get(4).getRegisteredMyArticleCount());
+        assertEquals(0, articles.get(4).getRegisteredMyArticleCount());
         assertEquals(38, articles.get(4).getPostedUser().getUserId());
         assertEquals("user38", articles.get(4).getPostedUser().getDisplayName());
         assertEquals("photo38", articles.get(4).getPostedUser().getPhotoUrl());
