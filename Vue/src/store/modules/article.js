@@ -1,5 +1,6 @@
 import axios from "axios";
 import marked from "marked";
+import QiitaAPI from "@/mixins/QiitaAPI";
 
 export default {
   namespaced: true,
@@ -69,11 +70,11 @@ export default {
     }
   },
   actions: {
-    async postArticleToQiita({commit}, articleId) {
-      if (store.getters["auth/isLinkedToQiita"]) {
-        axios.post(store.getters.API_URL + 'qiita/save-article-to-qiita/' + articleId, {}, {
+    async postArticleToQiita({commit, rootGetters, dispatch}, articleId) {
+      if (await rootGetters["auth/isLinkedToQiita"]) {
+        axios.post(rootGetters.API_URL + 'qiita/save-article-to-qiita/' + articleId, {}, {
           headers: {
-            "Authorization": store.getters["auth/apiToken"]
+            "Authorization": rootGetters["auth/apiToken"]
           }
         }).then(() => {
           alert('Qiitaに記事を投稿しました');
@@ -86,7 +87,7 @@ export default {
             //======================401======================
             if (response.status === 401 && response.data.message === errorLocation) {
               if (confirm('Qiitaとの連携が確認できませんでした。Qiitaと連携しますか？')) {
-                this.toQiitaAPIAuthentication();
+                QiitaAPI.methods.toQiitaAPIAuthentication()
               }
               //======================403======================
             } else if (response.status === 403 && response.data.message === errorLocation) {
@@ -97,24 +98,24 @@ export default {
             ) {
               if (confirm('Qiitaの記事が見つからないため、更新できませんでした。\nQiitaに再投稿しますか？')) {
                 commit("updateStateFlag", 2);
-                this.postArticleToQiita(articleId);
+                dispatch('postArticleToQiita', articleId);
               } else {
                 commit("updateStateFlag", 1);
               }
               //======================else======================
             } else {
               if (confirm('Qiitaへの記事投稿に失敗しました。Qiita連携からやり直しますか?')) {
-                this.toQiitaAPIAuthentication();
+                QiitaAPI.methods.toQiitaAPIAuthentication()
               }
             }
           }
         )
       } else {
         await localStorage.setItem('articleId', articleId);
-        await this.toQiitaAPIAuthentication();
+        await QiitaAPI.methods.toQiitaAPIAuthentication();
       }
     },
-    async fetchArticle({ commit, rootGetters, rootState }, articleId) {
+    async fetchArticle({commit, rootGetters, rootState}, articleId) {
       const url = rootGetters.API_URL + "article/" + articleId;
       var apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
       const reqHeader = {
@@ -135,7 +136,7 @@ export default {
           });
       });
     },
-    async saveArticle({ rootGetters }, article) {
+    async saveArticle({rootGetters}, article) {
       const articleEditUrl = rootGetters.API_URL + "article/";
       const apiToken = await rootGetters["auth/apiToken"];
       const requestBody = {
@@ -161,14 +162,14 @@ export default {
         });
       }
     },
-    resetArticle({ commit }) {
+    resetArticle({commit}) {
       commit("resetArticle");
     },
-    commitMarkDownText({ commit }, text) {
+    commitMarkDownText({commit}, text) {
       commit("mutateMarkDownText", text);
     },
     // feedback
-    async postFeedback({ commit, rootGetters }, feedback) {
+    async postFeedback({commit, rootGetters}, feedback) {
       const url = rootGetters.API_URL + "feedback";
       const apiToken = rootGetters["auth/apiToken"];
       const requestConfig = {
@@ -189,7 +190,7 @@ export default {
           });
       });
     },
-    async updateFeedback({ commit, rootGetters }, feedback) {
+    async updateFeedback({commit, rootGetters}, feedback) {
       const url = rootGetters.API_URL + "feedback";
       const apiToken = rootGetters["auth/apiToken"];
       const requestConfig = {
@@ -210,7 +211,7 @@ export default {
           });
       });
     },
-    async deleteFeedback({ commit, rootGetters }, feedback) {
+    async deleteFeedback({commit, rootGetters}, feedback) {
       const url = rootGetters.API_URL + "feedback";
       const apiToken = rootGetters["auth/apiToken"];
       const requestConfig = {
@@ -234,7 +235,7 @@ export default {
       });
     },
     // MyArticle
-    async fetchMyArticle({ commit, rootGetters }, articleId) {
+    async fetchMyArticle({commit, rootGetters}, articleId) {
       const url = rootGetters.API_URL + "my-article?articleId=" + articleId;
       const apiToken = rootGetters["auth/apiToken"];
       const requestConfig = {
@@ -255,7 +256,7 @@ export default {
           });
       });
     },
-    async registerMyArticle({ commit, rootGetters }, articleId) {
+    async registerMyArticle({commit, rootGetters}, articleId) {
       const url = rootGetters.API_URL + "my-article";
       const requestBody = {
         articleId: articleId,
@@ -279,7 +280,7 @@ export default {
           });
       });
     },
-    async deleteMyArticle({ commit, rootGetters }, myArticleId) {
+    async deleteMyArticle({commit, rootGetters}, myArticleId) {
       const url = rootGetters.API_URL + "my-article/" + myArticleId;
       const apiToken = rootGetters["auth/apiToken"];
       const requestConfig = {
@@ -301,7 +302,7 @@ export default {
       });
     },
     // Recommend
-    async fetchRecommend({ commit, rootGetters }, articleId) {
+    async fetchRecommend({commit, rootGetters}, articleId) {
       const url = rootGetters.API_URL + "recommend?articleId=" + articleId;
       const apiToken = rootGetters["auth/apiToken"];
       const requestConfig = {
@@ -322,7 +323,7 @@ export default {
           });
       });
     },
-    async registerRecommend({ commit, rootGetters }, articleId) {
+    async registerRecommend({commit, rootGetters}, articleId) {
       const url = rootGetters.API_URL + "recommend";
       const requestBody = {
         articleId: articleId,
@@ -347,7 +348,7 @@ export default {
           });
       });
     },
-    async deleteRecommend({ commit, rootGetters }, recommendId) {
+    async deleteRecommend({commit, rootGetters}, recommendId) {
       const url = rootGetters.API_URL + "recommend/" + recommendId;
       const apiToken = rootGetters["auth/apiToken"];
       const requestConfig = {
