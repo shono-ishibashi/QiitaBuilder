@@ -211,7 +211,7 @@ class MyArticleMapperTest {
         assertEquals("javascript", articles.get(5).getTags().get(0).getTagName());
         assertEquals(4, articles.get(5).getTags().get(1).getTagId());
         assertEquals("php", articles.get(5).getTags().get(1).getTagName());
-        assertNull(articles.get(5).getFeedbackCount());
+        assertEquals(0, articles.get(5).getFeedbackCount());
         assertEquals(1, articles.get(5).getRegisteredMyArticleCount());
         assertEquals(2, articles.get(5).getPostedUser().getUserId());
         assertEquals("b", articles.get(5).getPostedUser().getDisplayName());
