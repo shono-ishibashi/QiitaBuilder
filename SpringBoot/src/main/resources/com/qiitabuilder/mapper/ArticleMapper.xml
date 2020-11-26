@@ -313,7 +313,7 @@
 
         WHERE art.article_id = #{articleId}
 
-        ORDER BY art.article_id
+        ORDER BY tags.tag_id
         ;
     </select>
 
