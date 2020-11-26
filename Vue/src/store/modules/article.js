@@ -64,8 +64,56 @@ export default {
     decrementQiitaRecommendPoint(state) {
       state.article.qiitaRecommendPoint--;
     },
+    updateStateFlag(state, stateFlag) {
+      state.article.stateFlag = stateFlag;
+    }
   },
   actions: {
+    async postArticleToQiita({commit}, articleId) {
+      if (store.getters["auth/isLinkedToQiita"]) {
+        axios.post(store.getters.API_URL + 'qiita/save-article-to-qiita/' + articleId, {}, {
+          headers: {
+            "Authorization": store.getters["auth/apiToken"]
+          }
+        }).then(() => {
+          alert('Qiitaに記事を投稿しました');
+          commit('updateStateFlag', 2);
+        }).catch(({response}) => {
+            console.log(response);
+
+            const errorLocation = 'QiitaAPI';
+
+            //======================401======================
+            if (response.status === 401 && response.data.message === errorLocation) {
+              if (confirm('Qiitaとの連携が確認できませんでした。Qiitaと連携しますか？')) {
+                this.toQiitaAPIAuthentication();
+              }
+              //======================403======================
+            } else if (response.status === 403 && response.data.message === errorLocation) {
+              alert('この記事を更新する権限はありません。');
+              //======================404======================
+            } else if (response.status === 404 &&
+              response.data.message === errorLocation
+            ) {
+              if (confirm('Qiitaの記事が見つからないため、更新できませんでした。\nQiitaに再投稿しますか？')) {
+                commit("updateStateFlag", 2);
+                this.postArticleToQiita(articleId);
+              } else {
+                commit("updateStateFlag", 1);
+              }
+              //======================else======================
+            } else {
+              if (confirm('Qiitaへの記事投稿に失敗しました。Qiita連携からやり直しますか?')) {
+                this.toQiitaAPIAuthentication();
+              }
+            }
+          }
+        )
+      } else {
+        await localStorage.setItem('articleId', articleId);
+        await this.toQiitaAPIAuthentication();
+      }
+    },
     async fetchArticle({ commit, rootGetters, rootState }, articleId) {
       const url = rootGetters.API_URL + "article/" + articleId;
       var apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可

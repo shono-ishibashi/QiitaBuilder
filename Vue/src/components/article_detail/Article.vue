@@ -231,12 +231,10 @@ export default {
       await this.$store.dispatch("article/saveArticle", item);
     },
     async updateQiita() {
-      await this.postArticleToQiita(this.article.articleId);
-      await this.$router.push('/article/' + this.article.articleId + '?isPostedArticleToQiita=true');
+      await this.$store.dispatch("article/postArticleToQiita", this.article.articleId);
     },
     async postQiita() {
-      await this.postArticleToQiita(this.article.articleId);
-      await this.$router.push('/article/' + this.article.articleId + '?isPostedArticleToQiita=true');
+      await this.$store.dispatch("article/postArticleToQiita", this.article.articleId);
     },
   },
 };

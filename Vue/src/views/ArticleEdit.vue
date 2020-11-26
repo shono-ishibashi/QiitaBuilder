@@ -261,8 +261,8 @@ export default {
     },
     //qiitaに投稿or更新するメソッド
     async postedToQiita(article) {
-      await this.postArticle(article.stateFlag)
-      await this.postArticleToQiita(article.articleId)
+      await this.postArticle(article.stateFlag);
+      await this.$store.dispatch("article/postArticleToQiita", article.articleId);
     },
   },
 
