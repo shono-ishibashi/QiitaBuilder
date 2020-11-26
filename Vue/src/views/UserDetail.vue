@@ -513,7 +513,7 @@ export default {
     if (!isNaN(to.params['userId'])) {
       next();
     } else {
-      next({path: '/article'})
+      next({path: '/404'})
     }
   }
 }
