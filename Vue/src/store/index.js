@@ -5,6 +5,7 @@ import articles from './modules/articles'
 import article from './modules/article'
 import users from './modules/users'
 import user from './modules/user'
+import window from './modules/window';
 
 Vue.use(Vuex)
 
@@ -24,6 +25,7 @@ export default new Vuex.Store({
     articles:articles,
     article:article,
     users:users,
-    user:user
+    user:user,
+    window:window,
   }
 })
