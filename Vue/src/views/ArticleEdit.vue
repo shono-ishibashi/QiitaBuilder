@@ -287,9 +287,9 @@ export default {
     },
     errorHandle(error) {
       const status = error.response.status;
-      if (status == 404) {
+      if (status === 404) {
         this.$router.push({name: "404"});
-      } else if (status == 401) {
+      } else if (status === 401) {
         this.nonValidToken = true;
       } else {
         this.processFailure = true;
