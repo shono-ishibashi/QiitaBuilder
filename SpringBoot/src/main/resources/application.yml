@@ -15,4 +15,4 @@ server:
 logging:
   level:
     org.springframework.web.client.RestTemplate: DEBUG
-    com.qiitabuilder.mapper.ArticleMapper: DEBUG
+    com.qiitabuilder.mapper.*: DEBUG
