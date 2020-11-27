@@ -9,7 +9,7 @@ export default {
     loginUser: null,
     apiToken: "",
     isLinkedToQiita: null,
-      nonValidToken: false,
+    nonValidToken: false,
   },
   mutations: {
     setLoginUser(state, loginUser) {
@@ -23,11 +23,11 @@ export default {
     },
   },
   actions: {
-    async googleLoginPartners({commit, rootGetters}) {
+    async googleLogin({commit, rootGetters, dispatch}, domain) {
       //firebase google authログイン
       const provider = await new firebase.auth.GoogleAuthProvider();
       provider.setCustomParameters({
-        hd: "rakus-partners.co.jp",
+        hd: domain,
       });
       await firebase
         .auth()
@@ -50,101 +50,42 @@ export default {
               if (!data.exists) {
                 let password = await uuidv4();
 
-                await db
-                  .collection("users")
-                  .doc(loginUser.uid)
-                  .set({password: password})
+                await db.collection("users").doc(loginUser.uid).set({password: password})
                   .then(() => {
-                    axios
-                      .post(rootGetters.API_URL, {
-                        uid: loginUser.uid,
-                        password: password,
-                        photoUrl: loginUser.photoURL,
-                        displayName: loginUser.displayName,
-                      })
-                      .then((result) => {
-                        console.log(result);
-                      });
+                    axios.post(rootGetters.API_URL, {
+                      uid: loginUser.uid,
+                      password: password,
+                      photoUrl: loginUser.photoURL,
+                      displayName: loginUser.displayName,
+                    })
                   });
               }
+              await dispatch("loginRESTAPI", loginUser);
             });
         });
     },
-    async googleLoginRakus({commit, rootGetters}) {
-      //firebase google authログイン
-      const provider = await new firebase.auth.GoogleAuthProvider();
-      provider.setCustomParameters({
-        hd: "rakus.co.jp",
-      });
-      await firebase
-        .auth()
-        .signInWithPopup(provider)
-        .then(async () => {
-          const loginUser = await firebase.auth().currentUser;
-          const db = await firebase.firestore();
 
-          await commit("setLoginUser", loginUser);
-
-          await db
-            .collection("users")
-            .doc(loginUser.uid)
-            .get()
-            .then(async (data) => {
-              //firestore にユーザーのデータが存在するのかを確認
-              //--あれば、そのデータを用いてRESTAPIにログイン処理を行う
-              //--なければ、ユーザーデータをfirestoreに追加して、RESTAPIにも追加する
-
-              if (!data.exists) {
-                let password = await uuidv4();
-
-                await db
-                  .collection("users")
-                  .doc(loginUser.uid)
-                  .set({password: password})
-                  .then(() => {
-                    axios
-                      .post(rootGetters.API_URL, {
-                        uid: loginUser.uid,
-                        password: password,
-                        photoUrl: loginUser.photoURL,
-                        displayName: loginUser.displayName,
-                      })
-                      .then((result) => {
-                        console.log(result);
-                      });
-                  });
-              }
-            });
-        });
-    },
     async loginRESTAPI({commit, rootGetters}, loginUser) {
       //RESTAPI ログイン
-      console.log("loginRESTAPI");
       const db = await firebase.firestore();
-      await db
-        .collection("users")
-        .doc(loginUser.uid)
-        .get()
+      await db.collection("users").doc(loginUser.uid).get()
         .then(async (data) => {
-          await console.log(data);
-          await console.log(data.data());
+
           const request =
             rootGetters.API_URL +
             "login?uid=" +
             (await loginUser.uid) +
             "&password=" +
             (await data.data().password);
-          await console.log(data.data());
-          await axios
-            .post(
-              request,
-              {},
-              {headers: {"Content-Type": "application/json"}}
-            )
-            .then((response) => {
-              //Vuexにjwt tokenを追加
-              commit("setAPIToken", response.headers.authorization);
-            })
+
+          await axios.post(
+            request,
+            {},
+            {headers: {"Content-Type": "application/json"}}
+          ).then((response) => {
+            //Vuexにjwt tokenを追加
+            commit("setAPIToken", response.headers.authorization);
+          })
             .catch((error) => console.log(error.status));
         });
     },
