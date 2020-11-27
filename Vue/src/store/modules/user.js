@@ -1,5 +1,4 @@
 import axios from 'axios';
-import router from "@/router";
 
 export default {
     namespaced: true,
@@ -118,7 +117,7 @@ export default {
         }
     },
     actions: {
-        async setArticlesAndTags({ commit }, articles) {
+        async setArticlesAndTags({commit}, articles) {
             await commit("clearDisplayArticles");
             await commit("clearUsedTag");
             if (articles.length !== 0) {
@@ -126,40 +125,49 @@ export default {
                 await articles.forEach((art) => commit("setUsedTags", art.tags));
             }
         },
-        async setArticles({ commit }, articles) {
+        async setArticles({commit}, articles) {
             await commit("clearDisplayArticles");
             if (articles.length !== 0) {
                 await commit("setDisplayArticles", articles);
             }
         },
-        setArticleCardDisplay({ commit }, articleCard) {
+        setArticleCardDisplay({commit}, articleCard) {
             commit("setArticleCardDisplay", articleCard)
         },
-        setChartDisplay({ commit }, chartDiaplay) {
+        setChartDisplay({commit}, chartDiaplay) {
             commit("setChartDisplay", chartDiaplay)
         },
-        async fetchUserDetail({ commit, rootGetters, rootState }, userId) {
+        async fetchUserDetail({dispatch, commit, rootGetters, rootState}, userId) {
             const url = rootGetters.API_URL + 'user/detail/';
             let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
 
-            await axios.get(url, {
-                params: { userId },
-                headers: {
-                    Authorization: apiToken,
-                },
-            }).then(res => {
-                commit("setUserDetail", res.data);
-            }).catch((error) => {
-                console.log(error)
-                router.push({ name: "404" })
-            })
+            await new Promise(((resolve, reject) => {
+                axios.get(url, {
+                    params: {userId},
+                    headers: {
+                        Authorization: apiToken,
+                    },
+                }).then(res => {
+                    commit("setUserDetail", res.data);
+                    resolve(res)
+                }).catch((error) => {
+                    const errorStatus = error.response.status;
+                    if (errorStatus === 400) {
+                        dispatch('window/setNotFound', true, {root: true})
+                    } else {
+                        dispatch('window/setInternalServerError', true, {root: true})
+                    }
+                    reject(error)
+                })
+            }))
+
         },
-        async fetchPostedArticles({ commit, rootGetters, rootState }, userId) {
+        fetchPostedArticles({dispatch, commit, rootGetters, rootState}, userId) {
             const url = rootGetters.API_URL + 'article/posted'
             let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
 
-            await axios.get(url, {
-                params: { userId },
+            axios.get(url, {
+                params: {userId},
                 headers: {
                     Authorization: apiToken,
                 },
@@ -167,17 +175,22 @@ export default {
                 .then(res => {
                     commit("setPostedArticles", res.data)
                 }).catch((error) => {
-                    console.log(error)
-                    router.push({ name: "500" })
-                })
+                console.log(error)
+                const errorStatus = error.response.status;
+                if (errorStatus === 400) {
+                    dispatch('window/setNotFound', true, {root: true})
+                } else {
+                    dispatch('window/setInternalServerError', true, {root: true})
+                }
+            })
         },
-        async fetchFeedbackArticles({ commit, rootGetters, rootState }, userId) {
+        fetchFeedbackArticles({dispatch, commit, rootGetters, rootState}, userId) {
             const url = rootGetters.API_URL + 'article/feedbacked';
             let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
 
 
-            await axios.get(url, {
-                params: { userId },
+            axios.get(url, {
+                params: {userId},
                 headers: {
                     Authorization: apiToken,
                 },
@@ -185,15 +198,20 @@ export default {
                 commit("setFeedbackArticles", res.data);
             }).catch((error) => {
                 console.log(error)
-                router.push({ name: "500" })
+                const errorStatus = error.response.status;
+                if (errorStatus === 400) {
+                    dispatch('window/setNotFound', true, {root: true})
+                } else {
+                    dispatch('window/setInternalServerError', true, {root: true})
+                }
             })
         },
-        async fetchMyArticles({ commit, rootGetters, rootState }, userId) {
+        fetchMyArticles({dispatch, commit, rootGetters, rootState}, userId) {
             const url = rootGetters.API_URL + 'article/my-articles';
             let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
 
-            await axios.get(url, {
-                params: { userId },
+            axios.get(url, {
+                params: {userId},
                 headers: {
                     Authorization: apiToken,
                 },
@@ -201,24 +219,39 @@ export default {
                 commit("setMyArticles", res.data);
             }).catch((error) => {
                 console.log(error)
-                router.push({ name: "500" })
+                const errorStatus = error.response.status;
+                if (errorStatus === 400) {
+                    dispatch('window/setNotFound', true, {root: true})
+                } else {
+                    dispatch('window/setInternalServerError', true, {root: true})
+                }
             })
         },
-        async findUserIdByUid({ commit, rootGetters, rootState }, uid) {
+        async findUserIdByUid({dispatch, commit, rootGetters, rootState}, uid) {
             const url = rootGetters.API_URL + 'userId';
             let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
 
-            await axios.get(url, {
-                params: { uid },
-                headers: {
-                    Authorization: apiToken,
-                },
-            }).then(res => {
-                commit("setUserId", res.data);
-            }).catch((error) => {
-                console.log(error)
-                router.push({ name: "500" })
+            await new Promise((resolve, reject) => {
+                axios.get(url, {
+                    params: {uid},
+                    headers: {
+                        Authorization: apiToken,
+                    },
+                }).then(res => {
+                    commit("setUserId", res.data);
+                    resolve(res)
+                }).catch((error) => {
+                    console.log(error)
+                    const errorStatus = error.response.status;
+                    if (errorStatus === 400) {
+                        dispatch('window/setNotFound', true, {root: true})
+                    } else {
+                        dispatch('window/setInternalServerError', true, {root: true})
+                    }
+                    reject(errorStatus)
+                })
             })
+
         }
     }
 }
