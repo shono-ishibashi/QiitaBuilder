@@ -57,6 +57,7 @@ class QiitaConfigurationMapperTest {
                 "   content          text         null,\n" +
                 "   qiita_article_id text         null,\n" +
                 "   state_flag       int          null,\n" +
+                "   article_version  int          not null default 1,\n" +
                 "   constraint fk_articles_userid\n" +
                 "       foreign key (user_id) references users (user_id)\n" +
                 ");\n");

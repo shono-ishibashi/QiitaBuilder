@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.authentication.TestingAuthenticationToken;
@@ -21,6 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -68,6 +70,7 @@ class ArticleServiceTest {
                 "   content          text         null,\n" +
                 "   qiita_article_id text         null,\n" +
                 "   state_flag       int          null,\n" +
+                "   article_version  int          not null default 1,\n" +
                 "   constraint fk_articles_userid\n" +
                 "       foreign key (user_id) references users (user_id)\n" +
                 ");\n");
@@ -682,6 +685,8 @@ class ArticleServiceTest {
                 .title("title_test_edited")
                 .tags(tags)
                 .content("content_test_edited")
+                .stateFlag(1)
+                .articleVersion(1)
                 .build();
 
         articleService.saveArticle(article);
@@ -718,6 +723,8 @@ class ArticleServiceTest {
                 .title("title_test_edited")
                 .tags(tags)
                 .content("content_test_edited")
+                .stateFlag(1)
+                .articleVersion(1)
                 .build();
 
         articleService.saveArticle(article);
@@ -737,6 +744,70 @@ class ArticleServiceTest {
         assertEquals(1, articlesTagsRelationsResult.size());
     }
 
+    //下書きをupdateする時created_atは更新されているか
+    @Test
+    void saveArticle_正常系_stateFlagが0の時(){
+        List<Tag> tags = new ArrayList<>(Arrays.asList(new Tag(1, "tag1", null), new Tag(null, "tag2", null)));
+
+        jdbcTemplate.execute("INSERT INTO users (user_id) VALUES(1)");
+        jdbcTemplate.execute("INSERT INTO articles (article_id, user_id, title, content, qiita_article_id, state_flag) VALUES(1,1,'title_test','content_test',null,0)");
+        jdbcTemplate.execute("INSERT INTO tags(tag_id, tag_name) VALUES(1,'tag1')");
+
+        Article article = Article.builder()
+                .articleId(1)
+                .title("title_test_edited")
+                .tags(tags)
+                .content("content_test_edited")
+                .createdAt(LocalDateTime.now().minusDays(1))
+                .stateFlag(1)
+                .articleVersion(1)
+                .build();
+
+        articleService.saveArticle(article);
+
+        Map<String, Object> articleResult = jdbcTemplate.queryForMap("SELECT * FROM articles WHERE article_id = 1");
+        assertEquals(1, articleResult.get("article_id"));
+        assertEquals("title_test_edited", articleResult.get("title"));
+        assertEquals("content_test_edited", articleResult.get("content"));
+        assertNotEquals(article.getCreatedAt(),articleResult.get("created_at"));
+
+        List<Map<String, Object>> articlesTagsRelationsResult = jdbcTemplate.queryForList("SELECT * FROM articles_tags_relations WHERE article_id = 1");
+
+        List<Map<String, Object>> tagsResult = jdbcTemplate.queryForList("SELECT * FROM tags ORDER BY tag_id");
+
+        assertEquals(1, articlesTagsRelationsResult.get(0).get("article_id"));
+        assertEquals(1, articlesTagsRelationsResult.get(0).get("tag_id"));
+
+        assertEquals(1, articlesTagsRelationsResult.get(1).get("article_id"));
+        assertEquals(2, articlesTagsRelationsResult.get(1).get("tag_id"));
+
+        assertEquals("tag1", tagsResult.get(0).get("tag_name"));
+        assertEquals("tag2", tagsResult.get(1).get("tag_name"));
+    }
+
+    //   排他処理
+    @Test
+    void saveArticle_異常系_update_versionが異なる時() {
+        List<Tag> tags = new ArrayList<>(Arrays.asList(new Tag(1, "tag1", null), new Tag(null, "tag2", null)));
+
+        jdbcTemplate.execute("INSERT INTO users (user_id) VALUES(1)");
+        jdbcTemplate.execute("INSERT INTO articles (article_id, user_id, title, content, qiita_article_id, state_flag,article_version) VALUES(1,1,'title_test','content_test',null,1,2)");
+        jdbcTemplate.execute("INSERT INTO tags(tag_id, tag_name) VALUES(1,'tag1')");
+
+        Article article = Article.builder()
+                .articleId(1)
+                .title("title_test_edited")
+                .tags(tags)
+                .content("content_test_edited")
+                .stateFlag(1)
+                .articleVersion(1)
+                .build();
+        try{
+        articleService.saveArticle(article);
+        }catch(ResponseStatusException error){
+            assertEquals(HttpStatus.CONFLICT,error.getStatus());
+        }
+    }
 
     // getArticle()
     @Test
@@ -795,6 +866,7 @@ class ArticleServiceTest {
                 .title("title1")
                 .content("#content1")
                 .stateFlag(1)
+                .articleVersion(1)
                 .feedbacks(feedbacks)
                 .feedbackCount(1)
                 .qiitaRecommendPoint(1)
@@ -812,6 +884,7 @@ class ArticleServiceTest {
         assertEquals(expected.getTitle(), actual.getTitle());
         assertEquals(expected.getContent(), actual.getContent());
         assertEquals(expected.getStateFlag(), actual.getStateFlag());
+        assertEquals(expected.getArticleVersion(),actual.getArticleVersion());
         assertEquals(expected.getFeedbacks().get(0), actual.getFeedbacks().get(0));
         assertEquals(expected.getFeedbackCount(), actual.getFeedbackCount());
         assertEquals(expected.getQiitaRecommendPoint(), actual.getQiitaRecommendPoint());
@@ -873,6 +946,7 @@ class ArticleServiceTest {
                 .title("title1")
                 .content("#content1")
                 .stateFlag(1)
+                .articleVersion(1)
                 .feedbacks(feedbacks)
                 .feedbackCount(1)
                 .qiitaRecommendPoint(0)
@@ -890,6 +964,7 @@ class ArticleServiceTest {
         assertEquals(expected.getTitle(), actual.getTitle());
         assertEquals(expected.getContent(), actual.getContent());
         assertEquals(expected.getStateFlag(), actual.getStateFlag());
+        assertEquals(expected.getArticleVersion(),actual.getArticleVersion());
         assertEquals(expected.getFeedbacks().get(0), actual.getFeedbacks().get(0));
         assertEquals(expected.getFeedbackCount(), actual.getFeedbackCount());
         assertEquals(expected.getQiitaRecommendPoint(), actual.getQiitaRecommendPoint());
