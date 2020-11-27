@@ -3,6 +3,7 @@
     <Header></Header>
     <v-main>
       <NotFound v-if="notFound" />
+      <InternalServerError v-else-if="internalServerError" />
       <router-view v-else></router-view>
     </v-main>
     <Footer></Footer>
@@ -27,12 +28,13 @@
 import Header from './components/Header'
 import Footer from './components/Footer'
 import NotFound from './views/error/404';
+import InternalServerError from './views/error/500';
 
 export default {
   name: 'App',
 
   components: {
-    Header, Footer, NotFound
+    Header, Footer, NotFound, InternalServerError
   },
   created() {
   },
@@ -52,6 +54,9 @@ export default {
   computed: {
     notFound() {
       return this.$store.getters["window/isNotFound"];
+    },
+    internalServerError() {
+      return this.$store.getters["window/isInternalServerError"];
     },
   },
 };

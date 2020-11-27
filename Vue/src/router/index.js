@@ -67,7 +67,7 @@ const router = new VueRouter({
 })
 
 router.beforeResolve(async (to, from, next) => {
-    store.commit("window/setNotFound", false);
+    store.dispatch("window/clearErrors");
     if (to.path === '/login') {
         next();
     } else {
