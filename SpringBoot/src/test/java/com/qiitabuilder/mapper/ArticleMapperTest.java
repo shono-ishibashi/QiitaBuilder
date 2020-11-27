@@ -1345,6 +1345,52 @@ class ArticleMapperTest {
         assertEquals(2, resultArticle.get("article_version"));
     }
 
+//    下書きの記事を投稿した時に「created_at」が更新されているか
+    @Test
+    void updateDraftArticle正常系() {
+        String insertUser = "INSERT INTO users (user_id) values (1)";
+        String insertArticle =
+                "INSERT INTO articles ( user_id, created_at, updated_at, title, content, qiita_article_id, state_flag) " +
+                        "VALUES(1,NOW(),NOW(),'test title','content title',null,0)";
+
+        jdbcTemplate.execute(insertUser);
+        jdbcTemplate.execute(insertArticle);
+
+        User user = new User();
+        user.setUserId(1);
+
+        Article article = Article.builder()
+                .articleId(1)
+                .title("test title edited")
+                .content("content title edited")
+                .createdAt(LocalDateTime.now().minusDays(1))
+                .stateFlag(1)
+                .postedUser(user)
+                .build();
+
+        articleMapper.updateDraftArticle(article);
+
+        String articleSelectSql
+                = "SELECT * FROM articles ORDER BY article_id";
+
+        SqlParameterSource param = new EmptySqlParameterSource();
+
+        List<Map<String, Object>> resultArticles = namedParameterJdbcTemplate.queryForList(articleSelectSql, param);
+
+        Map<String, Object> resultArticle = resultArticles.get(0);
+
+
+        assertEquals(1, resultArticle.get("article_id"));
+        assertEquals(1, resultArticle.get("user_id"));
+        // 更新がされていれば異なる結果が取得される
+        assertNotEquals(article.getCreatedAt(),resultArticle.get("created_at"));
+        assertEquals("test title edited", resultArticle.get("title"));
+        assertEquals("content title edited", resultArticle.get("content"));
+        assertEquals(1, resultArticle.get("state_flag"));
+        // update処理を行うことでversionが+1される
+        assertEquals(2, resultArticle.get("article_version"));
+    }
+
     //// getArticleAndFeedback()
     @Test
     void getArticleAndFeedback正常系() {

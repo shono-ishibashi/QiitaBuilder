@@ -501,7 +501,8 @@
     <!-- ****** UPDATE ****** -->
     <update id="updateArticle">
         UPDATE articles
-        SET updated_at       = NOW(),
+        SET user_id          = #{postedUser.userId},
+            updated_at       = NOW(),
             title            = #{title},
             content          = #{content},
             state_flag       = #{stateFlag},

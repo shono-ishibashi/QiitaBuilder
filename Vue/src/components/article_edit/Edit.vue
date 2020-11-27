@@ -7,7 +7,8 @@
       placeholder="markdown記法で書いてください"
       background-color="#ffffff"
       :height="height"
-      :rules="[required,blank]"
+      :rules="[required,blank,content_limit_length]"
+      counter="20000"
   >
     input
   </v-textarea>
@@ -25,6 +26,7 @@ export default {
         const pattern = /\S/g
         return pattern.test(value) || "空文字のみの入力はできません"
       },
+      content_limit_length:value=>value&&value.length<=20000||"20000字以内で入力してください",
     }
   },
   props: [
