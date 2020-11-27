@@ -1,5 +1,11 @@
 <template>
   <div class="articleList">
+    <v-snackbar v-model="nonValidToken" timeout="5000">
+      トークンが失効しました。ログインからやり直してください。
+    </v-snackbar>
+    <v-snackbar v-model="processFailure" timeout="5000">
+      処理に失敗しました。ページを再読み込みしてください。
+    </v-snackbar>
     <v-row justify="center" align-content="center">
       <v-col cols="6">
         <v-card class="searchForm" outline-color="#008b8b">
@@ -182,6 +188,7 @@ export default {
         {key: 0, state: "週間"},
         {key: 1, state: "月間"},
       ],
+      nonValidToken: false,
       title_limit_length: value => value.length <= 100 || "100文字以内で入力してください",
       user_limit_length: value => value.length <= 30 || "30文字以内で入力してください",
       tags_limit_length: value => value.length <= 5 || "6個以上入力しないでください",
@@ -190,31 +197,42 @@ export default {
   watch: {
     ['searchCriteria.sortNum']() {
       this.searchCriteria.currentPage = 1;
-      this.fetchArticles(this.searchCriteria);
+      this.fetchArticles(this.searchCriteria).catch(error=>{
+        this.errorHandle(error)
+      })
     },
     ['searchCriteria.period']() {
       this.searchCriteria.currentPage = 1;
-      this.fetchArticles(this.searchCriteria);
+      this.fetchArticles(this.searchCriteria).catch(error=>{
+        this.errorHandle(error)
+      })
     },
     ['searchCriteria.pageSize']() {
       this.searchCriteria.currentPage = 1;
-      this.fetchArticles(this.searchCriteria);
+      this.fetchArticles(this.searchCriteria).catch(error=>{
+        this.errorHandle(error)
+      })
       this.scrollTop();
     },
     ['searchCriteria.currentPage']() {
-      this.fetchArticles(this.searchCriteria);
+      this.fetchArticles(this.searchCriteria).catch(error=>{
+        this.errorHandle(error)
+      })
       setTimeout(() => {
         this.scrollTop();
       }, 50)
     },
     apiToken() {
-      this.fetchArticles(this.searchCriteria);
+      this.fetchArticles(this.searchCriteria).catch(error=>{
+        this.errorHandle(error)
+      })
       this.fetchTags();
     }
   },
   created() {
   },
   computed: {
+    ...mapState("article", ["processFailure"]),
     ...mapState("articles", ["articles", "tags", "totalPage", "searchCriteria", "errorTransistionDialog"]),
     apiToken() {
       return this.$store.getters["auth/apiToken"];
@@ -232,6 +250,7 @@ export default {
     ArticleCard
   },
   methods: {
+    ...mapActions("article",["toggleProcessFailure"]),
     ...mapActions("articles", ["fetchArticles", "fetchTags", "toggleErrorTransitionDialog"]),
     changePeriod(key) {
       this.searchCriteria.period = key
@@ -239,7 +258,9 @@ export default {
     submit() {
       if (this.$refs.search_form.validate()) {
         this.searchCriteria.currentPage = 1
-        this.fetchArticles(this.searchCriteria)
+        this.fetchArticles(this.searchCriteria).catch(error=>{
+          this.errorHandle(error)
+        })
       }
     },
     scrollTop() {
@@ -252,7 +273,9 @@ export default {
       this.searchCriteria.searchWord = ""
       this.searchCriteria.searchTag = []
       this.searchCriteria.currentPage = 1
-      this.fetchArticles(this.searchCriteria)
+      this.fetchArticles(this.searchCriteria).catch(error=>{
+        this.errorHandle(error)
+      })
     },
     toggleSearchWordBox() {
       if (this.searchCriteria.toggleSearchWord === 0) {
@@ -260,7 +283,17 @@ export default {
       } else {
         this.searchCriteria.toggleSearchWord = 0
       }
-    }
+    },
+    errorHandle(error) {
+      const status = error.response.status;
+      if (status === 404) {
+        this.$router.push({name: "404"});
+      } else if (status === 401) {
+        this.nonValidToken = true;
+      } else {
+        this.toggleProcessFailure()
+      }
+    },
   }
 }
 </script>

@@ -1,3 +1,4 @@
+<script src="../../router/index.js"></script>
 <template>
   <v-app>
     <v-card>
@@ -21,7 +22,8 @@
                      justify="center"
                      style="height: 50px;"
               >
-                <v-btn class="login-btn" @click="loginRakus" style="text-transform: none;" width="50%" id="rakus_login_btn">
+                <v-btn class="login-btn" @click="loginRakus" style="text-transform: none;" width="50%"
+                       id="rakus_login_btn">
                   <svg
                       width="18px"
                       height="18px"
@@ -53,7 +55,8 @@
                      justify="center"
                      style="height: 50px;"
               >
-                <v-btn class="login-btn" @click="loginPartners" style="text-transform: none;" width="50%" id="rp_login_btn">
+                <v-btn class="login-btn" @click="loginPartners" style="text-transform: none;" width="50%"
+                       id="rp_login_btn">
                   <svg
                       width="18px"
                       height="18px"
@@ -102,12 +105,18 @@ export default {
   },
   methods: {
     async loginPartners() {
-      await this.$store.dispatch('auth/googleLoginPartners');
-      await router.push('/article');
+      await this.$store.dispatch('auth/googleLogin', "rakus-partners.co.jp")
+          .then(() => {
+                router.push({name: 'articleList'});
+              }
+          );
     },
     async loginRakus() {
-      await this.$store.dispatch('auth/googleLoginRakus');
-      await router.push('/article');
+      await this.$store.dispatch('auth/googleLogin', "rakus.co.jp")
+          .then(() => {
+                router.push({name: 'articleList'});
+              }
+          );
     }
   },
 
