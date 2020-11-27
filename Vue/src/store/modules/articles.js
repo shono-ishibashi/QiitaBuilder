@@ -49,6 +49,7 @@ export default {
             }
             const paramsSerializer = (params) => qs.stringify(params);
 
+            //記事一覧の取得
             await axios.get(fetchArticlesUrl, {
                 params: params,
                 headers: {
@@ -60,6 +61,10 @@ export default {
                 .then(res => {
                     commit("setArticles", res.data)
                 })
+                .catch(error=>{
+                    console.log(error)
+                })
+            //記事ページ数の取得
             await axios.get(fetchTotalPageUrl, {
                 params: params,
                 headers: {
@@ -70,6 +75,9 @@ export default {
             })
                 .then(res => {
                     commit("setTotalPage", res.data)
+                })
+                .catch((error) =>{
+                    console.log(error)
                 })
         },
         async fetchTags({commit, rootGetters}) {
