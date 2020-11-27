@@ -322,7 +322,7 @@ export default {
     sortNum() {
       this.page = 1;//sort変更時computedによる並び替え変更が行われるのでページが変更されないため、ここで1pに変えている
     },
-    page(){
+    page() {
       setTimeout(() => {
         window.scrollTo({
           top: 0,
@@ -333,22 +333,16 @@ export default {
     },
     apiToken: async function () {
       if (this.$route.params['userId'] === '0') {
-        if (!this.loginUser.uid) await this.$router.push({name: "articleList"});
+        if (!this.loginUser.uid) await this.$store.dispatch("window/setInternalServerError", true);
         await this.findUserIdByUid(this.loginUser.uid);
-        //DBに存在しないユーザーIDが渡された場合記事一覧に戻る
-        /*if (this.userId === 0 || this.userId) {
-          await this.$router.push({path: '/article'})
-        }*/
+
         await this.fetchUserDetail(this.userId);
+        //ユーザーが見つからない場合はこれ以降は実行されずwindow componentに切り替わる
         await this.fetchFeedbackArticles(this.userId);
         await this.fetchMyArticles(this.userId);
         await this.fetchPostedArticles(this.userId);
       } else {
         await this.fetchUserDetail(this.$route.params['userId']);
-        //DBに存在しないユーザーIDが渡された場合記事一覧に戻る
-        if (this.userId === 0) {
-          await this.$router.push({name: "articleList"})
-        }
         await this.fetchFeedbackArticles(this.$route.params['userId']);
         await this.fetchMyArticles(this.$route.params['userId']);
         await this.fetchPostedArticles(this.$route.params['userId']);
