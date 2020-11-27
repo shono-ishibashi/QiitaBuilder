@@ -1,12 +1,12 @@
-import Vuex from 'vuex';
 import index from '@/store/index';
 import users from '@/store/modules/users';
 import {createLocalVue} from '@vue/test-utils';
-import {cloneDeep} from 'lodash'
+import {cloneDeep} from 'lodash';
+import axios from "axios";
+import Vuex from 'vuex';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
-
 
 const replaceRankingUsers = [
     {
@@ -70,14 +70,128 @@ const replaceRankingUsers = [
         rank: 5
     },];
 
+let url = ''
+let apiToken = '';
+let mockError = false
+
+// axiosのモック化
+jest.mock('axios', () => ({
+    get: jest.fn((_url, {
+        headers: {
+            'Authorization': _apiToken
+        }
+    }) => {
+        return new Promise((resolve) => {
+            if (mockError) {
+                throw Error("Mock Error")
+            }
+            url = _url;
+            apiToken = _apiToken;
+            resolve({
+                data: replaceRankingUsers
+            })
+        })
+    })
+}))
+
 describe('store/users.js', () => {
-    let store;
-    beforeEach(() => {
-        store = new Vuex.Store(cloneDeep(users))
+
+    //************ actions ************
+    describe("actions", () => {
+        let store;
+        beforeEach(() => {
+            store = new Vuex.Store({
+                state: {
+                    API_URL: "http://localhost:8080/qiita_builder/"
+                },
+                getters: {
+                    API_URL: state => state.API_URL
+                },
+                modules: {
+                    auth: {
+                        state: {
+                            apiToken: 'token'
+                        }
+                    }
+                }
+            })
+            store.registerModule('users', cloneDeep(users))
+        })
+
+        test('actions: fetchRankingUser/FBCount', async () => {
+            let commit = cloneDeep(jest).fn();
+            let rootState = store.state;
+            let rootGetters = store.getters;
+            const selectRankItemId = 1;
+
+            await users.actions.fetchRankingUser({commit, rootState, rootGetters}, selectRankItemId);
+            await expect(url).toBe("http://localhost:8080/qiita_builder/user/ranking/FBCount")
+            await expect(apiToken).toBe('token')
+            await expect(commit).toHaveBeenCalledTimes(2)
+            await expect(commit).toHaveBeenCalledWith('resetRankingUsers')
+            await expect(commit).toHaveBeenCalledWith('setRankingUsers', replaceRankingUsers)
+        })
+
+        test('actions: fetchRankingUser/articleCount', async () => {
+            let commit = cloneDeep(jest).fn();
+            let rootState = store.state;
+            let rootGetters = store.getters;
+            const selectRankItemId = 2;
+
+            await users.actions.fetchRankingUser({commit, rootState, rootGetters}, selectRankItemId);
+            await expect(url).toBe("http://localhost:8080/qiita_builder/user/ranking/articleCount")
+            await expect(apiToken).toBe('token')
+            await expect(commit).toHaveBeenCalledTimes(2)
+            await expect(commit).toHaveBeenCalledWith('resetRankingUsers')
+            await expect(commit).toHaveBeenCalledWith('setRankingUsers', replaceRankingUsers)
+        })
+
+        test('actions: fetchRankingUser/qiitaRecommendedCount', async () => {
+            let commit = cloneDeep(jest).fn();
+            let rootState = store.state;
+            let rootGetters = store.getters;
+            const selectRankItemId = 3;
+
+            await users.actions.fetchRankingUser({commit, rootState, rootGetters}, selectRankItemId);
+            await expect(url).toBe("http://localhost:8080/qiita_builder/user/ranking/qiitaRecommendedCount");
+            await expect(apiToken).toBe('token');
+            await expect(commit).toHaveBeenCalledTimes(2);
+            await expect(commit).toHaveBeenCalledWith('resetRankingUsers');
+            await expect(commit).toHaveBeenCalledWith('setRankingUsers', replaceRankingUsers);
+        })
+    })
+
+    //************ mutations ************
+    describe('mutations', () => {
+        let store;
+        beforeEach(() => {
+            store = new Vuex.Store(cloneDeep(users));
+        })
+
+        test('mutations: setRankingUsers', () => {
+            expect(store.state.rankingUsers).toStrictEqual([]);
+            store.commit('setRankingUsers', replaceRankingUsers);
+            expect(store.state.rankingUsers).toStrictEqual(replaceRankingUsers);
+
+        })
+
+        test('mutations: resetRankingUsers', () => {
+            store.replaceState({
+                rankingUsers: replaceRankingUsers
+            })
+            expect(store.state.rankingUsers).toStrictEqual(replaceRankingUsers);
+            store.commit('resetRankingUsers');
+            expect(store.state.rankingUsers).toStrictEqual([]);
+        })
     })
 
     //************ getters ************
     describe('getters', () => {
+        let store;
+        beforeEach(() => {
+            store = new Vuex.Store(cloneDeep(users))
+        })
+
         test('getters: users', () => {
             store.replaceState({
                 rankingUsers: replaceRankingUsers
@@ -115,6 +229,7 @@ describe('store/users.js', () => {
                     rank: 5
                 }
             ];
+            expect(store.getters.users.length).toBe(5);
             expect(store.getters.users).toStrictEqual(expected);
         })
 
