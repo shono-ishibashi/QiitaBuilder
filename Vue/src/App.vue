@@ -2,7 +2,8 @@
   <v-app>
     <Header></Header>
     <v-main>
-      <router-view></router-view>
+      <NotFound v-if="notFound" />
+      <router-view v-else></router-view>
     </v-main>
     <Footer></Footer>
     <transition name="fade">
@@ -25,12 +26,13 @@
 <script>
 import Header from './components/Header'
 import Footer from './components/Footer'
+import NotFound from './views/error/404';
 
 export default {
   name: 'App',
 
   components: {
-    Header, Footer
+    Header, Footer, NotFound
   },
   created() {
   },
@@ -47,6 +49,11 @@ export default {
   data: () => ({
     fab: false
   }),
+  computed: {
+    notFound() {
+      return this.$store.getters["window/isNotFound"];
+    },
+  },
 };
 </script>
 

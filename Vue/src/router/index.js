@@ -49,7 +49,7 @@ const routes = [
         component: () => import(/* webpackChunkName: "articleDetail" */ '../views/UserDetail.vue')
     },
     {
-        path: '/404',
+        path: '*',
         name: '404',
         component: () => import(/* webpackChunkName: "404" */ '../views/error/404.vue')
     },
@@ -67,6 +67,7 @@ const router = new VueRouter({
 })
 
 router.beforeResolve(async (to, from, next) => {
+    store.commit("window/setNotFound", false);
     if (to.path === '/login') {
         next();
     } else {
