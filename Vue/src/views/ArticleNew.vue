@@ -13,7 +13,7 @@
                 placeholder="タイトル"
                 background-color="#ffffff"
                 :rules="[required,title_limit_length,blank]"
-                counter="100"
+                counter="255"
             ></v-text-field>
             <v-combobox
                 v-model="article.tags"
@@ -100,7 +100,7 @@ export default {
         const pattern = /\S/g
         return pattern.test(value[value.length - 1]) || "空文字のみの入力はできません"
       },
-      title_limit_length: value => value && value.length <= 100 || "100文字以内で入力してください",
+      title_limit_length: value => value && value.length <= 255 || "255文字以内で入力してください",
       tags_max_size: value => value && value.length <= 5 || "5つまで入力してください",
       tags_min_size: value => value && value.length >= 1 || "1つ以上入力してください",
     }
