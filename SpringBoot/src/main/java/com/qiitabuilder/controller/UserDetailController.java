@@ -27,8 +27,14 @@ public class UserDetailController {
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    public User fetchUserDetails(Integer userId) {
+    public User fetchUserDetails(String userId) {
         if (Objects.isNull(userId)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        return userDetailService.fetchUserDetails(userId);
+        try {
+            Integer id=Integer.valueOf(userId);
+            return userDetailService.fetchUserDetails(id);
+        }catch (NumberFormatException ex){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
     }
 }
