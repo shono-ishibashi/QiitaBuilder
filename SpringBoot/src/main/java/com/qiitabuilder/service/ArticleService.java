@@ -157,11 +157,8 @@ public class ArticleService {
 
             //現在の記事
             Article currentArticle = articleMapper.load(article.getArticleId());
-            System.out.println(currentArticle);
 
             // versionが異なる場合(排他制御)はConflictを返す
-            System.out.println(currentArticle.getArticleVersion());
-            System.out.println(article.getArticleVersion());
             if(!Objects.equals(currentArticle.getArticleVersion(),article.getArticleVersion())){
                 throw new ResponseStatusException(HttpStatus.CONFLICT);
             }

@@ -60,6 +60,7 @@ class ArticleMapperTest {
                 "   content          text         null,\n" +
                 "   qiita_article_id text         null,\n" +
                 "   state_flag       int          null,\n" +
+                "   article_version  int          not null default 1,\n" +
                 "   constraint fk_articles_userid\n" +
                 "       foreign key (user_id) references users (user_id)\n" +
                 ");\n");
@@ -567,12 +568,13 @@ class ArticleMapperTest {
         searchArticleForm.setTagLength(2);
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
 //        記事数
-        assertEquals(4, articleIdList.size());
+        assertEquals(5, articleIdList.size());
 //        取得記事
         assertEquals(15, articleIdList.get(0));
         assertEquals(12, articleIdList.get(1));
         assertEquals(7, articleIdList.get(2));
         assertEquals(38, articleIdList.get(3));
+        assertEquals(10, articleIdList.get(4));
     }
 
     @Test
@@ -598,10 +600,11 @@ class ArticleMapperTest {
         searchArticleForm.setTagLength(2);
         List<Integer> articleIdList = articleMapper.searchArticlesId(searchArticleForm);
 //        記事数
-        assertEquals(2, articleIdList.size());
+        assertEquals(3, articleIdList.size());
 //        取得記事
         assertEquals(12, articleIdList.get(0));
         assertEquals(7, articleIdList.get(1));
+        assertEquals(10, articleIdList.get(2));
     }
 
     @Test
@@ -1300,7 +1303,6 @@ class ArticleMapperTest {
         assertTrue(exception.getMessage().contains("fk_articles_userid` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)"));
     }
 
-
     @Test
     void updateArticle正常系() {
         String insertUser = "INSERT INTO users (user_id) values (1)";
@@ -1339,6 +1341,8 @@ class ArticleMapperTest {
         assertEquals("test title edited", resultArticle.get("title"));
         assertEquals("content title edited", resultArticle.get("content"));
         assertEquals(2, resultArticle.get("state_flag"));
+        // update処理を行うことでversionが+1される
+        assertEquals(2, resultArticle.get("article_version"));
     }
 
     //// getArticleAndFeedback()
@@ -1398,6 +1402,7 @@ class ArticleMapperTest {
                 .title("title1")
                 .content("#content1")
                 .stateFlag(1)
+                .articleVersion(1)
                 .feedbacks(feedbacks)
                 .feedbackCount(1)
                 .qiitaRecommendPoint(1)
@@ -1415,6 +1420,7 @@ class ArticleMapperTest {
         assertEquals(expected.getTitle(), actual.getTitle());
         assertEquals(expected.getContent(), actual.getContent());
         assertEquals(expected.getStateFlag(), actual.getStateFlag());
+        assertEquals(expected.getArticleVersion(), actual.getArticleVersion());
         assertEquals(expected.getFeedbacks().get(0), actual.getFeedbacks().get(0));
         assertEquals(expected.getFeedbackCount(), actual.getFeedbackCount());
         assertEquals(expected.getQiitaRecommendPoint(), actual.getQiitaRecommendPoint());
@@ -1443,6 +1449,7 @@ class ArticleMapperTest {
 
         assertEquals(article.getArticleId(), 1);
         assertEquals(article.getStateFlag(), 1);
+        assertEquals(article.getArticleVersion(), 1);
         assertEquals(article.getTitle(), "test title");
         assertEquals(article.getContent(), "content title");
 
