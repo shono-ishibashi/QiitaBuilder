@@ -2,62 +2,7 @@
   <v-container :class="{'d-flex':windowWidthClass}" fluid>
     <v-row>
       <v-col cols="12" sm="12" md="6">
-        <v-row>
-          <v-col cols="6" class="contentWrap"><span
-              style="font-weight: bold; font-size: x-large;">@{{ userDetail.displayName }}</span></v-col>
-          <v-col cols="6" class="contentWrap">
-            <v-btn @click="toQiitaAPIAuthentication" v-if="userDetail.isLoginUser" color="#5bc8ac" elevation="2"
-                   style="font-weight: bold" dark>Qiita連携
-            </v-btn>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols=6 class="contentWrap">
-            <v-avatar size="140">
-              <img :src="userDetail.photoUrl" alt=""/></v-avatar>
-          </v-col>
-          <v-col cols=6 align-self="center">
-            <Pie class="chart" :chart-data="chartDisplay" :options="chartOptions"
-                 v-if="userDetail.usedTags.length!==0"/>
-            <v-alert
-                v-if="userDetail.usedTags.length===0"
-                text
-                dense
-                color="teal"
-                border="left"
-                class="contentWrap"
-            >
-              タグの使用履歴がありません
-            </v-alert>
-          </v-col>
-        </v-row>
-
-        <v-row align-content="center" justify="center" class="box16">
-          <v-col cols="4" class="box6">
-            <v-row align-content="center" justify="center">
-              Qiita投稿数 / Builder投稿数
-            </v-row>
-            <v-row align-content="center" justify="center" class="count">
-              {{ userDetail.postedArticleCount }} / {{ notDraftArticles.length }}
-            </v-row>
-          </v-col>
-          <v-col cols="3" class="box6">
-            <v-row align-content="center" justify="center">
-              FB数
-            </v-row>
-            <v-row align-content="center" justify="center" class="count">
-              {{ userDetail.feedbackCount }}
-            </v-row>
-          </v-col>
-          <v-col cols="3" class="box6">
-            <v-row align-content="center" justify="center">
-              総獲得推奨数
-            </v-row>
-            <v-row align-content="center" justify="center" class="count">
-              {{ userDetail.qiitaRecommendedAllCount }}
-            </v-row>
-          </v-col>
-        </v-row>
+        <UserInfo></UserInfo>
       </v-col>
 
       <v-col cols="12" sm="12" md="6">
@@ -204,11 +149,12 @@
 import {mapState, mapActions, mapGetters} from "vuex";
 import ArticleCard from "../components/ArticleCard";
 import Pie from "@/components/user_detail/Pie";
+import UserInfo from "@/components/user_detail/UserInfo";
 import * as palette from "google-palette";
 
 export default {
   name: "userDetail",
-  components: {ArticleCard, Pie},
+  components: {ArticleCard, Pie, UserInfo},
   data() {
     return {
       chartData: {

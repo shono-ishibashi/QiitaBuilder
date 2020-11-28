@@ -22,9 +22,6 @@ export default {
         articleCardDisplay: null,
     },
     getters: {
-        uid(state) {
-            return state.uid
-        },
         userId(state) {
             return state.userDetail.userId
         },
