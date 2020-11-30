@@ -75,11 +75,11 @@ describe('Testing exist element', () => {
 
     test('v-progress-linear', async () => {
         //visible
-        await wrapper.setData({isLoading : true})
+        await wrapper.setData({isLoading: true})
         await expect(wrapper.findAllComponents({name: 'v-progress-linear'}).isVisible()).toBeTruthy();
 
         //invisible
-        await wrapper.setData({isLoading : false})
+        await wrapper.setData({isLoading: false})
         await expect(wrapper.findAllComponents({name: 'v-progress-linear'}).isVisible()).toBeFalsy();
 
         await expect(wrapper.findComponent({name: 'v-progress-linear'}).exists()).toBeTruthy();
@@ -88,11 +88,11 @@ describe('Testing exist element', () => {
 
     test('UserList', async () => {
         //visible
-        await wrapper.setData({isDisplay : true})
+        await wrapper.setData({isDisplay: true})
         await expect(wrapper.findAllComponents({name: 'UserList'}).isVisible()).toBeTruthy();
 
         //invisible
-        await wrapper.setData({isDisplay : false})
+        await wrapper.setData({isDisplay: false})
         await expect(wrapper.findAllComponents({name: 'UserList'}).isVisible()).toBeFalsy();
 
         await expect(wrapper.findComponent({name: 'UserList'}).exists()).toBeTruthy();
@@ -101,11 +101,11 @@ describe('Testing exist element', () => {
 
     test('ChartArea', async () => {
         //visible
-        await wrapper.setData({isDisplay : true})
+        await wrapper.setData({isDisplay: true})
         await expect(wrapper.findAllComponents({name: 'ChartArea'}).isVisible()).toBeTruthy();
 
         //invisible
-        await wrapper.setData({isDisplay : false})
+        await wrapper.setData({isDisplay: false})
         await expect(wrapper.findAllComponents({name: 'ChartArea'}).isVisible()).toBeFalsy();
 
         await expect(wrapper.findComponent({name: 'ChartArea'}).exists()).toBeTruthy();
@@ -114,11 +114,11 @@ describe('Testing exist element', () => {
 
     test('RelationArticles', async () => {
         //visible
-        await wrapper.setData({isDisplay : true})
+        await wrapper.setData({isDisplay: true})
         await expect(wrapper.findAllComponents({name: 'RelationArticles'}).isVisible()).toBeTruthy();
 
         //invisible
-        await wrapper.setData({isDisplay : false})
+        await wrapper.setData({isDisplay: false})
         await expect(wrapper.findAllComponents({name: 'RelationArticles'}).isVisible()).toBeFalsy();
 
         await expect(wrapper.findComponent({name: 'RelationArticles'}).exists()).toBeTruthy();
