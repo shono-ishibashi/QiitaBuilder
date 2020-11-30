@@ -82,11 +82,14 @@ jest.mock('axios', () => ({
         }
     }) => {
         return new Promise((resolve) => {
+
+            url = _url;
+            apiToken = _apiToken;
+
             if (mockError) {
                 throw Error("Mock Error")
             }
-            url = _url;
-            apiToken = _apiToken;
+
             resolve({
                 data: replaceRankingUsers
             })
@@ -99,6 +102,11 @@ describe('store/users.js', () => {
     //************ actions ************
     describe("actions", () => {
         let store;
+        let commit;
+        let dispatch;
+        let rootState;
+        let rootGetters;
+
         beforeEach(() => {
             store = new Vuex.Store({
                 state: {
@@ -116,15 +124,17 @@ describe('store/users.js', () => {
                 }
             })
             store.registerModule('users', cloneDeep(users))
+
+            commit = cloneDeep(jest).fn();
+            dispatch = cloneDeep(jest).fn();
+            rootState = store.state;
+            rootGetters = store.getters;
         })
 
         test('actions: fetchRankingUser/FBCount', async () => {
-            let commit = cloneDeep(jest).fn();
-            let rootState = store.state;
-            let rootGetters = store.getters;
             const selectRankItemId = 1;
 
-            await users.actions.fetchRankingUser({commit, rootState, rootGetters}, selectRankItemId);
+            await users.actions.fetchRankingUser({dispatch, commit, rootState, rootGetters}, selectRankItemId);
             await expect(url).toBe("http://localhost:8080/qiita_builder/user/ranking/FBCount")
             await expect(apiToken).toBe('token')
             await expect(commit).toHaveBeenCalledTimes(2)
@@ -133,12 +143,9 @@ describe('store/users.js', () => {
         })
 
         test('actions: fetchRankingUser/articleCount', async () => {
-            let commit = cloneDeep(jest).fn();
-            let rootState = store.state;
-            let rootGetters = store.getters;
             const selectRankItemId = 2;
 
-            await users.actions.fetchRankingUser({commit, rootState, rootGetters}, selectRankItemId);
+            await users.actions.fetchRankingUser({dispatch, commit, rootState, rootGetters}, selectRankItemId);
             await expect(url).toBe("http://localhost:8080/qiita_builder/user/ranking/articleCount")
             await expect(apiToken).toBe('token')
             await expect(commit).toHaveBeenCalledTimes(2)
@@ -147,17 +154,37 @@ describe('store/users.js', () => {
         })
 
         test('actions: fetchRankingUser/qiitaRecommendedCount', async () => {
-            let commit = cloneDeep(jest).fn();
-            let rootState = store.state;
-            let rootGetters = store.getters;
             const selectRankItemId = 3;
 
-            await users.actions.fetchRankingUser({commit, rootState, rootGetters}, selectRankItemId);
+            await users.actions.fetchRankingUser({dispatch, commit, rootState, rootGetters}, selectRankItemId);
             await expect(url).toBe("http://localhost:8080/qiita_builder/user/ranking/qiitaRecommendedCount");
             await expect(apiToken).toBe('token');
             await expect(commit).toHaveBeenCalledTimes(2);
             await expect(commit).toHaveBeenCalledWith('resetRankingUsers');
             await expect(commit).toHaveBeenCalledWith('setRankingUsers', replaceRankingUsers);
+        })
+
+        test('actions: fetchRankingUser/予期していないRankItemId', async () => {
+            const selectRankItemId = 10;
+
+            await users.actions.fetchRankingUser({dispatch, commit, rootState, rootGetters}, selectRankItemId);
+            await expect(url).toBe("http://localhost:8080/qiita_builder/user/ranking/FBCount")
+            await expect(apiToken).toBe('token')
+            await expect(commit).toHaveBeenCalledTimes(2)
+            await expect(commit).toHaveBeenCalledWith('resetRankingUsers')
+            await expect(commit).toHaveBeenCalledWith('setRankingUsers', replaceRankingUsers)
+        })
+
+        test('actions: fetchRankingUser/catch', async () => {
+            mockError = true;
+            const selectRankItemId = 1;
+
+            await users.actions.fetchRankingUser({dispatch, commit, rootState, rootGetters}, selectRankItemId);
+            await expect(url).toBe("http://localhost:8080/qiita_builder/user/ranking/FBCount");
+            await expect(apiToken).toBe('token');
+            await expect(commit).toHaveBeenCalledTimes(0);
+            await expect(dispatch).toHaveBeenCalledTimes(1);
+            await expect(dispatch).toHaveBeenCalledWith('window/setInternalServerError', true, {root: true})
         })
     })
 
