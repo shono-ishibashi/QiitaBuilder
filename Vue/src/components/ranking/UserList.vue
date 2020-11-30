@@ -1,6 +1,7 @@
 <template>
   <v-container>
     <v-pagination
+        v-show="rankUsers.length"
         v-model="currentPage"
         :length="totalPage"
         color="#5bc8ac"
@@ -10,6 +11,7 @@
               :rank-user="rankUser"
               :rank-item-id="rankItemId" :rank-num="rankUser.rank"></UserCard>
     <v-pagination
+        v-show="rankUsers.length"
         v-model="currentPage"
         :length="totalPage"
         color="#5bc8ac"

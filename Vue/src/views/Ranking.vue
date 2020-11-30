@@ -28,9 +28,10 @@
             </v-select>
           </v-col>
         </v-row>
-        <v-row align-content="center" justify="center" v-if="users.length">
-          <v-col cols="6" v-show="isLoading">
+        <v-row align-content="center" justify="center">
+          <v-col cols="6">
             <v-progress-linear
+                v-show="isLoading"
                 color="green"
                 indeterminate
                 rounded
@@ -43,14 +44,15 @@
       </v-col>
       <v-col cols="6">
         <v-row>
-          <h3 v-if="users.length">
+          <h3 v-if="rankUsersLength">
             <v-icon color="#5bc8ac">mdi-chess-king</v-icon>
             {{ rankTitle }}
           </h3>
         </v-row>
         <v-row align-content="center" justify="center">
-          <v-col cols="6" v-show="isLoading">
+          <v-col cols="6">
             <v-progress-linear
+                v-show="isLoading"
                 color="green"
                 indeterminate
                 rounded
@@ -69,8 +71,9 @@
           </h3>
         </v-row>
         <v-row align-content="center" justify="center">
-          <v-col cols="6" v-show="isLoading">
+          <v-col cols="6">
             <v-progress-linear
+                v-show="isLoading"
                 color="green"
                 indeterminate
                 rounded
