@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <!--  ファイル書き出し  -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--ファイル名 -->
+        <file>./Qiitabuilder.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logFilePath}${logFileName}-%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+
+            <!--3日間保存-->
+            <maxHistory>3</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="EMAIL" class="ch.qos.logback.classic.net.SMTPAppender">
+        <smtpHost>localhost</smtpHost>
+        <smtpPort>25</smtpPort>
+        <to>hoge@hoge.com</to>
+        <to>foo@foo.com</to>
+        <from>sender@hoge.com</from>
+        <subject>TESTING: %logger{20} - %m</subject>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%date %-5level %logger{35} - %message%n</pattern>
+        </layout>
+        <STARTTLS>true</STARTTLS>
+        <asynchronousSending>false</asynchronousSending><!-- 後述 -->
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="DEBUG">
+        <appender-ref ref="EMAIL"/>
+    </root>
+
+
+</configuration>
