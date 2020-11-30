@@ -18,6 +18,6 @@
 
 <script>
 export default {
-  name: "500"
+  name: "error500"
 }
 </script>
