@@ -1,5 +1,4 @@
 import axios from "axios";
-import router from "@/router";
 
 export default {
     namespaced: true,
@@ -18,7 +17,7 @@ export default {
     },
 
     actions: {
-        async fetchRankingUser({commit, rootState, rootGetters}, selectRankItemId) {
+        async fetchRankingUser({dispatch, commit, rootState, rootGetters}, selectRankItemId) {
             let path;
             switch (selectRankItemId) {
                 case 1:
@@ -47,9 +46,8 @@ export default {
                 .then(rankingUserList => {
                     commit("resetRankingUsers");
                     commit("setRankingUsers", rankingUserList.data);
-                }).catch(err => {
-                    console.log(err);
-                    router.push({name: "404"})
+                }).catch(() => {
+                    dispatch('window/setInternalServerError', true, {root: true})
                 });
         }
     },
