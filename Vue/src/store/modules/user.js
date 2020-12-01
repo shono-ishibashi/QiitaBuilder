@@ -22,9 +22,6 @@ export default {
         articleCardDisplay: null,
     },
     getters: {
-        uid(state) {
-            return state.uid
-        },
         userId(state) {
             return state.userDetail.userId
         },
@@ -64,9 +61,6 @@ export default {
         },
         usedTags(state) {
             return state.usedTags;
-        },
-        articleCardDisplay(state) {
-            return state.articleCardDisplay;
         },
         chartDisplay(state) {
             return state.chartDisplay;
@@ -114,9 +108,31 @@ export default {
         },
         setUserId(state, userId) {
             state.userDetail.userId = userId;
+        },
+        clearState(state) {
+            state.articleCardDisplay=null
+            state.postedArticles.splice(0)
+            state.displayArticles.splice(0)
+            state.myArticles.splice(0)
+            state.feedbackArticles.splice(0)
+            state.userDetail={
+                userId: 0,
+                displayName: "",
+                photoUrl: "",
+                usedTags: [],
+                feedbackCount: 0,
+                qiitaRecommendedAllCount: 0,
+                postedArticleCount: 0,
+                isLoginUser: false,
+            }
+            state.chartDisplay=null
+            state.usedTags.splice(0)
         }
     },
     actions: {
+        clearState({commit}){
+          commit("clearState");
+        },
         async setArticlesAndTags({commit}, articles) {
             await commit("clearDisplayArticles");
             await commit("clearUsedTag");

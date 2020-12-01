@@ -179,6 +179,8 @@ export default {
       this.$router.push({
         name: "userDetail",
         params: {userId},
+      }).catch(err => {
+          console.log(err)
       });
     },
     scrollTop() {

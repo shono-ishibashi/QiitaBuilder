@@ -2,62 +2,7 @@
   <v-container :class="{'d-flex':windowWidthClass}" fluid>
     <v-row>
       <v-col cols="12" sm="12" md="6">
-        <v-row>
-          <v-col cols="6" class="contentWrap"><span
-              style="font-weight: bold; font-size: x-large;">@{{ userDetail.displayName }}</span></v-col>
-          <v-col cols="6" class="contentWrap">
-            <v-btn @click="toQiitaAPIAuthentication" v-if="userDetail.isLoginUser" color="#5bc8ac" elevation="2"
-                   style="font-weight: bold" dark>Qiita連携
-            </v-btn>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols=6 class="contentWrap">
-            <v-avatar size="140">
-              <img :src="userDetail.photoUrl" alt=""/></v-avatar>
-          </v-col>
-          <v-col cols=6 align-self="center">
-            <Pie class="chart" :chart-data="chartDisplay" :options="chartOptions"
-                 v-if="userDetail.usedTags.length!==0"/>
-            <v-alert
-                v-if="userDetail.usedTags.length===0"
-                text
-                dense
-                color="teal"
-                border="left"
-                class="contentWrap"
-            >
-              タグの使用履歴がありません
-            </v-alert>
-          </v-col>
-        </v-row>
-
-        <v-row align-content="center" justify="center" class="box16">
-          <v-col cols="4" class="box6">
-            <v-row align-content="center" justify="center">
-              Qiita投稿数 / Builder投稿数
-            </v-row>
-            <v-row align-content="center" justify="center" class="count">
-              {{ userDetail.postedArticleCount }} / {{ notDraftArticles.length }}
-            </v-row>
-          </v-col>
-          <v-col cols="3" class="box6">
-            <v-row align-content="center" justify="center">
-              FB数
-            </v-row>
-            <v-row align-content="center" justify="center" class="count">
-              {{ userDetail.feedbackCount }}
-            </v-row>
-          </v-col>
-          <v-col cols="3" class="box6">
-            <v-row align-content="center" justify="center">
-              総獲得推奨数
-            </v-row>
-            <v-row align-content="center" justify="center" class="count">
-              {{ userDetail.qiitaRecommendedAllCount }}
-            </v-row>
-          </v-col>
-        </v-row>
+        <UserInfo></UserInfo>
       </v-col>
 
       <v-col cols="12" sm="12" md="6">
@@ -164,7 +109,8 @@
                   <v-row align-content="center" justify="center">
                     <v-col cols="12">
                       <ArticleCard v-for="(article,index) in sortedArticles" :key="article.articleId" :article="article"
-                                   :is="articleCardDisplay" :index="index" style="margin: 0; padding: 0;">
+                                   :is="articleCardDisplay" :index="index" style="margin: 0; padding: 0;"
+                                   v-show="sortedArticles.length!==0">
                       </ArticleCard>
                     </v-col>
                   </v-row>
@@ -203,12 +149,12 @@
 <script>
 import {mapState, mapActions, mapGetters} from "vuex";
 import ArticleCard from "../components/ArticleCard";
-import Pie from "@/components/user_detail/Pie";
+import UserInfo from "@/components/user_detail/UserInfo";
 import * as palette from "google-palette";
 
 export default {
   name: "userDetail",
-  components: {ArticleCard, Pie},
+  components: {ArticleCard, UserInfo},
   data() {
     return {
       chartData: {
@@ -261,6 +207,7 @@ export default {
         {id: 1, name: 'Qiita未投稿記事'},
         {id: 2, name: 'Qiita投稿済み記事'},
       ],//記事stateタブ表示用リスト
+      articleCardDisplay: "",
       title_limit_length: value => value.length <= 100 || "100文字以内で入力してください",
       tags_limit_length: value => value.length <= 5 || "6個以上入力しないでください",
     };
@@ -279,6 +226,7 @@ export default {
     sortedArticles: {
       get() {
         let art = this.displayArticles;
+
         if (this.sortNum === 0) {
           art = art.sort((a, b) => {
             return (a.createdAt < b.createdAt) ? 1 : (a.createdAt > b.createdAt) ? -1 : 0;
@@ -313,12 +261,49 @@ export default {
       "userId",
       "displayArticles",
       "usedTags",
-      "articleCardDisplay",
       "chartDisplay",]),
     ...mapState("user", ["userDetail",]),
     ...mapGetters("auth", ["loginUser"]),
   },
   watch: {
+    postedArticles() {
+      const th = this;
+      let query;
+      query = Object.assign({}, th.$route.query);
+      try {
+        query = query["defaultList"].toString();
+      } catch (err) {
+        query = 1
+      }
+      const change = async function () {
+        if (query === '4' && th.userDetail.isLoginUser) {
+          await th.changeList(4);
+        } else if (query === '3') {
+          await th.changeList(3);
+        } else {
+          await th.changeList(1);
+        }
+        th.setArticleCardDisplay(ArticleCard);
+        th.articleCardDisplay = "ArticleCard"
+      }
+      const chart = async function () {
+        th.userDetail.usedTags.forEach(function (tag) {
+          th.chartData.labels.push(tag.tagName);
+          th.chartData.datasets[0].data.push(tag.usedTagCount);
+        }, th);
+        th.chartData.datasets[0].backgroundColor = palette('cb-YlGn', th.userDetail.usedTags.length).map(
+            function (hex) {
+              return '#' + hex
+            }
+        )
+        await th.setChartDisplay(th.chartData);
+      }
+      const processAll = async function () {
+        await change();
+        await chart();
+      }
+      processAll();
+    },
     sortNum() {
       this.page = 1;//sort変更時computedによる並び替え変更が行われるのでページが変更されないため、ここで1pに変えている
     },
@@ -328,45 +313,59 @@ export default {
           top: 0,
           behavior: "smooth"
         });
-
       }, 100)
     },
-    apiToken: async function () {
-      if (this.$route.params['userId'] === '0') {
-        if (!this.loginUser.uid) await this.$store.dispatch("window/setInternalServerError", true);
-        await this.findUserIdByUid(this.loginUser.uid);
-
-        await this.fetchUserDetail(this.userId);
-        //ユーザーが見つからない場合はこれ以降は実行されずwindow componentに切り替わる
-        await this.fetchFeedbackArticles(this.userId);
-        await this.fetchMyArticles(this.userId);
-        await this.fetchPostedArticles(this.userId);
-      } else {
-        await this.fetchUserDetail(this.$route.params['userId']);
-        await this.fetchFeedbackArticles(this.$route.params['userId']);
-        await this.fetchMyArticles(this.$route.params['userId']);
-        await this.fetchPostedArticles(this.$route.params['userId']);
+    apiToken: function () {
+      const paramUserId = this.$route.params['userId'];
+      //let paramUserId = Object.assign({}, this.$route.params);
+      //paramUserId = paramUserId['userId'].toString();
+      const th = this;
+      const fetch = async function () {
+        if (paramUserId === '0') {
+          if (!th.loginUser.uid) await th.$store.dispatch("window/setInternalServerError", true);
+          await th.findUserIdByUid(th.loginUser.uid);
+          await th.fetchUserDetail(th.userId);
+          //ユーザーが見つからない場合はこれ以降は実行されずwindow componentに切り替わる
+          await th.fetchFeedbackArticles(th.userId);
+          await th.fetchMyArticles(th.userId);
+          await th.fetchPostedArticles(th.userId);
+        } else {
+          await th.fetchUserDetail(paramUserId);
+          await th.fetchFeedbackArticles(paramUserId);
+          await th.fetchMyArticles(paramUserId);
+          await th.fetchPostedArticles(paramUserId);
+        }
       }
-
-      if (this.$route.query.defaultList === '4' && this.userDetail.isLoginUser) {
-        this.changeList(4);
-      } else if (this.$route.query.defaultList === '3') {
-        this.changeList(3);
-      } else {
-        this.changeList(1);
+      /*const change = async function () {
+        if (th.$route.query.defaultList === '4' && th.userDetail.isLoginUser) {
+          await th.changeList(4);
+        } else if (th.$route.query.defaultList === '3') {
+          await th.changeList(3);
+        } else {
+          await th.changeList(1);
+        }
+        th.setArticleCardDisplay(ArticleCard);
+        th.articleCardDisplay = "ArticleCard"
       }
-      this.setArticleCardDisplay(ArticleCard);
+      const chart = async function () {
+        th.userDetail.usedTags.forEach(function (tag) {
+          th.chartData.labels.push(tag.tagName);
+          th.chartData.datasets[0].data.push(tag.usedTagCount);
+        }, th);
+        th.chartData.datasets[0].backgroundColor = palette('cb-YlGn', th.userDetail.usedTags.length).map(
+            function (hex) {
+              return '#' + hex
+            }
+        )
+        await th.setChartDisplay(th.chartData);
+      }*/
+      const processAll = async function () {
+        await fetch();
+        //await change();
+        //await chart();
+      }
+      processAll();
 
-      await this.userDetail.usedTags.forEach(function (tag) {
-        this.chartData.labels.push(tag.tagName);
-        this.chartData.datasets[0].data.push(tag.usedTagCount);
-      }, this);
-      this.chartData.datasets[0].backgroundColor = palette('cb-YlGn', this.userDetail.usedTags.length).map(
-          function (hex) {
-            return '#' + hex
-          }
-      )
-      this.setChartDisplay(this.chartData);
     },
   },
   methods: {
@@ -374,7 +373,7 @@ export default {
      * 表示したい記事に対応する数値を渡して、表示する記事一覧とオートコンプリート用タグリストを変更する
      * @param listNum (1:投稿記事), (2:FB記事), (3:My記事), (0:下書き記事)
      */
-    changeList(listNum) {
+    async changeList(listNum) {
       this.conditions.title = "";
       this.conditions.conditionTags = [];
       this.displayListNum = listNum;
@@ -388,7 +387,7 @@ export default {
       if (listNum === 2) articlesFromVuex = this.feedbackArticles;
       if (listNum === 3) articlesFromVuex = this.myArticles;
       if (listNum === 4) articlesFromVuex = this.draftArticles;
-      this.setArticlesAndTags(articlesFromVuex);
+      await this.setArticlesAndTags(articlesFromVuex);
       if (articlesFromVuex.length === 0) {
         this.sortedArticles.length = 0;
       }
@@ -399,7 +398,7 @@ export default {
      * 表示したい記事に対応する数値を渡して、表示する記事一覧を変更する
      * @param listState (10:全記事), (1:Qiita未投稿記事), (2:Qiita投稿済み記事)
      */
-    changeListState(listState) {
+    async changeListState(listState) {
       this.conditions.title = "";
       this.conditions.conditionTags = [];
       this.displayListState = listState;
@@ -428,7 +427,7 @@ export default {
           })
         }
       }
-      this.setArticlesAndTags(articlesFromVuex);
+      await this.setArticlesAndTags(articlesFromVuex);
       if (articlesFromVuex.length === 0) {
         this.sortedArticles.length = 0;
       }
@@ -458,7 +457,6 @@ export default {
             return art.stateFlag === this.displayListState
           });
         }
-
         articlesFromVuex = articlesFromVuex.filter(article => {
           return article.title.includes(this.conditions.title)
         })
@@ -486,14 +484,13 @@ export default {
       "fetchPostedArticles",
       "fetchFeedbackArticles",
       "fetchMyArticles",
-      "findUserIdByUid"
+      "findUserIdByUid",
+      "clearState"
     ]),
-
-
   },
   created() {
     //画面横幅が960px以上であればwindowWidthClassをtrueに変え画面を記事一覧を横に配置
-    (this.windowWidth >= 960) ? this.windowWidthClass = true : this.windowWidthClass = false;
+    (this.windowWidth >= 960) ? this.windowWidthClass = true : this.windowWidthClass = false
   },
   mounted() {
     //画面の横幅が変わるが度に960px以上かを判定
@@ -501,6 +498,9 @@ export default {
       this.windowWidth = window.innerWidth;
       (this.windowWidth >= 960) ? this.windowWidthClass = true : this.windowWidthClass = false;
     }
+  },
+  beforeDestroy() {
+    this.clearState()//遷移前にstoreを空にしないと次にユーザー詳細画面来たとき前回のユーザーが表示されてしまう
   },
   beforeRouteEnter(to, from, next) {
     //URLのparam(userId)に数値以外が入力された際に記事一覧に戻る
