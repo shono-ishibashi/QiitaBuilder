@@ -4,11 +4,11 @@ import com.qiitabuilder.domain.*;
 import com.qiitabuilder.mapper.ArticleMapper;
 import com.qiitabuilder.mapper.QiitaConfigurationMapper;
 import com.qiitabuilder.security.SimpleLoginUser;
+import com.qiitabuilder.utils.LogUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -166,6 +166,7 @@ public class QiitaAPIService {
                 article.setStateFlag(2);
                 articleMapper.updateArticle(article);
             } catch (RestClientException e) {
+                LogUtils.error("QiitaAPIService#saveArticleToQiita",e);
                 article.setQiitaArticleId(null);
                 article.setStateFlag(1);
                 articleMapper.updateArticle(article);
@@ -177,20 +178,24 @@ public class QiitaAPIService {
                 Map<String, Object> response = restTemplate.patchForObject(URL + '/' + article.getQiitaArticleId(), request, Map.class);
 
             } catch (HttpClientErrorException.NotFound e) {
+                LogUtils.error("QiitaAPIService#saveArticleToQiita",e);
                 article.setQiitaArticleId(null);
                 article.setStateFlag(1);
                 System.out.println(article);
                 articleMapper.updateArticle(article);
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "QiitaAPI");
             } catch (HttpClientErrorException.Unauthorized e) {
+                LogUtils.error("QiitaAPIService#saveArticleToQiita",e);
                 article.setQiitaArticleId(null);
                 articleMapper.updateArticle(article);
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "QiitaAPI");
             } catch (HttpClientErrorException.Forbidden e) {
+                LogUtils.error("QiitaAPIService#saveArticleToQiita",e);
                 article.setQiitaArticleId(null);
                 articleMapper.updateArticle(article);
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "QiitaAPI");
             } catch (RestClientException e) {
+                LogUtils.error("QiitaAPIService#saveArticleToQiita",e);
                 article.setQiitaArticleId(null);
                 articleMapper.updateArticle(article);
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);

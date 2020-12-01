@@ -12,7 +12,7 @@ server:
   error:
     include-message: always
 
-logging:
-  level:
-    org.springframework.web.client.RestTemplate: DEBUG
-    com.qiitabuilder.mapper.*: DEBUG
+
+
+
+

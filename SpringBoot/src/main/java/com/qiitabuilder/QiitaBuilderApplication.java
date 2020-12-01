@@ -9,14 +9,13 @@ import org.springframework.web.client.RestTemplate;
 @SpringBootApplication
 public class QiitaBuilderApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(QiitaBuilderApplication.class, args);
-	}
+    public static void main(String[] args)  {
+        SpringApplication.run(QiitaBuilderApplication.class, args);
+    }
 
-	@Bean
-	RestTemplate restTemplate() {
-		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-		return new RestTemplate(factory);
-	}
-
+    @Bean
+    RestTemplate restTemplate() {
+        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+        return new RestTemplate(factory);
+    }
 }

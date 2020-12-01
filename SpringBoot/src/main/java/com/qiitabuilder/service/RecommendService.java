@@ -5,6 +5,7 @@ import com.qiitabuilder.domain.Recommend;
 import com.qiitabuilder.mapper.ArticleMapper;
 import com.qiitabuilder.mapper.RecommendMapper;
 import com.qiitabuilder.security.SimpleLoginUser;
+import com.qiitabuilder.utils.LogUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -57,6 +58,7 @@ public class RecommendService {
         try {
             recommend.setPostedUserId(article.getPostedUser().getUserId());
         } catch (NullPointerException e) {
+            LogUtils.error("RecommendService#postRecommend",e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
