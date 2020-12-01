@@ -5,6 +5,7 @@ import com.qiitabuilder.domain.MyArticle;
 import com.qiitabuilder.mapper.ArticleMapper;
 import com.qiitabuilder.mapper.MyArticleMapper;
 import com.qiitabuilder.security.SimpleLoginUser;
+import com.qiitabuilder.utils.LogUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -59,6 +60,7 @@ public class MyArticleService {
         try {
             myArticle.setPostedUserId(article.getPostedUser().getUserId());
         } catch (NullPointerException e) {
+            LogUtils.error("MyArticleService#postMyArticle",e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 

@@ -7,7 +7,7 @@
         <!--ファイル名 -->
         <file>./Qiitabuilder.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${logFilePath}${logFileName}-%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <fileNamePattern>QiitaBuilderLOG-%d{yyyy-MM-dd}.log.zip</fileNamePattern>
 
             <!--3日間保存-->
             <maxHistory>3</maxHistory>
@@ -22,7 +22,6 @@
         <smtpHost>localhost</smtpHost>
         <smtpPort>25</smtpPort>
         <to>hoge@hoge.com</to>
-        <to>foo@foo.com</to>
         <from>sender@hoge.com</from>
         <subject>TESTING: %logger{20} - %m</subject>
         <layout class="ch.qos.logback.classic.PatternLayout">
@@ -39,8 +38,20 @@
         </encoder>
     </appender>
 
-    <root level="DEBUG">
+    <logger name="com.qiitabuilder.mapper" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <logger name="org.springframework.web.client.RestTemplate" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <root level="INFO">
         <appender-ref ref="EMAIL"/>
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
     </root>
 
 
