@@ -300,7 +300,7 @@ jest.mock('axios', () => ({
 
 describe('store/articles.js', () => {
 
-    //************ actions ************
+    //******************** actions ********************
     describe("actions", () => {
 
         let store;

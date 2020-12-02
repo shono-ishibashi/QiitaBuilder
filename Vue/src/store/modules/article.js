@@ -33,9 +33,11 @@ export default {
                 articleId: null,
                 title: "",
                 content: "",
-                state_flag: undefined,
-
+                stateFlag: undefined,
+                articleVersion: undefined,
                 tags: undefined,
+                feedbacks: [],
+                qiitaRecommendPoint: null,
             };
         },
         // feedback
