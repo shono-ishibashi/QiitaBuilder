@@ -182,6 +182,9 @@ export default {
         case 3:
           rankTitle = 'Qiita推薦累計数ランキング';
           break;
+        default:
+          rankTitle = 'FBした数ランキング';
+          break;
       }
       return rankTitle;
     },
@@ -191,6 +194,10 @@ export default {
   watch: {
     selectRankItemId: {
       async handler() {
+        //もしselectRankItemIdが予期しない型だった場合
+        if(typeof this.selectRankItemId !== 'number'){
+          this.selectRankItemId = 1;
+        }
         await this.fetchRankingUser(this.selectRankItemId);
         this.rankUsersLength = Number(this.users.length);
         await this.$nextTick();
@@ -213,7 +220,7 @@ export default {
     apiToken: {
       async handler() {
         await this.fetchRankingUser(this.selectRankItemId);
-        this.rankUsersLength = Number(this.users.length);
+        this.rankUsersLength = await Number(this.users.length);
       }
     }
   },
