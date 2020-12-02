@@ -2,15 +2,22 @@
   <v-container :class="{'d-flex':windowWidthClass}" fluid>
     <v-row>
       <v-col cols="12" sm="12" md="6">
-        <UserInfo></UserInfo>
+        <UserInfo v-show="isDisplay"></UserInfo>
+        <v-progress-linear
+            v-show="isLoading"
+            color="green"
+            indeterminate
+            rounded
+            height="10"
+        ></v-progress-linear>
       </v-col>
 
       <v-col cols="12" sm="12" md="6">
         <v-container>
-          <v-tabs v-model="activeListTab" v-if="userDetail.isLoginUser" color="#5bc8ac">
+          <v-tabs v-model="displayListNum" v-if="userDetail.isLoginUser" color="#5bc8ac">
             <v-tab v-for="tab of loginListTabs" :key="tab.id" @click="changeList(tab.id)">{{ tab.name }}</v-tab>
           </v-tabs>
-          <v-tabs v-model="activeListTab" v-if="!(userDetail.isLoginUser)" color="#5bc8ac">
+          <v-tabs v-model="displayListNum" v-if="!(userDetail.isLoginUser)" color="#5bc8ac">
             <v-tab v-for="tab of notLoginListTabs" :key="tab.id" @click="changeList(tab.id)">{{ tab.name }}</v-tab>
           </v-tabs>
 
@@ -19,13 +26,13 @@
               <v-row>
                 <v-col cols="4" style="padding: 0">
                   <v-select
-                      :items="stateTabs"
+                      :items="stateList"
                       item-text="name"
                       item-value="id"
                       item-color="green"
                       color="#5bc8ac"
                       @change="changeListState"
-                      v-model="activeStateTab"
+                      v-model="displayListState"
                       label="絞り込み"
                   ></v-select>
                 </v-col>
@@ -118,9 +125,16 @@
                   <v-row align-content="center" justify="center">
                     <v-col cols="12">
                       <ArticleCard v-for="(article,index) in sortedArticles" :key="article.articleId" :article="article"
-                                   :is="articleCardDisplay" :index="index" style="margin: 0; padding: 0;"
-                                   v-show="sortedArticles.length!==0">
+                                   v-show="isDisplay&&sortedArticles.length!==0" :index="index"
+                                   style="margin: 0; padding: 0;">
                       </ArticleCard>
+                      <v-progress-linear
+                          v-show="isLoading"
+                          color="green"
+                          indeterminate
+                          rounded
+                          height="10"
+                      ></v-progress-linear>
                     </v-col>
                   </v-row>
                   <v-row justify="center" align-content="center">
@@ -139,7 +153,7 @@
                   </v-row>
                   <v-row justify="center" align-content="center">
                     <v-pagination
-                        v-model="page"
+                        v-model="paging.now"
                         :length="length"
                         color="#5bc8ac"
                         circle
@@ -188,37 +202,38 @@ export default {
         {key: 3, state: "My記事登録数順"}
       ],//並び替え選択用リスト
       sortNum: 0,//現在のソートkey
-      page: 1,//現在のページ
-      pageSize: 5,//ページ当たりの記事数
-      displayListNum: 1,//1:posted, 2:feedback, 3:my, 0:draft
-      displayListState: 10,//10:all, 1:notPostedQiita, 2:postedQiita
+      paging: {
+        now: 1,//現在のページ
+        pageSize: 5,//1pあたりの記事数
+      },//paging処理用オブジェクト
+      displayListNum: 0,//0:posted, 1:feedback, 2:my, 3:draft
+      displayListState: {id: 10, name: '全記事'},//10:all, 1:notPostedQiita, 2:postedQiita
       conditions: {
         title: "",
         conditionTags: []
       },//検索条件
       windowWidth: window.innerWidth,//画面横幅
       windowWidthClass: false,//画面横幅に応じて付与するクラスの切り替え用boolean
-      activeListTab: 1,//記事Tabの選択されているタブのインデックス
-      activeStateTab: {id: 10, name: '全記事'},//記事StateTabの選択されているタブのインデックス
       loginListTabs: [
-        {id: 1, name: '公開中の投稿記事'},
-        {id: 2, name: '公開中のFBした記事'},
-        {id: 3, name: '公開中のMy記事'},
-        {id: 4, name: '下書き記事'}
-      ],//記事タブ表示用リスト
+        {id: 0, name: '公開中の投稿記事'},
+        {id: 1, name: '公開中のFBした記事'},
+        {id: 2, name: '公開中のMy記事'},
+        {id: 3, name: '下書き記事'}
+      ],//記事タブ表示用リスト(login user用)
       notLoginListTabs: [
-        {id: 1, name: '公開中の投稿記事'},
-        {id: 2, name: '公開中のFBした記事'},
-        {id: 3, name: '公開中のMy記事'},
-      ],
-      stateTabs: [
+        {id: 0, name: '公開中の投稿記事'},
+        {id: 1, name: '公開中のFBした記事'},
+        {id: 2, name: '公開中のMy記事'},
+      ],//記事タブ表示用リスト(not login user用)
+      stateList: [
         {id: 10, name: '全記事'},
         {id: 1, name: 'Qiita未投稿記事'},
         {id: 2, name: 'Qiita投稿済み記事'},
-      ],//記事stateタブ表示用リスト
-      articleCardDisplay: "",
-      title_limit_length: value => value.length <= 100 || "100文字以内で入力してください",
-      tags_limit_length: value => value.length <= 5 || "6個以上入力しないでください",
+      ],//記事state select-box表示用リスト
+      isDisplay: false,//各コンポーネント表示切替用のboolean
+      isLoading: false,//loading処理表示切替用のboolean
+      title_limit_length: value => value.length <= 100 || "100文字以内で入力してください",//記事title検索用のvalidation
+      tags_limit_length: value => value.length <= 5 || "6個以上入力しないでください",//記事tag検索用のvalidation
     };
   },
   computed: {
@@ -227,7 +242,7 @@ export default {
     },
     length: {
       get() {
-        return Math.ceil(this.displayArticles.length / this.pageSize);
+        return Math.ceil(this.displayArticles.length / this.paging.pageSize);
       },
       set() {
       },
@@ -256,7 +271,7 @@ export default {
             return (a.registeredMyArticleCount < b.registeredMyArticleCount) ? 1 : (a.registeredMyArticleCount > b.registeredMyArticleCount) ? -1 : 0;
           })
         }
-        return art.slice(this.pageSize * (this.page - 1), this.pageSize * (this.page));
+        return art.slice(this.paging.pageSize * (this.paging.now - 1), this.paging.pageSize * (this.paging.now));
       },
       set() {
       },
@@ -269,32 +284,14 @@ export default {
       "myArticles",
       "userId",
       "displayArticles",
-      "usedTags",
-      "chartDisplay",]),
+      "usedTags",]),
     ...mapState("user", ["userDetail",]),
     ...mapGetters("auth", ["loginUser"]),
   },
   watch: {
-    postedArticles() {
+    //storeのuserDetailにDBからの情報をsetしたときにタグ使用率グラフにデータを詰め込む
+    userDetail() {
       const th = this;
-      let query;
-      query = Object.assign({}, th.$route.query);
-      try {
-        query = query["defaultList"].toString();
-      } catch (err) {
-        query = 1
-      }
-      const change = async function () {
-        if (query === '4' && th.userDetail.isLoginUser) {
-          await th.changeList(4);
-        } else if (query === '3') {
-          await th.changeList(3);
-        } else {
-          await th.changeList(1);
-        }
-        th.setArticleCardDisplay(ArticleCard);
-        th.articleCardDisplay = "ArticleCard"
-      }
       const chart = async function () {
         th.userDetail.usedTags.forEach(function (tag) {
           th.chartData.labels.push(tag.tagName);
@@ -308,20 +305,50 @@ export default {
         await th.setChartDisplay(th.chartData);
       }
       const processAll = async function () {
-        await change();
         await chart();
       }
       processAll();
     },
-    sortNum() {
-      this.page = 1;//sort変更時computedによる並び替え変更が行われるのでページが変更されないため、ここで1pに変えている
+    //storeのpostedArticlesにDBからの情報をsetしたときに最初画面遷移時に表示する記事種に切り替える
+    postedArticles() {
+      const th = this;
+      let query;
+      query = Object.assign({}, th.$route.query);
+      try {
+        query = query["defaultList"].toString();
+      } catch (err) {
+        query = 0
+      }
+      const change = async function () {
+        if (query === 'DraftArticles' && th.userDetail.isLoginUser) {
+          await th.changeList(3);//下書き一覧遷移
+        } else if (query === 'MyArticles') {
+          await th.changeList(2);//My記事一覧遷移
+        } else {
+          await th.changeList(0);//マイページ遷移もしくはその他のdefaultListが入力されたとき
+        }
+      }
+      const processAll = async function () {
+        await change();
+      }
+      processAll();
     },
-    page() {
+    sortNum() {
+      this.paging.now = 1;//sort変更時computedによる並び替え変更が行われるのでページが変更されないため、ここで1pに変えている
+    },
+    'paging.now'() {
       setTimeout(() => {
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth"
-        });
+        if (this.windowWidthClass) {
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+          });
+        } else {
+          window.scrollTo({
+            top: 650,
+            behavior: "smooth"
+          });
+        }
       }, 100)
     },
     apiToken: function () {
@@ -345,33 +372,10 @@ export default {
           await th.fetchPostedArticles(paramUserId);
         }
       }
-      /*const change = async function () {
-        if (th.$route.query.defaultList === '4' && th.userDetail.isLoginUser) {
-          await th.changeList(4);
-        } else if (th.$route.query.defaultList === '3') {
-          await th.changeList(3);
-        } else {
-          await th.changeList(1);
-        }
-        th.setArticleCardDisplay(ArticleCard);
-        th.articleCardDisplay = "ArticleCard"
-      }
-      const chart = async function () {
-        th.userDetail.usedTags.forEach(function (tag) {
-          th.chartData.labels.push(tag.tagName);
-          th.chartData.datasets[0].data.push(tag.usedTagCount);
-        }, th);
-        th.chartData.datasets[0].backgroundColor = palette('cb-YlGn', th.userDetail.usedTags.length).map(
-            function (hex) {
-              return '#' + hex
-            }
-        )
-        await th.setChartDisplay(th.chartData);
-      }*/
       const processAll = async function () {
         await fetch();
-        //await change();
-        //await chart();
+        th.isLoading = false;
+        th.isDisplay = true;
       }
       processAll();
 
@@ -380,28 +384,26 @@ export default {
   methods: {
     /**
      * 表示したい記事に対応する数値を渡して、表示する記事一覧とオートコンプリート用タグリストを変更する
-     * @param listNum (1:投稿記事), (2:FB記事), (3:My記事), (0:下書き記事)
+     * @param listNum (0:投稿記事), (1:FB記事), (2:My記事), (3:下書き記事)
      */
     async changeList(listNum) {
       this.conditions.title = "";
       this.conditions.conditionTags = [];
       this.displayListNum = listNum;
-      this.displayListState = 10;
+      this.displayListState = {id: 10, name: '全記事'};
       this.sortNum = 0;
-      this.activeListTab = listNum - 1;
-      this.activeStateTab = {id: 10, name: '全記事'};
       let articlesFromVuex = [];
 
-      if (listNum === 1) articlesFromVuex = this.postedArticles;
-      if (listNum === 2) articlesFromVuex = this.feedbackArticles;
-      if (listNum === 3) articlesFromVuex = this.myArticles;
-      if (listNum === 4) articlesFromVuex = this.draftArticles;
+      if (listNum === 0) articlesFromVuex = this.postedArticles;
+      if (listNum === 1) articlesFromVuex = this.feedbackArticles;
+      if (listNum === 2) articlesFromVuex = this.myArticles;
+      if (listNum === 3) articlesFromVuex = this.draftArticles;
       await this.setArticlesAndTags(articlesFromVuex);
       if (articlesFromVuex.length === 0) {
-        this.sortedArticles.length = 0;
+        this.sortedArticles.splice(0);
       }
-      this.page = 1;
-      this.length = Math.ceil(this.displayArticles.length / this.pageSize);
+      this.paging.now = 1;
+      this.length = Math.ceil(this.displayArticles.length / this.paging.pageSize);
     },
     /**
      * 表示したい記事に対応する数値を渡して、表示する記事一覧を変更する
@@ -410,27 +412,27 @@ export default {
     async changeListState(listState) {
       this.conditions.title = "";
       this.conditions.conditionTags = [];
-      this.displayListState = listState;
+      this.displayListState = this.stateList.find(({id}) => id === listState);
       this.sortNum = 0;
 
       let articlesFromVuex = [];
-      if (listState === 10) {
-        if (this.displayListNum === 1) articlesFromVuex = this.postedArticles;
-        if (this.displayListNum === 2) articlesFromVuex = this.feedbackArticles;
-        if (this.displayListNum === 3) articlesFromVuex = this.myArticles;
+      if (listState === 10) {//全記事表示に切り替える
+        if (this.displayListNum === 0) articlesFromVuex = this.postedArticles;
+        if (this.displayListNum === 1) articlesFromVuex = this.feedbackArticles;
+        if (this.displayListNum === 2) articlesFromVuex = this.myArticles;
       }
-      if (listState !== 10) {
-        if (this.displayListNum === 1 && this.postedArticles.length !== 0) {
+      if (listState !== 10) {//全記事以外の表示に切り替えるためにstateFlagでfilterをかけて絞り込む
+        if (this.displayListNum === 0 && this.postedArticles.length !== 0) {
           articlesFromVuex = this.postedArticles.filter((art) => {
             return art.stateFlag === listState
           })
         }
-        if (this.displayListNum === 2 && this.feedbackArticles.length !== 0) {
+        if (this.displayListNum === 1 && this.feedbackArticles.length !== 0) {
           articlesFromVuex = this.feedbackArticles.filter((art) => {
             return art.stateFlag === listState
           })
         }
-        if (this.displayListNum === 3 && this.myArticles.length !== 0) {
+        if (this.displayListNum === 2 && this.myArticles.length !== 0) {
           articlesFromVuex = this.myArticles.filter((art) => {
             return art.stateFlag === listState
           })
@@ -440,8 +442,8 @@ export default {
       if (articlesFromVuex.length === 0) {
         this.sortedArticles.length = 0;
       }
-      this.page = 1;
-      this.length = Math.ceil(this.displayArticles.length / this.pageSize);
+      this.paging.now = 1;
+      this.length = Math.ceil(this.displayArticles.length / this.paging.pageSize);
     },
     /**
      * 入力された検索条件とタグ条件に応じた記事を検索する
@@ -449,21 +451,21 @@ export default {
     searchWithConditions() {
       if (this.$refs.search_form.validate()) {
         let articlesFromVuex = [];
-        if (this.displayListState === 10) {
-          if (this.displayListNum === 1) articlesFromVuex = this.postedArticles;
-          if (this.displayListNum === 2) articlesFromVuex = this.feedbackArticles;
-          if (this.displayListNum === 3) articlesFromVuex = this.myArticles;
-          if (this.displayListNum === 0) articlesFromVuex = this.draftArticles;
+        if (this.displayListState.id === 10) {//全記事表示中の場合
+          if (this.displayListNum === 0) articlesFromVuex = this.postedArticles;
+          if (this.displayListNum === 1) articlesFromVuex = this.feedbackArticles;
+          if (this.displayListNum === 2) articlesFromVuex = this.myArticles;
+          if (this.displayListNum === 3) articlesFromVuex = this.draftArticles;
         }
-        if (this.displayListState !== 10) {
+        if (this.displayListState.id !== 10) {//全記事表示以外の場合絞り込む
           if (this.displayListNum === 1) articlesFromVuex = this.postedArticles.filter((art) => {
-            return art.stateFlag === this.displayListState
+            return art.stateFlag === this.displayListState.id
           });
           if (this.displayListNum === 2) articlesFromVuex = this.feedbackArticles.filter((art) => {
-            return art.stateFlag === this.displayListState
+            return art.stateFlag === this.displayListState.id
           });
           if (this.displayListNum === 3) articlesFromVuex = this.myArticles.filter((art) => {
-            return art.stateFlag === this.displayListState
+            return art.stateFlag === this.displayListState.id
           });
         }
         articlesFromVuex = articlesFromVuex.filter(article => {
@@ -475,8 +477,8 @@ export default {
           })
         }
         this.setArticles(articlesFromVuex);
-        this.page = 1;
-        this.length = Math.ceil(this.displayArticles.length / this.pageSize);
+        this.paging.now = 1;
+        this.length = Math.ceil(this.displayArticles.length / this.paging.pageSize);
       }
     },
     resetConditions() {
@@ -500,6 +502,7 @@ export default {
   created() {
     //画面横幅が960px以上であればwindowWidthClassをtrueに変え画面を記事一覧を横に配置
     (this.windowWidth >= 960) ? this.windowWidthClass = true : this.windowWidthClass = false
+    this.isLoading = true;
   },
   mounted() {
     //画面の横幅が変わるが度に960px以上かを判定
@@ -526,25 +529,5 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.count {
-  font-size: x-large;
-  font-weight: bold;
-}
-
-.box16 {
-  padding: 0.5em 1em;
-  margin: 2em 0;
-  background: -webkit-repeating-linear-gradient(-45deg, #f0f8ff, #f0f8ff 3px, #e9f4ff 3px, #e9f4ff 7px);
-  background: repeating-linear-gradient(-45deg, #f0f8ff, #f0f8ff 3px, #e9f4ff 3px, #e9f4ff 7px);
-}
-
-.box6 {
-  padding: 0.5em 1em;
-  margin: 2em 0.25em;
-  background: #f0f7ff;
-  border: dashed 2px #5bc8ac; /*点線*/
-  border-radius: 10px;
 }
 </style>
