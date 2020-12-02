@@ -103,21 +103,21 @@ export default {
       })
     },
     async toMyPage() {
-      await this.$router.push('/user/0?defaultList=0').catch(err => {
+      await this.$router.push('/user/0?defaultList=MypPage').catch(err => {
         if (this.$route.path === '/user/0') {
           console.log(err)
         }
       })
     },
     async toMyArticles() {
-      await this.$router.push('/user/0?defaultList=3').catch(err => {
+      await this.$router.push('/user/0?defaultList=MyArticles').catch(err => {
         if (this.$route.path === '/user/0') {
           console.log(err)
         }
       })
     },
     async toDraftArticles() {
-      await this.$router.push('/user/0?defaultList=4').catch(err => {
+      await this.$router.push('/user/0?defaultList=DraftArticles').catch(err => {
         if (this.$route.path === '/user/0') {
           console.log(err)
         }

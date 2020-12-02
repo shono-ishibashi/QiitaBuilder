@@ -19,7 +19,6 @@ export default {
         displayArticles: [],
         usedTags: [],
         chartDisplay: null,
-        articleCardDisplay: null,
     },
     getters: {
         userId(state) {
