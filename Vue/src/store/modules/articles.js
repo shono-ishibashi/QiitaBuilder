@@ -34,10 +34,10 @@ export default {
         },
     },
     actions: {
-        async fetchArticles({commit, rootGetters}, newSearchCriteria) {
+        async fetchArticles({commit, rootState, rootGetters}, newSearchCriteria) {
             const fetchArticlesUrl = rootGetters.API_URL + 'article/'
             const fetchTotalPageUrl = rootGetters.API_URL + 'article/totalPage'
-            const apiToken = await rootGetters["auth/apiToken"];
+            const apiToken = rootState.auth.apiToken;
             const params = {
                 sortNum: newSearchCriteria.sortNum,
                 pageSize: newSearchCriteria.pageSize,
@@ -80,9 +80,9 @@ export default {
                     console.log(error)
                 })
         },
-        async fetchTags({commit, rootGetters}) {
+        async fetchTags({commit, rootState, rootGetters}) {
             const url = rootGetters.API_URL + 'tag/'
-            const apiToken = await rootGetters["auth/apiToken"];
+            const apiToken = rootState.auth.apiToken;
             await axios.get(url, {
                 headers: {
                     "Authorization": apiToken,
