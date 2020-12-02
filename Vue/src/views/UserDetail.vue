@@ -17,13 +17,19 @@
           <v-card outlined>
             <v-container fluid>
               <v-row>
-                <v-col cols="9" style="padding: 0">
-                  <v-tabs v-model="activeStateTab" v-show="displayListNum!==0" color="#5bc8ac">
-                    <v-tab v-for="tab of stateTabs" :key="tab.id" @click="changeListState(tab.id)">
-                      {{ tab.name }}
-                    </v-tab>
-                  </v-tabs>
+                <v-col cols="4" style="padding: 0">
+                  <v-select
+                      :items="stateTabs"
+                      item-text="name"
+                      item-value="id"
+                      item-color="green"
+                      color="#5bc8ac"
+                      @change="changeListState"
+                      v-model="activeStateTab"
+                      label="絞り込み"
+                  ></v-select>
                 </v-col>
+                <v-col cols="1" style="padding: 0"></v-col>
                 <v-col cols="2" style="padding: 0">
                   <v-select
                       :items="sortList"
@@ -32,10 +38,13 @@
                       item-color="green"
                       color="#5bc8ac"
                       v-model="sortNum"
-                      style="padding: 0"
+                      style="padding-top: 9px"
+                      label="並び順"
                   >
                   </v-select>
                 </v-col>
+                <v-col cols="4" style="padding: 0"></v-col>
+
               </v-row>
               <v-row justify="center" align-content="center">
                 <v-col cols="12">
@@ -189,8 +198,8 @@ export default {
       },//検索条件
       windowWidth: window.innerWidth,//画面横幅
       windowWidthClass: false,//画面横幅に応じて付与するクラスの切り替え用boolean
-      activeListTab: 0,//記事Tabの選択されているタブのインデックス
-      activeStateTab: 0,//記事StateTabの選択されているタブのインデックス
+      activeListTab: 1,//記事Tabの選択されているタブのインデックス
+      activeStateTab: {id: 10, name: '全記事'},//記事StateTabの選択されているタブのインデックス
       loginListTabs: [
         {id: 1, name: '公開中の投稿記事'},
         {id: 2, name: '公開中のFBした記事'},
@@ -380,7 +389,7 @@ export default {
       this.displayListState = 10;
       this.sortNum = 0;
       this.activeListTab = listNum - 1;
-      this.activeStateTab = 0;
+      this.activeStateTab = {id: 10, name: '全記事'};
       let articlesFromVuex = [];
 
       if (listNum === 1) articlesFromVuex = this.postedArticles;
