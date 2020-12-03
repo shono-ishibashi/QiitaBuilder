@@ -126,6 +126,7 @@
                     <v-col cols="12">
                       <ArticleCard v-for="(article,index) in sortedArticles" :key="article.articleId" :article="article"
                                    v-show="isDisplay&&sortedArticles.length!==0" :index="index"
+                                   @thisUserPage="resetPage"
                                    style="margin: 0; padding: 0;">
                       </ArticleCard>
                       <v-progress-linear
@@ -180,7 +181,7 @@ export default {
   components: {ArticleCard, UserInfo},
   data() {
     return {
-      chartData: {
+      chartDatasets: {
         labels: [],
         datasets: [
           {
@@ -189,12 +190,6 @@ export default {
           },
         ]
       },//Pieコンポーネントに渡してグラフを表示するためのデータ。DBからタグ使用率を取り次第dataとcolor指定
-      chartOptions: {
-        responsive: true,
-        legend: {
-          position: 'right'
-        }
-      },//Pieコンポーネントのグラフ表示用オプション
       sortList: [
         {key: 0, state: "新着順"},
         {key: 1, state: "更新順"},
@@ -294,15 +289,15 @@ export default {
       const th = this;
       const chart = async function () {
         th.userDetail.usedTags.forEach(function (tag) {
-          th.chartData.labels.push(tag.tagName);
-          th.chartData.datasets[0].data.push(tag.usedTagCount);
+          th.chartDatasets.labels.push(tag.tagName);
+          th.chartDatasets.datasets[0].data.push(tag.usedTagCount);
         }, th);
-        th.chartData.datasets[0].backgroundColor = palette('cb-YlGn', th.userDetail.usedTags.length).map(
+        th.chartDatasets.datasets[0].backgroundColor = palette('cb-YlGn', th.userDetail.usedTags.length).map(
             function (hex) {
               return '#' + hex
             }
         )
-        await th.setChartDisplay(th.chartData);
+        await th.setChartData(th.chartDatasets);
       }
       const processAll = async function () {
         await chart();
@@ -353,8 +348,6 @@ export default {
     },
     apiToken: function () {
       const paramUserId = this.$route.params['userId'];
-      //let paramUserId = Object.assign({}, this.$route.params);
-      //paramUserId = paramUserId['userId'].toString();
       const th = this;
       const fetch = async function () {
         if (paramUserId === '0') {
@@ -451,20 +444,13 @@ export default {
     searchWithConditions() {
       if (this.$refs.search_form.validate()) {
         let articlesFromVuex = [];
-        if (this.displayListState.id === 10) {//全記事表示中の場合
-          if (this.displayListNum === 0) articlesFromVuex = this.postedArticles;
-          if (this.displayListNum === 1) articlesFromVuex = this.feedbackArticles;
-          if (this.displayListNum === 2) articlesFromVuex = this.myArticles;
-          if (this.displayListNum === 3) articlesFromVuex = this.draftArticles;
-        }
+        if (this.displayListNum === 0) articlesFromVuex = this.postedArticles;
+        if (this.displayListNum === 1) articlesFromVuex = this.feedbackArticles;
+        if (this.displayListNum === 2) articlesFromVuex = this.myArticles;
+        if (this.displayListNum === 3) articlesFromVuex = this.draftArticles;
+
         if (this.displayListState.id !== 10) {//全記事表示以外の場合絞り込む
-          if (this.displayListNum === 1) articlesFromVuex = this.postedArticles.filter((art) => {
-            return art.stateFlag === this.displayListState.id
-          });
-          if (this.displayListNum === 2) articlesFromVuex = this.feedbackArticles.filter((art) => {
-            return art.stateFlag === this.displayListState.id
-          });
-          if (this.displayListNum === 3) articlesFromVuex = this.myArticles.filter((art) => {
+          if (this.displayListNum === 0) articlesFromVuex = articlesFromVuex.filter((art) => {
             return art.stateFlag === this.displayListState.id
           });
         }
@@ -486,11 +472,19 @@ export default {
       this.conditions.conditionTags.splice(0);
       this.searchWithConditions();
     },
+    resetPage() {
+      this.displayListNum = 0;
+      this.displayListState = {id: 10, name: '全記事'};
+      this.changeList(0)
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    },
     ...mapActions("user", [
       "setArticlesAndTags",
       "setArticles",
-      "setArticleCardDisplay",
-      "setChartDisplay",
+      "setChartData",
       "fetchUserDetail",
       "fetchPostedArticles",
       "fetchFeedbackArticles",
