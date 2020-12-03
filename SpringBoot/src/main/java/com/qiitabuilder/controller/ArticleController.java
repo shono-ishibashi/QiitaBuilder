@@ -110,7 +110,7 @@ public class ArticleController {
         }
         Integer articleId = articleService.findByArticleIdAndUserId(existArticleForm.getArticleId(), existArticleForm.getUserId());
         if (Objects.isNull(articleId)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         return articleId;
     }
