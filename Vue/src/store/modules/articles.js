@@ -44,14 +44,13 @@ export default {
             const params = {
                 sortNum: newSearchCriteria.sortNum,
                 pageSize: newSearchCriteria.pageSize,
-                currentPage: 1,
+                currentPage: newSearchCriteria.currentPage,
                 searchWord: newSearchCriteria.searchWord,
                 toggleSearchWord: newSearchCriteria.toggleSearchWord,
                 searchTag: newSearchCriteria.searchTag,
                 period: newSearchCriteria.period
             }
             const paramsSerializer = (params) => qs.stringify(params);
-
             //記事一覧の取得
             await axios.get(fetchArticlesUrl, {
                 params: params,

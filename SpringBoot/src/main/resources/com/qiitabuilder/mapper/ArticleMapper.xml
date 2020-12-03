@@ -166,7 +166,25 @@
         feed_cnt_table.feed_cnt as feedCnt,
         my_cnt_table.my_cnt as myCnt,
         recommend_cnt_table.recommend_cnt as recommendCnt
-        FROM articles as art
+        FROM
+        (
+        select *
+        from articles
+        <where>
+            state_flag IN
+            <foreach item="stateFlag" index="index" collection="search.stateFlagList" open="(" separator="," close=")">
+                #{stateFlag}
+            </foreach>
+            <if test="search.period!=null">
+                <if test="search.period==0">
+                    AND created_at between NOW() - interval 7 day and NOW()
+                </if>
+                <if test="search.period==1">
+                    AND DATE_FORMAT(created_at, '%Y%m') = DATE_FORMAT(NOW(), '%Y%m')
+                </if>
+            </if>
+        </where>
+        ) as art
         <if test="search.searchTag!=null">
             JOIN (SELECT article_id as atArticleId
             FROM articles_tags_relations
@@ -199,21 +217,9 @@
         GROUP BY recommend.article_id) as recommend_cnt_table
         ON art.article_id = recommend_cnt_table.article_id
         <where>
-            state_flag IN
-            <foreach item="stateFlag" index="index" collection="search.stateFlagList" open="(" separator="," close=")">
-                #{stateFlag}
-            </foreach>
             <if test="search.searchWord !=null and search.toggleSearchWord==0">
                 AND title LIKE CONCAT('%', #{search.searchWord}, '%')
                 OR content LIKE CONCAT('%', #{search.searchWord},'%')
-            </if>
-            <if test="search.period!=null">
-                <if test="search.period==0">
-                    AND created_at between NOW() - interval 7 day and NOW()
-                </if>
-                <if test="search.period==1">
-                    AND DATE_FORMAT(created_at, '%Y%m') = DATE_FORMAT(NOW(), '%Y%m')
-                </if>
             </if>
         </where>
         ORDER BY ${search.sort} desc

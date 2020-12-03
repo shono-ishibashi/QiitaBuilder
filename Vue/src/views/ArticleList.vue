@@ -36,28 +36,28 @@
               </v-row>
               <v-row>
                 <v-col>
-                    <v-text-field
-                        v-if="this.toggleSearchWord==0"
-                        label="記事を検索"
-                        color="#5bc8ac"
-                        v-model="searchCriteria.searchWord"
-                        :rules="[title_limit_length]"
-                        counter="100"
-                        @keypress.prevent.enter.exact="enable_submit"
-                        @keyup.prevent.enter.exact="submit"
-                    >
-                    </v-text-field>
-                    <v-text-field
-                        v-if="this.toggleSearchWord==1"
-                        label="ユーザーを検索"
-                        color="#5bc8ac"
-                        v-model="searchCriteria.searchWord"
-                        :rules="[user_limit_length]"
-                        counter="30"
-                        @keypress.prevent.enter.exact="enable_submit"
-                        @keyup.prevent.enter.exact="submit"
-                    >
-                    </v-text-field>
+                  <v-text-field
+                      v-if="this.toggleSearchWord==0"
+                      label="記事を検索"
+                      color="#5bc8ac"
+                      v-model="searchCriteria.searchWord"
+                      :rules="[title_limit_length]"
+                      counter="100"
+                      @keypress.prevent.enter.exact="enable_submit"
+                      @keyup.prevent.enter.exact="submit"
+                  >
+                  </v-text-field>
+                  <v-text-field
+                      v-if="this.toggleSearchWord==1"
+                      label="ユーザーを検索"
+                      color="#5bc8ac"
+                      v-model="searchCriteria.searchWord"
+                      :rules="[user_limit_length]"
+                      counter="30"
+                      @keypress.prevent.enter.exact="enable_submit"
+                      @keyup.prevent.enter.exact="submit"
+                  >
+                  </v-text-field>
                 </v-col>
                 <v-col>
                   <v-autocomplete
@@ -136,16 +136,33 @@
           >
           </v-select>
         </v-subheader>
-        <v-container
-            v-if="articles.length===0"
-            class="no-article-field"
-        >
-          記事が見つかりませんでした<br>
-          再度検索してください
-        </v-container>
-        <ArticleCard v-for="(article,index) in articles" :key="article.articleId" :article="article"
-                     :index="index"></ArticleCard>
+        <div v-show="isDisplay">
+          <!--          記事がない場合の処理: 変数をクッションに挟んで取得後にbooleanで描画を決定-->
+          <v-container
+              v-if="articles.length===0"
+              class="no-article-field"
+          >
+            記事が見つかりませんでした<br>
+            再度検索してください
+          </v-container>
+          <ArticleCard
+              v-for="(article,index) in articles"
+              :key="article.articleId"
+              :article="article"
+              :index="index">
+
+          </ArticleCard>
+        </div>
       </v-list>
+      <v-col cols="6" :class="{'progress-linear':isLoading}">
+        <v-progress-linear
+            v-show="isLoading"
+            color="green"
+            indeterminate
+            rounded
+            height="10"
+        ></v-progress-linear>
+      </v-col>
     </v-row>
     <v-row justify="center" align-content="center">
       <v-col cols="8" v-if="articles.length!==0">
@@ -160,6 +177,7 @@
       </v-col>
     </v-row>
 
+    <!--    許可しないアクセス時の警告ダイアログ-->
     <v-dialog v-model="errorDialog" width="400">
       <v-card>
         <v-card-title>
@@ -184,6 +202,7 @@ export default {
   name: "ArticleList",
   data() {
     return {
+      // 表示件数
       displayCountList: [
         {
           text: '10件',
@@ -195,36 +214,77 @@ export default {
           text: '30件',
           value: 30
         }],
+      // 並び順
       sortList: [
         {key: 0, state: "新着順"},
         {key: 1, state: "更新順"},
         {key: 2, state: "Qiita推奨数順"},
         {key: 3, state: "My記事登録順"}
       ],
+      // 期間
       periodList: [
         {key: null, state: "全て"},
         {key: 0, state: "週間"},
         {key: 1, state: "月間"},
       ],
+      // tokenの有無を行うboolean
       nonValidToken: false,
+      // submit処理の認証を行うboolean
       can_submit_search: false,
+      // 記事の存在の有無(true: 存在しない, false: 存在する)
+      isNotExistArticle: false,
+      // 各コンポーネント表示切替用のboolean
+      isDisplay: false,
+      // loading処理表示切替用のboolean
+      isLoading: true,
+      // validation条件
       title_limit_length: value => value.length <= 100 || "100文字以内で入力してください",
       user_limit_length: value => value.length <= 30 || "30文字以内で入力してください",
       tags_limit_length: value => value.length <= 5 || "6個以上入力しないでください",
     }
   },
+  // created() {
+  //   this.isLoading = true
+  // },
   watch: {
-    ['searchCriteria.sortNum']() {
-      this.searchCriteria.currentPage = 1;
-      this.fetchArticles(this.searchCriteria).catch(error => {
+    async apiToken() {
+     await this.fetchArticles(this.searchCriteria)
+         .then(()=>{
+           if(this.articles.length===0){
+             this.isNotExistArticle=true
+           }
+         })
+         .catch(error => {
         this.errorHandle(error)
       })
+      await this.fetchTags();
+      await this.$nextTick();
+
+      setTimeout(() => {
+        this.toggleDisplay()
+      }, 1000)
     },
-    ['searchCriteria.period']() {
+    async ['searchCriteria.sortNum']() {
+      await this.toggleDisplay()
+      this.searchCriteria.currentPage = 1;
+      await this.fetchArticles(this.searchCriteria).catch(error => {
+        this.errorHandle(error)
+      })
+      await this.$nextTick();
+      setTimeout(() => {
+        this.toggleDisplay()
+      }, 1000)
+    },
+    async ['searchCriteria.period']() {
+      await this.toggleDisplay()
       this.searchCriteria.currentPage = 1;
       this.fetchArticles(this.searchCriteria).catch(error => {
         this.errorHandle(error)
       })
+      await this.$nextTick();
+      setTimeout(() => {
+        this.toggleDisplay()
+      }, 1000)
     },
     ['searchCriteria.pageSize']() {
       this.searchCriteria.currentPage = 1;
@@ -240,15 +300,7 @@ export default {
       setTimeout(() => {
         this.scrollTop();
       }, 50)
-    },
-    apiToken() {
-      this.fetchArticles(this.searchCriteria).catch(error => {
-        this.errorHandle(error)
-      })
-      this.fetchTags();
     }
-  },
-  created() {
   },
   computed: {
     ...mapState("article", ["processFailure"]),
@@ -269,9 +321,7 @@ export default {
         return this.searchCriteria.toggleSearchWord
       },
       set(value) {
-        console.log(value)
         this.setToggleSearchWord(value)
-        console.log(this.searchCriteria.toggleSearchWord)
       }
     }
   },
@@ -287,13 +337,18 @@ export default {
     enable_submit() {
       this.can_submit_search = true;
     },
-    submit() {
+    async submit() {
       if (!this.can_submit_search) return
       if (this.$refs.search_form.validate()) {
+        await this.toggleDisplay()
         this.searchCriteria.currentPage = 1
-        this.fetchArticles(this.searchCriteria).catch(error => {
+        await this.fetchArticles(this.searchCriteria).catch(error => {
           this.errorHandle(error)
         })
+        await this.$nextTick();
+        setTimeout(() => {
+          this.toggleDisplay()
+        }, 1000)
         this.can_submit_search = false;
       }
     },
@@ -307,13 +362,18 @@ export default {
         behavior: "smooth"
       });
     },
-    reset() {
+    async reset() {
+      await this.toggleDisplay()
       this.searchCriteria.searchWord = ""
       this.searchCriteria.searchTag = []
       this.searchCriteria.currentPage = 1
-      this.fetchArticles(this.searchCriteria).catch(error => {
+      await this.fetchArticles(this.searchCriteria).catch(error => {
         this.errorHandle(error)
       })
+      await this.$nextTick();
+      setTimeout(() => {
+        this.toggleDisplay()
+      }, 1000)
     },
     errorHandle(error) {
       const status = error.response.status;
@@ -325,6 +385,10 @@ export default {
         this.toggleProcessFailure()
       }
     },
+    toggleDisplay(){
+      this.isLoading=!this.isLoading
+      this.isDisplay=!this.isDisplay
+    }
   }
 }
 </script>
@@ -361,4 +425,8 @@ export default {
   padding-bottom: 10px;
 }
 
+.progress-linear{
+  padding-top:60px;
+  height:150px;
+}
 </style>
