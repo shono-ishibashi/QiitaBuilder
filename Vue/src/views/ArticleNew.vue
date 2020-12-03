@@ -1,6 +1,11 @@
 <template>
   <v-container id="article-edit-field" fluid>
-    <div class="edit-field">
+
+    <!--  投稿ページ  -->
+<!--  loading処理追加時: v-show="isDisplay"  -->
+    <div
+        class="edit-field"
+    >
 <!--      タイトル、タグ入力欄-->
       <v-form ref="form" v-model="valid" lazy-validation>
         <v-row>
@@ -74,6 +79,18 @@
         </v-row>
       </v-form>
     </div>
+
+    <!--  loading処理  -->
+<!--    <v-col cols="12" :class="{'progress-linear':isLoading}">-->
+<!--      <v-progress-linear-->
+<!--          v-show="isLoading"-->
+<!--          color="green"-->
+<!--          indeterminate-->
+<!--          rounded-->
+<!--          height="10"-->
+<!--      ></v-progress-linear>-->
+<!--    </v-col>-->
+
   </v-container>
 </template>
 
@@ -95,6 +112,10 @@ export default {
       valid: true,
       currentView: Edit,
       selectedFormat: 0,
+      // 各コンポーネント表示切替用のboolean
+      // isDisplay: false,
+      // loading処理表示切替用のboolean
+      // isLoading: true,
       required: value => value && !!value || "必ず入力してください",
       blank: value => {
         const pattern = /\S/g
@@ -108,6 +129,9 @@ export default {
   watch: {
     apiToken() {
       this.fetchTags()
+      // setTimeout(() => {
+      //   this.toggleDisplay()
+      // }, 1000)
     }
   },
   computed: {
@@ -153,6 +177,11 @@ export default {
         this.currentView = EditAndPreview
       }
     },
+    // 読み込みと表示画面の切り替え
+    // toggleDisplay() {
+    //   this.isLoading = !this.isLoading
+    //   this.isDisplay = !this.isDisplay
+    // }
   }
 }
 
@@ -203,4 +232,9 @@ export default {
 .btn {
   background-color: #ffffff;
 }
+
+/*.progress-linear{*/
+/*  padding-top:150px;*/
+/*  height:450px;*/
+/*}*/
 </style>
