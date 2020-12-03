@@ -341,3 +341,24 @@ describe('Testing watch property', () => {
         await expect(wrapper.vm.rankItemId).toBe(2);
     })
 })
+
+describe('Testing methods property', () => {
+    test('toUserDetail method', async () => {
+        //事前準備
+        const routerSpy = {
+            push: jest.fn()
+        };
+        wrapper = shallowMount(Component, {
+            store,
+            localVue,
+            mocks: {
+                $router: routerSpy
+            }
+        });
+
+        // 実行
+        await wrapper.vm.toUserDetail(1)
+        await expect(routerSpy.push).toBeCalled();
+        await expect(routerSpy.push).toBeCalledWith({"name": "userDetail", "params": {"userId": 2}});
+    })
+})
