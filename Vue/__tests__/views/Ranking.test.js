@@ -104,6 +104,30 @@ describe('Testing exist element', () => {
     test('v-select', () => {
         expect(wrapper.findComponent({name: 'v-select'}).exists()).toBeTruthy();
         expect(wrapper.findAllComponents({name: 'v-select'}).length).toBe(2);
+
+        //ランキング項目
+        const rankItemSelectWrapper = wrapper.findAllComponents({name: 'v-select'}).at(0);
+        expect(rankItemSelectWrapper.props().label).toBe('ランキング項目');
+        expect(rankItemSelectWrapper.props().items[0].item).toBe('FBした数');
+        expect(rankItemSelectWrapper.props().items[0].id).toBe(1);
+        expect(rankItemSelectWrapper.props().items[1].item).toBe('記事投稿数');
+        expect(rankItemSelectWrapper.props().items[1].id).toBe(2);
+        expect(rankItemSelectWrapper.props().items[2].item).toBe('Qiita推薦累計数');
+        expect(rankItemSelectWrapper.props().items[2].id).toBe(3);
+
+        expect(rankItemSelectWrapper.props().value).toBe(wrapper.vm.selectRankItemId);
+
+        //表示件数
+        const displayCountSelectWrapper = wrapper.findAllComponents({name: 'v-select'}).at(1);
+        expect(displayCountSelectWrapper.props().label).toBe('表示件数');
+        expect(displayCountSelectWrapper.props().items[0].text).toBe('10件');
+        expect(displayCountSelectWrapper.props().items[0].value).toBe(10);
+        expect(displayCountSelectWrapper.props().items[1].text).toBe('20件');
+        expect(displayCountSelectWrapper.props().items[1].value).toBe(20);
+        expect(displayCountSelectWrapper.props().items[2].text).toBe('30件');
+        expect(displayCountSelectWrapper.props().items[2].value).toBe(30);
+
+        expect(displayCountSelectWrapper.props().value).toBe(wrapper.vm.selectDisplayCount);
     })
 
     test('v-progress-linear', async () => {
