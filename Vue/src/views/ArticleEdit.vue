@@ -6,8 +6,12 @@
     <v-snackbar v-model="processFailure" timeout="5000">
       処理に失敗しました。ページを再読み込みしてください。
     </v-snackbar>
-    <div class="edit-field">
-      <!--      タイトル、タグ入力欄-->
+    <!--  編集ページ  -->
+    <div
+        class="edit-field"
+        v-show="isDisplay"
+    >
+      <!--  タイトル、タグ入力欄  -->
       <v-form ref="edit_form" v-model="valid" lazy-validation>
         <v-row>
           <v-col cols="8" class="title-tag-form">
@@ -40,7 +44,6 @@
           </v-col>
           <!--          記事投稿または下書き保存するフィールド-->
           <v-col cols="4">
-            <!--            この中を変更、statusflugが0の時はarticleNewと同じボタン表示にする-->
             <div class="article-edit-action-field" v-if="article.stateFlag===0">
               <v-row justify="center">
                 <v-btn @click="postArticle(1)" class="btn" outlined color="#008b8b">記事を公開</v-btn>
@@ -64,9 +67,10 @@
               </v-row>
             </div>
           </v-col>
+
         </v-row>
-        <!--        stateflugが0の時の挙動-->
-        <!--          編集フォーマット選択タブフィールド-->
+
+        <!--   フォーマット切り替えタブ     -->
         <v-tabs
             color="#5bc8ac"
             background-color="#f5f5f5"
@@ -94,13 +98,29 @@
             編集 & プレビュー & FB
           </v-tab>
         </v-tabs>
+
+        <!--   記事編集フォーマット     -->
         <v-row>
           <v-main class="content">
             <component :is="currentView"></component>
           </v-main>
         </v-row>
+
       </v-form>
     </div>
+
+    <!--  loading処理  -->
+    <v-col cols="12" :class="{'progress-linear':isLoading}">
+      <v-progress-linear
+          v-show="isLoading"
+          color="green"
+          indeterminate
+          rounded
+          height="10"
+      ></v-progress-linear>
+    </v-col>
+
+    <!--    qiita投稿or更新用ダイアログ-->
     <v-dialog v-model="qiitaDialog" max-width="400">
       <v-card>
         <v-card-title>
@@ -154,6 +174,10 @@ export default {
       qiitaDialog: false,
       nonValidToken: false,
       processFailure: false,
+      // 各コンポーネント表示切替用のboolean
+      isDisplay: false,
+      // loading処理表示切替用のboolean
+      isLoading: true,
       required: value => value && !!value || "必ず入力してください",
       blank: value => {
         const pattern = /\S/g
@@ -166,6 +190,7 @@ export default {
   },
   watch: {
     async apiToken() {
+      // アクセス権限のあるユーザーにのみ編集ページを表示する
       const uid = await this.loginUser.uid
       await this.findUserIdByUid(uid).catch((error) => {
         this.errorHandle(error);
@@ -175,6 +200,7 @@ export default {
         articleId: article,
         userId: this.userId
       }
+      // アクセス権限のあるユーザーだと200が返ってくる
       await axios.get(this.API_URL + 'article/isExist', {
         params: params,
         headers: {
@@ -191,10 +217,14 @@ export default {
                     this.toggleErrorTransitionDialog()
                     this.$router.push('/article')
                   }
+                  setTimeout(() => {
+                    this.toggleDisplay()
+                  }, 1000)
                 })
                 .catch((error) => {
                   this.errorHandle(error);
                 })
+
           })
           .catch(() => {
             this.toggleErrorTransitionDialog()
@@ -304,6 +334,11 @@ export default {
       await this.postArticle(article.stateFlag);
       await this.$store.dispatch("article/postArticleToQiita", article.articleId);
     },
+    // 読み込みと表示画面の切り替え
+    toggleDisplay() {
+      this.isLoading = !this.isLoading
+      this.isDisplay = !this.isDisplay
+    }
   },
 
 }
@@ -354,5 +389,10 @@ export default {
 
 .btn {
   background-color: #ffffff;
+}
+
+.progress-linear{
+  padding-top:150px;
+  height:450px;
 }
 </style>
