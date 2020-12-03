@@ -9,7 +9,7 @@ export default {
             sortNum: 0,
             period: null,
             searchWord: "",
-            toggleSearchWord: 0,
+            toggleSearchWord: "0",
             searchTag: [],
             pageSize: 10,
             currentPage: 1,
@@ -32,6 +32,9 @@ export default {
         toggleErrorTransitionDialog(state) {
             state.errorTransistionDialog = !state.errorTransistionDialog
         },
+        setToggleSearchWord(state,selected){
+            state.searchCriteria.toggleSearchWord = selected
+        }
     },
     actions: {
         async fetchArticles({commit, rootState, rootGetters}, newSearchCriteria) {
@@ -94,6 +97,9 @@ export default {
         },
         toggleErrorTransitionDialog({commit}) {
             commit("toggleErrorTransitionDialog")
+        },
+        setToggleSearchWord({commit},selected){
+            commit('setToggleSearchWord',selected)
         }
     }
 }
