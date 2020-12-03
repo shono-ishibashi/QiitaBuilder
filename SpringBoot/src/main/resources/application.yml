@@ -1,14 +1,12 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/qiita_builder?serverTimezone=JST
+    url: jdbc:mysql://qiita-builder-db.cpadm1u8valy.ap-northeast-1.rds.amazonaws.com:3306/qiita_builder?serverTimezone=JST
     username: qiita_builder
     password: qiita_builder
 
 server:
   port: 8080
-  servlet:
-    context-path: /qiita_builder
   error:
     include-message: always
 
