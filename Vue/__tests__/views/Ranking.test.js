@@ -360,5 +360,26 @@ describe('Testing methods property', () => {
         await wrapper.vm.toUserDetail(1)
         await expect(routerSpy.push).toBeCalled();
         await expect(routerSpy.push).toBeCalledWith({"name": "userDetail", "params": {"userId": 2}});
+
+        await wrapper.vm.toUserDetail(2)
+        await expect(routerSpy.push).toBeCalled();
+        await expect(routerSpy.push).toBeCalledWith({"name": "userDetail", "params": {"userId": 3}});
+    })
+})
+
+describe('Testing props to child-component', () => {
+    test('UserList', () => {
+        expect(wrapper.findComponent({name: 'UserList'}).vm.$props.rankUsers).toEqual([{"userId": 1}, {"userId": 2}, {"userId": 3}]);
+        expect(wrapper.findComponent({name: 'UserList'}).vm.$props.displayCount).toEqual(10);
+        expect(wrapper.findComponent({name: 'UserList'}).vm.$props.rankItemId).toEqual(1);
+    })
+
+    test('ChartArea', () => {
+        expect(wrapper.findComponent({name: 'ChartArea'}).vm.$props.selectRankItemId).toEqual(1);
+        expect(wrapper.findComponent({name: 'ChartArea'}).vm.$props.rankUsers).toEqual([{"userId": 1}, {"userId": 2}, {"userId": 3}]);
+    })
+
+    test('RelationArticles', () => {
+        expect(wrapper.findComponent({name: 'RelationArticles'}).vm.$props.relArticles).toEqual([{"articleId": 1}, {"articleId": 2}, {"articleId": 3}]);
     })
 })
