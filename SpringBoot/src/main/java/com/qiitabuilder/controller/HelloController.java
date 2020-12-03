@@ -17,6 +17,6 @@ public class HelloController {
     @RequestMapping(value = "/", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     public String welcome() {
-        return "<h1>Welcome to Qiitabuilder's API.</h1>";
+        return "<h1>Welcome to QiitaBuilder API!</h1>";
     }
 }
