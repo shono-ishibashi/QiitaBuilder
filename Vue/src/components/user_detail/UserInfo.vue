@@ -15,7 +15,7 @@
           <img :src="userDetail.photoUrl" alt=""/></v-avatar>
       </v-col>
       <v-col cols=6 align-self="center">
-        <Pie class="chart" :chart-data="chartDisplay" :options="chartOptions"
+        <Pie class="chart" :chart-data="chartData" :options="chartOptions"
              v-if="userDetail.usedTags.length!==0"/>
         <v-alert
             v-if="userDetail.usedTags.length===0"
@@ -69,15 +69,6 @@ export default {
   components: {Pie},
   data() {
     return {
-      chartData: {
-        labels: [],
-        datasets: [
-          {
-            data: [],
-            backgroundColor: [],
-          },
-        ]
-      },//Pieコンポーネントに渡してグラフを表示するためのデータ。DBからタグ使用率を取り次第dataとcolor指定
       chartOptions: {
         responsive: true,
         legend: {
@@ -89,7 +80,7 @@ export default {
   computed: {
     ...mapGetters("user", [
       "notDraftArticles",
-      "chartDisplay",]),
+      "chartData",]),
     ...mapState("user", ["userDetail",]),
   }
 }

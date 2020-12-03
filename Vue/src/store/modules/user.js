@@ -18,7 +18,7 @@ export default {
         feedbackArticles: [],
         displayArticles: [],
         usedTags: [],
-        chartDisplay: null,
+        chartData: null,
     },
     getters: {
         userId(state) {
@@ -61,8 +61,8 @@ export default {
         usedTags(state) {
             return state.usedTags;
         },
-        chartDisplay(state) {
-            return state.chartDisplay;
+        chartData(state) {
+            return state.chartData;
         },
     },
     mutations: {
@@ -102,8 +102,8 @@ export default {
         setArticleCardDisplay(state, articleCard) {
             state.articleCardDisplay = articleCard;
         },
-        setChartDisplay(state, chartDiaplay) {
-            state.chartDisplay = chartDiaplay;
+        setChartData(state, chartData) {
+            state.chartData = chartData;
         },
         setUserId(state, userId) {
             state.userDetail.userId = userId;
@@ -124,7 +124,7 @@ export default {
                 postedArticleCount: 0,
                 isLoginUser: false,
             }
-            state.chartDisplay=null
+            state.chartData=null
             state.usedTags.splice(0)
         }
     },
@@ -149,8 +149,8 @@ export default {
         setArticleCardDisplay({commit}, articleCard) {
             commit("setArticleCardDisplay", articleCard)
         },
-        setChartDisplay({commit}, chartDiaplay) {
-            commit("setChartDisplay", chartDiaplay)
+        setChartData({commit}, chartData) {
+            commit("setChartData", chartData)
         },
         async fetchUserDetail({dispatch, commit, rootGetters, rootState}, userId) {
             const url = rootGetters.API_URL + 'user/detail/';

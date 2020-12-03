@@ -180,7 +180,8 @@ export default {
         name: "userDetail",
         params: {userId},
       }).catch(err => {
-          console.log(err)
+        if (this.$route.name === "userDetail") this.$emit('thisUserPage')
+        console.log(err)
       });
     },
     scrollTop() {
