@@ -5,9 +5,9 @@
     <!--  ファイル書き出し  -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!--ファイル名 -->
-        <file>./Qiitabuilder.log</file>
+        <file>logs/QiitaBuilder.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>QiitaBuilderLOG-%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <fileNamePattern>logs/QiitaBuilder%d{yyyy-MM-dd}.log.zip</fileNamePattern>
 
             <!--3日間保存-->
             <maxHistory>3</maxHistory>
