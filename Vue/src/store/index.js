@@ -11,7 +11,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    API_URL:"http://api.qiita-builder.ga/"
+    API_URL:"https://api.qiita-builder.ga/"
   },
   mutations: {
   },
