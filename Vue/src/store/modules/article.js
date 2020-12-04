@@ -20,6 +20,9 @@ export default {
         recommendId: null,
         processFailure: false,
     },
+    getters: {
+        compiledMarkdown: (state) => marked(state.article.content)
+    },
     mutations: {
         setArticle(state, article) {
             state.article = article;
@@ -403,8 +406,5 @@ export default {
         toggleProcessFailure({commit}) {
             commit("toggleProcessFailure");
         }
-    },
-    getters: {
-        compiledMarkdown: (state) => marked(state.article.content),
-    },
+    }
 };

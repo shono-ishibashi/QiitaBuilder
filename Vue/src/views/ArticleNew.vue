@@ -2,11 +2,11 @@
   <v-container id="article-edit-field" fluid>
 
     <!--  投稿ページ  -->
-<!--  loading処理追加時: v-show="isDisplay"  -->
+    <!--  loading処理追加時: v-show="isDisplay"  -->
     <div
         class="edit-field"
     >
-<!--      タイトル、タグ入力欄-->
+      <!--      タイトル、タグ入力欄-->
       <v-form ref="form" v-model="valid" lazy-validation>
         <v-row>
           <v-col cols="8" class="title-tag-form">
@@ -22,12 +22,9 @@
             ></v-text-field>
             <v-combobox
                 v-model="article.tags"
-                :items="tags"
+                :items="tagNameList"
                 color="#5bc8ac"
-                item-value="tagId"
-                item-text="tagName"
                 item-color="green"
-                return-object
                 label="プログラミング技術に関するタグを5つまで入力(例：Java)"
                 deletable-chips
                 :rules="[tags_max_size,tags_min_size,blank]"
@@ -37,7 +34,7 @@
             >
             </v-combobox>
           </v-col>
-<!--          記事投稿または下書き保存するフィールド-->
+          <!--          記事投稿または下書き保存するフィールド-->
           <v-col cols="4">
             <div class="article-edit-action-field">
               <v-row v-if="this.slug==null" justify="center">
@@ -49,7 +46,7 @@
               </v-row>
             </div>
           </v-col>
-<!--          編集フォーマット選択タブフィールド-->
+          <!--          編集フォーマット選択タブフィールド-->
         </v-row>
         <v-tabs
             color="#5bc8ac"
@@ -81,15 +78,15 @@
     </div>
 
     <!--  loading処理  -->
-<!--    <v-col cols="12" :class="{'progress-linear':isLoading}">-->
-<!--      <v-progress-linear-->
-<!--          v-show="isLoading"-->
-<!--          color="green"-->
-<!--          indeterminate-->
-<!--          rounded-->
-<!--          height="10"-->
-<!--      ></v-progress-linear>-->
-<!--    </v-col>-->
+    <!--    <v-col cols="12" :class="{'progress-linear':isLoading}">-->
+    <!--      <v-progress-linear-->
+    <!--          v-show="isLoading"-->
+    <!--          color="green"-->
+    <!--          indeterminate-->
+    <!--          rounded-->
+    <!--          height="10"-->
+    <!--      ></v-progress-linear>-->
+    <!--    </v-col>-->
 
   </v-container>
 </template>
@@ -98,7 +95,7 @@
 import EditAndPreview from '../components/article_edit/format/FormatEditAndPreview'
 import Edit from '../components/article_edit/format/FormatEdit'
 import Preview from '../components/article_edit/format/FormatPreview'
-import {mapState, mapActions} from 'vuex'
+import {mapState, mapGetters,mapActions} from 'vuex'
 
 export default {
   name: "ArticleNew",
@@ -136,6 +133,7 @@ export default {
   },
   computed: {
     ...mapState("articles", ["tags"]),
+    ...mapGetters("articles",["tagNameList"]),
     ...mapState("article", ["article"]),
     slug() {
       return this.$route.params.articleId;
@@ -152,8 +150,17 @@ export default {
       //validationチェック
       if (this.$refs.form.validate()) {
         this.article.stateFlag = state
+        for(let i=0;i < this.article.tags.length; i++){
+          for(let tag of this.tags){
+            //タグが登録されているものには登録されているものをset
+            if(tag.tagName === this.article.tags[i]){
+              this.article.tags.splice(i,1,tag)
+              break
+            }
+          }
+        }
         //タグが登録されていないものにはtagIdにnullをset
-        for (var i = 0; i < this.article.tags.length; i++) {
+        for (let i = 0; i < this.article.tags.length; i++) {
           if (typeof this.article.tags[i] == 'string') {
             this.article.tags.splice(i, 1, {
               tagId: null, tagName: this.article.tags[i]

@@ -19,6 +19,10 @@ export default {
         // 遷移エラー時に表示するダイアログ
         errorTransistionDialog: false,
     },
+    getters: {
+        tagNameList: state => state.tags.map(tag=>tag.tagName)
+    }
+    ,
     mutations: {
         setArticles(state, articles) {
             state.articles = articles
