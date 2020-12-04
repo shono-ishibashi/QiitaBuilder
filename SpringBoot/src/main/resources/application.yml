@@ -7,8 +7,6 @@ spring:
 
 server:
   port: 8080
-  servlet:
-    context-path: /qiita_builder
   error:
     include-message: always
 
