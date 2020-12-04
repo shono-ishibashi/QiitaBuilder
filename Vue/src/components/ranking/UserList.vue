@@ -53,7 +53,7 @@ export default {
   computed: {
     totalPage() {
       let totalPage;
-      if (this.rankUsers.length / this.displayCount === 0) {
+      if (this.rankUsers.length % this.displayCount === 0) {
         totalPage = this.rankUsers.length / this.displayCount;
       } else {
         totalPage = Math.floor(this.rankUsers.length / this.displayCount) + 1;
