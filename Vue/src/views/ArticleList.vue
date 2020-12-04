@@ -154,6 +154,15 @@
           </ArticleCard>
         </div>
       </v-list>
+      <v-col cols="6" :class="{'progress-linear':isLoading}">
+        <v-progress-linear
+            v-show="isLoading"
+            color="green"
+            indeterminate
+            rounded
+            height="10"
+        ></v-progress-linear>
+      </v-col>
     </v-row>
     <v-row>
       <v-col cols="3"></v-col>
