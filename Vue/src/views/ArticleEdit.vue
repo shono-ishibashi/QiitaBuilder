@@ -153,7 +153,6 @@ import Edit from '../components/article_edit/format/FormatEdit'
 import Preview from '../components/article_edit/format/FormatPreview'
 import EditAndPreviewAndFeedback from '../components/article_edit/format/FormatEditAndPreviewAndFeedback'
 import {mapState, mapGetters, mapActions} from 'vuex'
-import axios from 'axios'
 
 export default {
   name: "ArticleEdit",
@@ -192,43 +191,16 @@ export default {
       await this.findUserIdByUid(uid).catch((error) => {
         this.errorHandle(error);
       })
-      const article = await this.slug
-      const params = await {
-        articleId: article,
+      const articleId = await this.slug
+      const params =  {
+        articleId: articleId,
         userId: this.userId
       }
-      // アクセス権限のあるユーザーだと200が返ってくる
-      await axios.get(this.API_URL + 'article/isExist', {
-        params: params,
-        headers: {
-          "Authorization": this.apiToken,
-          "Content-Type": "application/json"
-        },
-      })
-          .then(() => {
-            this.resetArticle()
-            this.fetchTags()
-            this.fetchArticle(this.slug)
-                .then(() => {
-                  if (this.article.stateFlag === 9) {
-                    this.toggleErrorTransitionDialog()
-                    this.$router.push('/article')
-                  }
-                  setTimeout(() => {
-                    this.toggleDisplay()
-                  }, 1000)
-                })
-                .catch((error) => {
-                  this.errorHandle(error);
-                })
-
-          })
-          .catch(() => {
-            this.toggleErrorTransitionDialog()
-            this.fetchArticles(this.searchCriteria);
-            this.fetchTags();
-            this.$router.push('/article')
-          })
+      // 認証の通ったユーザーであれば該当する記事とタグを取得
+      await this.fetchArticleEdit(params)
+      await setTimeout(() => {
+        this.toggleDisplay()
+      }, 1000)
     },
     article(){
       if(this.article.tags){
@@ -277,8 +249,8 @@ export default {
     },
   },
   methods: {
-    ...mapActions("article", ["fetchArticle", "saveArticle", "resetArticle"]),
-    ...mapActions("articles", ["fetchArticles", "fetchTags", "toggleErrorTransitionDialog"]),
+    ...mapActions("article", ["fetchArticle", "saveArticle", "resetArticle","fetchArticleEdit"]),
+    ...mapActions("articles", ["fetchArticles"]),
     ...mapActions("user", ["findUserIdByUid"]),
     //記事を投稿or更新するメソッド
     async postArticle(state) {

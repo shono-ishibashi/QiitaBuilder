@@ -403,6 +403,41 @@ export default {
                     });
             });
         },
+        // 認証の通ったユーザーであれば該当する記事とタグを取得
+        // params(articleId: 記事ID,userid: ユーザーID)
+        async fetchArticleEdit({dispatch,state,rootState,rootGetters},params){
+            const apiToken = rootState.auth.apiToken;
+            // アクセス権限のあるユーザーだと200が返ってくる
+            await axios.get(rootGetters.API_URL + 'article/isExist', {
+                params: params,
+                headers: {
+                    "Authorization": apiToken,
+                    "Content-Type": "application/json"
+                },
+            })
+                .then(() => {
+                    dispatch('resetArticle')
+                    dispatch('articles/fetchTags',null,{root:true})
+                    dispatch('fetchArticle',params.articleId)
+                        .then(() => {
+                            if (state.article.stateFlag === 9) {
+                                dispatch("window/setNotFound", true,{root:true});
+                            }
+                        })
+                        .catch((error) => {
+                            const errorStatus = error.response.status;
+                            if (errorStatus === 400) {
+                                dispatch('window/setNotFound', true, {root: true})
+                            } else {
+                                dispatch('window/setInternalServerError', true, {root: true})
+                            }
+                        })
+
+                })
+                .catch(() => {
+                    dispatch("window/setNotFound", true);
+                })
+        },
         toggleProcessFailure({commit}) {
             commit("toggleProcessFailure");
         }
