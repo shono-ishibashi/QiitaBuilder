@@ -103,7 +103,7 @@ export default {
       })
     },
     async toMyPage() {
-      await this.$router.push('/user/0?defaultList=MypPage').catch(err => {
+      await this.$router.push('/user/0?defaultList=MyPage').catch(err => {
         if (this.$route.path === '/user/0') {
           console.log(err)
         }
