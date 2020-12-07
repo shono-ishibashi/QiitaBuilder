@@ -9,6 +9,12 @@
     <v-snackbar v-model="processFailure" timeout="5000">
       処理に失敗しました。ページを再読み込みしてください。
     </v-snackbar>
+    <v-snackbar v-model="postFeedbackSuccess" timeout="5000">
+      フィードバックを投稿しました。
+    </v-snackbar>
+    <v-snackbar v-model="updateFeedbackSuccess" timeout="5000">
+      フィードバックを更新しました。
+    </v-snackbar>
     <v-row v-show="isLoading" justify="center">
       <v-col cols="6">
         <v-progress-linear
@@ -192,6 +198,8 @@ export default {
       propsFeedback: {},
       nonValidUser: false,
       nonValidToken: false,
+      postFeedbackSuccess: false,
+      updateFeedbackSuccess: false,
     };
   },
   computed: {
@@ -285,12 +293,18 @@ export default {
         this.propsFeedback.articleId = this.article.articleId;
         this.$store
           .dispatch("article/postFeedback", this.propsFeedback)
+          .then(() => {
+            this.postFeedbackSuccess = true;
+          })
           .catch((error) => {
             this.errorHandle(error);
           });
       } else {
         this.$store
           .dispatch("article/updateFeedback", this.propsFeedback)
+          .then(() => {
+            this.updateFeedbackSuccess = true;
+          })
           .catch((error) => {
             this.errorHandle(error);
           });
