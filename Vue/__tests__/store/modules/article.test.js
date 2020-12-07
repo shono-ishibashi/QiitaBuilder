@@ -42,6 +42,7 @@ const replaceArticle={
 let url = ''
 let apiToken = '';
 let param=[]
+let requestBody;
 let mockError = false
 
 // axiosのモック化
@@ -62,6 +63,26 @@ jest.mock('axios', () => ({
                 throw Error("Mock Error")
             }
 
+            resolve({
+                data: null
+            })
+        })
+    }),
+
+    post: jest.fn((_url,_requestBody,{
+        headers:{
+            'Authorization': _apiToken
+        }
+    })=>{
+        return new Promise((resolve) => {
+            url = _url;
+            apiToken = _apiToken;
+            requestBody=_requestBody;
+
+            if (mockError) {
+                throw Error("Mock Error")
+            }
+            //insert予定の記事
             resolve({
                 data: null
             })
@@ -102,6 +123,7 @@ describe('store/articles.js', () => {
             store.registerModule('articles', cloneDeep(article))
             commit = cloneDeep(jest).fn();
         })
+
 
     })
 
