@@ -14,6 +14,7 @@
         :feedback="feedback"
         :key="feedback.feedbackId"
         @editFeedback="editFeedback"
+        @deleteFeedback="deleteFeedback"
     ></Feedback>
   </v-container>
 </template>
@@ -30,6 +31,9 @@ export default {
   methods: {
     editFeedback(feedback) {
       this.$emit("editFeedback", feedback);
+    },
+    deleteFeedback(feedback) {
+      this.$emit("deleteFeedback", feedback);
     },
   },
 };

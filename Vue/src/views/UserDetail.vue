@@ -210,9 +210,9 @@ export default {
       windowWidth: window.innerWidth,//画面横幅
       windowWidthClass: false,//画面横幅に応じて付与するクラスの切り替え用boolean
       loginListTabs: [
-        {id: 0, name: '公開中の投稿記事'},
-        {id: 1, name: '公開中のFBした記事'},
-        {id: 2, name: '公開中のMy記事'},
+        {id: 0, name: '投稿記事'},
+        {id: 1, name: 'FBした記事'},
+        {id: 2, name: 'My記事'},
         {id: 3, name: '下書き記事'}
       ],//記事タブ表示用リスト(login user用)
       notLoginListTabs: [
@@ -464,7 +464,7 @@ export default {
         }
         this.setArticles(articlesFromVuex);
         this.paging.now = 1;
-        this.length = Math.ceil(this.displayArticles.length / this.paging.pageSize);
+        this.length = Math.ceil(articlesFromVuex.length / this.paging.pageSize);
       }
     },
     resetConditions() {
