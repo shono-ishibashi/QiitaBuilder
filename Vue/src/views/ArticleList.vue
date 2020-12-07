@@ -181,20 +181,6 @@
       </v-col>
     </v-row>
 
-    <!--    許可しないアクセス時の警告ダイアログ-->
-    <v-dialog v-model="errorDialog" width="400">
-      <v-card>
-        <v-card-title>
-          警告
-        </v-card-title>
-        <v-card-text>
-          記事に対する権限がないか、記事が存在しません。
-        </v-card-text>
-        <v-card-actions>
-          <v-btn @click="toggleErrorTransitionDialog">OK</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </div>
 </template>
 
@@ -309,14 +295,6 @@ export default {
     apiToken() {
       const api=this.$store.getters["auth/apiToken"];
       return api
-    },
-    errorDialog: {
-      get() {
-        return this.errorTransistionDialog
-      },
-      set() {
-        this.toggleErrorTransitionDialog()
-      }
     },
     toggleSearchWord: {
       get() {
