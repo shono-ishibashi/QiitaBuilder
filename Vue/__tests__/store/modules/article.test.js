@@ -40,9 +40,10 @@ const replaceArticle={
 
 // actualな値
 let url = ''
-let apiToken = '';
+let apiToken = ''
 let param=[]
-let requestBody;
+let requestBody
+let mockReturn=null
 let mockError = false
 
 // axiosのモック化
@@ -64,7 +65,7 @@ jest.mock('axios', () => ({
             }
 
             resolve({
-                data: null
+                data: mockReturn
             })
         })
     }),
@@ -84,7 +85,7 @@ jest.mock('axios', () => ({
             }
             //insert予定の記事
             resolve({
-                data: null
+                data: mockReturn
             })
         })
     })
