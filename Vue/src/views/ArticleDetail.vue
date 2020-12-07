@@ -15,6 +15,9 @@
     <v-snackbar v-model="updateFeedbackSuccess" timeout="5000">
       フィードバックを更新しました。
     </v-snackbar>
+    <v-snackbar v-model="deleteFeedbackSuccess" timeout="5000">
+      フィードバックを削除しました。
+    </v-snackbar>
     <v-row v-show="isLoading" justify="center">
       <v-col cols="6">
         <v-progress-linear
@@ -129,6 +132,7 @@
           <Feedbacks
             :feedbacks="feedbacks"
             @editFeedback="editFeedback"
+            @deleteFeedback="deleteFeedback"
             v-if="article.stateFlag !== 0"
           />
         </v-sheet>
@@ -200,6 +204,7 @@ export default {
       nonValidToken: false,
       postFeedbackSuccess: false,
       updateFeedbackSuccess: false,
+      deleteFeedbackSuccess: false,
     };
   },
   computed: {
@@ -325,6 +330,16 @@ export default {
         updatedAt: feedback.updatedAt,
       };
       this.EditorIsOpen = true;
+    },
+    async deleteFeedback(feedback) {
+      this.$store
+        .dispatch("article/deleteFeedback", feedback)
+        .then(() => {
+          this.deleteFeedbackSuccess = true;
+        })
+        .catch((error) => {
+          this.errorHandle(error);
+        });
     },
     toggleMyArticle() {
       if (this.myArticleId) {
