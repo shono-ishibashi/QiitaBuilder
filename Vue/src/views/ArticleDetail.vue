@@ -142,15 +142,21 @@
           />
         </span>
         <span v-show="!EditorIsOpen">
-          <v-btn
-            color="gray"
-            icon
-            large
-            @click="openNewEditor"
-            class="toggle_editor_btn"
-          >
-            <v-icon>mdi-comment-plus</v-icon>
-          </v-btn>
+          <v-tooltip top>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                v-bind="attrs"
+                v-on="on"
+                icon
+                large
+                @click="openNewEditor"
+                class="toggle_editor_btn"
+              >
+                <v-icon large>mdi-comment-plus</v-icon>
+              </v-btn>
+            </template>
+            <span>フィードバック入力</span>
+          </v-tooltip>
         </span>
       </v-col>
     </v-row>
