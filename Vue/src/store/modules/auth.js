@@ -118,7 +118,7 @@ export default {
           commit("setLoginUser", null);
           commit("setAPIToken", null);
           axios.post(rootGetters.API_URL + "logout").then(() => {
-            router.push("/login");
+            router.push("/login").catch(()=>{});
           });
         });
     },
