@@ -27,12 +27,9 @@
             ></v-text-field>
             <v-combobox
                 v-model="article.tags"
-                :items="tags"
+                :items="tagNameList"
                 color="#5bc8ac"
-                item-value="tagId"
-                item-text="tagName"
                 item-color="green"
-                return-object
                 label="プログラミング技術に関するタグを5つまで入力(例：Java)"
                 deletable-chips
                 :rules="[tags_max_size,tags_min_size,blank]"
@@ -232,10 +229,18 @@ export default {
             this.fetchTags();
             this.$router.push('/article')
           })
+    },
+    article(){
+      if(this.article.tags){
+        for(let i=0;i<this.article.tags.length;i++){
+          this.article.tags.splice(i,1,this.article.tags[i].tagName)
+        }
+      }
     }
   },
   computed: {
     ...mapState("articles", ["tags", "searchCriteria"]),
+    ...mapGetters("articles",["tagNameList"]),
     ...mapState("article", ["article"]),
     ...mapGetters("auth", ["loginUser"]),
     ...mapGetters(["API_URL"]),
@@ -282,8 +287,17 @@ export default {
         //更新前のstateFlag
         const beforeStateFlag = this.article.stateFlag
         this.article.stateFlag = state
+        for(let i=0;i < this.article.tags.length; i++){
+          for(let tag of this.tags){
+            //タグが登録されているものには登録されているものをset
+            if(tag.tagName === this.article.tags[i]){
+              this.article.tags.splice(i,1,tag)
+              break
+            }
+          }
+        }
         //タグが登録されていないものにはtagIdにnullをset
-        for (var i = 0; i < this.article.tags.length; i++) {
+        for (let i = 0; i < this.article.tags.length; i++) {
           if (typeof this.article.tags[i] == 'string') {
             this.article.tags.splice(i, 1, {
               tagId: null, tagName: this.article.tags[i]
