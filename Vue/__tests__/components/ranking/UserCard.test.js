@@ -1,7 +1,6 @@
 import {shallowMount, createLocalVue} from '@vue/test-utils';
 import Component from '@/components/ranking/UserCard';
 import {afterEach, beforeEach, describe, jest} from "@jest/globals";
-import user from "@/store/modules/user";
 
 const localVue = createLocalVue();
 
