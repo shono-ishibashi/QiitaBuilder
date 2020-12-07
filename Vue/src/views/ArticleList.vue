@@ -247,9 +247,6 @@ export default {
       tags_limit_length: value => value.length <= 5 || "6個以上入力しないでください",
     }
   },
-  created() {
-
-  },
   watch: {
     async apiToken() {
       await this.fetchArticles(this.searchCriteria)
@@ -305,12 +302,13 @@ export default {
       }, 50)
     }
   },
+
   computed: {
     ...mapState("article", ["processFailure"]),
     ...mapState("articles", ["articles", "tags", "totalPage", "searchCriteria", "errorTransistionDialog"]),
     apiToken() {
-      console.log('呼んだ')
-      return this.$store.getters["auth/apiToken"];
+      const api=this.$store.getters["auth/apiToken"];
+      return api
     },
     errorDialog: {
       get() {
