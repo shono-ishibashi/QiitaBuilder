@@ -232,13 +232,22 @@ describe('Testing UserDetail Component', () => {
             await expect(wrapper.findAllComponents({name: 'v-progress-linear'}).length).toBe(2);
         })
         test('login list tabs', () => {
-            const loginTab0=wrapper.find(sel('login-list-tabs0'))
-            expect(wrapper.find(sel('login-list-tabs0')).text()).toBe('投稿記事');
-            expect(wrapper.find(sel('login-list-tabs1')).exists).toBeTruthy();
-            expect(loginTab0.text()).toBe('投稿記事');
-            console.log(loginTab0.text())
-            const tabs=wrapper.findAllComponents({name:'v-tab'}).at(0)
-            console.log(tabs.text())
+           //expect(wrapper.find(sel('login-list-tabs0')).text()).toBe('投稿記事');
+            //expect(wrapper.find(sel('login-list-tabs1')).exists).toBeTruthy();
+            expect(wrapper.find(sel('login-tab0')).text()).toBe('投稿記事')
+            expect(wrapper.find(sel('login-tab1')).text()).toBe('FBした記事')
+            expect(wrapper.find(sel('login-tab2')).text()).toBe('My記事')
+            expect(wrapper.find(sel('login-tab3')).text()).toBe('下書き記事')
+
+            expect(wrapper.find(sel('not-login-tab0')).exists()).toBeFalsy();
+
+
+            //Vuex内のisLoginUserがfalseは別ストアのテストじゃないと無理？
+            store.state.user.userDetail.isLoginUser=false;
+            //expect(wrapper.find(sel('not-login-tab0')).exists()).toBeTruthy();
+            console.log(store.state.user.userDetail.isLoginUser)
+            console.log("not-login:"+wrapper.find(sel('not-login-tab0')).exists())
+
         })
     })
 })
