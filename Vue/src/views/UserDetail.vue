@@ -15,10 +15,12 @@
       <v-col cols="12" sm="12" md="6">
         <v-container>
           <v-tabs v-model="displayListNum" v-if="userDetail.isLoginUser" color="#5bc8ac">
-            <v-tab v-for="tab of loginListTabs" :key="tab.id" @click="changeList(tab.id)">{{ tab.name }}</v-tab>
+            <v-tab v-for="(tab,index) of loginListTabs" :key="tab.id" @click="changeList(tab.id)"
+                   :data-testid="'login-list-tabs'+index">{{ tab.name }}
+            </v-tab>
           </v-tabs>
           <v-tabs v-model="displayListNum" v-if="!(userDetail.isLoginUser)" color="#5bc8ac">
-            <v-tab v-for="tab of notLoginListTabs" :key="tab.id" @click="changeList(tab.id)">{{ tab.name }}</v-tab>
+            <v-tab v-for="(tab, index)of notLoginListTabs" :key="tab.id" @click="changeList(tab.id)" :data-testid="'not-login-list-tabs'+index">{{ tab.name }}</v-tab>
           </v-tabs>
 
           <v-card outlined>
