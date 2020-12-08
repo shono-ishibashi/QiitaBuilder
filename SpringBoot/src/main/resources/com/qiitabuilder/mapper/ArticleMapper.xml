@@ -137,6 +137,7 @@
         ON a_t_relation.tag_id = tags.tag_id
         LEFT OUTER JOIN (SELECT article_id, count(feed.article_id) as feed_cnt
         FROM feedbacks as feed
+        WHERE delete_flag= 0
         GROUP BY feed.article_id) as feed_cnt_table
         ON art.article_id = feed_cnt_table.article_id
         LEFT OUTER JOIN (SELECT article_id, count(my.article_id) as my_cnt

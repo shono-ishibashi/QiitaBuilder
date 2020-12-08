@@ -126,7 +126,7 @@ export default {
         },
         async fetchArticle({commit, rootGetters, rootState}, articleId) {
             const url = rootGetters.API_URL + "article/" + articleId;
-            var apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
+            const apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
             const reqHeader = {
                 headers: {
                     Authorization: apiToken,
@@ -140,14 +140,13 @@ export default {
                         resolve(res);
                     })
                     .catch((error) => {
-                        console.log("Error getting data : ", error);
                         reject(error);
                     });
             });
         },
-        async saveArticle({rootGetters}, article) {
+        async saveArticle({rootState,rootGetters}, article) {
             const articleEditUrl = rootGetters.API_URL + "article/";
-            const apiToken = await rootGetters["auth/apiToken"];
+            const apiToken = rootState.auth.apiToken;
             const insertRequestBody = {
                 articleId: article.articleId,
                 content: article.content,

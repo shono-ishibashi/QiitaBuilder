@@ -25,16 +25,7 @@ const replaceArticle = {
         tagId: 1,
         tagName: 'Java'
     },
-    feedbacks: [
-        {
-            feedbackId: 1,
-            articleId: 1,
-            // createdAt:
-            // updatedAt:
-            content: 'content',
-            feedbackVersion: 1,
-            deleteFlag: 0
-        }],
+    feedbacks: [],
     qiitaRecommendPoint: 2
 }
 
@@ -64,7 +55,6 @@ jest.mock('axios', () => ({
 
             if (mockError) {
                 if (mockHttpStatus === 400) {
-                    httpStatus = 400
                     throw  Object.assign(new Error('BAD REQUEST'), {
                             name: 'axios error',
                             response: {status: 400}
@@ -72,21 +62,18 @@ jest.mock('axios', () => ({
                     );
                 }
                 if (mockHttpStatus === 404) {
-                    httpStatus = 404
                     throw  Object.assign(new Error('NOT FOUND'), {
                         name: 'axios error',
                         response: {status: 404}
                     });
                 }
                 if (mockHttpStatus === 409) {
-                    httpStatus = 409
                     throw  Object.assign(new Error('NOT FOUND'), {
                         name: 'axios error',
                         response: {status: 404}
                     });
                 }
                 if (mockHttpStatus === 500) {
-                    httpStatus = 500
                     throw   Object.assign(new Error('Internal Server Error'), {
                         name: 'axios error',
                         response: {status: 500}
@@ -112,7 +99,6 @@ jest.mock('axios', () => ({
 
             if (mockError) {
                 if (mockHttpStatus === 400) {
-                    httpStatus = 400
                     throw  Object.assign(new Error('BAD REQUEST'), {
                             name: 'axios error',
                             response: {status: 400}
@@ -120,21 +106,18 @@ jest.mock('axios', () => ({
                     );
                 }
                 if (mockHttpStatus === 404) {
-                    httpStatus = 404
                     throw  Object.assign(new Error('NOT FOUND'), {
                         name: 'axios error',
                         response: {status: 404}
                     });
                 }
                 if (mockHttpStatus === 409) {
-                    httpStatus = 409
                     throw  Object.assign(new Error('NOT FOUND'), {
                         name: 'axios error',
                         response: {status: 404}
                     });
                 }
                 if (mockHttpStatus === 500) {
-                    httpStatus = 500
                     throw   Object.assign(new Error('Internal Server Error'), {
                         name: 'axios error',
                         response: {status: 500}
@@ -160,7 +143,6 @@ jest.mock('axios', () => ({
 
             if (mockError) {
                 if (mockHttpStatus === 400) {
-                    httpStatus = 400
                     throw  Object.assign(new Error('BAD REQUEST'), {
                             name: 'axios error',
                             response: {status: 400}
@@ -168,21 +150,18 @@ jest.mock('axios', () => ({
                     );
                 }
                 if (mockHttpStatus === 404) {
-                    httpStatus = 404
                     throw  Object.assign(new Error('NOT FOUND'), {
                         name: 'axios error',
                         response: {status: 404}
                     });
                 }
                 if (mockHttpStatus === 409) {
-                    httpStatus = 409
                     throw  Object.assign(new Error('NOT FOUND'), {
                         name: 'axios error',
                         response: {status: 404}
                     });
                 }
                 if (mockHttpStatus === 500) {
-                    httpStatus = 500
                     throw   Object.assign(new Error('Internal Server Error'), {
                         name: 'axios error',
                         response: {status: 500}
@@ -249,14 +228,28 @@ describe('store/articles.js', () => {
             try {
                 await article.actions.fetchArticle({commit, rootGetters, rootState}, articleId)
             } catch (error) {
+                console.log(error.response)
+                console.log(error.name)
                 await expect(url).toBe('http://localhost:8080/qiita_builder/article/a')
                 await expect(apiToken).toBe('token')
-                await expect(httpStatus).toHaveBeenCalledTimes(400)
+                await expect(error.name).toBe("axios error")
+                await expect(error.response.status).toBe(400)
             }
         })
 
         test('actions: saveArticle(post)', async () => {
-
+            mockReturn=replaceArticle
+            const insertRequestBody={
+                articleId: null,
+                title: 'title',
+                content: 'content',
+                stateFlag: 1,
+                tags: {
+                    tagId: 1,
+                    tagName: 'Java'
+                },
+            }
+            await article.actions.saveArticle({rootState,rootGetters},)
         })
 
         test('actions: saveArticle(post,400error)', async () => {
