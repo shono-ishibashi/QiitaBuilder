@@ -272,7 +272,7 @@ export default {
     },
     errorHandle(error) {
       const status = error.response.status;
-      if (status == 404) {
+      if (status == 400 || status == 404) {
         this.$store.dispatch("window/setNotFound", true);
       } else if (status == 401) {
         this.nonValidToken = true;
