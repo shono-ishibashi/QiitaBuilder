@@ -110,7 +110,7 @@
                     </v-icon>
                     {{ article.feedbackCount }}
                   </template>
-                  <span>コメント数</span>
+                  <span>フィードバック数</span>
                 </v-tooltip>
               </v-col>
             </v-row>
