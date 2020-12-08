@@ -209,7 +209,7 @@ export default {
         {key: 0, state: "新着順"},
         {key: 1, state: "更新順"},
         {key: 2, state: "Qiita推奨数順"},
-        {key: 3, state: "My記事登録順"}
+        {key: 3, state: "お気に入り登録順"}
       ],
       // 期間
       periodList: [
