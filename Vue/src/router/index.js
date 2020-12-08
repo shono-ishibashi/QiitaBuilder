@@ -85,7 +85,7 @@ router.beforeResolve(async (to, from, next) => {
                             })
                     })
                 if (to.path === '/login') {
-                    await next({path: '/'});
+                    await next({name: 'articleList'});
                 } else {
                     await next();
                 }
