@@ -237,6 +237,7 @@ export default {
   },
   watch: {
     apiToken: async function() {
+      this.isLoading = true;
       const a = this.fetchArticle(this.slug).catch((error) => {
         this.errorHandle(error);
       });
@@ -276,6 +277,7 @@ export default {
         this.$store.dispatch("window/setNotFound", true);
       } else if (status == 401) {
         this.nonValidToken = true;
+        this.$store.dispatch("auth/logout");
       } else {
         this.toggleProcessFailure();
       }
