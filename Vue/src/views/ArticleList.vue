@@ -235,6 +235,7 @@ export default {
   },
   watch: {
     async apiToken() {
+      if(this.apiToken!=null){
       await this.fetchArticles(this.searchCriteria)
           .then(() => {
             if (this.articles.length === 0) {
@@ -247,34 +248,35 @@ export default {
       await this.fetchTags();
       await this.$nextTick();
       await setTimeout(() => {
-        this.toggleLoading()
-        this.toggleDisplay()
+        this.isLoading=false
+        this.isDisplay=true
       }, 1000)
+      }
     },
     async ['searchCriteria.sortNum']() {
-      await this.toggleLoading()
-      await this.toggleDisplay()
+      this.isLoading=true
+      this.isDisplay=false
       this.searchCriteria.currentPage = 1;
       await this.fetchArticles(this.searchCriteria).catch(error => {
         this.errorHandle(error)
       })
       await this.$nextTick();
       await setTimeout(() => {
-        this.toggleLoading()
-        this.toggleDisplay()
+        this.isLoading=false
+        this.isDisplay=true
       }, 1000)
     },
     async ['searchCriteria.period']() {
-      await this.toggleLoading()
-      await this.toggleDisplay()
+      this.isLoading=true
+      this.isDisplay=false
       this.searchCriteria.currentPage = 1;
       this.fetchArticles(this.searchCriteria).catch(error => {
         this.errorHandle(error)
       })
       await this.$nextTick();
       await setTimeout(() => {
-        this.toggleLoading()
-        this.toggleDisplay()
+        this.isLoading=false
+        this.isDisplay=true
       }, 1000)
     },
     ['searchCriteria.pageSize']() {
@@ -324,16 +326,16 @@ export default {
     async submit() {
       if (!this.can_submit_search) return
       if (this.$refs.search_form.validate()) {
-        await this.toggleLoading()
-        await this.toggleDisplay()
+        this.isLoading=true
+        this.isDisplay=false
         this.searchCriteria.currentPage = 1
         await this.fetchArticles(this.searchCriteria).catch(error => {
           this.errorHandle(error)
         })
         await this.$nextTick();
         await setTimeout(() => {
-          this.toggleLoading()
-          this.toggleDisplay()
+          this.isLoading=false
+          this.isDisplay=true
         }, 1000)
         this.can_submit_search = false;
       }
@@ -349,8 +351,8 @@ export default {
       });
     },
     async reset() {
-      await this.toggleLoading()
-      await this.toggleDisplay()
+      this.isLoading=true
+      this.isDisplay=false
       this.searchCriteria.searchWord = ""
       this.searchCriteria.searchTag = []
       this.searchCriteria.currentPage = 1
@@ -359,8 +361,8 @@ export default {
       })
       await this.$nextTick();
       await setTimeout(() => {
-        this.toggleLoading()
-        this.toggleDisplay()
+        this.isLoading=false
+        this.isDisplay=true
       }, 1000)
     },
     errorHandle(error) {
@@ -373,12 +375,6 @@ export default {
         this.toggleProcessFailure()
       }
     },
-    toggleDisplay() {
-      this.isDisplay = !this.isDisplay
-    },
-    toggleLoading(){
-      this.isLoading = !this.isLoading
-    }
   }
 }
 </script>

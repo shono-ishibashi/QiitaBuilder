@@ -29,6 +29,25 @@ const replaceArticle = {
     qiitaRecommendPoint: 2
 }
 
+const replaceInsertArticle = {
+    postedUser: {
+        userid: 1,
+        uid: 'uid',
+        password: 'password',
+        displayName: 'user1',
+        photoUrl: 'url1'
+    },
+    articleId: 1,
+    title: 'title',
+    content: 'content',
+    stateFlag: 1,
+    articleVersion: 1,
+    tags: {
+        tagId: 1,
+        tagName: 'Java'
+    },
+}
+
 // actualな値
 let url = ''
 let apiToken = ''
@@ -37,7 +56,6 @@ let requestBody = []
 let mockHttpStatus = 200
 let mockReturn = null
 let mockError = false
-let httpStatus = ''
 
 // axiosのモック化
 //jestのエラーを削除するとtestに失敗する
@@ -68,9 +86,9 @@ jest.mock('axios', () => ({
                     });
                 }
                 if (mockHttpStatus === 409) {
-                    throw  Object.assign(new Error('NOT FOUND'), {
+                    throw  Object.assign(new Error('CONFLICT'), {
                         name: 'axios error',
-                        response: {status: 404}
+                        response: {status: 409}
                     });
                 }
                 if (mockHttpStatus === 500) {
@@ -80,7 +98,6 @@ jest.mock('axios', () => ({
                     });
                 }
             }
-
             resolve({
                 data: mockReturn
             })
@@ -112,9 +129,9 @@ jest.mock('axios', () => ({
                     });
                 }
                 if (mockHttpStatus === 409) {
-                    throw  Object.assign(new Error('NOT FOUND'), {
+                    throw  Object.assign(new Error('CONFLICT'), {
                         name: 'axios error',
-                        response: {status: 404}
+                        response: {status: 409}
                     });
                 }
                 if (mockHttpStatus === 500) {
@@ -156,9 +173,9 @@ jest.mock('axios', () => ({
                     });
                 }
                 if (mockHttpStatus === 409) {
-                    throw  Object.assign(new Error('NOT FOUND'), {
+                    throw  Object.assign(new Error('CONFLICT'), {
                         name: 'axios error',
-                        response: {status: 404}
+                        response: {status: 409}
                     });
                 }
                 if (mockHttpStatus === 500) {
@@ -228,8 +245,6 @@ describe('store/articles.js', () => {
             try {
                 await article.actions.fetchArticle({commit, rootGetters, rootState}, articleId)
             } catch (error) {
-                console.log(error.response)
-                console.log(error.name)
                 await expect(url).toBe('http://localhost:8080/qiita_builder/article/a')
                 await expect(apiToken).toBe('token')
                 await expect(error.name).toBe("axios error")
@@ -237,79 +252,223 @@ describe('store/articles.js', () => {
             }
         })
 
+        // 記事投稿用のrequestBody
+        const insertRequestBody = {
+            articleId: null,
+            title: 'title',
+            content: 'content',
+            stateFlag: 1,
+            tags: {
+                tagId: 1,
+                tagName: 'Java'
+            },
+        }
+
         test('actions: saveArticle(post)', async () => {
-            mockReturn=replaceArticle
-            const insertRequestBody={
-                articleId: null,
-                title: 'title',
-                content: 'content',
-                stateFlag: 1,
-                tags: {
-                    tagId: 1,
-                    tagName: 'Java'
-                },
-            }
-            await article.actions.saveArticle({rootState,rootGetters},)
+            mockReturn = replaceInsertArticle
+
+            await article.actions.saveArticle({rootState, rootGetters}, insertRequestBody)
+            await expect(url).toBe('http://localhost:8080/qiita_builder/article/')
+            await expect(apiToken).toBe('token')
+            await expect(requestBody).toStrictEqual(insertRequestBody)
         })
 
         test('actions: saveArticle(post,400error)', async () => {
-
-        })
+                mockError = true
+                mockHttpStatus = 400
+                insertRequestBody.content = ''
+                try {
+                    await article.actions.saveArticle({rootState, rootGetters}, insertRequestBody)
+                } catch (error) {
+                    await expect(url).toBe('http://localhost:8080/qiita_builder/article/')
+                    await expect(apiToken).toBe('token')
+                    await expect(error.name).toBe("axios error")
+                    await expect(error.response.status).toBe(400)
+                }
+            }
+        )
 
         test('actions: saveArticle(put)', async () => {
-
+            mockReturn = replaceInsertArticle
+            insertRequestBody.articleId = 1
+            insertRequestBody.articleVersion = 1
+            await article.actions.saveArticle({rootState, rootGetters}, insertRequestBody)
+            await expect(url).toBe('http://localhost:8080/qiita_builder/article/')
+            await expect(apiToken).toBe('token')
+            await expect(requestBody).toStrictEqual(insertRequestBody)
         })
 
         test('actions: saveArticle(put,400error)', async () => {
-
-        })
+                mockError = true
+                insertRequestBody.articleId = 1
+                insertRequestBody.articleVersion = 1
+                mockHttpStatus = 400
+                insertRequestBody.content = ''
+                try {
+                    await article.actions.saveArticle({rootState, rootGetters}, insertRequestBody)
+                } catch (error) {
+                    await expect(url).toBe('http://localhost:8080/qiita_builder/article/')
+                    await expect(apiToken).toBe('token')
+                    await expect(error.name).toBe("axios error")
+                    await expect(error.response.status).toBe(400)
+                }
+            }
+        )
 
         test('actions: resetArticle', async () => {
-
+            await article.actions.resetArticle({commit})
+            await expect(commit).toHaveBeenCalledTimes(1)
+            await expect(commit).toHaveBeenCalledWith('resetArticle')
         })
 
         test('actions: commitMarkDownText', async () => {
-
+            const text = 'text'
+            await article.actions.commitMarkDownText({commit}, text)
+            await expect(commit).toHaveBeenCalledTimes(1)
+            await expect(commit).toHaveBeenCalledWith('mutateMarkDownText', text)
         })
 
-        test('actions: postFeedback', async () => {
+        //フィードバック投稿用のrequestBody
+        const feedbackRequestBody = {
+            feedbackId: null,
+            articleId: 1,
+            content: 'content',
+            deleteFlag: 0
+        }
 
+        test('actions: postFeedback', async () => {
+            await article.actions.postFeedback({commit, rootState, rootGetters}, feedbackRequestBody)
+            await expect(url).toBe('http://localhost:8080/qiita_builder/feedback')
+            await expect(apiToken).toBe('token')
+            await expect(requestBody).toStrictEqual(feedbackRequestBody)
         })
 
         test('actions: postFeedback(400error)', async () => {
-
+            mockError = true
+            mockHttpStatus = 400
+            feedbackRequestBody.content = ''
+            try {
+                await article.actions.postFeedback({commit, rootState, rootGetters}, feedbackRequestBody)
+            } catch (error) {
+                await expect(url).toBe('http://localhost:8080/qiita_builder/feedback')
+                await expect(apiToken).toBe('token')
+                await expect(error.name).toBe("axios error")
+                await expect(error.response.status).toBe(400)
+            }
         })
 
         test('actions: postFeedback(409error)', async () => {
-
+            mockError = true
+            mockHttpStatus = 409
+            feedbackRequestBody.articleId = 2
+            try {
+                await article.actions.postFeedback({commit, rootState, rootGetters}, feedbackRequestBody)
+            } catch (error) {
+                await expect(url).toBe('http://localhost:8080/qiita_builder/feedback')
+                await expect(apiToken).toBe('token')
+                await expect(error.name).toBe("axios error")
+                await expect(error.response.status).toBe(409)
+            }
         })
 
         test('actions: updateFeedback', async () => {
+            feedbackRequestBody.feedbackId = 1
+            feedbackRequestBody.content = 'updateContent'
+            feedbackRequestBody.feedbackVersion = 1
+            mockReturn = feedbackRequestBody
 
+            await article.actions.updateFeedback({commit, rootState, rootGetters}, feedbackRequestBody)
+            await expect(url).toBe('http://localhost:8080/qiita_builder/feedback')
+            await expect(apiToken).toBe('token')
+            await expect(commit).toHaveBeenCalledTimes(1)
+            await expect(commit).toHaveBeenCalledWith('updateFeedback', feedbackRequestBody)
         })
 
         test('actions: updateFeedback(400error)', async () => {
-
+            mockError = true
+            mockHttpStatus = 400
+            feedbackRequestBody.feedbackId = 1
+            feedbackRequestBody.content = 'updateContent'
+            feedbackRequestBody.feedbackVersion = 1
+            try {
+                await article.actions.updateFeedback({commit, rootState, rootGetters}, feedbackRequestBody)
+            } catch (error) {
+                await expect(url).toBe('http://localhost:8080/qiita_builder/feedback')
+                await expect(apiToken).toBe('token')
+                await expect(error.name).toBe("axios error")
+                await expect(error.response.status).toBe(400)
+            }
         })
 
         test('actions: updateFeedback(409error)', async () => {
-
+            mockError = true
+            mockHttpStatus = 409
+            feedbackRequestBody.feedbackId = 2
+            feedbackRequestBody.content = 'updateContent1'
+            feedbackRequestBody.feedbackVersion = 1
+            try {
+                await article.actions.updateFeedback({commit, rootState, rootGetters}, feedbackRequestBody)
+            } catch (error) {
+                await expect(url).toBe('http://localhost:8080/qiita_builder/feedback')
+                await expect(apiToken).toBe('token')
+                await expect(error.name).toBe("axios error")
+                await expect(error.response.status).toBe(409)
+            }
         })
 
         test('actions: deleteFeedback', async () => {
-
+            feedbackRequestBody.feedbackId = 1
+            feedbackRequestBody.content = 'updateContent'
+            feedbackRequestBody.feedbackVersion = 2
+            feedbackRequestBody.deleteFlag=1
+            await article.actions.deleteFeedback({commit,rootState,rootGetters},feedbackRequestBody)
+            await expect(url).toBe('http://localhost:8080/qiita_builder/feedback')
+            await expect(apiToken).toBe('token')
+            await expect(commit).toHaveBeenCalledTimes(1)
+            await expect(commit).toHaveBeenCalledWith('removeFeedback', 1)
         })
 
         test('actions: deleteFeedback(400error)', async () => {
-
+            mockError = true
+            mockHttpStatus = 400
+            feedbackRequestBody.feedbackId = 1
+            feedbackRequestBody.content = ''
+            feedbackRequestBody.feedbackVersion = 1
+            try {
+                await article.actions.deleteFeedback({commit, rootState, rootGetters}, feedbackRequestBody)
+            } catch (error) {
+                await expect(url).toBe('http://localhost:8080/qiita_builder/feedback')
+                await expect(apiToken).toBe('token')
+                await expect(error.name).toBe("axios error")
+                await expect(error.response.status).toBe(400)
+            }
         })
 
         test('actions: deleteFeedback(409error)', async () => {
-
+            mockError = true
+            mockHttpStatus = 409
+            // 存在しないfeedbackIdを想定
+            feedbackRequestBody.feedbackId = 2
+            feedbackRequestBody.content = 'updateContent'
+            feedbackRequestBody.feedbackVersion = 1
+            try {
+                await article.actions.deleteFeedback({commit, rootState, rootGetters}, feedbackRequestBody)
+            } catch (error) {
+                await expect(url).toBe('http://localhost:8080/qiita_builder/feedback')
+                await expect(apiToken).toBe('token')
+                await expect(error.name).toBe("axios error")
+                await expect(error.response.status).toBe(409)
+            }
         })
 
         test('actions: fetchMyArticle', async () => {
-
+            const articleId=1
+            mockReturn=1
+            await article.actions.fetchMyArticle({commit,rootState,rootGetters},articleId)
+            await expect(url).toBe('http://localhost:8080/qiita_builder/my-article?articleId=1')
+            await expect(apiToken).toBe('token')
+            await expect(commit).toHaveBeenCalledTimes(1)
+            await expect(commit).toHaveBeenCalledWith('setMyArticleId',1)
         })
 
         test('actions: fetchMyArticle(400error)', async () => {

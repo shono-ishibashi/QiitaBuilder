@@ -208,7 +208,6 @@ public class ArticleService {
                             )
                     );
         }
-        System.out.println(article);
         return article;
     }
 
