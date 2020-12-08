@@ -165,7 +165,7 @@
                 <v-icon large>mdi-comment-plus</v-icon>
               </v-btn>
             </template>
-            <span>フィードバック入力</span>
+            <span>フィードバックを入力する</span>
           </v-tooltip>
         </span>
       </v-col>
