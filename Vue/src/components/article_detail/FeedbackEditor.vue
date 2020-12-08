@@ -5,7 +5,7 @@
       <v-icon>mdi-message-text-outline</v-icon>
       <v-spacer></v-spacer>
       <v-toolbar-title
-        >コメントを{{ feedback.feedbackId | postOrEdit }}する
+        >フィードバックを{{ feedback.feedbackId | postOrEdit }}する
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn color="" icon @click="closeEditor">
@@ -95,7 +95,7 @@ export default {
         },
       },
       valid: false,
-      required: (value) => !!value || "コメントを入力してください",
+      required: (value) => !!value || "テキストを入力してください",
       maximum: (value) =>
         value === undefined
           ? true

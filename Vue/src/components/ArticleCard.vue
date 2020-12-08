@@ -95,7 +95,7 @@
                     </v-icon>
                     {{ article.registeredMyArticleCount }}
                   </template>
-                  <span>My記事登録数</span>
+                  <span>お気に入り数</span>
                 </v-tooltip>
               </v-col>
               <v-col cols="1" class="margin-control">
@@ -110,7 +110,7 @@
                     </v-icon>
                     {{ article.feedbackCount }}
                   </template>
-                  <span>コメント数</span>
+                  <span>フィードバック数</span>
                 </v-tooltip>
               </v-col>
             </v-row>

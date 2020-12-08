@@ -107,7 +107,7 @@ export default {
     async loginPartners() {
       await this.$store.dispatch('auth/googleLogin', "rakus-partners.co.jp")
           .then(() => {
-                router.push({name: 'articleList'});
+                router.push({name: 'articleList'}).catch(()=>{});
               }
           );
     },

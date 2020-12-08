@@ -92,7 +92,6 @@ router.beforeResolve(async (to, from, next) => {
                 //ログイン中でないならログアウト処理を行う
             } else {
                 await store.dispatch('auth/logout');
-                await next({path: '/login'})
             }
         })
     }

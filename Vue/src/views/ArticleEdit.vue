@@ -27,12 +27,9 @@
             ></v-text-field>
             <v-combobox
                 v-model="article.tags"
-                :items="tags"
+                :items="tagNameList"
                 color="#5bc8ac"
-                item-value="tagId"
-                item-text="tagName"
                 item-color="green"
-                return-object
                 label="プログラミング技術に関するタグを5つまで入力(例：Java)"
                 deletable-chips
                 :rules="[tags_max_size,tags_min_size,blank]"
@@ -156,7 +153,6 @@ import Edit from '../components/article_edit/format/FormatEdit'
 import Preview from '../components/article_edit/format/FormatPreview'
 import EditAndPreviewAndFeedback from '../components/article_edit/format/FormatEditAndPreviewAndFeedback'
 import {mapState, mapGetters, mapActions} from 'vuex'
-import axios from 'axios'
 
 export default {
   name: "ArticleEdit",
@@ -195,47 +191,29 @@ export default {
       await this.findUserIdByUid(uid).catch((error) => {
         this.errorHandle(error);
       })
-      const article = await this.slug
-      const params = await {
-        articleId: article,
+      const articleId = await this.slug
+      const params =  {
+        articleId: articleId,
         userId: this.userId
       }
-      // アクセス権限のあるユーザーだと200が返ってくる
-      await axios.get(this.API_URL + 'article/isExist', {
-        params: params,
-        headers: {
-          "Authorization": this.apiToken,
-          "Content-Type": "application/json"
-        },
-      })
-          .then(() => {
-            this.resetArticle()
-            this.fetchTags()
-            this.fetchArticle(this.slug)
-                .then(() => {
-                  if (this.article.stateFlag === 9) {
-                    this.toggleErrorTransitionDialog()
-                    this.$router.push('/article')
-                  }
-                  setTimeout(() => {
-                    this.toggleDisplay()
-                  }, 1000)
-                })
-                .catch((error) => {
-                  this.errorHandle(error);
-                })
-
-          })
-          .catch(() => {
-            this.toggleErrorTransitionDialog()
-            this.fetchArticles(this.searchCriteria);
-            this.fetchTags();
-            this.$router.push('/article')
-          })
+      // 認証の通ったユーザーであれば該当する記事とタグを取得
+      await this.fetchArticleEdit(params)
+      await setTimeout(() => {
+        this.toggleLoading()
+        this.toggleDisplay()
+      }, 1000)
+    },
+    article(){
+      if(this.article.tags){
+        for(let i=0;i<this.article.tags.length;i++){
+          this.article.tags.splice(i,1,this.article.tags[i].tagName)
+        }
+      }
     }
   },
   computed: {
     ...mapState("articles", ["tags", "searchCriteria"]),
+    ...mapGetters("articles",["tagNameList"]),
     ...mapState("article", ["article"]),
     ...mapGetters("auth", ["loginUser"]),
     ...mapGetters(["API_URL"]),
@@ -272,8 +250,8 @@ export default {
     },
   },
   methods: {
-    ...mapActions("article", ["fetchArticle", "saveArticle", "resetArticle"]),
-    ...mapActions("articles", ["fetchArticles", "fetchTags", "toggleErrorTransitionDialog"]),
+    ...mapActions("article", ["fetchArticle", "saveArticle", "resetArticle","fetchArticleEdit"]),
+    ...mapActions("articles", ["fetchArticles"]),
     ...mapActions("user", ["findUserIdByUid"]),
     //記事を投稿or更新するメソッド
     async postArticle(state) {
@@ -282,8 +260,17 @@ export default {
         //更新前のstateFlag
         const beforeStateFlag = this.article.stateFlag
         this.article.stateFlag = state
+        for(let i=0;i < this.article.tags.length; i++){
+          for(let tag of this.tags){
+            //タグが登録されているものには登録されているものをset
+            if(tag.tagName === this.article.tags[i]){
+              this.article.tags.splice(i,1,tag)
+              break
+            }
+          }
+        }
         //タグが登録されていないものにはtagIdにnullをset
-        for (var i = 0; i < this.article.tags.length; i++) {
+        for (let i = 0; i < this.article.tags.length; i++) {
           if (typeof this.article.tags[i] == 'string') {
             this.article.tags.splice(i, 1, {
               tagId: null, tagName: this.article.tags[i]
@@ -336,8 +323,10 @@ export default {
     },
     // 読み込みと表示画面の切り替え
     toggleDisplay() {
-      this.isLoading = !this.isLoading
       this.isDisplay = !this.isDisplay
+    },
+    toggleLoading(){
+      this.isLoading = !this.isLoading
     }
   },
 

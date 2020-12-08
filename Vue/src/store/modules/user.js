@@ -10,7 +10,7 @@ export default {
             usedTags: [],
             feedbackCount: 0,
             qiitaRecommendedAllCount: 0,
-            postedArticleCount: 0,
+            postedArticleCount: 0,//Qiita投稿済み記事数(stateFlag=2)
             isLoginUser: false,
         },
         postedArticles: [],
@@ -99,9 +99,6 @@ export default {
         clearUsedTag(state) {
             state.usedTags.splice(0);
         },
-        setArticleCardDisplay(state, articleCard) {
-            state.articleCardDisplay = articleCard;
-        },
         setChartData(state, chartData) {
             state.chartData = chartData;
         },
@@ -109,7 +106,6 @@ export default {
             state.userDetail.userId = userId;
         },
         clearState(state) {
-            state.articleCardDisplay=null
             state.postedArticles.splice(0)
             state.displayArticles.splice(0)
             state.myArticles.splice(0)
@@ -145,9 +141,6 @@ export default {
             if (articles.length !== 0) {
                 await commit("setDisplayArticles", articles);
             }
-        },
-        setArticleCardDisplay({commit}, articleCard) {
-            commit("setArticleCardDisplay", articleCard)
         },
         setChartData({commit}, chartData) {
             commit("setChartData", chartData)
@@ -190,7 +183,6 @@ export default {
                 .then(res => {
                     commit("setPostedArticles", res.data)
                 }).catch((error) => {
-                console.log(error)
                 const errorStatus = error.response.status;
                 if (errorStatus === 400) {
                     dispatch('window/setNotFound', true, {root: true})
@@ -212,7 +204,6 @@ export default {
             }).then(res => {
                 commit("setFeedbackArticles", res.data);
             }).catch((error) => {
-                console.log(error)
                 const errorStatus = error.response.status;
                 if (errorStatus === 400) {
                     dispatch('window/setNotFound', true, {root: true})
@@ -233,7 +224,6 @@ export default {
             }).then(res => {
                 commit("setMyArticles", res.data);
             }).catch((error) => {
-                console.log(error)
                 const errorStatus = error.response.status;
                 if (errorStatus === 400) {
                     dispatch('window/setNotFound', true, {root: true})
@@ -256,7 +246,6 @@ export default {
                     commit("setUserId", res.data);
                     resolve(res)
                 }).catch((error) => {
-                    console.log(error)
                     const errorStatus = error.response.status;
                     if (errorStatus === 400) {
                         dispatch('window/setNotFound', true, {root: true})

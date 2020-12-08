@@ -114,7 +114,7 @@ export default {
       this.$emit("editFeedback", this.feedback);
     },
     deleteFeedback() {
-      this.$store.dispatch("article/deleteFeedback", this.feedback);
+      this.$emit("deleteFeedback", this.feedback);
     },
   },
 };

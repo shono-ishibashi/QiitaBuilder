@@ -16,9 +16,11 @@ export default {
         },
         totalPage: undefined,
         tags: [],
-        // 遷移エラー時に表示するダイアログ
-        errorTransistionDialog: false,
     },
+    getters: {
+        tagNameList: state => state.tags.map(tag => tag.tagName)
+    }
+    ,
     mutations: {
         setArticles(state, articles) {
             state.articles = articles
@@ -29,15 +31,12 @@ export default {
         setTotalPage(state, totalPage) {
             state.totalPage = totalPage
         },
-        toggleErrorTransitionDialog(state) {
-            state.errorTransistionDialog = !state.errorTransistionDialog
-        },
-        setToggleSearchWord(state,selected){
+        setToggleSearchWord(state, selected) {
             state.searchCriteria.toggleSearchWord = selected
         }
     },
     actions: {
-        async fetchArticles({commit, rootState, rootGetters}, newSearchCriteria) {
+        async fetchArticles({dispatch, commit, rootState, rootGetters}, newSearchCriteria) {
             const fetchArticlesUrl = rootGetters.API_URL + 'article/'
             const fetchTotalPageUrl = rootGetters.API_URL + 'article/totalPage'
             const apiToken = rootState.auth.apiToken;
@@ -63,10 +62,16 @@ export default {
                 .then(res => {
                     commit("setArticles", res.data)
                 })
-                .catch(error=>{
-                    console.log(error)
-                })
-            //記事ページ数の取得
+                .catch(error => {
+                        const errorStatus = error.response.status;
+                        if (errorStatus === 400) {
+                            dispatch('window/setNotFound', true, {root: true})
+                        } else {
+                            dispatch('window/setInternalServerError', true, {root: true})
+                        }
+                    }
+                )
+//記事ページ数の取得
             await axios.get(fetchTotalPageUrl, {
                 params: params,
                 headers: {
@@ -78,11 +83,16 @@ export default {
                 .then(res => {
                     commit("setTotalPage", res.data)
                 })
-                .catch((error) =>{
-                    console.log(error)
+                .catch((error) => {
+                    const errorStatus = error.response.status;
+                    if (errorStatus === 400) {
+                        dispatch('window/setNotFound', true, {root: true})
+                    } else {
+                        dispatch('window/setInternalServerError', true, {root: true})
+                    }
                 })
         },
-        async fetchTags({commit, rootState, rootGetters}) {
+        async fetchTags({dispatch,commit, rootState, rootGetters}) {
             const url = rootGetters.API_URL + 'tag/'
             const apiToken = rootState.auth.apiToken;
             await axios.get(url, {
@@ -92,13 +102,15 @@ export default {
             })
                 .then(res => {
                     commit("setTags", res.data)
+                }).catch(error=>{
+                    const errorStatus=error.response.status
+                    if(errorStatus){
+                        dispatch('window/setInternalServerError', true, {root: true})
+                    }
                 })
         },
-        toggleErrorTransitionDialog({commit}) {
-            commit("toggleErrorTransitionDialog")
-        },
-        setToggleSearchWord({commit},selected){
-            commit('setToggleSearchWord',selected)
+        setToggleSearchWord({commit}, selected) {
+            commit('setToggleSearchWord', selected)
         }
     }
 }

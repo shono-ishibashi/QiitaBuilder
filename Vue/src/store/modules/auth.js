@@ -65,7 +65,7 @@ export default {
         });
     },
 
-    async loginRESTAPI({commit, rootGetters}, loginUser) {
+    async loginRESTAPI({ rootGetters}, loginUser) {
       //RESTAPI ログイン
       const db = await firebase.firestore();
       await db.collection("users").doc(loginUser.uid).get()
@@ -82,9 +82,10 @@ export default {
             request,
             {},
             {headers: {"Content-Type": "application/json"}}
-          ).then((response) => {
+          ).then(() => {
             //Vuexにjwt tokenを追加
-            commit("setAPIToken", response.headers.authorization);
+            //  navigationガードにて遷移時実行されるため削除
+            // commit("setAPIToken", response.headers.authorization);
           })
             .catch((error) => console.log(error.status));
         });
@@ -118,7 +119,7 @@ export default {
           commit("setLoginUser", null);
           commit("setAPIToken", null);
           axios.post(rootGetters.API_URL + "logout").then(() => {
-            router.push("/login");
+            router.push("/login").catch(()=>{});
           });
         });
     },

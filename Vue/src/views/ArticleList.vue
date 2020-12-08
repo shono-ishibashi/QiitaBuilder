@@ -154,15 +154,6 @@
           </ArticleCard>
         </div>
       </v-list>
-      <v-col cols="6" :class="{'progress-linear':isLoading}">
-        <v-progress-linear
-            v-show="isLoading"
-            color="green"
-            indeterminate
-            rounded
-            height="10"
-        ></v-progress-linear>
-      </v-col>
     </v-row>
     <v-row>
       <v-col cols="3"></v-col>
@@ -190,20 +181,6 @@
       </v-col>
     </v-row>
 
-    <!--    許可しないアクセス時の警告ダイアログ-->
-    <v-dialog v-model="errorDialog" width="400">
-      <v-card>
-        <v-card-title>
-          警告
-        </v-card-title>
-        <v-card-text>
-          記事に対する権限がないか、記事が存在しません。
-        </v-card-text>
-        <v-card-actions>
-          <v-btn @click="toggleErrorTransitionDialog">OK</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </div>
 </template>
 
@@ -232,7 +209,7 @@ export default {
         {key: 0, state: "新着順"},
         {key: 1, state: "更新順"},
         {key: 2, state: "Qiita推奨数順"},
-        {key: 3, state: "My記事登録順"}
+        {key: 3, state: "お気に入り登録順"}
       ],
       // 期間
       periodList: [
@@ -256,46 +233,47 @@ export default {
       tags_limit_length: value => value.length <= 5 || "6個以上入力しないでください",
     }
   },
-  // created() {
-  //   this.isLoading = true
-  // },
   watch: {
     async apiToken() {
-     await this.fetchArticles(this.searchCriteria)
-         .then(()=>{
-           if(this.articles.length===0){
-             this.isNotExistArticle=true
-           }
-         })
-         .catch(error => {
-        this.errorHandle(error)
-      })
+      await this.fetchArticles(this.searchCriteria)
+          .then(() => {
+            if (this.articles.length === 0) {
+              this.isNotExistArticle = true
+            }
+          })
+          .catch(error => {
+            this.errorHandle(error)
+          })
       await this.fetchTags();
       await this.$nextTick();
-
-      setTimeout(() => {
+      await setTimeout(() => {
+        this.toggleLoading()
         this.toggleDisplay()
       }, 1000)
     },
     async ['searchCriteria.sortNum']() {
+      await this.toggleLoading()
       await this.toggleDisplay()
       this.searchCriteria.currentPage = 1;
       await this.fetchArticles(this.searchCriteria).catch(error => {
         this.errorHandle(error)
       })
       await this.$nextTick();
-      setTimeout(() => {
+      await setTimeout(() => {
+        this.toggleLoading()
         this.toggleDisplay()
       }, 1000)
     },
     async ['searchCriteria.period']() {
+      await this.toggleLoading()
       await this.toggleDisplay()
       this.searchCriteria.currentPage = 1;
       this.fetchArticles(this.searchCriteria).catch(error => {
         this.errorHandle(error)
       })
       await this.$nextTick();
-      setTimeout(() => {
+      await setTimeout(() => {
+        this.toggleLoading()
         this.toggleDisplay()
       }, 1000)
     },
@@ -306,28 +284,21 @@ export default {
       })
       this.scrollTop();
     },
-    ['searchCriteria.currentPage']() {
-      this.fetchArticles(this.searchCriteria).catch(error => {
+    async ['searchCriteria.currentPage']() {
+      await this.fetchArticles(this.searchCriteria).catch(error => {
         this.errorHandle(error)
       })
-      setTimeout(() => {
+      await setTimeout(() => {
         this.scrollTop();
       }, 50)
     }
   },
+
   computed: {
     ...mapState("article", ["processFailure"]),
     ...mapState("articles", ["articles", "tags", "totalPage", "searchCriteria", "errorTransistionDialog"]),
     apiToken() {
       return this.$store.getters["auth/apiToken"];
-    },
-    errorDialog: {
-      get() {
-        return this.errorTransistionDialog
-      },
-      set() {
-        this.toggleErrorTransitionDialog()
-      }
     },
     toggleSearchWord: {
       get() {
@@ -353,13 +324,15 @@ export default {
     async submit() {
       if (!this.can_submit_search) return
       if (this.$refs.search_form.validate()) {
+        await this.toggleLoading()
         await this.toggleDisplay()
         this.searchCriteria.currentPage = 1
         await this.fetchArticles(this.searchCriteria).catch(error => {
           this.errorHandle(error)
         })
         await this.$nextTick();
-        setTimeout(() => {
+        await setTimeout(() => {
+          this.toggleLoading()
           this.toggleDisplay()
         }, 1000)
         this.can_submit_search = false;
@@ -376,6 +349,7 @@ export default {
       });
     },
     async reset() {
+      await this.toggleLoading()
       await this.toggleDisplay()
       this.searchCriteria.searchWord = ""
       this.searchCriteria.searchTag = []
@@ -384,7 +358,8 @@ export default {
         this.errorHandle(error)
       })
       await this.$nextTick();
-      setTimeout(() => {
+      await setTimeout(() => {
+        this.toggleLoading()
         this.toggleDisplay()
       }, 1000)
     },
@@ -398,9 +373,11 @@ export default {
         this.toggleProcessFailure()
       }
     },
-    toggleDisplay(){
-      this.isLoading=!this.isLoading
-      this.isDisplay=!this.isDisplay
+    toggleDisplay() {
+      this.isDisplay = !this.isDisplay
+    },
+    toggleLoading(){
+      this.isLoading = !this.isLoading
     }
   }
 }
@@ -438,8 +415,8 @@ export default {
   padding-bottom: 10px;
 }
 
-.progress-linear{
-  padding-top:60px;
-  height:150px;
+.progress-linear {
+  padding-top: 60px;
+  height: 150px;
 }
 </style>

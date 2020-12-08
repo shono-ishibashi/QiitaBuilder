@@ -70,7 +70,7 @@
               </v-icon>
             </v-btn>
           </template>
-          <span>My記事登録</span>
+          <span>お気に入り</span>
         </v-tooltip>
         <!-- 未登録 -->
         <v-tooltip top v-if="!myArticleId">
@@ -90,7 +90,7 @@
               </v-icon>
             </v-btn>
           </template>
-          <span>My記事登録</span>
+          <span>お気に入り</span>
         </v-tooltip>
       </v-col>
     </v-row>
