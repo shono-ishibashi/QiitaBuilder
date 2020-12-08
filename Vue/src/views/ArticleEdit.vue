@@ -199,8 +199,8 @@ export default {
       // 認証の通ったユーザーであれば該当する記事とタグを取得
       await this.fetchArticleEdit(params)
       await setTimeout(() => {
-        this.toggleLoading()
-        this.toggleDisplay()
+        this.isLoading=false
+        this.isDisplay=true
       }, 1000)
     },
     article(){
@@ -321,13 +321,6 @@ export default {
       await this.postArticle(article.stateFlag);
       await this.$store.dispatch("article/postArticleToQiita", article.articleId);
     },
-    // 読み込みと表示画面の切り替え
-    toggleDisplay() {
-      this.isDisplay = !this.isDisplay
-    },
-    toggleLoading(){
-      this.isLoading = !this.isLoading
-    }
   },
 
 }

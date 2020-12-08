@@ -201,9 +201,9 @@ export default {
             commit("mutateMarkDownText", text);
         },
         // feedback
-        async postFeedback({commit, rootGetters}, feedback) {
+        async postFeedback({commit, rootState,rootGetters}, feedback) {
             const url = rootGetters.API_URL + "feedback";
-            const apiToken = rootGetters["auth/apiToken"];
+            const apiToken = rootState.auth.apiToken;
             const requestConfig = {
                 headers: {
                     Authorization: apiToken,
@@ -222,9 +222,9 @@ export default {
                     });
             });
         },
-        async updateFeedback({commit, rootGetters}, feedback) {
+        async updateFeedback({commit, rootState,rootGetters}, feedback) {
             const url = rootGetters.API_URL + "feedback";
-            const apiToken = rootGetters["auth/apiToken"];
+            const apiToken = rootState.auth.apiToken;
             const requestConfig = {
                 headers: {
                     Authorization: apiToken,
@@ -243,9 +243,9 @@ export default {
                     });
             });
         },
-        async deleteFeedback({commit, rootGetters}, feedback) {
+        async deleteFeedback({commit, rootState,rootGetters}, feedback) {
             const url = rootGetters.API_URL + "feedback";
-            const apiToken = rootGetters["auth/apiToken"];
+            const apiToken = rootState.auth.apiToken;
             const requestConfig = {
                 headers: {
                     Authorization: apiToken,
@@ -267,9 +267,9 @@ export default {
             });
         },
         // MyArticle
-        async fetchMyArticle({commit, rootGetters}, articleId) {
+        async fetchMyArticle({commit, rootState, rootGetters}, articleId) {
             const url = rootGetters.API_URL + "my-article?articleId=" + articleId;
-            const apiToken = rootGetters["auth/apiToken"];
+            const apiToken = rootState.auth.apiToken;
             const requestConfig = {
                 headers: {
                     Authorization: apiToken,
