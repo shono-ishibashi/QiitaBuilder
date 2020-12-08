@@ -247,10 +247,12 @@ export default {
       await this.fetchTags();
       await this.$nextTick();
       await setTimeout(() => {
+        this.toggleLoading()
         this.toggleDisplay()
       }, 1000)
     },
     async ['searchCriteria.sortNum']() {
+      await this.toggleLoading()
       await this.toggleDisplay()
       this.searchCriteria.currentPage = 1;
       await this.fetchArticles(this.searchCriteria).catch(error => {
@@ -258,10 +260,12 @@ export default {
       })
       await this.$nextTick();
       await setTimeout(() => {
+        this.toggleLoading()
         this.toggleDisplay()
       }, 1000)
     },
     async ['searchCriteria.period']() {
+      await this.toggleLoading()
       await this.toggleDisplay()
       this.searchCriteria.currentPage = 1;
       this.fetchArticles(this.searchCriteria).catch(error => {
@@ -269,6 +273,7 @@ export default {
       })
       await this.$nextTick();
       await setTimeout(() => {
+        this.toggleLoading()
         this.toggleDisplay()
       }, 1000)
     },
@@ -366,8 +371,10 @@ export default {
       }
     },
     toggleDisplay() {
-      this.isLoading = !this.isLoading
       this.isDisplay = !this.isDisplay
+    },
+    toggleLoading(){
+      this.isLoading = !this.isLoading
     }
   }
 }

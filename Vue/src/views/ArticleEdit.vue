@@ -199,6 +199,7 @@ export default {
       // 認証の通ったユーザーであれば該当する記事とタグを取得
       await this.fetchArticleEdit(params)
       await setTimeout(() => {
+        this.toggleLoading()
         this.toggleDisplay()
       }, 1000)
     },
@@ -322,8 +323,10 @@ export default {
     },
     // 読み込みと表示画面の切り替え
     toggleDisplay() {
-      this.isLoading = !this.isLoading
       this.isDisplay = !this.isDisplay
+    },
+    toggleLoading(){
+      this.isLoading = !this.isLoading
     }
   },
 
