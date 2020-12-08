@@ -298,8 +298,7 @@ export default {
     ...mapState("article", ["processFailure"]),
     ...mapState("articles", ["articles", "tags", "totalPage", "searchCriteria", "errorTransistionDialog"]),
     apiToken() {
-      const api=this.$store.getters["auth/apiToken"];
-      return api
+      return this.$store.getters["auth/apiToken"];
     },
     toggleSearchWord: {
       get() {
@@ -325,6 +324,7 @@ export default {
     async submit() {
       if (!this.can_submit_search) return
       if (this.$refs.search_form.validate()) {
+        await this.toggleLoading()
         await this.toggleDisplay()
         this.searchCriteria.currentPage = 1
         await this.fetchArticles(this.searchCriteria).catch(error => {
@@ -332,6 +332,7 @@ export default {
         })
         await this.$nextTick();
         await setTimeout(() => {
+          this.toggleLoading()
           this.toggleDisplay()
         }, 1000)
         this.can_submit_search = false;
@@ -348,6 +349,7 @@ export default {
       });
     },
     async reset() {
+      await this.toggleLoading()
       await this.toggleDisplay()
       this.searchCriteria.searchWord = ""
       this.searchCriteria.searchTag = []
@@ -357,6 +359,7 @@ export default {
       })
       await this.$nextTick();
       await setTimeout(() => {
+        this.toggleLoading()
         this.toggleDisplay()
       }, 1000)
     },
