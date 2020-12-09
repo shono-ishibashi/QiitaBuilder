@@ -273,7 +273,7 @@ export default {
     },
     errorHandle(error) {
       const status = error.response.status;
-      switch (error) {
+      switch (status) {
         case 400:
         case 404:
           this.$store.dispatch("window/setNotFound", true);
