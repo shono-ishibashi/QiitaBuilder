@@ -14,11 +14,16 @@
 
       <v-col cols="12" sm="12" md="6">
         <v-container>
-          <v-tabs v-model="displayListNum" v-if="userDetail.isLoginUser" color="#5bc8ac">
-            <v-tab v-for="tab of loginListTabs" :key="tab.id" @click="changeList(tab.id)">{{ tab.name }}</v-tab>
+          <v-tabs v-model="displayListNum" v-if="userDetail.isLoginUser" color="#5bc8ac" data-testid="login-tabs">
+            <v-tab v-for="(tab, index) of loginListTabs" :key="tab.id" @click="changeList(tab.id)"
+                   :data-testid="'login-tab'+index">{{ tab.name }}
+            </v-tab>
           </v-tabs>
-          <v-tabs v-model="displayListNum" v-if="!(userDetail.isLoginUser)" color="#5bc8ac">
-            <v-tab v-for="tab of notLoginListTabs" :key="tab.id" @click="changeList(tab.id)">{{ tab.name }}</v-tab>
+          <v-tabs v-model="displayListNum" v-if="!(userDetail.isLoginUser)" color="#5bc8ac"
+                  data-testid="not-login-tabs">
+            <v-tab v-for="(tab, index) of notLoginListTabs" :key="tab.id" @click="changeList(tab.id)"
+                   :data-testid="'not-login-tab'+index">{{ tab.name }}
+            </v-tab>
           </v-tabs>
 
           <v-card outlined>
@@ -34,6 +39,7 @@
                       @change="changeListState"
                       v-model="displayListState"
                       label="絞り込み"
+                      data-testid="list-state-selector"
                   ></v-select>
                 </v-col>
                 <v-col cols="1" style="padding: 0"></v-col>
@@ -47,6 +53,7 @@
                       v-model="sortNum"
                       style="padding-top: 9px"
                       label="並び順"
+                      data-testid="sort-selector"
                   >
                   </v-select>
                 </v-col>
@@ -69,6 +76,7 @@
                                 label="記事タイトルを入力"
                                 :rules="[title_limit_length]"
                                 color="#5bc8ac"
+                                data-testid="search-title"
                             ></v-text-field>
                           </v-form>
                         </v-col>
@@ -88,6 +96,7 @@
                                 multiple
                                 small-chips
                                 style="margin-top: 8px; margin-left: 2px"
+                                data-testid="search-tag-form"
                             >
                             </v-autocomplete>
                           </v-form>
@@ -126,7 +135,7 @@
                     <v-col cols="12">
                       <ArticleCard v-for="(article,index) in sortedArticles" :key="article.articleId" :article="article"
                                    v-show="isDisplay&&sortedArticles.length!==0" :index="index"
-                                   @thisUserPage="resetPage"
+                                   @thisUserPage="resetPage" :data-testid="'article-card'+index"
                                    style="margin: 0; padding: 0;">
                       </ArticleCard>
                       <v-progress-linear
@@ -146,8 +155,9 @@
                         color="teal"
                         icon="mdi-emoticon-confused"
                         border="left"
-                        v-if="sortedArticles.length===0"
+                        v-show="sortedArticles.length===0"
                         class="contentWrap"
+                        data-testid="no-articles-alert"
                     >
                       該当する記事がありません
                     </v-alert>
@@ -158,6 +168,7 @@
                         :length="length"
                         color="#5bc8ac"
                         circle
+                        data-testid="article-pagination"
                     ></v-pagination>
                   </v-row>
                 </v-col>
@@ -194,7 +205,7 @@ export default {
         {key: 0, state: "新着順"},
         {key: 1, state: "更新順"},
         {key: 2, state: "Qiita推奨数順"},
-        {key: 3, state: "My記事登録数順"}
+        {key: 3, state: "お気に入り登録数順"}
       ],//並び替え選択用リスト
       sortNum: 0,//現在のソートkey
       paging: {
@@ -212,13 +223,13 @@ export default {
       loginListTabs: [
         {id: 0, name: '投稿記事'},
         {id: 1, name: 'FBした記事'},
-        {id: 2, name: 'My記事'},
+        {id: 2, name: 'お気に入り記事'},
         {id: 3, name: '下書き記事'}
       ],//記事タブ表示用リスト(login user用)
       notLoginListTabs: [
         {id: 0, name: '公開中の投稿記事'},
         {id: 1, name: '公開中のFBした記事'},
-        {id: 2, name: '公開中のMy記事'},
+        {id: 2, name: '公開中のお気に入り記事'},
       ],//記事タブ表示用リスト(not login user用)
       stateList: [
         {id: 10, name: '全記事'},
@@ -377,7 +388,7 @@ export default {
   methods: {
     /**
      * 表示したい記事に対応する数値を渡して、表示する記事一覧とオートコンプリート用タグリストを変更する
-     * @param listNum (0:投稿記事), (1:FB記事), (2:My記事), (3:下書き記事)
+     * @param listNum (0:投稿記事), (1:FB記事), (2:お気に入り記事), (3:下書き記事)
      */
     async changeList(listNum) {
       this.conditions.title = "";
