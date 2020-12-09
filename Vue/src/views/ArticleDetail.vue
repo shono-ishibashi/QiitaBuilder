@@ -131,6 +131,7 @@
             :recommendId="recommendId"
             @toggleMyArticle="toggleMyArticle"
             @toggleRecommend="toggleRecommend"
+            @deleteArticle="deleteArticle"
           />
           <Feedbacks
             :feedbacks="feedbacks"
@@ -268,7 +269,7 @@ export default {
     this.scrollTop();
   },
   methods: {
-    // 画面描画の調整
+    //// 画面描画の調整
     scrollTop() {
       window.scrollTo({
         top: 0,
@@ -306,7 +307,22 @@ export default {
       errorHandle(error);
     },
 
-    // 通常処理
+    //// 通常処理
+    deleteArticle(){
+      // 削除前のstateFlag
+      const beforeStateFlag = this.article.stateFlag;
+      const item = this.article;
+      item.stateFlag = 9;
+      this.$store
+        .dispatch("article/saveArticle", item)
+        .then(() => {
+          this.$router.push({ name: "articleList" });
+        })
+        .catch((error) => {
+          this.article.stateFlag = beforeStateFlag;
+          this.errorHandle(error);
+        });
+    },
     closeEditor() {
       if (!this.propsFeedback.feedbackId) {
         this.feedbackForNewPost = this.propsFeedback;
