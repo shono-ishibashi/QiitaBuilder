@@ -81,11 +81,11 @@ export default {
         }
     },
     actions: {
-        async postArticleToQiita({commit, rootGetters, dispatch}, articleId) {
-            if (await rootGetters["auth/isLinkedToQiita"]) {
+        async postArticleToQiita({commit, rootGetters, rootState, dispatch}, articleId) {
+            if (await rootState.auth.isLinkedToQiita) {
                 axios.post(rootGetters.API_URL + 'qiita/save-article-to-qiita/' + articleId, {}, {
                     headers: {
-                        "Authorization": rootGetters["auth/apiToken"]
+                        "Authorization": rootState.auth.apiToken
                     }
                 }).then(() => {
                     alert('Qiitaに記事を投稿しました');
@@ -126,7 +126,7 @@ export default {
         },
         async fetchArticle({commit, rootGetters, rootState}, articleId) {
             const url = rootGetters.API_URL + "article/" + articleId;
-            const apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
+            const apiToken = rootState.auth.apiToken;// rootGetters["auth/apiToken"] も可
             const reqHeader = {
                 headers: {
                     Authorization: apiToken,
@@ -140,11 +140,12 @@ export default {
                         resolve(res);
                     })
                     .catch((error) => {
+                        console.log(error);
                         reject(error);
                     });
             });
         },
-        async saveArticle({rootState,rootGetters}, article) {
+        async saveArticle({rootState, rootGetters}, article) {
             const articleEditUrl = rootGetters.API_URL + "article/";
             const apiToken = rootState.auth.apiToken;
             const insertRequestBody = {
@@ -201,7 +202,7 @@ export default {
             commit("mutateMarkDownText", text);
         },
         // feedback
-        async postFeedback({commit, rootState,rootGetters}, feedback) {
+        async postFeedback({commit, rootState, rootGetters}, feedback) {
             const url = rootGetters.API_URL + "feedback";
             const apiToken = rootState.auth.apiToken;
             const requestConfig = {
@@ -222,7 +223,7 @@ export default {
                     });
             });
         },
-        async updateFeedback({commit, rootState,rootGetters}, feedback) {
+        async updateFeedback({commit, rootState, rootGetters}, feedback) {
             const url = rootGetters.API_URL + "feedback";
             const apiToken = rootState.auth.apiToken;
             const requestConfig = {
@@ -243,7 +244,7 @@ export default {
                     });
             });
         },
-        async deleteFeedback({commit, rootState,rootGetters}, feedback) {
+        async deleteFeedback({commit, rootState, rootGetters}, feedback) {
             const url = rootGetters.API_URL + "feedback";
             const apiToken = rootState.auth.apiToken;
             const requestConfig = {
@@ -288,12 +289,12 @@ export default {
                     });
             });
         },
-        async registerMyArticle({commit, rootGetters}, articleId) {
+        async registerMyArticle({commit, rootState, rootGetters}, articleId) {
             const url = rootGetters.API_URL + "my-article";
             const requestBody = {
                 articleId: articleId,
             };
-            const apiToken = rootGetters["auth/apiToken"];
+            const apiToken = rootState.auth.apiToken;
             const requestConfig = {
                 headers: {
                     Authorization: apiToken,
@@ -312,9 +313,9 @@ export default {
                     });
             });
         },
-        async deleteMyArticle({commit, rootGetters}, myArticleId) {
+        async deleteMyArticle({commit, rootState, rootGetters}, myArticleId) {
             const url = rootGetters.API_URL + "my-article/" + myArticleId;
-            const apiToken = rootGetters["auth/apiToken"];
+            const apiToken = rootState.auth.apiToken;
             const requestConfig = {
                 headers: {
                     Authorization: apiToken,
@@ -334,9 +335,9 @@ export default {
             });
         },
         // Recommend
-        async fetchRecommend({commit, rootGetters}, articleId) {
+        async fetchRecommend({commit, rootState, rootGetters}, articleId) {
             const url = rootGetters.API_URL + "recommend?articleId=" + articleId;
-            const apiToken = rootGetters["auth/apiToken"];
+            const apiToken = rootState.auth.apiToken;
             const requestConfig = {
                 headers: {
                     Authorization: apiToken,
@@ -355,12 +356,12 @@ export default {
                     });
             });
         },
-        async registerRecommend({commit, rootGetters}, articleId) {
+        async registerRecommend({commit, rootState, rootGetters}, articleId) {
             const url = rootGetters.API_URL + "recommend";
             const requestBody = {
                 articleId: articleId,
             };
-            const apiToken = rootGetters["auth/apiToken"];
+            const apiToken = rootState.auth.apiToken;
             const requestConfig = {
                 headers: {
                     Authorization: apiToken,
@@ -380,9 +381,9 @@ export default {
                     });
             });
         },
-        async deleteRecommend({commit, rootGetters}, recommendId) {
+        async deleteRecommend({commit, rootState, rootGetters}, recommendId) {
             const url = rootGetters.API_URL + "recommend/" + recommendId;
-            const apiToken = rootGetters["auth/apiToken"];
+            const apiToken = rootState.auth.apiToken;
             const requestConfig = {
                 headers: {
                     Authorization: apiToken,
@@ -404,7 +405,7 @@ export default {
         },
         // 認証の通ったユーザーであれば該当する記事とタグを取得
         // params(articleId: 記事ID,userid: ユーザーID)
-        async fetchArticleEdit({dispatch,state,rootState,rootGetters},params){
+        async fetchArticleEdit({dispatch, state, rootState, rootGetters}, params) {
             const apiToken = rootState.auth.apiToken;
             // アクセス権限のあるユーザーだと200が返ってくる
             await axios.get(rootGetters.API_URL + 'article/isExist', {
@@ -416,11 +417,11 @@ export default {
             })
                 .then(() => {
                     dispatch('resetArticle')
-                    dispatch('articles/fetchTags',null,{root:true})
-                    dispatch('fetchArticle',params.articleId)
+                    dispatch('articles/fetchTags', null, {root: true})
+                    dispatch('fetchArticle', params.articleId)
                         .then(() => {
                             if (state.article.stateFlag === 9) {
-                                dispatch("window/setNotFound", true,{root:true});
+                                dispatch("window/setNotFound", true, {root: true});
                             }
                         })
                         .catch((error) => {
