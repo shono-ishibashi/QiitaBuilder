@@ -129,14 +129,14 @@ describe('Testing UserCard component', () => {
         test('v-list-item-subtitle', async () => {
             expect(wrapper.find('v-list-item-subtitle-stub').findAll('v-col-stub').length).toBe(3);
 
-            let fbCountWrapper = wrapper.find('v-list-item-subtitle-stub').findAll('v-col-stub').at(0).find('div');
-            let postedArticleCountWrapper = wrapper.find('v-list-item-subtitle-stub').findAll('v-col-stub').at(1).find('div');
-            let qiitaRecommendedCountWrapper = wrapper.find('v-list-item-subtitle-stub').findAll('v-col-stub').at(2).find('div');
+            let fbCountWrapper = wrapper.find('v-list-item-subtitle-stub').find('[data-test-id="fbCount"]').find('div');
+            let postedArticleCountWrapper = wrapper.find('v-list-item-subtitle-stub').find('[data-test-id="postedArticleCount"]').find('div');
+            let qiitaRecommendedCountWrapper = wrapper.find('v-list-item-subtitle-stub').find('[data-test-id="qiitaRecommendedCount"]').find('div');
 
             const updateWrapper = function () {
-                fbCountWrapper = wrapper.find('v-list-item-subtitle-stub').findAll('v-col-stub').at(0).find('div');
-                postedArticleCountWrapper = wrapper.find('v-list-item-subtitle-stub').findAll('v-col-stub').at(1).find('div');
-                qiitaRecommendedCountWrapper = wrapper.find('v-list-item-subtitle-stub').findAll('v-col-stub').at(2).find('div');
+                fbCountWrapper = wrapper.find('v-list-item-subtitle-stub').find('[data-test-id="fbCount"]').find('div');
+                postedArticleCountWrapper = wrapper.find('v-list-item-subtitle-stub').find('[data-test-id="postedArticleCount"]').find('div');
+                qiitaRecommendedCountWrapper = wrapper.find('v-list-item-subtitle-stub').find('[data-test-id="qiitaRecommendedCount"]').find('div');
             }
 
             // FBCount
