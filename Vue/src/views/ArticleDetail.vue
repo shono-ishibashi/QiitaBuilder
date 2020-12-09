@@ -242,7 +242,7 @@ export default {
     apiToken: async function() {
       this.isLoading = true;
       const a = this.fetchArticle(this.slug).catch((error) => {
-        this.errorHandle(error);
+        this.articleErrorHandle(error);
       });
       this.fetchMyArticle(this.slug).catch((error) => {
         this.errorHandle(error);
@@ -268,13 +268,31 @@ export default {
     this.scrollTop();
   },
   methods: {
+    // 画面描画の調整
     scrollTop() {
       window.scrollTo({
         top: 0,
         behavior: "auto",
       });
     },
+    //// エラー処理
+    // 汎用的なエラー処理
     errorHandle(error) {
+      const status = error.response.status;
+      switch (status) {
+        case 401:
+          this.nonValidToken = true;
+          this.$store.dispatch("auth/logout");
+          break;
+        case 500:
+          this.$store.dispatch("window/setInternalServerError", true);
+          break;
+        default:
+          this.toggleProcessFailure();
+      }
+    },
+    // 記事取得時のエラー処理
+    articleErrorHandle(error) {
       const status = error.response.status;
       switch (status) {
         case 400:
@@ -284,17 +302,11 @@ export default {
         case 403:
           this.$store.dispatch("window/setForbidden", true);
           break;
-        case 500:
-          this.$store.dispatch("window/setInternalServerError", true);
-          break;
-        case 401:
-          this.nonValidToken = true;
-          this.$store.dispatch("auth/logout");
-          break;
-        default:
-          this.toggleProcessFailure();
       }
+      errorHandle(error);
     },
+
+    // 通常処理
     closeEditor() {
       if (!this.propsFeedback.feedbackId) {
         this.feedbackForNewPost = this.propsFeedback;
