@@ -30,7 +30,10 @@
     </v-row>
     <v-row v-show="!isLoading">
       <v-col class="hidden-xs-only hidden-sm-only" :md="mdPlacement.buttons">
-        <v-row v-if="article.stateFlag !== 0" id="qiita_btn">
+        <v-row
+          v-if="article.stateFlag !== 0 && article.stateFlag !== 9"
+          id="qiita_btn"
+        >
           <!-- Qiitaボタン -->
           <v-col
             cols="12"
@@ -133,12 +136,12 @@
             :feedbacks="feedbacks"
             @editFeedback="editFeedback"
             @deleteFeedback="deleteFeedback"
-            v-if="article.stateFlag !== 0"
+            v-if="article.stateFlag !== 0 && article.stateFlag !== 9"
           />
         </v-sheet>
       </v-col>
       <v-col
-        v-if="article.stateFlag !== 0"
+        v-if="article.stateFlag !== 0 && article.stateFlag !== 9"
         cols="12"
         sm="12"
         :md="mdPlacement.editor"

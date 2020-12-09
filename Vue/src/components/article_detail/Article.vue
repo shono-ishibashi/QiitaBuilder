@@ -29,7 +29,9 @@
           <v-menu
             offset-y
             v-if="
-              loginUser.uid == article.postedUser.uid && article.stateFlag !== 0
+              loginUser.uid == article.postedUser.uid &&
+                article.stateFlag !== 0 &&
+                article.stateFlag !== 9
             "
           >
             <template v-slot:activator="{ attrs, on }">
@@ -54,7 +56,9 @@
             </v-list>
           </v-menu>
           <v-btn
-            v-if="loginUser.uid == article.postedUser.uid && article.stateFlag == 0"
+            v-if="
+              loginUser.uid == article.postedUser.uid && article.stateFlag == 0
+            "
             color="green"
             outlined
             style="text-transform: none; cursor: default;"
@@ -96,7 +100,7 @@
           </v-menu>
         </v-col>
       </v-row>
-      <v-row>
+      <v-row v-if="article.stateFlag !== 0 && article.stateFlag !== 9">
         <v-col cols="12">
           <Button
             :myArticleId="myArticleId"
