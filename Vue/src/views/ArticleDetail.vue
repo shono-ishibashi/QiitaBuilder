@@ -281,6 +281,9 @@ export default {
         case 404:
           this.$store.dispatch("window/setNotFound", true);
           break;
+        case 403:
+          this.$store.dispatch("window/setForbidden", true);
+          break;
         case 500:
           this.$store.dispatch("window/setInternalServerError", true);
           break;

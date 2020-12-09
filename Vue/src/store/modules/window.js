@@ -2,9 +2,13 @@ export default {
   namespaced: true,
   state: {
     notFound: false,
+    forbidden: false,
     internalServerError: false,
   },
   mutations: {
+    setForbidden(state, val) {
+      state.forbidden = val;
+    },
     setNotFound(state, val) {
       state.notFound = val;
     },
@@ -13,6 +17,9 @@ export default {
     },
   },
   actions: {
+    setForbidden({ commit }, val) {
+      commit("setForbidden", val);
+    },
     setNotFound({ commit }, val) {
       commit("setNotFound", val);
     },
@@ -21,11 +28,15 @@ export default {
     },
     clearErrors({ commit }) {
       const val = false;
+      commit("setForbidden", val);
       commit("setNotFound", val);
       commit("setInternalServerError", val);
     },
   },
   getters: {
+    isForbidden(state) {
+      return state.forbidden;
+    },
     isNotFound(state) {
       return state.notFound;
     },
