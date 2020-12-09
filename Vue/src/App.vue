@@ -3,6 +3,7 @@
     <Header></Header>
     <v-main>
       <NotFound v-if="notFound" />
+      <Forbidden v-else-if="forbidden" />
       <InternalServerError v-else-if="internalServerError" />
       <router-view v-else></router-view>
     </v-main>
@@ -27,6 +28,7 @@
 <script>
 import Header from './components/Header'
 import Footer from './components/Footer'
+import Forbidden from './views/error/403';
 import NotFound from './views/error/404';
 import InternalServerError from './views/error/500';
 
@@ -34,7 +36,7 @@ export default {
   name: 'App',
 
   components: {
-    Header, Footer, NotFound, InternalServerError
+    Header, Footer, Forbidden, NotFound, InternalServerError
   },
   created() {
   },
@@ -52,6 +54,9 @@ export default {
     fab: false
   }),
   computed: {
+    forbidden() {
+      return this.$store.getters["window/isForbidden"];
+    },
     notFound() {
       return this.$store.getters["window/isNotFound"];
     },

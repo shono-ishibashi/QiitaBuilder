@@ -29,7 +29,9 @@
           <v-menu
             offset-y
             v-if="
-              loginUser.uid == article.postedUser.uid && article.stateFlag !== 0
+              loginUser.uid == article.postedUser.uid &&
+                article.stateFlag !== 0 &&
+                article.stateFlag !== 9
             "
           >
             <template v-slot:activator="{ attrs, on }">
@@ -53,6 +55,16 @@
               </v-list-item>
             </v-list>
           </v-menu>
+          <v-btn
+            v-if="
+              loginUser.uid == article.postedUser.uid && article.stateFlag == 0
+            "
+            color="green"
+            outlined
+            style="text-transform: none; cursor: default;"
+          >
+            {{ article.stateFlag | naming }}
+          </v-btn>
           <v-btn
             v-if="loginUser.uid != article.postedUser.uid"
             color="green"
@@ -88,7 +100,7 @@
           </v-menu>
         </v-col>
       </v-row>
-      <v-row>
+      <v-row v-if="article.stateFlag !== 0 && article.stateFlag !== 9">
         <v-col cols="12">
           <Button
             :myArticleId="myArticleId"
@@ -204,8 +216,12 @@ export default {
   },
   filters: {
     naming: function(value) {
-      if (value == 2) return "Qiitaに投稿済み";
-      return "Qiitaに未投稿";
+      if (value == 2) {
+        return "Qiitaに投稿済み";
+      } else if (value == 1) {
+        return "Qiitaに未投稿";
+      }
+      return "下書き";
     },
     date: function(value) {
       if (!value) return "";

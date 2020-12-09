@@ -16,7 +16,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -24,6 +26,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -891,6 +894,13 @@ class ArticleServiceTest {
         assertEquals(expected.getRegisteredMyArticleCount(), actual.getRegisteredMyArticleCount());
         assertEquals(expected.getTags().get(0), actual.getTags().get(0));
     }
+    @Test
+    void getArticle正常系_Nullの場合() {
+        // check
+        Article actual = articleService.getArticle(1);
+
+        assertNull(actual);
+    }
 
     @Test
     void getArticle異常系_QiitaRecommendPointがNullの場合() {
@@ -970,6 +980,64 @@ class ArticleServiceTest {
         assertEquals(expected.getQiitaRecommendPoint(), actual.getQiitaRecommendPoint());
         assertEquals(expected.getRegisteredMyArticleCount(), actual.getRegisteredMyArticleCount());
         assertEquals(expected.getTags().get(0), actual.getTags().get(0));
+    }
+    @Test
+    void getArticle異常系_削除済み記事の場合() {
+        // set up
+        String insertUser1 = "INSERT INTO users (user_id, uid, photo_url, display_name, password) VALUES (1, 'a', 'a', 'a', 'a');";
+        String insertUser2 = "INSERT INTO users (user_id, uid, photo_url, display_name, password) VALUES (2, 'b', 'b', 'b', 'b');";
+
+        String insertArt1 = "INSERT INTO articles (article_id, user_id, created_at, updated_at, title, content, state_flag) VALUES (1, 1, '2020-10-01 00:00:00', '2020-10-02 00:00:00', 'title1', '#content1', 9);";
+        String insertFeed1 = "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (1, 2, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content1', 0);";
+
+        String insertMyArt = "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (1, 1, 2);";
+        String insertTag1 = "INSERT INTO tags (tag_name) VALUES ('Java');";
+        String insertTagRel1 = "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (1, 1, 1);";
+
+        jdbcTemplate.execute(insertUser1);
+        jdbcTemplate.execute(insertUser2);
+        jdbcTemplate.execute(insertArt1);
+        jdbcTemplate.execute(insertFeed1);
+        jdbcTemplate.execute(insertMyArt);
+        jdbcTemplate.execute(insertTag1);
+        jdbcTemplate.execute(insertTagRel1);
+
+        // 404エラーをスローするか確認
+        Exception exception = assertThrows(org.springframework.web.server.ResponseStatusException.class, () -> {
+            Article actual = articleService.getArticle(1);
+        });
+        String expectedMessage = "404 NOT_FOUND";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+    @Test
+    void getArticle異常系_下書き記事かつアクセス権限なしの場合() {
+        // set up
+        String insertUser1 = "INSERT INTO users (user_id, uid, photo_url, display_name, password) VALUES (1, 'a', 'a', 'a', 'a');";
+        String insertUser2 = "INSERT INTO users (user_id, uid, photo_url, display_name, password) VALUES (2, 'b', 'b', 'b', 'b');";
+
+        String insertArt1 = "INSERT INTO articles (article_id, user_id, created_at, updated_at, title, content, state_flag) VALUES (1, 2, '2020-10-01 00:00:00', '2020-10-02 00:00:00', 'title1', '#content1', 0);";
+        String insertFeed1 = "INSERT INTO feedbacks (article_id, user_id, created_at, updated_at, content, delete_flag) VALUES (1, 2, '2020-11-03 00:00:00', '2020-11-04 00:00:00', 'feedback content1', 0);";
+
+        String insertMyArt = "INSERT INTO my_articles (article_id, posted_user_id, register_user_id) VALUES (1, 2, 2);";
+        String insertTag1 = "INSERT INTO tags (tag_name) VALUES ('Java');";
+        String insertTagRel1 = "INSERT INTO articles_tags_relations (article_id, posted_user_id, tag_id) VALUES (1, 2, 1);";
+
+        jdbcTemplate.execute(insertUser1);
+        jdbcTemplate.execute(insertUser2);
+        jdbcTemplate.execute(insertArt1);
+        jdbcTemplate.execute(insertFeed1);
+        jdbcTemplate.execute(insertMyArt);
+        jdbcTemplate.execute(insertTag1);
+        jdbcTemplate.execute(insertTagRel1);
+
+        // 403エラーをスローするか確認
+        Exception exception = assertThrows(org.springframework.web.server.ResponseStatusException.class, () -> {
+            Article actual = articleService.getArticle(1);
+        });
+        String expectedMessage = "403 FORBIDDEN";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 
     @Test
