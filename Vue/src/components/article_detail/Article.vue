@@ -253,20 +253,8 @@ export default {
       this.fetchArticles(this.searchCriteria);
     },
     async deleteArticle() {
-      // 削除前のstateFlag
-      const beforeStateFlag = this.article.stateFlag;
-      const item = this.article;
-      item.stateFlag = 9;
-      await this.$store
-        .dispatch("article/saveArticle", item)
-        .then(() => {
-          this.$router.push({ name: "articleList" });
-        })
-        .catch((error) => {
-          this.article.stateFlag = beforeStateFlag;
-          this.toggleDialog();
-          this.errorHandle(error);
-        });
+      this.$emit("deleteArticle");
+      this.toggleDialog();
     },
     async updateQiita() {
       await this.$store.dispatch(
