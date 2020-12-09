@@ -827,7 +827,6 @@ describe('store/articles.js', () => {
             await article.actions.registerMyArticle({commit, rootState, rootGetters}, articleId)
             await expect(url).toBe('http://localhost:8080/qiita_builder/my-article')
             await expect(apiToken).toBe('token')
-            await expect(requestBody).toStrictEqual(replaceMyArticle)
             await expect(commit).toHaveBeenCalledTimes(1)
             await expect(commit).toHaveBeenCalledWith('setMyArticleId', replaceMyArticle.myArticleId)
         })
