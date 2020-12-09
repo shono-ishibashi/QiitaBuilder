@@ -5,6 +5,7 @@
         <v-row justify="center" align-content="center">
           <v-col cols="5">
             <v-select
+                data-test-id="selectRankItem"
                 v-model="selectRankItemId"
                 :items="rankItems"
                 item-text="item"
@@ -17,6 +18,7 @@
           </v-col>
           <v-col cols="2">
             <v-select
+                data-test-id="displayCount"
                 :items="displayCountList"
                 item-text="text"
                 item-value="value"
@@ -195,7 +197,7 @@ export default {
     selectRankItemId: {
       async handler() {
         //もしselectRankItemIdが予期しない型だった場合
-        if(typeof this.selectRankItemId !== 'number'){
+        if (typeof this.selectRankItemId !== 'number') {
           this.selectRankItemId = 1;
         }
         await this.fetchRankingUser(this.selectRankItemId);
