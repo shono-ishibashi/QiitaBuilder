@@ -139,7 +139,7 @@ describe('Testing Ranking component', () => {
             await wrapper.setData({isLoading: false})
             await expect(wrapper.findAllComponents({name: 'v-progress-linear'}).isVisible()).toBeFalsy();
 
-            await expect(wrapper.findComponent({name: 'v-progress-linear'}).exists()).toBeTruthy();
+            await expect(wrapper.findAllComponents({name: 'v-progress-linear'}).exists()).toBeTruthy();
             await expect(wrapper.findAllComponents({name: 'v-progress-linear'}).length).toBe(3);
         })
 
