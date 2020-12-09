@@ -273,13 +273,20 @@ export default {
     },
     errorHandle(error) {
       const status = error.response.status;
-      if (status == 400 || status == 404) {
-        this.$store.dispatch("window/setNotFound", true);
-      } else if (status == 401) {
-        this.nonValidToken = true;
-        this.$store.dispatch("auth/logout");
-      } else {
-        this.toggleProcessFailure();
+      switch (error) {
+        case 400:
+        case 404:
+          this.$store.dispatch("window/setNotFound", true);
+          break;
+        case 500:
+          this.$store.dispatch("window/setInternalServerError", true);
+          break;
+        case 401:
+          this.nonValidToken = true;
+          this.$store.dispatch("auth/logout");
+          break;
+        default:
+          this.toggleProcessFailure();
       }
     },
     closeEditor() {
