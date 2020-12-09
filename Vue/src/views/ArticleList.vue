@@ -224,9 +224,9 @@ export default {
       // 記事の存在の有無(true: 存在しない, false: 存在する)
       isNotExistArticle: false,
       // 各コンポーネント表示切替用のboolean
-      isDisplay: false,
+      isDisplay: true,
       // loading処理表示切替用のboolean
-      isLoading: true,
+      isLoading: false,
       // validation条件
       title_limit_length: value => value.length <= 100 || "100文字以内で入力してください",
       user_limit_length: value => value.length <= 30 || "30文字以内で入力してください",
@@ -235,48 +235,49 @@ export default {
   },
   watch: {
     async apiToken() {
-      if(this.apiToken!=null){
-      await this.fetchArticles(this.searchCriteria)
-          .then(() => {
-            if (this.articles.length === 0) {
-              this.isNotExistArticle = true
-            }
-          })
-          .catch(error => {
-            this.errorHandle(error)
-          })
-      await this.fetchTags();
-      await this.$nextTick();
-      await setTimeout(() => {
-        this.isLoading=false
-        this.isDisplay=true
-      }, 1000)
+      if (this.apiToken != null) {
+        this.isLoading = true
+        this.isDisplay = false
+        await this.fetchArticles(this.searchCriteria)
+            .then(async () => {
+              await this.sleep(1000)
+              this.isLoading = await false
+              this.isDisplay = await true
+              if (this.articles.length === 0) {
+                this.isNotExistArticle = true
+              }
+            })
+            .catch(error => {
+              this.errorHandle(error)
+            })
+        await this.fetchTags();
+        await this.$nextTick();
       }
     },
     async ['searchCriteria.sortNum']() {
-      this.isLoading=true
-      this.isDisplay=false
+      this.isLoading = true
+      this.isDisplay = false
       this.searchCriteria.currentPage = 1;
       await this.fetchArticles(this.searchCriteria).catch(error => {
         this.errorHandle(error)
       })
       await this.$nextTick();
       await setTimeout(() => {
-        this.isLoading=false
-        this.isDisplay=true
+        this.isLoading = false
+        this.isDisplay = true
       }, 1000)
     },
     async ['searchCriteria.period']() {
-      this.isLoading=true
-      this.isDisplay=false
+      this.isLoading = true
+      this.isDisplay = false
       this.searchCriteria.currentPage = 1;
       this.fetchArticles(this.searchCriteria).catch(error => {
         this.errorHandle(error)
       })
       await this.$nextTick();
       await setTimeout(() => {
-        this.isLoading=false
-        this.isDisplay=true
+        this.isLoading = false
+        this.isDisplay = true
       }, 1000)
     },
     ['searchCriteria.pageSize']() {
@@ -326,16 +327,16 @@ export default {
     async submit() {
       if (!this.can_submit_search) return
       if (this.$refs.search_form.validate()) {
-        this.isLoading=true
-        this.isDisplay=false
+        this.isLoading = true
+        this.isDisplay = false
         this.searchCriteria.currentPage = 1
         await this.fetchArticles(this.searchCriteria).catch(error => {
           this.errorHandle(error)
         })
         await this.$nextTick();
         await setTimeout(() => {
-          this.isLoading=false
-          this.isDisplay=true
+          this.isLoading = false
+          this.isDisplay = true
         }, 1000)
         this.can_submit_search = false;
       }
@@ -351,8 +352,8 @@ export default {
       });
     },
     async reset() {
-      this.isLoading=true
-      this.isDisplay=false
+      this.isLoading = true
+      this.isDisplay = false
       this.searchCriteria.searchWord = ""
       this.searchCriteria.searchTag = []
       this.searchCriteria.currentPage = 1
@@ -361,8 +362,8 @@ export default {
       })
       await this.$nextTick();
       await setTimeout(() => {
-        this.isLoading=false
-        this.isDisplay=true
+        this.isLoading = false
+        this.isDisplay = true
       }, 1000)
     },
     errorHandle(error) {
@@ -374,6 +375,13 @@ export default {
       } else {
         this.toggleProcessFailure()
       }
+    },
+    sleep(msec) {
+      return new Promise(function (resolve) {
+        setTimeout(function () {
+          resolve()
+        }, msec);
+      })
     },
   }
 }

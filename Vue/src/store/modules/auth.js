@@ -65,7 +65,7 @@ export default {
         });
     },
 
-    async loginRESTAPI({ rootGetters}, loginUser) {
+    async loginRESTAPI({rootGetters}, loginUser) {
       //RESTAPI ログイン
       const db = await firebase.firestore();
       await db.collection("users").doc(loginUser.uid).get()
