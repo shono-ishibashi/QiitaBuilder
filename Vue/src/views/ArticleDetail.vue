@@ -178,7 +178,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapActions } from "vuex";
 import Article from "../components/article_detail/Article";
 import Feedbacks from "../components/article_detail/Feedbacks";
 import FeedbackEditor from "../components/article_detail/FeedbackEditor";
@@ -212,7 +212,6 @@ export default {
     };
   },
   computed: {
-    ...mapState("article", ["processFailure"]),
     slug() {
       return this.$route.params.articleId;
     },
@@ -237,6 +236,9 @@ export default {
     },
     recommendId() {
       return this.$store.state.article.recommendId;
+    },
+    processFailure() {
+      return this.$store.state.article.processFailure;
     },
   },
   watch: {
@@ -304,11 +306,11 @@ export default {
           this.$store.dispatch("window/setForbidden", true);
           break;
       }
-      errorHandle(error);
+      this.errorHandle(error);
     },
 
     //// 通常処理
-    deleteArticle(){
+    deleteArticle() {
       // 削除前のstateFlag
       const beforeStateFlag = this.article.stateFlag;
       const item = this.article;
