@@ -169,11 +169,10 @@ export default {
       selectedFormat: 0,
       qiitaDialog: false,
       nonValidToken: false,
-      processFailure: false,
       // 各コンポーネント表示切替用のboolean
-      isDisplay: false,
+      isDisplay: true,
       // loading処理表示切替用のboolean
-      isLoading: true,
+      isLoading: false,
       required: value => value && !!value || "必ず入力してください",
       blank: value => {
         const pattern = /\S/g
@@ -186,35 +185,40 @@ export default {
   },
   watch: {
     async apiToken() {
-      // アクセス権限のあるユーザーにのみ編集ページを表示する
-      const uid = await this.loginUser.uid
-      await this.findUserIdByUid(uid).catch((error) => {
-        this.errorHandle(error);
-      })
-      const articleId = await this.slug
-      const params =  {
-        articleId: articleId,
-        userId: this.userId
+      if (this.apiToken) {
+        // アクセス権限のあるユーザーにのみ編集ページを表示する
+        this.isLoading = true
+        this.isDisplay = false
+        const uid = await this.loginUser.uid
+        await this.findUserIdByUid(uid)
+        const articleId = await this.slug
+        const params = {
+          articleId: articleId,
+          userId: this.userId
+        }
+        // 認証の通ったユーザーであれば該当する記事とタグを取得
+        await this.fetchArticleEdit(params)
+            .catch(error => {
+              this.articleErrorHandle(error)
+            })
+        await setTimeout(() => {
+          this.isLoading = false
+          this.isDisplay = true
+        }, 1000)
       }
-      // 認証の通ったユーザーであれば該当する記事とタグを取得
-      await this.fetchArticleEdit(params)
-      await setTimeout(() => {
-        this.isLoading=false
-        this.isDisplay=true
-      }, 1000)
     },
-    article(){
-      if(this.article.tags){
-        for(let i=0;i<this.article.tags.length;i++){
-          this.article.tags.splice(i,1,this.article.tags[i].tagName)
+    article() {
+      if (this.article.tags) {
+        for (let i = 0; i < this.article.tags.length; i++) {
+          this.article.tags.splice(i, 1, this.article.tags[i].tagName)
         }
       }
     }
   },
   computed: {
     ...mapState("articles", ["tags", "searchCriteria"]),
-    ...mapGetters("articles",["tagNameList"]),
-    ...mapState("article", ["article"]),
+    ...mapGetters("articles", ["tagNameList"]),
+    ...mapState("article", ["article", "processFailure"]),
     ...mapGetters("auth", ["loginUser"]),
     ...mapGetters(["API_URL"]),
     ...mapGetters("user", ["userId"]),
@@ -250,8 +254,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions("article", ["fetchArticle", "saveArticle", "resetArticle","fetchArticleEdit"]),
-    ...mapActions("articles", ["fetchArticles"]),
+    ...mapActions("article", ["saveArticle", "resetArticle", "fetchArticleEdit", "toggleProcessFailure"]),
     ...mapActions("user", ["findUserIdByUid"]),
     //記事を投稿or更新するメソッド
     async postArticle(state) {
@@ -260,11 +263,11 @@ export default {
         //更新前のstateFlag
         const beforeStateFlag = this.article.stateFlag
         this.article.stateFlag = state
-        for(let i=0;i < this.article.tags.length; i++){
-          for(let tag of this.tags){
+        for (let i = 0; i < this.article.tags.length; i++) {
+          for (let tag of this.tags) {
             //タグが登録されているものには登録されているものをset
-            if(tag.tagName === this.article.tags[i]){
-              this.article.tags.splice(i,1,tag)
+            if (tag.tagName === this.article.tags[i]) {
+              this.article.tags.splice(i, 1, tag)
               break
             }
           }
@@ -281,6 +284,9 @@ export default {
           await this.saveArticle(this.article)
           await this.$router.push({name: "articleList"})
           await this.resetArticle()
+              .catch(error => {
+                this.articleErrorHandle(error)
+              })
         } catch (error) {
           this.article.stateFlag = beforeStateFlag
           this.errorHandle(error);
@@ -304,13 +310,30 @@ export default {
     },
     errorHandle(error) {
       const status = error.response.status;
-      if (status === 404) {
-        this.$router.push({name: "404"});
-      } else if (status === 401) {
-        this.nonValidToken = true;
-      } else {
-        this.processFailure = true;
+      switch (status) {
+        case 401:
+          this.nonValidToken = true;
+          this.$store.dispatch("auth/logout");
+          break;
+        case 500:
+          this.$store.dispatch("window/setInternalServerError", true);
+          break;
+        default:
+          this.toggleProcessFailure();
       }
+    },
+    articleErrorHandle(error) {
+      const status = error.response.status;
+      switch (status) {
+        case 400:
+        case 404:
+          this.$store.dispatch("window/setNotFound", true);
+          break;
+        case 403:
+          this.$store.dispatch("window/setForbidden", true);
+          break;
+      }
+      this.errorHandle(error);
     },
     //qiita投稿or更新ボタンを押下した時にモーダルを変更するメソッド
     toggleQiitaDialog() {
@@ -373,8 +396,8 @@ export default {
   background-color: #ffffff;
 }
 
-.progress-linear{
-  padding-top:150px;
-  height:450px;
+.progress-linear {
+  padding-top: 150px;
+  height: 450px;
 }
 </style>
