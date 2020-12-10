@@ -14,15 +14,15 @@
 
       <v-col cols="12" sm="12" md="6">
         <v-container>
-          <v-tabs v-model="displayListNum" v-if="userDetail.isLoginUser" color="#5bc8ac" data-testid="login-tabs">
+          <v-tabs v-model="displayListNum" v-if="userDetail.isLoginUser" color="#5bc8ac" data-test-id="login-tabs">
             <v-tab v-for="(tab, index) of loginListTabs" :key="tab.id" @click="changeList(tab.id)"
-                   :data-testid="'login-tab'+index">{{ tab.name }}
+                   :data-test-id="'login-tab'+index">{{ tab.name }}
             </v-tab>
           </v-tabs>
           <v-tabs v-model="displayListNum" v-if="!(userDetail.isLoginUser)" color="#5bc8ac"
-                  data-testid="not-login-tabs">
+                  data-test-id="not-login-tabs">
             <v-tab v-for="(tab, index) of notLoginListTabs" :key="tab.id" @click="changeList(tab.id)"
-                   :data-testid="'not-login-tab'+index">{{ tab.name }}
+                   :data-test-id="'not-login-tab'+index">{{ tab.name }}
             </v-tab>
           </v-tabs>
 
@@ -39,7 +39,7 @@
                       @change="changeListState"
                       v-model="displayListState"
                       label="絞り込み"
-                      data-testid="list-state-selector"
+                      data-test-id="list-state-selector"
                   ></v-select>
                 </v-col>
                 <v-col cols="1" style="padding: 0"></v-col>
@@ -53,7 +53,7 @@
                       v-model="sortNum"
                       style="padding-top: 9px"
                       label="並び順"
-                      data-testid="sort-selector"
+                      data-test-id="sort-selector"
                   >
                   </v-select>
                 </v-col>
@@ -76,7 +76,7 @@
                                 label="記事タイトルを入力"
                                 :rules="[title_limit_length]"
                                 color="#5bc8ac"
-                                data-testid="search-title"
+                                data-test-id="search-title"
                             ></v-text-field>
                           </v-form>
                         </v-col>
@@ -96,7 +96,7 @@
                                 multiple
                                 small-chips
                                 style="margin-top: 8px; margin-left: 2px"
-                                data-testid="search-tag-form"
+                                data-test-id="search-tag-form"
                             >
                             </v-autocomplete>
                           </v-form>
@@ -135,7 +135,7 @@
                     <v-col cols="12">
                       <ArticleCard v-for="(article,index) in sortedArticles" :key="article.articleId" :article="article"
                                    v-show="isDisplay&&sortedArticles.length!==0" :index="index"
-                                   @thisUserPage="resetPage" :data-testid="'article-card'+index"
+                                   @thisUserPage="resetPage" :data-test-id="'article-card'+index"
                                    style="margin: 0; padding: 0;">
                       </ArticleCard>
                       <v-progress-linear
@@ -157,7 +157,7 @@
                         border="left"
                         v-show="sortedArticles.length===0"
                         class="contentWrap"
-                        data-testid="no-articles-alert"
+                        data-test-id="no-articles-alert"
                     >
                       該当する記事がありません
                     </v-alert>
@@ -168,7 +168,7 @@
                         :length="length"
                         color="#5bc8ac"
                         circle
-                        data-testid="article-pagination"
+                        data-test-id="article-pagination"
                     ></v-pagination>
                   </v-row>
                 </v-col>
