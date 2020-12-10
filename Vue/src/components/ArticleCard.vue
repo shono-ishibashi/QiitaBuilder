@@ -33,8 +33,8 @@
           >{{ article.title|truncate }}
           </v-list-item-title>
           <v-list-item-subtitle class="tag-field">
-            <v-chip-group active-class="primary--text">
               <v-chip
+                  class="tag-field"
                   v-for="tag in article.tags"
                   :key="tag.tagId"
                   color="#5bc8ac"
@@ -44,7 +44,6 @@
               >
                 {{ tag.tagName }}
               </v-chip>
-            </v-chip-group>
           </v-list-item-subtitle>
         </div>
         <div>
@@ -225,5 +224,9 @@ export default {
   margin: 0;
   padding-top: 0;
   padding-bottom: 0;
+}
+
+.tag-field{
+  margin-right:10px
 }
 </style>
