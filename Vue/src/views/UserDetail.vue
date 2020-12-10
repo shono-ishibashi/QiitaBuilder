@@ -189,22 +189,12 @@
 import {mapState, mapActions, mapGetters} from "vuex";
 import ArticleCard from "../components/ArticleCard";
 import UserInfo from "@/components/user_detail/UserInfo";
-import * as palette from "google-palette";
 
 export default {
   name: "userDetail",
   components: {ArticleCard, UserInfo},
   data() {
     return {
-      chartDatasets: {
-        labels: [],
-        datasets: [
-          {
-            data: [],
-            backgroundColor: [],
-          },
-        ]
-      },//Pieコンポーネントに渡してグラフを表示するためのデータ。DBからタグ使用率を取り次第dataとcolor指定
       sortList: [
         {key: 0, state: "新着順"},
         {key: 1, state: "更新順"},
@@ -299,39 +289,7 @@ export default {
   },
   watch: {
     //storeのuserDetailにDBからの情報をsetしたときにタグ使用率グラフにデータを詰め込む
-    userDetail() {
-      const th = this;
-      const usedTagsForChart = []
-      this.userDetail.usedTags.forEach((tag) => {
-        usedTagsForChart.push(tag)
-      })
 
-      const chart = async function () {
-        //tag数が10を超えると自動配色できないので9個目からはその他扱い
-        if (usedTagsForChart.length >= 10) {
-          usedTagsForChart.splice(8)
-          usedTagsForChart.push({
-            tagId: null,
-            tagName: 'その他',
-            usedTagCount: th.userDetail.usedTags.length - usedTagsForChart.length + 1
-          })
-        }
-        usedTagsForChart.forEach(function (tag) {
-          th.chartDatasets.labels.push(tag.tagName);
-          th.chartDatasets.datasets[0].data.push(tag.usedTagCount);
-        }, th);
-        th.chartDatasets.datasets[0].backgroundColor = palette('cb-YlGn', usedTagsForChart.length).map(
-            function (hex) {
-              return '#' + hex
-            }
-        )
-        await th.setChartData(th.chartDatasets);
-      }
-      const processAll = async function () {
-        await chart();
-      }
-      processAll();
-    },
     //storeのpostedArticlesにDBからの情報をsetしたときに最初画面遷移時に表示する記事種に切り替える
     postedArticles() {
       const th = this;
@@ -401,6 +359,26 @@ export default {
         processAll();
       }
     },
+    '$route': async function (to) {
+      const th = this
+      this.isLoading = true
+      const paramUserId = to.params['userId']
+      if (paramUserId === '0') {
+        if (!th.loginUser.uid) await th.$store.dispatch("window/setInternalServerError", true);
+        await th.findUserIdByUid(th.loginUser.uid);
+        await th.fetchUserDetail(th.userId);
+        //ユーザーが見つからない場合はこれ以降は実行されずwindow componentに切り替わる
+        await th.fetchFeedbackArticles(th.userId);
+        await th.fetchMyArticles(th.userId);
+        await th.fetchPostedArticles(th.userId);
+      } else {
+        await th.fetchUserDetail(paramUserId);
+        await th.fetchFeedbackArticles(paramUserId);
+        await th.fetchMyArticles(paramUserId);
+        await th.fetchPostedArticles(paramUserId);
+      }
+      this.isLoading=false
+    }
   },
   methods: {
     /**
@@ -425,7 +403,8 @@ export default {
       }
       this.paging.now = 1;
       this.length = Math.ceil(this.displayArticles.length / this.paging.pageSize);
-    },
+    }
+    ,
     /**
      * 表示したい記事に対応する数値を渡して、表示する記事一覧を変更する
      * @param listState (10:全記事), (1:Qiita未投稿記事), (2:Qiita投稿済み記事)
@@ -465,7 +444,8 @@ export default {
       }
       this.paging.now = 1;
       this.length = Math.ceil(this.displayArticles.length / this.paging.pageSize);
-    },
+    }
+    ,
     /**
      * 入力された検索条件とタグ条件に応じた記事を検索する
      */
@@ -494,12 +474,14 @@ export default {
         this.paging.now = 1;
         this.length = Math.ceil(articlesFromVuex.length / this.paging.pageSize);
       }
-    },
+    }
+    ,
     resetConditions() {
       this.conditions.title = "";
       this.conditions.conditionTags.splice(0);
       this.searchWithConditions();
-    },
+    }
+    ,
     resetPage() {
       this.displayListNum = 0;
       this.displayListState = {id: 10, name: '全記事'};
@@ -508,34 +490,39 @@ export default {
         top: 0,
         behavior: "smooth"
       });
-    },
+    }
+    ,
     ...mapActions("user", [
-      "setArticlesAndTags",
-      "setArticles",
-      "setChartData",
-      "fetchUserDetail",
-      "fetchPostedArticles",
-      "fetchFeedbackArticles",
-      "fetchMyArticles",
-      "findUserIdByUid",
-      "clearState"
-    ]),
-  },
+          "setArticlesAndTags",
+          "setArticles",
+          "setChartData",
+          "fetchUserDetail",
+          "fetchPostedArticles",
+          "fetchFeedbackArticles",
+          "fetchMyArticles",
+          "findUserIdByUid",
+          "clearState"
+        ]),
+  }
+  ,
   created() {
     //画面横幅が960px以上であればwindowWidthClassをtrueに変え画面を記事一覧を横に配置
     (this.windowWidth >= 960) ? this.windowWidthClass = true : this.windowWidthClass = false
     this.isLoading = true;
-  },
+  }
+  ,
   mounted() {
     //画面の横幅が変わるが度に960px以上かを判定
     window.onresize = () => {
       this.windowWidth = window.innerWidth;
       (this.windowWidth >= 960) ? this.windowWidthClass = true : this.windowWidthClass = false;
     }
-  },
+  }
+  ,
   beforeDestroy() {
     this.clearState()//遷移前にstoreを空にしないと次にユーザー詳細画面来たとき前回のユーザーが表示されてしまう
-  },
+  }
+  ,
   beforeRouteEnter(to, from, next) {
     //URLのparam(userId)に数値以外が入力された際に記事一覧に戻る
     if (!isNaN(to.params['userId'])) {
