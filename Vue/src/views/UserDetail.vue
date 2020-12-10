@@ -212,7 +212,7 @@ export default {
         now: 1,//現在のページ
         pageSize: 5,//1pあたりの記事数
       },//paging処理用オブジェクト
-      displayListNum: 0,//0:posted, 1:feedback, 2:my, 3:draft
+      displayListNum: 0,//0:notDraft, 1:feedback, 2:my, 3:draft
       displayListState: {id: 10, name: '全記事'},//10:all, 1:notPostedQiita, 2:postedQiita
       conditions: {
         title: "",
@@ -298,12 +298,26 @@ export default {
     //storeのuserDetailにDBからの情報をsetしたときにタグ使用率グラフにデータを詰め込む
     userDetail() {
       const th = this;
+      const usedTagsForChart = []
+      this.userDetail.usedTags.forEach((tag) => {
+        usedTagsForChart.push(tag)
+      })
+
       const chart = async function () {
-        th.userDetail.usedTags.forEach(function (tag) {
+        //tag数が10を超えると自動配色できないので9個目からはその他扱い
+        if (usedTagsForChart.length >= 10) {
+          usedTagsForChart.splice(8)
+          usedTagsForChart.push({
+            tagId: null,
+            tagName: 'その他',
+            usedTagCount: th.userDetail.usedTags.length - usedTagsForChart.length + 1
+          })
+        }
+        usedTagsForChart.forEach(function (tag) {
           th.chartDatasets.labels.push(tag.tagName);
           th.chartDatasets.datasets[0].data.push(tag.usedTagCount);
         }, th);
-        th.chartDatasets.datasets[0].backgroundColor = palette('cb-YlGn', th.userDetail.usedTags.length).map(
+        th.chartDatasets.datasets[0].backgroundColor = palette('cb-YlGn', usedTagsForChart.length).map(
             function (hex) {
               return '#' + hex
             }
@@ -358,31 +372,33 @@ export default {
       }, 100)
     },
     apiToken: function () {
-      const paramUserId = this.$route.params['userId'];
-      const th = this;
-      const fetch = async function () {
-        if (paramUserId === '0') {
-          if (!th.loginUser.uid) await th.$store.dispatch("window/setInternalServerError", true);
-          await th.findUserIdByUid(th.loginUser.uid);
-          await th.fetchUserDetail(th.userId);
-          //ユーザーが見つからない場合はこれ以降は実行されずwindow componentに切り替わる
-          await th.fetchFeedbackArticles(th.userId);
-          await th.fetchMyArticles(th.userId);
-          await th.fetchPostedArticles(th.userId);
-        } else {
-          await th.fetchUserDetail(paramUserId);
-          await th.fetchFeedbackArticles(paramUserId);
-          await th.fetchMyArticles(paramUserId);
-          await th.fetchPostedArticles(paramUserId);
+      if (this.apiToken != null) {
+        const paramUserId = this.$route.params['userId'];
+        const th = this;
+        const fetch = async function () {
+          if (paramUserId === '0') {
+            if (!th.loginUser.uid) await th.$store.dispatch("window/setInternalServerError", true);
+            await th.findUserIdByUid(th.loginUser.uid);
+            await th.fetchUserDetail(th.userId);
+            //ユーザーが見つからない場合はこれ以降は実行されずwindow componentに切り替わる
+            await th.fetchFeedbackArticles(th.userId);
+            await th.fetchMyArticles(th.userId);
+            await th.fetchPostedArticles(th.userId);
+          } else {
+            await th.fetchUserDetail(paramUserId);
+            await th.fetchFeedbackArticles(paramUserId);
+            await th.fetchMyArticles(paramUserId);
+            await th.fetchPostedArticles(paramUserId);
+          }
         }
-      }
-      const processAll = async function () {
-        await fetch();
-        th.isLoading = false;
-        th.isDisplay = true;
-      }
-      processAll();
+        const processAll = async function () {
+          await fetch();
+          th.isLoading = false;
+          th.isDisplay = true;
+        }
+        processAll();
 
+      }
     },
   },
   methods: {
@@ -398,7 +414,7 @@ export default {
       this.sortNum = 0;
       let articlesFromVuex = [];
 
-      if (listNum === 0) articlesFromVuex = this.postedArticles;
+      if (listNum === 0) articlesFromVuex = this.notDraftArticles;
       if (listNum === 1) articlesFromVuex = this.feedbackArticles;
       if (listNum === 2) articlesFromVuex = this.myArticles;
       if (listNum === 3) articlesFromVuex = this.draftArticles;
@@ -421,13 +437,13 @@ export default {
 
       let articlesFromVuex = [];
       if (listState === 10) {//全記事表示に切り替える
-        if (this.displayListNum === 0) articlesFromVuex = this.postedArticles;
+        if (this.displayListNum === 0) articlesFromVuex = this.notDraftArticles;
         if (this.displayListNum === 1) articlesFromVuex = this.feedbackArticles;
         if (this.displayListNum === 2) articlesFromVuex = this.myArticles;
       }
       if (listState !== 10) {//全記事以外の表示に切り替えるためにstateFlagでfilterをかけて絞り込む
-        if (this.displayListNum === 0 && this.postedArticles.length !== 0) {
-          articlesFromVuex = this.postedArticles.filter((art) => {
+        if (this.displayListNum === 0 && this.notDraftArticles.length !== 0) {
+          articlesFromVuex = this.notDraftArticles.filter((art) => {
             return art.stateFlag === listState
           })
         }
@@ -455,7 +471,7 @@ export default {
     searchWithConditions() {
       if (this.$refs.search_form.validate()) {
         let articlesFromVuex = [];
-        if (this.displayListNum === 0) articlesFromVuex = this.postedArticles;
+        if (this.displayListNum === 0) articlesFromVuex = this.notDraftArticles;
         if (this.displayListNum === 1) articlesFromVuex = this.feedbackArticles;
         if (this.displayListNum === 2) articlesFromVuex = this.myArticles;
         if (this.displayListNum === 3) articlesFromVuex = this.draftArticles;
