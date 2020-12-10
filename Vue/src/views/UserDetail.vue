@@ -390,12 +390,11 @@ export default {
             await th.fetchPostedArticles(paramUserId);
           }
         }
-      }
-      const processAll = async function () {
-        await fetch();
-        th.isLoading = false;
-      }
-      processAll();
+        const processAll = async function () {
+          await fetch();
+          th.isLoading = false;
+        }
+        processAll();
       }
     },
   },
