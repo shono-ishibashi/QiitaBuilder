@@ -235,7 +235,7 @@ export default {
   },
   watch: {
     async apiToken() {
-      if (this.apiToken != null) {
+      if (this.apiToken) {
         this.isLoading = true
         this.isDisplay = false
         await this.fetchArticles(this.searchCriteria)
@@ -248,9 +248,12 @@ export default {
               }
             })
             .catch(error => {
-              this.errorHandle(error)
+              this.articleErrorHandle(error)
             })
-        await this.fetchTags();
+        await this.fetchTags()
+            .catch(error => {
+              this.errorHandle(error)
+            });
         await this.$nextTick();
       }
     },
@@ -259,7 +262,7 @@ export default {
       this.isDisplay = false
       this.searchCriteria.currentPage = 1;
       await this.fetchArticles(this.searchCriteria).catch(error => {
-        this.errorHandle(error)
+        this.articleErrorHandle(error)
       })
       await this.$nextTick();
       await setTimeout(() => {
@@ -272,7 +275,7 @@ export default {
       this.isDisplay = false
       this.searchCriteria.currentPage = 1;
       this.fetchArticles(this.searchCriteria).catch(error => {
-        this.errorHandle(error)
+        this.articleErrorHandle(error)
       })
       await this.$nextTick();
       await setTimeout(() => {
@@ -283,13 +286,13 @@ export default {
     ['searchCriteria.pageSize']() {
       this.searchCriteria.currentPage = 1;
       this.fetchArticles(this.searchCriteria).catch(error => {
-        this.errorHandle(error)
+        this.articleErrorHandle(error)
       })
       this.scrollTop();
     },
     async ['searchCriteria.currentPage']() {
       await this.fetchArticles(this.searchCriteria).catch(error => {
-        this.errorHandle(error)
+        this.articleErrorHandle(error)
       })
       await setTimeout(() => {
         this.scrollTop();
@@ -317,7 +320,7 @@ export default {
   },
   methods: {
     ...mapActions("article", ["toggleProcessFailure"]),
-    ...mapActions("articles", ["fetchArticles", "fetchTags", "toggleErrorTransitionDialog", "setToggleSearchWord"]),
+    ...mapActions("articles", ["fetchArticles", "fetchTags", "setToggleSearchWord"]),
     changePeriod(key) {
       this.searchCriteria.period = key
     },
@@ -331,7 +334,7 @@ export default {
         this.isDisplay = false
         this.searchCriteria.currentPage = 1
         await this.fetchArticles(this.searchCriteria).catch(error => {
-          this.errorHandle(error)
+          this.articleErrorHandle(error)
         })
         await this.$nextTick();
         await setTimeout(() => {
@@ -358,7 +361,7 @@ export default {
       this.searchCriteria.searchTag = []
       this.searchCriteria.currentPage = 1
       await this.fetchArticles(this.searchCriteria).catch(error => {
-        this.errorHandle(error)
+        this.articleErrorHandle(error)
       })
       await this.$nextTick();
       await setTimeout(() => {
@@ -368,13 +371,30 @@ export default {
     },
     errorHandle(error) {
       const status = error.response.status;
-      if (status === 404) {
-        this.$router.push({name: "404"});
-      } else if (status === 401) {
-        this.nonValidToken = true;
-      } else {
-        this.toggleProcessFailure()
+      switch (status) {
+        case 401:
+          this.nonValidToken = true;
+          this.$store.dispatch("auth/logout");
+          break;
+        case 500:
+          this.$store.dispatch("window/setInternalServerError", true);
+          break;
+        default:
+          this.toggleProcessFailure();
       }
+    },
+    articleErrorHandle(error) {
+      const status = error.response.status;
+      switch (status) {
+        case 400:
+        case 404:
+          this.$store.dispatch("window/setNotFound", true);
+          break;
+        case 403:
+          this.$store.dispatch("window/setForbidden", true);
+          break;
+      }
+      this.errorHandle(error);
     },
     sleep(msec) {
       return new Promise(function (resolve) {
