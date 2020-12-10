@@ -221,8 +221,10 @@ export default {
     },
     apiToken: {
       async handler() {
-        await this.fetchRankingUser(this.selectRankItemId);
-        this.rankUsersLength = await Number(this.users.length);
+        if (this.apiToken) {
+          await this.fetchRankingUser(this.selectRankItemId);
+          this.rankUsersLength = await Number(this.users.length);
+        }
       }
     }
   },
