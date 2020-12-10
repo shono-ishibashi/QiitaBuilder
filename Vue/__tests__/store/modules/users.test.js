@@ -4,6 +4,7 @@ import {createLocalVue} from '@vue/test-utils';
 import {cloneDeep} from 'lodash';
 import axios from "axios";
 import Vuex from 'vuex';
+import {beforeEach, describe, jest} from "@jest/globals";
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -76,7 +77,7 @@ let mockError = false
 
 // axiosのモック化
 jest.mock('axios', () => ({
-    get: jest.fn((_url, {
+    get: (_url, {
         headers: {
             'Authorization': _apiToken
         }
@@ -94,7 +95,7 @@ jest.mock('axios', () => ({
                 data: replaceRankingUsers
             })
         })
-    })
+    }
 }))
 
 describe('store/users.js', () => {

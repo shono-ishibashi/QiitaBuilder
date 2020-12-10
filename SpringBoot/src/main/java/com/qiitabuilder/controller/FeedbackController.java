@@ -42,7 +42,7 @@ public class FeedbackController {
     @ResponseStatus(HttpStatus.OK)
     public Feedback postFeedback(@Validated @RequestBody FeedbackForm form, BindingResult result) {
         // 入力値エラーの場合はBadRequestを返す
-        if (result.hasErrors()) {
+        if (result.hasErrors() || form.getContent().matches("^[　]+")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
@@ -79,7 +79,7 @@ public class FeedbackController {
     @ResponseStatus(HttpStatus.OK)
     public Feedback updateFeedback(@Validated @RequestBody FeedbackForm form, BindingResult result) {
         // 入力値エラーの場合はBadRequestを返す
-        if (result.hasErrors() || Objects.isNull(form.getFeedbackId()) || Objects.isNull(form.getFeedbackVersion())) {
+        if (result.hasErrors() || Objects.isNull(form.getFeedbackId()) || Objects.isNull(form.getFeedbackVersion()) || form.getContent().matches("^[　]+")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 

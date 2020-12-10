@@ -46,7 +46,7 @@
             color="green darken-2"
             solo
             v-model="feedback.content"
-            :rules="[required, maximum]"
+            :rules="[required, maximum, blank]"
             label="テキストを入力"
           ></v-textarea>
         </v-container>
@@ -100,6 +100,10 @@ export default {
         value === undefined
           ? true
           : value.length <= 20000 || "2万文字以内で入力してください",
+      blank: (value) => {
+        const pattern = /\S/;
+        return pattern.test(value) || "空文字のみの入力はできません";
+      },
     };
   },
   props: ["feedback"],

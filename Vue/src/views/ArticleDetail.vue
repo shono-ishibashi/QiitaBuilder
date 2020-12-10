@@ -30,7 +30,10 @@
     </v-row>
     <v-row v-show="!isLoading">
       <v-col class="hidden-xs-only hidden-sm-only" :md="mdPlacement.buttons">
-        <v-row v-if="article.stateFlag !== 0" id="qiita_btn">
+        <v-row
+          v-if="article.stateFlag !== 0 && article.stateFlag !== 9"
+          id="qiita_btn"
+        >
           <!-- Qiitaボタン -->
           <v-col
             cols="12"
@@ -128,17 +131,18 @@
             :recommendId="recommendId"
             @toggleMyArticle="toggleMyArticle"
             @toggleRecommend="toggleRecommend"
+            @deleteArticle="deleteArticle"
           />
           <Feedbacks
             :feedbacks="feedbacks"
             @editFeedback="editFeedback"
             @deleteFeedback="deleteFeedback"
-            v-if="article.stateFlag !== 0"
+            v-if="article.stateFlag !== 0 && article.stateFlag !== 9"
           />
         </v-sheet>
       </v-col>
       <v-col
-        v-if="article.stateFlag !== 0"
+        v-if="article.stateFlag !== 0 && article.stateFlag !== 9"
         cols="12"
         sm="12"
         :md="mdPlacement.editor"
@@ -174,7 +178,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapActions } from "vuex";
 import Article from "../components/article_detail/Article";
 import Feedbacks from "../components/article_detail/Feedbacks";
 import FeedbackEditor from "../components/article_detail/FeedbackEditor";
@@ -208,7 +212,6 @@ export default {
     };
   },
   computed: {
-    ...mapState("article", ["processFailure"]),
     slug() {
       return this.$route.params.articleId;
     },
@@ -234,12 +237,15 @@ export default {
     recommendId() {
       return this.$store.state.article.recommendId;
     },
+    processFailure() {
+      return this.$store.state.article.processFailure;
+    },
   },
   watch: {
     apiToken: async function() {
       this.isLoading = true;
       const a = this.fetchArticle(this.slug).catch((error) => {
-        this.errorHandle(error);
+        this.articleErrorHandle(error);
       });
       this.fetchMyArticle(this.slug).catch((error) => {
         this.errorHandle(error);
@@ -265,22 +271,59 @@ export default {
     this.scrollTop();
   },
   methods: {
+    //// 画面描画の調整
     scrollTop() {
       window.scrollTo({
         top: 0,
         behavior: "auto",
       });
     },
+    //// エラー処理
+    // 汎用的なエラー処理
     errorHandle(error) {
       const status = error.response.status;
-      if (status == 400 || status == 404) {
-        this.$store.dispatch("window/setNotFound", true);
-      } else if (status == 401) {
-        this.nonValidToken = true;
-        this.$store.dispatch("auth/logout");
-      } else {
-        this.toggleProcessFailure();
+      switch (status) {
+        case 401:
+          this.nonValidToken = true;
+          this.$store.dispatch("auth/logout");
+          break;
+        case 500:
+          this.$store.dispatch("window/setInternalServerError", true);
+          break;
+        default:
+          this.toggleProcessFailure();
       }
+    },
+    // 記事取得時のエラー処理
+    articleErrorHandle(error) {
+      const status = error.response.status;
+      switch (status) {
+        case 400:
+        case 404:
+          this.$store.dispatch("window/setNotFound", true);
+          break;
+        case 403:
+          this.$store.dispatch("window/setForbidden", true);
+          break;
+      }
+      this.errorHandle(error);
+    },
+
+    //// 通常処理
+    deleteArticle() {
+      // 削除前のstateFlag
+      const beforeStateFlag = this.article.stateFlag;
+      const item = this.article;
+      item.stateFlag = 9;
+      this.$store
+        .dispatch("article/saveArticle", item)
+        .then(() => {
+          this.$router.push({ name: "articleList" });
+        })
+        .catch((error) => {
+          this.article.stateFlag = beforeStateFlag;
+          this.errorHandle(error);
+        });
     },
     closeEditor() {
       if (!this.propsFeedback.feedbackId) {
