@@ -2,7 +2,7 @@
   <v-container :class="{'d-flex':windowWidthClass}" fluid>
     <v-row>
       <v-col cols="12" sm="12" md="6">
-        <UserInfo v-show="isDisplay"></UserInfo>
+        <UserInfo v-show="!isLoading"></UserInfo>
         <v-progress-linear
             v-show="isLoading"
             color="green"
@@ -134,7 +134,7 @@
                   <v-row align-content="center" justify="center">
                     <v-col cols="12">
                       <ArticleCard v-for="(article,index) in sortedArticles" :key="article.articleId" :article="article"
-                                   v-show="isDisplay&&sortedArticles.length!==0" :index="index"
+                                   v-show="!isLoading&&sortedArticles.length!==0" :index="index"
                                    @thisUserPage="resetPage" :data-test-id="'article-card'+index"
                                    style="margin: 0; padding: 0;">
                       </ArticleCard>
@@ -236,7 +236,6 @@ export default {
         {id: 1, name: 'Qiita未投稿記事'},
         {id: 2, name: 'Qiita投稿済み記事'},
       ],//記事state select-box表示用リスト
-      isDisplay: false,//各コンポーネント表示切替用のboolean
       isLoading: false,//loading処理表示切替用のboolean
       title_limit_length: value => value.length <= 100 || "100文字以内で入力してください",//記事title検索用のvalidation
       tags_limit_length: value => value.length <= 5 || "6個以上入力しないでください",//記事tag検索用のvalidation
@@ -379,7 +378,6 @@ export default {
       const processAll = async function () {
         await fetch();
         th.isLoading = false;
-        th.isDisplay = true;
       }
       processAll();
 

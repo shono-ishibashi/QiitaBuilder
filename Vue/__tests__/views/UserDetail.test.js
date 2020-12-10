@@ -2,8 +2,8 @@ import {shallowMount, createLocalVue} from '@vue/test-utils';
 import Vuex from 'vuex';
 import Component from '@/views/UserDetail';
 import {afterEach, beforeEach, describe, jest} from "@jest/globals";
-import * as palette from 'google-palette/palette'
-jest.mock('google-palette/palette.js')
+/*import * as palette from 'google-palette/palette'
+jest.mock('google-palette/palette.js')*/
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -25,9 +25,13 @@ beforeEach(() => {
         setArticlesAndTags: jest.fn(),
         setArticles: jest.fn(),
         setChartData: jest.fn(),
-        fetchUserDetail: jest.fn(),
+        fetchUserDetail: jest.fn().mockImplementation((userId) => {
+            return userId
+        }),
         fetchPostedArticles: jest.fn(),
-        fetchFeedbackArticles: jest.fn(),
+        fetchFeedbackArticles: jest.fn().mockImplementation((userId) => {
+            return userId
+        }),
         fetchMyArticles: jest.fn(),
         findUserIdByUid: jest.fn(),
         clearState: jest.fn()
@@ -740,7 +744,7 @@ describe('Testing UserDetail Component', () => {
 
             /*const mockPalette=require('google-palette')
             const palette=require('google-palette/palette').palette().mockReturnValue('aaa')*/
-            //const paletteSpy = jest.spyOn(, 'default').mockReturnValueOnce('41ab5d').mockReturnValueOnce('78c679').mockReturnValueOnce('addd8e')
+            //const paletteSpy = jest.spyOn(, 'palette').mockReturnValueOnce('41ab5d').mockReturnValueOnce('78c679').mockReturnValueOnce('addd8e')
 
             //const paletteMock=jest.spyOn(palette,"palette")
             //paletteMock.mockReturnValue('a')
@@ -749,26 +753,6 @@ describe('Testing UserDetail Component', () => {
             palette.mockReturnValue('aaa')
             console.log(palette('cb-YlGn',3))*/
             //('cb-YlGn',3)
-            store = new Vuex.Store({
-                state: {},
-                mutations: {},
-                actions: {},
-                getters: {},
-                modules: {
-                    user: {
-                        namespaced: true,
-                        state: user_state,
-                        mutations: user_mutations,
-                        actions: user_actions,
-                        getters: user_getters
-                    },
-                    auth: {
-                        namespaced: true,
-                        state: auth_state,
-                        getters: auth_getters
-                    }
-                }
-            });
             wrapper = shallowMount(Component, {
                 store,
                 localVue,
@@ -799,8 +783,6 @@ describe('Testing UserDetail Component', () => {
                     }
                 },
             });
-
-            console.log(palette)
 
             expect(wrapper.vm.chartDatasets).toStrictEqual({
                 labels: [],
@@ -841,20 +823,167 @@ describe('Testing UserDetail Component', () => {
                 }
             }
             await changeUserDetail();
-           /* const chartDatasetsForTest = {
-                labels: ['Java', 'go', 'Javascript'],
-                datasets: [
-                    {
-                        data: [1, 2, 3],
-                        backgroundColor: ['#41ab5d', '#78c679', '#addd8e'],
-                    },
-                ]
-            }*/
+            /* const chartDatasetsForTest = {
+                 labels: ['Java', 'go', 'Javascript'],
+                 datasets: [
+                     {
+                         data: [1, 2, 3],
+                         backgroundColor: ['#41ab5d', '#78c679', '#addd8e'],
+                     },
+                 ]
+             }*/
             //await wrapper.vm.$nextTick();
-            console.log('expect 3 color: '+wrapper.vm.chartDatasets.datasets.backgroundColor)
+            console.log('expect 3 color: ' + wrapper.vm.chartDatasets.datasets.backgroundColor)
             //await expect(wrapper.vm.chartDatasets).toStrictEqual(chartDatasetsForTest)
             //await expect(user_actions.setChartData).toBeCalled()
         })
+        test('postedArticles', async () => {
+            const $route = {
+                query: {defaultList: 'MyArticles'}
+            };
+            wrapper = shallowMount(Component, {
+                store,
+                localVue,
+                mocks: {
+                    $route
+                },
+                data() {
+                    //storeを変更したいがwrap後は検知できないので、storeを新たに上書きしwrapするしかないが
+                    // それではwatchのテストとして成立しないのでstoreの役割をここのdataとcomputedに持たせている
+                    return {
+                        postedArticlesInStore: []
+                    }
+                },
+                computed: {
+                    postedArticles: {
+                        get() {
+                            return this.postedArticlesInStore
+                        },
+                        set(val) {
+                            this.postedArticlesInStore = val
+                        }
+                    }
+                },
+            });
+            wrapper.vm.changeList = jest.fn()
+            //変更前
+            await expect(wrapper.vm.changeList).not.toBeCalled()
 
+            //変更
+            const changePostedArticles = function () {
+                //上記の仮storeのおかげでここでwrapしなおさず変更できる
+                wrapper.vm.postedArticles = [
+                    {
+                        articleId: 1
+                    }
+                ]
+            }
+            await changePostedArticles();
+
+            //変更後
+            await expect(wrapper.vm.changeList).toBeCalledWith(2)
+        })
+        test('sortNum', async () => {
+            await wrapper.setData({paging: {now: 2, pageSize: 5}})
+            await expect(wrapper.vm.paging.now).toBe(2)
+            await wrapper.setData({sortNum: 2})
+            await expect(wrapper.vm.paging.now).toBe(1)
+        })
+        test('apiToken', async () => {
+            const userIdFromParams = 3
+            const $route = {
+                params: {userId: userIdFromParams}
+            };
+            wrapper = shallowMount(Component, {
+                store,
+                localVue,
+                mocks: {
+                    $route
+                },
+                data() {
+                    //storeを変更したいがwrap後は検知できないので、storeを新たに上書きしwrapするしかないが
+                    // それではwatchのテストとして成立しないのでstoreの役割をここのdataとcomputedに持たせている
+                    return {
+                        testToken: ''
+                    }
+                },
+                computed: {
+                    apiToken: {
+                        get() {
+                            return 'computed token' + this.testToken
+                        },
+                        set(val) {
+                            this.testToken = val
+                        }
+                    }
+                },
+            });
+
+            //変更前
+            await expect(user_actions.fetchUserDetail).not.toBeCalled()
+            await expect(user_actions.fetchFeedbackArticles).not.toBeCalled()
+            await expect(user_actions.fetchMyArticles).not.toBeCalled()
+            await expect(user_actions.fetchPostedArticles).not.toBeCalled()
+
+            //変更
+            const changeToken = function () {
+                //上記の仮storeのおかげでここでwrapしなおさず変更できる
+                wrapper.vm.apiToken = 'test'
+            }
+            await changeToken();
+
+            await expect(user_actions.fetchUserDetail).toBeCalledTimes(1)
+            //TODO: debugしてuser_actions.fetch～に来ていることは確認できるのに、なぜかfetchUserDetail以外は呼ばれていないことになる
+            //await expect(user_actions.fetchFeedbackArticles).toBeCalledTimes(1)
+            //await expect(user_actions.fetchMyArticles).toBeCalledTimes(1)
+            //await expect(user_actions.fetchPostedArticles).toBeCalledTimes(1)
+
+            //引数にuserIdを指定できているかのテスト。引数一つ目は{dispatch, commit, rootGetters, rootState}が自動で入れられるので引数の二つ目を検証
+            await expect(user_actions.fetchUserDetail).toBeCalledWith(user_actions.fetchUserDetail.mock.calls[0][0], userIdFromParams)
+        })
+
+    })
+    describe('Testing methods', () => {
+        test('changeList', async () => {
+            wrapper.setData({conditions: {title: 'title', conditionTags: ['a']}})
+            wrapper.setData({displayListState: {id: 1, name: ['Qiita未投稿記事']}})
+
+            //変更前
+            expect(wrapper.vm.conditions).toStrictEqual({title: 'title', conditionTags: ['a']})
+            expect(wrapper.vm.displayListNum).toBe(0)
+            expect(wrapper.vm.displayListState).toStrictEqual({id: 1, name: ['Qiita未投稿記事']})
+
+            //変更
+            await wrapper.vm.changeList(1)
+
+            //変更後
+            expect(wrapper.vm.conditions).toStrictEqual({title: '', conditionTags: []})
+            expect(wrapper.vm.displayListNum).toBe(1)
+            expect(wrapper.vm.displayListState).toStrictEqual({id: 10, name: '全記事'})
+            expect(wrapper.vm.paging.now).toBe(1)
+
+            expect(user_actions.setArticlesAndTags).toBeCalled()
+        })
+        test('changeListState', async () => {
+            wrapper.setData({conditions: {title: 'title', conditionTags: ['a']}})
+            wrapper.setData({displayListState: {id: 1, name: ['Qiita未投稿記事']}})
+            wrapper.setData({displayListNum:0})
+
+            //変更前
+            expect(wrapper.vm.conditions).toStrictEqual({title: 'title', conditionTags: ['a']})
+            expect(wrapper.vm.displayListNum).toBe(0)
+            expect(wrapper.vm.displayListState).toStrictEqual({id: 1, name: ['Qiita未投稿記事']})
+
+            //変更
+            await wrapper.vm.changeListState(10)
+
+            //変更後
+            expect(wrapper.vm.conditions).toStrictEqual({title: '', conditionTags: []})
+            expect(wrapper.vm.displayListState).toStrictEqual({id: 10, name: '全記事'})
+            expect(wrapper.vm.paging.now).toBe(1)
+            expect(wrapper.vm.sortNum).toBe(0)
+
+            expect(user_actions.setArticlesAndTags).toBeCalled()
+        })
     })
 })
