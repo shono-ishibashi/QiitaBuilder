@@ -19,15 +19,18 @@
               </v-row>
               <v-row>
                 <v-radio-group
+                    data-test-id="toggle-search"
                     v-model="toggleSearchWord"
                     row
                 >
                   <v-radio
+                      data-test-id="toggle-search0"
                       label="記事検索"
                       value="0"
                       color="success"
                   ></v-radio>
                   <v-radio
+                      data-test-id="toggle-search1"
                       label="ユーザー検索"
                       value="1"
                       color="success"
@@ -37,6 +40,7 @@
               <v-row>
                 <v-col>
                   <v-text-field
+                      data-test-id="search-article"
                       v-if="this.toggleSearchWord==0"
                       label="記事を検索"
                       color="#5bc8ac"
@@ -48,6 +52,7 @@
                   >
                   </v-text-field>
                   <v-text-field
+                      data-test-id="search-user"
                       v-if="this.toggleSearchWord==1"
                       label="ユーザーを検索"
                       color="#5bc8ac"
@@ -111,21 +116,28 @@
               fixed-tabs
               color="#5bc8ac"
           >
-            <v-tab v-for="period in periodList" :key="period.key" @click="changePeriod(period.key)">
+            <v-tab
+                v-for="(period,index) in periodList"
+                :data-test-id="'tab'+index"
+                :key="period.key"
+                @click="changePeriod(period.key)">
               {{ period.state }}
             </v-tab>
           </v-tabs>
           <v-spacer></v-spacer>
           <v-select
+              data-test-id="sort"
+              v-model="searchCriteria.sortNum"
               :items="sortList"
               item-value="key"
               item-text="state"
               item-color="green"
               label="並び替え"
               color="#5bc8ac"
-              v-model="searchCriteria.sortNum">
+              >
           </v-select>
           <v-select
+              data-test-id="pageSize"
               :items="displayCountList"
               item-text="text"
               item-value="value"
@@ -139,6 +151,7 @@
         <div v-show="isDisplay">
           <!--          記事がない場合の処理: 変数をクッションに挟んで取得後にbooleanで描画を決定-->
           <v-container
+              data-test-id="no-article-field"
               v-if="articles.length===0"
               class="no-article-field"
           >
@@ -157,7 +170,10 @@
     </v-row>
     <v-row>
       <v-col cols="3"></v-col>
-      <v-col cols="6" :class="{'progress-linear':isLoading}">
+      <v-col
+          cols="6"
+          :class="{'progress-linear':isLoading}"
+      >
         <v-progress-linear
             v-show="isLoading"
             color="green"
@@ -233,6 +249,23 @@ export default {
       tags_limit_length: value => value.length <= 5 || "6個以上入力しないでください",
     }
   },
+
+  computed: {
+    ...mapState("article", ["processFailure"]),
+    ...mapState("articles", ["articles", "tags", "totalPage", "searchCriteria", "errorTransistionDialog"]),
+    apiToken() {
+      return this.$store.getters["auth/apiToken"];
+    },
+    toggleSearchWord: {
+      get() {
+        return this.searchCriteria.toggleSearchWord
+      },
+      set(value) {
+        this.setToggleSearchWord(value)
+      }
+    }
+  },
+
   watch: {
     async apiToken() {
       if (this.apiToken) {
@@ -297,22 +330,6 @@ export default {
       await setTimeout(() => {
         this.scrollTop();
       }, 50)
-    }
-  },
-
-  computed: {
-    ...mapState("article", ["processFailure"]),
-    ...mapState("articles", ["articles", "tags", "totalPage", "searchCriteria", "errorTransistionDialog"]),
-    apiToken() {
-      return this.$store.getters["auth/apiToken"];
-    },
-    toggleSearchWord: {
-      get() {
-        return this.searchCriteria.toggleSearchWord
-      },
-      set(value) {
-        this.setToggleSearchWord(value)
-      }
     }
   },
   components: {
