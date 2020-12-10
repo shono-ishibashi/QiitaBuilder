@@ -70,20 +70,24 @@
                           <v-icon>mdi-magnify</v-icon>
                         </v-col>
                         <v-col cols="4" style="padding: 0">
-                          <v-form ref="search_form">
+                          <v-form ref="search_form" @submit.prevent="">
                             <v-text-field
                                 v-model="conditions.title"
                                 label="記事タイトルを入力"
                                 :rules="[title_limit_length]"
                                 color="#5bc8ac"
                                 data-test-id="search-title"
+                                @keydown.enter.exact.prevent
+                                @keyup.enter="searchWithConditions"
                             ></v-text-field>
                           </v-form>
                         </v-col>
                         <v-col cols="4" style="padding: 0">
-                          <v-form ref="search_form">
+                          <v-form ref="search_form" @submit.prevent="">
                             <v-autocomplete
                                 v-model="conditions.conditionTags"
+                                @keyup.enter="searchWithConditions"
+                                @keydown.enter.exact.prevent
                                 :items="usedTags"
                                 :rules="[tags_limit_length]"
                                 item-value="tagId"
