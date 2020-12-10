@@ -419,6 +419,7 @@ export default {
                     dispatch('resetArticle')
                     dispatch('articles/fetchTags', null, {root: true})
                     dispatch('fetchArticle', params.articleId)
+                        // ここの処理はコンポーネントに書く
                         .then(() => {
                             if (state.article.stateFlag === 9) {
                                 dispatch("window/setNotFound", true, {root: true});
@@ -435,7 +436,7 @@ export default {
 
                 })
                 .catch(() => {
-                    dispatch("window/setNotFound", true);
+                    dispatch("window/setNotFound", true, {root: true});
                 })
         },
         toggleProcessFailure({commit}) {
