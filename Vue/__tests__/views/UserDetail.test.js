@@ -25,13 +25,9 @@ beforeEach(() => {
         setArticlesAndTags: jest.fn(),
         setArticles: jest.fn(),
         setChartData: jest.fn(),
-        fetchUserDetail: jest.fn().mockImplementation((userId) => {
-            return userId
-        }),
+        fetchUserDetail: jest.fn(),
         fetchPostedArticles: jest.fn(),
-        fetchFeedbackArticles: jest.fn().mockImplementation((userId) => {
-            return userId
-        }),
+        fetchFeedbackArticles: jest.fn(),
         fetchMyArticles: jest.fn(),
         findUserIdByUid: jest.fn(),
         clearState: jest.fn()
@@ -232,7 +228,8 @@ beforeEach(() => {
     };
     myMock.mockReturnValueOnce(auth_state.apiToken);
     auth_getters = {
-        apiToken: myMock
+        apiToken: myMock,
+        loginUser: jest.fn()
     };
 
     store = new Vuex.Store({
@@ -823,7 +820,6 @@ describe('Testing UserDetail Component', () => {
                 }
             }
             await changeUserDetail();
-            //TODO:google-palette/palette.jsの128行目のfunctionが呼ばれているとこまでは確認できたがstub化がうまくいかない(UserInfo.vue 123)
 
             /* const chartDatasetsForTest = {
                  labels: ['Java', 'go', 'Javascript'],
@@ -921,6 +917,7 @@ describe('Testing UserDetail Component', () => {
                 },
             });
 
+            const spy = jest.spyOn(wrapper.vm, 'fetchFeedbackArticles')
             //変更前
             await expect(user_actions.fetchUserDetail).not.toBeCalled()
             await expect(user_actions.fetchFeedbackArticles).not.toBeCalled()
@@ -934,9 +931,11 @@ describe('Testing UserDetail Component', () => {
             }
             await changeToken();
 
+            console.log(wrapper.vm.fetchFeedbackArticles)
+            console.log(user_actions.fetchFeedbackArticles)
             await expect(user_actions.fetchUserDetail).toBeCalledTimes(1)
-            //TODO: debugしてuser_actions.fetch～に来ていることは確認できるのに、なぜかfetchUserDetail以外は呼ばれていないことになる(UserDetail.vue 392~395)
-            //await expect(user_actions.fetchFeedbackArticles).toBeCalledTimes(1)
+            await expect(user_actions.fetchFeedbackArticles).toBeCalledTimes(1)
+            await expect(spy).toBeCalledTimes(1)
             //await expect(user_actions.fetchMyArticles).toBeCalledTimes(1)
             //await expect(user_actions.fetchPostedArticles).toBeCalledTimes(1)
 
@@ -988,7 +987,6 @@ describe('Testing UserDetail Component', () => {
             expect(user_actions.setArticlesAndTags).toBeCalled()
         })
         test('searchWithConditions', async () => {
-            //TODO:(this.$refs.search_form.validatin)のテスト方法(UserDetail.vue 474)
         })
         test('resetConditions', () => {
             wrapper.setData({conditions: {title: '1', conditionTags: ['Java']}})

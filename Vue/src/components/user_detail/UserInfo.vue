@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import {mapActions, mapGetters, mapState} from "vuex";
+import {mapGetters, mapState} from "vuex";
 import Pie from "@/components/user_detail/Pie";
 import * as palette from "google-palette";
 
@@ -125,7 +125,6 @@ export default {
               return '#' + hex
             }
         )
-        await th.setChartData(th.chartDatasets);
       }
       const processAll = async function () {
         await chart();
@@ -137,14 +136,9 @@ export default {
   computed: {
     ...mapGetters("user", [
       "notDraftArticles",
-      "chartData",]),
+    ]),
     ...mapState("user", ["userDetail",]),
   },
-  methods: {
-    ...mapActions("user", [
-      "setChartData",
-    ]),
-  }
 }
 </script>
 
