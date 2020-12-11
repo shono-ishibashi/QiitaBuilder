@@ -152,7 +152,7 @@ import EditAndPreview from '../components/article_edit/format/FormatEditAndPrevi
 import Edit from '../components/article_edit/format/FormatEdit'
 import Preview from '../components/article_edit/format/FormatPreview'
 import EditAndPreviewAndFeedback from '../components/article_edit/format/FormatEditAndPreviewAndFeedback'
-import {mapState, mapGetters, mapActions} from 'vuex'
+import {mapState, mapGetters, mapActions, mapMutations} from 'vuex'
 
 export default {
   name: "ArticleEdit",
@@ -215,6 +215,9 @@ export default {
       }
     }
   },
+  beforeDestroy() {
+    this.resetArticle()
+  },
   computed: {
     ...mapState("articles", ["tags", "searchCriteria"]),
     ...mapGetters("articles", ["tagNameList"]),
@@ -256,6 +259,7 @@ export default {
   methods: {
     ...mapActions("article", ["saveArticle", "resetArticle", "fetchArticleEdit", "toggleProcessFailure"]),
     ...mapActions("user", ["findUserIdByUid"]),
+    ...mapMutations("article", ['resetArticle']),
     //記事を投稿or更新するメソッド
     async postArticle(state) {
       //validationチェック

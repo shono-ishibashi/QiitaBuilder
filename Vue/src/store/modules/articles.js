@@ -33,6 +33,9 @@ export default {
         },
         setToggleSearchWord(state, selected) {
             state.searchCriteria.toggleSearchWord = selected
+        },
+        resetArticles(state){
+            state.articles = []
         }
     },
     actions: {

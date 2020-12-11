@@ -105,7 +105,7 @@
 import ChartArea from "../components/ranking/ChartArea.vue";
 import UserList from "../components/ranking/UserList.vue";
 import RelationArticles from "../components/ranking/RelationArticles.vue";
-import {mapActions, mapGetters} from "vuex";
+import {mapActions, mapGetters, mapMutations} from "vuex";
 
 
 export default {
@@ -228,9 +228,12 @@ export default {
       }
     }
   },
-
+  beforeDestroy() {
+    this.resetRankingUsers()
+  },
   methods: {
     ...mapActions("users", ["fetchRankingUser"]),
+    ...mapMutations('users', ['resetRankingUsers']),
     toUserDetail(index) {
       const userId = this.users[index].userId;
       this.$router.push({name: 'userDetail', params: {userId: userId}});
