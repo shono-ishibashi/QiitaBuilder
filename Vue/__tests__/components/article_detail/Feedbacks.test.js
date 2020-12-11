@@ -1,43 +1,11 @@
 /* eslint-disable no-undef */
 import { shallowMount, createLocalVue } from "@vue/test-utils";
-import Vuex from "vuex";
 import Feedbacks from "@/components/article_detail/Feedbacks";
 import { afterEach, beforeEach, describe } from "@jest/globals";
 
 const localVue = createLocalVue();
-localVue.use(Vuex);
 
 let wrapper;
-let store = new Vuex.Store({
-  state: {},
-  mutations: {},
-  actions: {},
-  getters: {},
-  modules: {
-    auth: {
-      namespaced: true,
-      state: {
-        loginUser: {
-          userId: 5,
-          password: null,
-          postArticles: null,
-          displayName: "gorilla",
-          photoUrl:
-            "https://www.nationalgeographic.com/content/dam/animals/thumbs/rights-exempt/mammals/m/mountain-gorilla_thumb.ngsversion.1538530889286.adapt.1900.1.jpg",
-          feedbacks: null,
-          myArticles: null,
-          uid: "uiduiduid",
-          feedbackCount: null,
-          postedArticleCount: null,
-          qiitaRecommendedAllCount: null,
-          usedTags: null,
-          isLoginUser: null,
-        },
-      },
-      getters: {},
-    },
-  },
-});
 let feedbacks = [
   {
     feedbackId: 64,
@@ -93,7 +61,6 @@ let feedbacks = [
 
 beforeEach(() => {
   wrapper = shallowMount(Feedbacks, {
-    store,
     localVue,
     propsData: {
       feedbacks: feedbacks,
