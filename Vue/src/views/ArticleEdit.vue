@@ -138,7 +138,7 @@
           <v-btn
               color="green darken-1"
               text
-              @click="postedToQiita(article)"
+              @click="postArticleToQiita(article)"
           >
             投稿する
           </v-btn>
@@ -287,14 +287,47 @@ export default {
         try {
           await this.saveArticle(this.article)
           await this.$router.push({name: "articleList"})
-          await this.resetArticle()
-              .catch(error => {
-                this.articleErrorHandle(error)
-              })
         } catch (error) {
           this.article.stateFlag = beforeStateFlag
           this.errorHandle(error);
         }
+      } else {
+        this.$refs.edit_form.validate()
+      }
+    },
+    async postArticleToQiita(article) {
+      let state = article.stateFlag;
+      //validationチェック
+      if (this.$refs.edit_form.validate()) {
+        //更新前のstateFlag
+        const beforeStateFlag = this.article.stateFlag
+        this.article.stateFlag = state
+        for (let i = 0; i < this.article.tags.length; i++) {
+          for (let tag of this.tags) {
+            //タグが登録されているものには登録されているものをset
+            if (tag.tagName === this.article.tags[i]) {
+              this.article.tags.splice(i, 1, tag)
+              break
+            }
+          }
+        }
+        //タグが登録されていないものにはtagIdにnullをset
+        for (let i = 0; i < this.article.tags.length; i++) {
+          if (typeof this.article.tags[i] == 'string') {
+            this.article.tags.splice(i, 1, {
+              tagId: null, tagName: this.article.tags[i]
+            })
+          }
+        }
+        try {
+          await this.saveArticle(this.article)
+        } catch (error) {
+          this.article.stateFlag = beforeStateFlag
+          this.errorHandle(error);
+        }
+        await this.$store.dispatch("article/postArticleToQiita", article.articleId).then(() => {
+          this.$router.push({name: "articleList"})
+        })
       } else {
         this.$refs.edit_form.validate()
       }
@@ -327,6 +360,7 @@ export default {
       }
     },
     articleErrorHandle(error) {
+      console.log(error);
       const status = error.response.status;
       switch (status) {
         case 400:
@@ -345,8 +379,7 @@ export default {
     },
     //qiitaに投稿or更新するメソッド
     async postedToQiita(article) {
-      await this.postArticle(article.stateFlag);
-      await this.$store.dispatch("article/postArticleToQiita", article.articleId);
+      await this.postArticle(article.stateFlag)
     },
   },
 
