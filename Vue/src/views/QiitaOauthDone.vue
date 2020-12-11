@@ -90,7 +90,7 @@ export default {
     async apiToken() {
 
       //リダイレクトでstate,code が存在するなら
-      if (await this.$route.query.state && await this.$route.query.code) {
+      if (await this.$route.query.state && await this.$route.query.code && this.apiToken) {
         await this.authenticateQiitaAPI();
         //form article detail or edit page
         const articleId = localStorage.getItem('articleId');
