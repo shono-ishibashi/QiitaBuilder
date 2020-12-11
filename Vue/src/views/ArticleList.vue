@@ -251,6 +251,7 @@ export default {
   },
   beforeDestroy() {
     this.resetArticles()
+    this.resetSearchCriteria()
   },
   computed: {
     ...mapState("article", ["processFailure"]),
@@ -340,7 +341,7 @@ export default {
   methods: {
     ...mapActions("article", ["toggleProcessFailure"]),
     ...mapActions("articles", ["fetchArticles", "fetchTags", "setToggleSearchWord"]),
-    ...mapMutations('articles', ['resetArticles']),
+    ...mapMutations('articles', ['resetArticles','resetSearchCriteria']),
     changePeriod(key) {
       this.searchCriteria.period = key
     },
@@ -350,7 +351,7 @@ export default {
     async submit() {
       if (!this.can_submit_search) return
       if (this.$refs.search_form.validate()) {
-        this.isLoading = true
+        this.isLoading = true;
         this.isDisplay = false
         this.searchCriteria.currentPage = 1
         await this.fetchArticles(this.searchCriteria).catch(error => {
