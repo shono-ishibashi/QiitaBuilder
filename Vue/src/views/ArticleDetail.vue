@@ -243,26 +243,28 @@ export default {
   },
   watch: {
     apiToken: async function () {
-      this.isLoading = true;
-      const a = this.fetchArticle(this.slug).catch((error) => {
-        this.articleErrorHandle(error);
-      });
-      this.fetchMyArticle(this.slug).catch((error) => {
-        this.errorHandle(error);
-      });
-      this.fetchRecommend(this.slug).catch((error) => {
-        this.errorHandle(error);
-      });
-      const d = this.$store
-          .dispatch("auth/checkIsLinkedToQiita")
-          .catch((error) => {
-            this.errorHandle(error);
-          });
-      if (this.$route.query.isPostedArticleToQiita) {
-        this.isPostedArticleToQiita = true;
+      if (this.apiToken) {
+        this.isLoading = true;
+        const a = this.fetchArticle(this.slug).catch((error) => {
+          this.articleErrorHandle(error);
+        });
+        this.fetchMyArticle(this.slug).catch((error) => {
+          this.errorHandle(error);
+        });
+        this.fetchRecommend(this.slug).catch((error) => {
+          this.errorHandle(error);
+        });
+        const d = this.$store
+            .dispatch("auth/checkIsLinkedToQiita")
+            .catch((error) => {
+              this.errorHandle(error);
+            });
+        if (this.$route.query.isPostedArticleToQiita) {
+          this.isPostedArticleToQiita = true;
+        }
+        await Promise.all([a, d]);
+        this.isLoading = false;
       }
-      await Promise.all([a, d]);
-      this.isLoading = false;
     },
   },
   created() {

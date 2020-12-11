@@ -333,7 +333,7 @@ export default {
       }, 100)
     },
     apiToken: function () {
-      if (this.apiToken != null) {
+      if (this.apiToken) {
         const paramUserId = this.$route.params['userId'];
         const th = this;
         const fetch = async function () {
@@ -377,7 +377,7 @@ export default {
         await th.fetchMyArticles(paramUserId);
         await th.fetchPostedArticles(paramUserId);
       }
-      this.isLoading=false
+      this.isLoading = false
     }
   },
   methods: {
@@ -493,16 +493,16 @@ export default {
     }
     ,
     ...mapActions("user", [
-          "setArticlesAndTags",
-          "setArticles",
-          "setChartData",
-          "fetchUserDetail",
-          "fetchPostedArticles",
-          "fetchFeedbackArticles",
-          "fetchMyArticles",
-          "findUserIdByUid",
-          "clearState"
-        ]),
+      "setArticlesAndTags",
+      "setArticles",
+      "setChartData",
+      "fetchUserDetail",
+      "fetchPostedArticles",
+      "fetchFeedbackArticles",
+      "fetchMyArticles",
+      "findUserIdByUid",
+      "clearState"
+    ]),
   }
   ,
   created() {
