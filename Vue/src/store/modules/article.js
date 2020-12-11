@@ -83,7 +83,7 @@ export default {
     actions: {
         async postArticleToQiita({commit, rootGetters, rootState, dispatch}, articleId) {
             if (await rootState.auth.isLinkedToQiita) {
-                axios.post(rootGetters.API_URL + 'qiita/save-article-to-qiita/' + articleId, {}, {
+                await axios.post(rootGetters.API_URL + 'qiita/save-article-to-qiita/' + articleId, {}, {
                     headers: {
                         "Authorization": rootState.auth.apiToken
                     }
@@ -102,7 +102,7 @@ export default {
                             await alert('この記事を更新する権限はありません。');
                             //======================404======================
                         } else if (response.status === 404 && response.data.message === errorLocation) {
-                            if (confirm('Qiitaの記事が見つからないため、更新できませんでした。\nQiitaに再投稿しますか？')) {
+                            if (await confirm('Qiitaの記事が見つからないため、更新できませんでした。\nQiitaに再投稿しますか？')) {
                                 await commit("updateStateFlag", 2);
                                 await dispatch('postArticleToQiita', articleId);
                             } else {
