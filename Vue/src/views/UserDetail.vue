@@ -113,6 +113,7 @@
                                 elevation="2"
                                 small
                                 dark
+                                data-test-id="search-button"
                             >
                               検索
                             </v-btn>
