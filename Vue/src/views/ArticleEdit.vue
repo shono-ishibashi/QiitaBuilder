@@ -331,8 +331,10 @@ export default {
           this.article.stateFlag = beforeStateFlag
           this.errorHandle(error);
         }
-        await this.$store.dispatch("article/postArticleToQiita", article.articleId)
-        await this.$router.push({name: "articleList"})
+        await this.$store.dispatch("article/postArticleToQiita", article.articleId).then(() => {
+          this.$router.push({name: "articleList"})
+        })
+        
       } else {
         this.$refs.edit_form.validate()
       }
