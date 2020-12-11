@@ -83,38 +83,35 @@ export default {
     actions: {
         async postArticleToQiita({commit, rootGetters, rootState, dispatch}, articleId) {
             if (await rootState.auth.isLinkedToQiita) {
-                axios.post(rootGetters.API_URL + 'qiita/save-article-to-qiita/' + articleId, {}, {
+                await axios.post(rootGetters.API_URL + 'qiita/save-article-to-qiita/' + articleId, {}, {
                     headers: {
                         "Authorization": rootState.auth.apiToken
                     }
                 }).then(() => {
                     alert('Qiitaに記事を投稿しました');
                     commit('updateStateFlag', 2);
-                }).catch(({response}) => {
-                        console.log(response);
-
+                }).catch(async ({response}) => {
                         const errorLocation = 'QiitaAPI';
-
                         //======================401======================
                         if (response.status === 401 && response.data.message === errorLocation) {
-                            if (confirm('Qiitaとの連携が確認できませんでした。Qiitaと連携しますか？')) {
-                                QiitaAPI.methods.toQiitaAPIAuthentication()
+                            if (await confirm('Qiitaとの連携が確認できませんでした。Qiitaと連携しますか？')) {
+                                await QiitaAPI.methods.toQiitaAPIAuthentication()
                             }
                             //======================403======================
                         } else if (response.status === 403 && response.data.message === errorLocation) {
-                            alert('この記事を更新する権限はありません。');
+                            await alert('この記事を更新する権限はありません。');
                             //======================404======================
                         } else if (response.status === 404 && response.data.message === errorLocation) {
-                            if (confirm('Qiitaの記事が見つからないため、更新できませんでした。\nQiitaに再投稿しますか？')) {
-                                commit("updateStateFlag", 2);
-                                dispatch('postArticleToQiita', articleId);
+                            if (await confirm('Qiitaの記事が見つからないため、更新できませんでした。\nQiitaに再投稿しますか？')) {
+                                await commit("updateStateFlag", 2);
+                                await dispatch('postArticleToQiita', articleId);
                             } else {
-                                commit("updateStateFlag", 1);
+                                await commit("updateStateFlag", 1);
                             }
                             //======================else======================
                         } else {
-                            if (confirm('Qiitaへの記事投稿に失敗しました。Qiita連携からやり直しますか?')) {
-                                QiitaAPI.methods.toQiitaAPIAuthentication()
+                            if (await confirm('Qiitaへの記事投稿に失敗しました。Qiita連携からやり直しますか?')) {
+                                await QiitaAPI.methods.toQiitaAPIAuthentication()
                             }
                         }
                     }
