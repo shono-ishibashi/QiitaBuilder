@@ -823,6 +823,8 @@ describe('Testing UserDetail Component', () => {
                 }
             }
             await changeUserDetail();
+            //TODO:google-palette/palette.jsの128行目のfunctionが呼ばれているとこまでは確認できたがstub化がうまくいかない(UserInfo.vue 123)
+
             /* const chartDatasetsForTest = {
                  labels: ['Java', 'go', 'Javascript'],
                  datasets: [
@@ -933,7 +935,7 @@ describe('Testing UserDetail Component', () => {
             await changeToken();
 
             await expect(user_actions.fetchUserDetail).toBeCalledTimes(1)
-            //TODO: debugしてuser_actions.fetch～に来ていることは確認できるのに、なぜかfetchUserDetail以外は呼ばれていないことになる
+            //TODO: debugしてuser_actions.fetch～に来ていることは確認できるのに、なぜかfetchUserDetail以外は呼ばれていないことになる(UserDetail.vue 392~395)
             //await expect(user_actions.fetchFeedbackArticles).toBeCalledTimes(1)
             //await expect(user_actions.fetchMyArticles).toBeCalledTimes(1)
             //await expect(user_actions.fetchPostedArticles).toBeCalledTimes(1)
@@ -967,7 +969,7 @@ describe('Testing UserDetail Component', () => {
         test('changeListState', async () => {
             wrapper.setData({conditions: {title: 'title', conditionTags: ['a']}})
             wrapper.setData({displayListState: {id: 1, name: ['Qiita未投稿記事']}})
-            wrapper.setData({displayListNum:0})
+            wrapper.setData({displayListNum: 0})
 
             //変更前
             expect(wrapper.vm.conditions).toStrictEqual({title: 'title', conditionTags: ['a']})
@@ -984,6 +986,101 @@ describe('Testing UserDetail Component', () => {
             expect(wrapper.vm.sortNum).toBe(0)
 
             expect(user_actions.setArticlesAndTags).toBeCalled()
+        })
+        test('searchWithConditions', async () => {
+            //TODO:(this.$refs.search_form.validatin)のテスト方法(UserDetail.vue 474)
+        })
+        test('resetConditions', () => {
+            wrapper.setData({conditions: {title: '1', conditionTags: ['Java']}})
+            wrapper.vm.searchWithConditions = jest.fn()
+            wrapper.vm.resetConditions()
+            expect(wrapper.vm.conditions.title).toBe('')
+            expect(wrapper.vm.conditions.conditionTags.length).toBe(0)
+            expect(wrapper.vm.searchWithConditions).toBeCalled()
+        })
+        test('resetPage', () => {
+            wrapper.setData({displayListState: {id: '2', name: 'Qiita投稿済み記事'}})
+            wrapper.setData({displayListNum: 1})
+            wrapper.vm.changeList = jest.fn()
+            global.scrollTo = jest.fn()
+            wrapper.vm.resetPage()
+            expect(wrapper.vm.displayListState).toStrictEqual({id: 10, name: '全記事'})
+            expect(wrapper.vm.displayListNum).toBe(0)
+            expect(wrapper.vm.changeList).toBeCalled()
+            expect(global.scrollTo).toBeCalled()
+        })
+    })
+    describe('Testing created', () => {
+        test('windowWidthClass', () => {
+            wrapper = shallowMount(Component, {
+                store,
+                localVue,
+                beforeCreate() {
+                    global.innerWidth = 600
+                }
+            });
+            expect(wrapper.vm.windowWidthClass).toBe(false)
+            wrapper = shallowMount(Component, {
+                store,
+                localVue,
+                beforeCreate() {
+                    global.innerWidth = 1000
+                }
+            });
+            expect(wrapper.vm.windowWidthClass).toBe(true)
+        })
+    })
+    describe('Testing mounted', () => {
+        test('window onresize', () => {
+            wrapper = shallowMount(Component, {
+                store,
+                localVue,
+                beforeCreate() {
+                    global.innerWidth = 600
+                }
+            });
+            expect(wrapper.vm.windowWidthClass).toBe(false)
+
+            //画面サイズ変更
+            window = Object.assign(window, {innerWidth: 1000});
+            window.dispatchEvent(new Event("resize"));
+
+            expect(wrapper.vm.windowWidthClass).toBe(true)
+        })
+    })
+    describe('Testing beforeDestroy', () => {
+        test('call clearState', () => {
+            const spy = jest.spyOn(wrapper.vm, 'clearState')
+            wrapper.destroy()
+            expect(spy).toBeCalled()
+        })
+    })
+    describe('Testing beforeRouteEnter', () => {
+        test('check userId param', () => {
+            const next = jest.fn()
+            let paramUserId = 1
+            let to = {
+                params: {
+                    userId: paramUserId
+                }
+            }
+            Component.beforeRouteEnter.call(
+                wrapper.vm,
+                to,
+                '',
+                next
+            )
+            expect(next).toBeCalledWith()
+
+            paramUserId = 'a'
+            to.params.userId = paramUserId
+            Component.beforeRouteEnter.call(
+                wrapper.vm,
+                to,
+                '',
+                next
+            )
+            expect(next).toBeCalledWith({path: '/404'})
         })
     })
 })

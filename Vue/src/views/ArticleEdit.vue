@@ -58,7 +58,7 @@
               </v-row>
               <v-row justify="center" class="post-article-toQiita-btn">
                 <v-btn @click.stop="toggleQiitaDialog" width="220" class="btn" outlined color="#008b8b">{{
-                    postToQiita
+                    postToQiitaTitle
                   }}
                 </v-btn>
               </v-row>
@@ -140,7 +140,7 @@
               text
               @click="postArticleToQiita(article)"
           >
-            投稿する
+            {{ postToQiitaButton }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -231,10 +231,9 @@ export default {
     apiToken() {
       return this.$store.getters["auth/apiToken"];
     },
-    //qiitaのトークンを取得し、表示するボタンの文字列を変更
-    postToQiita() {
+    postToQiitaTitle() {
       if (this.article.stateFlag === 2) {
-        return "Qiita に記事を更新"
+        return "Qiita の記事を更新"
       } else {
         return "Qiita に記事を投稿"
       }
@@ -242,7 +241,7 @@ export default {
     //qiitaのトークンを取得し、qiita更新時のモーダルのタイトルを変更
     qiitaConfirmTitle() {
       if (this.article.stateFlag === 2) {
-        return "Qiitaに記事を更新しますか？"
+        return "Qiitaの記事を更新しますか？"
       } else {
         return "Qiitaに記事を投稿しますか？"
       }
@@ -250,11 +249,18 @@ export default {
     //qiitaのトークンを取得し、qiita更新時のモーダルのメッセージを変更
     qiitaConfirmMessage() {
       if (this.article.stateFlag === 2) {
-        return "編集内容をQiitaBuilderに保存し、Qiitaに記事を更新します"
+        return "編集内容をQiitaBuilderに保存し、Qiitaの記事を更新します"
       } else {
         return "編集内容をQiitaBuilderに保存し、Qiitaに記事を投稿します"
       }
     },
+    postToQiitaButton() {
+      if (this.article.stateFlag === 2) {
+        return "更新"
+      } else {
+        return "投稿"
+      }
+    }
   },
   methods: {
     ...mapActions("article", ["saveArticle", "resetArticle", "fetchArticleEdit", "toggleProcessFailure"]),
@@ -376,10 +382,6 @@ export default {
     //qiita投稿or更新ボタンを押下した時にモーダルを変更するメソッド
     toggleQiitaDialog() {
       this.qiitaDialog = !this.qiitaDialog
-    },
-    //qiitaに投稿or更新するメソッド
-    async postedToQiita(article) {
-      await this.postArticle(article.stateFlag)
     },
   },
 
