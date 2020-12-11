@@ -230,7 +230,7 @@ export default {
     },
     //qiitaのトークンを取得し、表示するボタンの文字列を変更
     postToQiita() {
-      if (this.article.qiitaArticleId != null) {
+      if (this.article.stateFlag === 2) {
         return "Qiita に記事を更新"
       } else {
         return "Qiita に記事を投稿"
@@ -238,7 +238,7 @@ export default {
     },
     //qiitaのトークンを取得し、qiita更新時のモーダルのタイトルを変更
     qiitaConfirmTitle() {
-      if (this.article.qiitaArticleId != null) {
+      if (this.article.stateFlag === 2) {
         return "Qiitaに記事を更新しますか？"
       } else {
         return "Qiitaに記事を投稿しますか？"
@@ -246,7 +246,7 @@ export default {
     },
     //qiitaのトークンを取得し、qiita更新時のモーダルのメッセージを変更
     qiitaConfirmMessage() {
-      if (this.article.qiitaArticleId != null) {
+      if (this.article.stateFlag === 2) {
         return "編集内容をQiitaBuilderに保存し、Qiitaに記事を更新します"
       } else {
         return "編集内容をQiitaBuilderに保存し、Qiitaに記事を投稿します"

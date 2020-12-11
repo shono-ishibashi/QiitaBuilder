@@ -134,7 +134,7 @@
               item-color="green"
               label="並び替え"
               color="#5bc8ac"
-              >
+          >
           </v-select>
           <v-select
               data-test-id="pageSize"
@@ -237,8 +237,6 @@ export default {
       nonValidToken: false,
       // submit処理の認証を行うboolean
       can_submit_search: false,
-      // 記事の存在の有無(true: 存在しない, false: 存在する)
-      isNotExistArticle: false,
       // 各コンポーネント表示切替用のboolean
       isDisplay: true,
       // loading処理表示切替用のboolean
@@ -276,45 +274,44 @@ export default {
               await this.sleep(1000)
               this.isLoading = await false
               this.isDisplay = await true
-              if (this.articles.length === 0) {
-                this.isNotExistArticle = true
-              }
             })
             .catch(error => {
+              console.log(2)
               this.articleErrorHandle(error)
             })
         await this.fetchTags()
             .catch(error => {
               this.errorHandle(error)
             });
-        await this.$nextTick();
       }
     },
     async ['searchCriteria.sortNum']() {
       this.isLoading = true
       this.isDisplay = false
       this.searchCriteria.currentPage = 1;
-      await this.fetchArticles(this.searchCriteria).catch(error => {
-        this.articleErrorHandle(error)
-      })
-      await this.$nextTick();
-      await setTimeout(() => {
-        this.isLoading = false
-        this.isDisplay = true
-      }, 1000)
+      await this.fetchArticles(this.searchCriteria)
+          .then(async () => {
+            await this.sleep(1000)
+            this.isLoading = await false
+            this.isDisplay = await true
+          })
+          .catch(error => {
+            this.articleErrorHandle(error)
+          })
     },
     async ['searchCriteria.period']() {
       this.isLoading = true
       this.isDisplay = false
       this.searchCriteria.currentPage = 1;
-      this.fetchArticles(this.searchCriteria).catch(error => {
-        this.articleErrorHandle(error)
-      })
-      await this.$nextTick();
-      await setTimeout(() => {
-        this.isLoading = false
-        this.isDisplay = true
-      }, 1000)
+      await this.fetchArticles(this.searchCriteria)
+          .then(async () => {
+            await this.sleep(1000)
+            this.isLoading = await false
+            this.isDisplay = await true
+          })
+          .catch(error => {
+            this.articleErrorHandle(error)
+          })
     },
     ['searchCriteria.pageSize']() {
       this.searchCriteria.currentPage = 1;
@@ -327,9 +324,8 @@ export default {
       await this.fetchArticles(this.searchCriteria).catch(error => {
         this.articleErrorHandle(error)
       })
-      await setTimeout(() => {
-        this.scrollTop();
-      }, 50)
+      await this.sleep(50)
+      this.scrollTop();
     }
   },
   components: {
@@ -341,6 +337,7 @@ export default {
     changePeriod(key) {
       this.searchCriteria.period = key
     },
+    // 文字変換でenterを押下した場合はfalseのまま
     enable_submit() {
       this.can_submit_search = true;
     },
@@ -350,14 +347,15 @@ export default {
         this.isLoading = true
         this.isDisplay = false
         this.searchCriteria.currentPage = 1
-        await this.fetchArticles(this.searchCriteria).catch(error => {
-          this.articleErrorHandle(error)
-        })
-        await this.$nextTick();
-        await setTimeout(() => {
-          this.isLoading = false
-          this.isDisplay = true
-        }, 1000)
+        await this.fetchArticles(this.searchCriteria)
+            .then(async () => {
+              await this.sleep(1000)
+              this.isLoading = await false
+              this.isDisplay = await true
+            })
+            .catch(error => {
+              this.articleErrorHandle(error)
+            })
         this.can_submit_search = false;
       }
     },
@@ -377,14 +375,15 @@ export default {
       this.searchCriteria.searchWord = ""
       this.searchCriteria.searchTag = []
       this.searchCriteria.currentPage = 1
-      await this.fetchArticles(this.searchCriteria).catch(error => {
-        this.articleErrorHandle(error)
-      })
-      await this.$nextTick();
-      await setTimeout(() => {
-        this.isLoading = false
-        this.isDisplay = true
-      }, 1000)
+      await this.fetchArticles(this.searchCriteria)
+          .then(async () => {
+            await this.sleep(1000)
+            this.isLoading = await false
+            this.isDisplay = await true
+          })
+          .catch(error => {
+            this.articleErrorHandle(error)
+          })
     },
     errorHandle(error) {
       const status = error.response.status;
