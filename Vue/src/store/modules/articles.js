@@ -33,6 +33,21 @@ export default {
         },
         setToggleSearchWord(state, selected) {
             state.searchCriteria.toggleSearchWord = selected
+        },
+        resetArticles(state){
+            state.articles = []
+        },
+        resetSearchCriteria(state){
+            const defaultData = {
+                sortNum: 0,
+                period: null,
+                searchWord: "",
+                toggleSearchWord: "0",
+                searchTag: [],
+                pageSize: 10,
+                currentPage: 1,
+            }
+            Object.assign(state.searchCriteria,defaultData);
         }
     },
     actions: {

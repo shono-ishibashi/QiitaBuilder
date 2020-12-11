@@ -152,7 +152,7 @@ import EditAndPreview from '../components/article_edit/format/FormatEditAndPrevi
 import Edit from '../components/article_edit/format/FormatEdit'
 import Preview from '../components/article_edit/format/FormatPreview'
 import EditAndPreviewAndFeedback from '../components/article_edit/format/FormatEditAndPreviewAndFeedback'
-import {mapState, mapGetters, mapActions} from 'vuex'
+import {mapState, mapGetters, mapActions, mapMutations} from 'vuex'
 
 export default {
   name: "ArticleEdit",
@@ -176,7 +176,7 @@ export default {
       required: value => value && !!value || "必ず入力してください",
       blank: value => {
         const pattern = /\S/g
-        return pattern.test(value[value.length - 1]) || "空文字のみの入力はできません"
+        return value === undefined ? true : pattern.test(value[value.length - 1]) || "空文字のみの入力はできません"
       },
       title_limit_length: value => value && value.length <= 255 || "255文字以内で入力してください",
       tags_max_size: value => value && value.length <= 5 || "5つまで入力してください",
@@ -214,6 +214,9 @@ export default {
         }
       }
     }
+  },
+  beforeDestroy() {
+    this.resetArticle()
   },
   computed: {
     ...mapState("articles", ["tags", "searchCriteria"]),
@@ -262,6 +265,7 @@ export default {
   methods: {
     ...mapActions("article", ["saveArticle", "resetArticle", "fetchArticleEdit", "toggleProcessFailure"]),
     ...mapActions("user", ["findUserIdByUid"]),
+    ...mapMutations("article", ['resetArticle']),
     //記事を投稿or更新するメソッド
     async postArticle(state) {
       //validationチェック

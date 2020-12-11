@@ -202,7 +202,7 @@
 
 <script>
 import ArticleCard from "../components/ArticleCard"
-import {mapState, mapActions} from "vuex"
+import {mapState, mapActions, mapMutations} from "vuex"
 
 export default {
   name: "ArticleList",
@@ -247,7 +247,10 @@ export default {
       tags_limit_length: value => value.length <= 5 || "6個以上入力しないでください",
     }
   },
-
+  beforeDestroy() {
+    this.resetArticles()
+    this.resetSearchCriteria()
+  },
   computed: {
     ...mapState("article", ["processFailure"]),
     ...mapState("articles", ["articles", "tags", "totalPage", "searchCriteria", "errorTransistionDialog"]),
@@ -334,6 +337,7 @@ export default {
   methods: {
     ...mapActions("article", ["toggleProcessFailure"]),
     ...mapActions("articles", ["fetchArticles", "fetchTags", "setToggleSearchWord"]),
+    ...mapMutations('articles', ['resetArticles','resetSearchCriteria']),
     changePeriod(key) {
       this.searchCriteria.period = key
     },
@@ -344,7 +348,7 @@ export default {
     async submit() {
       if (!this.can_submit_search) return
       if (this.$refs.search_form.validate()) {
-        this.isLoading = true
+        this.isLoading = true;
         this.isDisplay = false
         this.searchCriteria.currentPage = 1
         await this.fetchArticles(this.searchCriteria)

@@ -57,7 +57,7 @@
               <v-list-item-title>マイページ</v-list-item-title>
             </v-list-item>
             <v-list-item link @click="toMyArticles">
-              <v-list-item-title>マイ記事</v-list-item-title>
+              <v-list-item-title>お気に入り記事一覧</v-list-item-title>
             </v-list-item>
             <v-list-item link @click="toDraftArticles">
               <v-list-item-title>下書き一覧</v-list-item-title>

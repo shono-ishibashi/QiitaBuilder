@@ -1,17 +1,23 @@
 <script>
-import {Pie} from 'vue-chartjs';
+import {Pie, mixins} from 'vue-chartjs';
 
 export default {
   name: "Chart",
   extends: Pie,
-  props: ['chartData', 'options'],
-  watch: {
-    chartData() {
-      this.renderChart(this.chartData, this.options)
+  mixins: [mixins.reactiveProp],
+  props: ['chartData', 'options', 'change'],
+  computed: {
+    data: function () {
+      return this.chartData
     }
   },
-  mounted() {
-    this.renderChart(this.chartData, this.options)
+  watch: {
+    change: {
+      handler: function () {
+        this.renderChart(this.data, this.options);
+      },
+      deep: true
+    }
   }
 }
 </script>
