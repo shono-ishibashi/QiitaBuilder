@@ -823,7 +823,7 @@ describe('Testing UserDetail Component', () => {
                 }
             }
             await changeUserDetail();
-            //TODO:google-palette/palette.jsの128行目のfunctionが呼ばれているとこまでは確認できたがstub化がうまくいかない(UserInfo.vue )
+            //TODO:google-palette/palette.jsの128行目のfunctionが呼ばれているとこまでは確認できたがstub化がうまくいかない(UserInfo.vue 123)
 
             /* const chartDatasetsForTest = {
                  labels: ['Java', 'go', 'Javascript'],
@@ -1008,6 +1008,79 @@ describe('Testing UserDetail Component', () => {
             expect(wrapper.vm.displayListNum).toBe(0)
             expect(wrapper.vm.changeList).toBeCalled()
             expect(global.scrollTo).toBeCalled()
+        })
+    })
+    describe('Testing created', () => {
+        test('windowWidthClass', () => {
+            wrapper = shallowMount(Component, {
+                store,
+                localVue,
+                beforeCreate() {
+                    global.innerWidth = 600
+                }
+            });
+            expect(wrapper.vm.windowWidthClass).toBe(false)
+            wrapper = shallowMount(Component, {
+                store,
+                localVue,
+                beforeCreate() {
+                    global.innerWidth = 1000
+                }
+            });
+            expect(wrapper.vm.windowWidthClass).toBe(true)
+        })
+    })
+    describe('Testing mounted', () => {
+        test('window onresize', () => {
+            wrapper = shallowMount(Component, {
+                store,
+                localVue,
+                beforeCreate() {
+                    global.innerWidth = 600
+                }
+            });
+            expect(wrapper.vm.windowWidthClass).toBe(false)
+
+            //画面サイズ変更
+            window = Object.assign(window, {innerWidth: 1000});
+            window.dispatchEvent(new Event("resize"));
+
+            expect(wrapper.vm.windowWidthClass).toBe(true)
+        })
+    })
+    describe('Testing beforeDestroy', () => {
+        test('call clearState', () => {
+            const spy = jest.spyOn(wrapper.vm, 'clearState')
+            wrapper.destroy()
+            expect(spy).toBeCalled()
+        })
+    })
+    describe('Testing beforeRouteEnter', () => {
+        test('check userId param', () => {
+            const next = jest.fn()
+            let paramUserId = 1
+            let to = {
+                params: {
+                    userId: paramUserId
+                }
+            }
+            Component.beforeRouteEnter.call(
+                wrapper.vm,
+                to,
+                '',
+                next
+            )
+            expect(next).toBeCalledWith()
+
+            paramUserId = 'a'
+            to.params.userId = paramUserId
+            Component.beforeRouteEnter.call(
+                wrapper.vm,
+                to,
+                '',
+                next
+            )
+            expect(next).toBeCalledWith({path: '/404'})
         })
     })
 })

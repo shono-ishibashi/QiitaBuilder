@@ -213,7 +213,6 @@ export default {
         title: "",
         conditionTags: []
       },//検索条件
-      windowWidth: window.innerWidth,//画面横幅
       windowWidthClass: false,//画面横幅に応じて付与するクラスの切り替え用boolean
       loginListTabs: [
         {id: 0, name: '投稿記事'},
@@ -333,6 +332,7 @@ export default {
     },
     apiToken: function () {
       if (this.apiToken) {
+        this.isLoading = true;
         const paramUserId = this.$route.params['userId'];
         const th = this;
         const fetch = async function () {
@@ -505,19 +505,16 @@ export default {
   ,
   created() {
     //画面横幅が960px以上であればwindowWidthClassをtrueに変え画面を記事一覧を横に配置
-    (this.windowWidth >= 960) ? this.windowWidthClass = true : this.windowWidthClass = false
-    this.isLoading = true;
+    (window.innerWidth >= 960) ? this.windowWidthClass = true : this.windowWidthClass = false
   }
   ,
   mounted() {
     //画面の横幅が変わるが度に960px以上かを判定
     window.onresize = () => {
-      this.windowWidth = window.innerWidth;
-      (this.windowWidth >= 960) ? this.windowWidthClass = true : this.windowWidthClass = false;
+      (window.innerWidth >= 960) ? this.windowWidthClass = true : this.windowWidthClass = false;
     }
-  }
-  ,
-  beforeDestroy() {
+  },
+  destroyed() {
     this.clearState()//遷移前にstoreを空にしないと次にユーザー詳細画面来たとき前回のユーザーが表示されてしまう
   }
   ,
