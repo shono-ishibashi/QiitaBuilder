@@ -160,10 +160,11 @@
           </v-container>
           <ArticleCard
               v-for="(article,index) in articles"
+              :data-test-id="'articleCard'+index"
               :key="article.articleId"
               :article="article"
-              :index="index">
-
+              :index="index"
+          >
           </ArticleCard>
         </div>
       </v-list>
@@ -257,6 +258,7 @@ export default {
     apiToken() {
       return this.$store.getters["auth/apiToken"];
     },
+    // 記事検索かユーザー検索か
     toggleSearchWord: {
       get() {
         return this.searchCriteria.toggleSearchWord
@@ -288,6 +290,7 @@ export default {
             });
       }
     },
+    // 並び順
     async ['searchCriteria.sortNum']() {
       this.isLoading = true
       this.isDisplay = false
@@ -302,6 +305,7 @@ export default {
             this.articleErrorHandle(error)
           })
     },
+    // 期間
     async ['searchCriteria.period']() {
       this.isLoading = true
       this.isDisplay = false
@@ -316,6 +320,7 @@ export default {
             this.articleErrorHandle(error)
           })
     },
+    // 表示ページ数
     ['searchCriteria.pageSize']() {
       this.searchCriteria.currentPage = 1;
       this.fetchArticles(this.searchCriteria).catch(error => {
@@ -323,6 +328,7 @@ export default {
       })
       this.scrollTop();
     },
+    // 現在のページ
     async ['searchCriteria.currentPage']() {
       await this.fetchArticles(this.searchCriteria).catch(error => {
         this.articleErrorHandle(error)
@@ -338,6 +344,7 @@ export default {
     ...mapActions("article", ["toggleProcessFailure"]),
     ...mapActions("articles", ["fetchArticles", "fetchTags", "setToggleSearchWord"]),
     ...mapMutations('articles', ['resetArticles','resetSearchCriteria']),
+    // 期間を変更するメソッド
     changePeriod(key) {
       this.searchCriteria.period = key
     },
@@ -345,6 +352,7 @@ export default {
     enable_submit() {
       this.can_submit_search = true;
     },
+    // 検索処理
     async submit() {
       if (!this.can_submit_search) return
       if (this.$refs.search_form.validate()) {
@@ -373,6 +381,7 @@ export default {
         behavior: "smooth"
       });
     },
+    // 検索条件のリセット処理
     async reset() {
       this.isLoading = true
       this.isDisplay = false
@@ -389,6 +398,7 @@ export default {
             this.articleErrorHandle(error)
           })
     },
+    // エラーハンドリング
     errorHandle(error) {
       const status = error.response.status;
       switch (status) {
@@ -403,6 +413,7 @@ export default {
           this.toggleProcessFailure();
       }
     },
+    // エラーハンドリング
     articleErrorHandle(error) {
       const status = error.response.status;
       switch (status) {

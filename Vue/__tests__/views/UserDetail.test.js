@@ -25,9 +25,13 @@ beforeEach(() => {
         setArticlesAndTags: jest.fn(),
         setArticles: jest.fn(),
         setChartData: jest.fn(),
-        fetchUserDetail: jest.fn(),
+        fetchUserDetail: jest.fn().mockImplementation((userId) => {
+            return userId
+        }),
         fetchPostedArticles: jest.fn(),
-        fetchFeedbackArticles: jest.fn(),
+        fetchFeedbackArticles: jest.fn().mockImplementation((userId) => {
+            return userId
+        }),
         fetchMyArticles: jest.fn(),
         findUserIdByUid: jest.fn(),
         clearState: jest.fn()
@@ -820,7 +824,7 @@ describe('Testing UserDetail Component', () => {
                 }
             }
             await changeUserDetail();
-
+          
             /* const chartDatasetsForTest = {
                  labels: ['Java', 'go', 'Javascript'],
                  datasets: [
@@ -918,6 +922,7 @@ describe('Testing UserDetail Component', () => {
             });
 
             const spy = jest.spyOn(wrapper.vm, 'fetchFeedbackArticles')
+
             //変更前
             await expect(user_actions.fetchUserDetail).not.toBeCalled()
             await expect(user_actions.fetchFeedbackArticles).not.toBeCalled()
@@ -930,6 +935,7 @@ describe('Testing UserDetail Component', () => {
                 wrapper.vm.apiToken = 'test'
             }
             await changeToken();
+
 
             console.log(wrapper.vm.fetchFeedbackArticles)
             console.log(user_actions.fetchFeedbackArticles)
@@ -986,6 +992,7 @@ describe('Testing UserDetail Component', () => {
 
             expect(user_actions.setArticlesAndTags).toBeCalled()
         })
+
         test('searchWithConditions', async () => {
         })
         test('resetConditions', () => {

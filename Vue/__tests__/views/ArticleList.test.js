@@ -1,5 +1,6 @@
 import {shallowMount, createLocalVue} from '@vue/test-utils';
 import Vuex from 'vuex';
+import Vuetify from 'vuetify'
 import Component from '@/views/ArticleList';
 import {afterEach, beforeEach, describe, jest} from "@jest/globals";
 
@@ -18,13 +19,33 @@ let article_state;
 let article_getters;
 let auth_getters;
 let auth_state;
+let auth_actions;
+let window_state;
+let window_getters;
+let window_mutation;
+let window_actions;
 let myMock = jest.fn();
 const sel = id => `[data-test-id="${id}"]`
 
-const updateMount=()=>{
+const updateMount = () => {
     wrapper = shallowMount(Component, {
         store,
         localVue
+    });
+}
+
+const sleep = (msec) => {
+    return new Promise(function (resolve) {
+        setTimeout(function () {
+            resolve()
+        }, msec);
+    })
+}
+
+const scrollTop = () => {
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
     });
 }
 
@@ -35,7 +56,10 @@ beforeEach(() => {
         fetchTags: jest.fn(),
         setToggleSearchWord: jest.fn()
     };
-    articles_mutations = {};
+    articles_mutations = {
+        resetArticles: jest.fn(),
+        resetSearchCriteria: jest.fn()
+    };
     articles_state = {
         articles: [
             {
@@ -301,14 +325,28 @@ beforeEach(() => {
         processFailure: false,
     };
     article_getters = {};
-
-
     auth_state = {
         apiToken: 'token'
     };
     myMock.mockReturnValueOnce(auth_state.apiToken);
     auth_getters = {
         apiToken: myMock
+    };
+    auth_actions = {
+        logout: jest.fn()
+    };
+    window_state = {
+        notFound: false,
+        forbidden: false,
+        internalServerError: false,
+    };
+    window_getters = {};
+    window_mutation = {};
+    window_actions = {
+        setForbidden: jest.fn(),
+        setNotFound: jest.fn(),
+        setInternalServerError: jest.fn(),
+        clearErrors: jest.fn()
     };
 
     // rootState,rootGettersは使わない
@@ -336,7 +374,15 @@ beforeEach(() => {
             auth: {
                 namespaced: true,
                 state: auth_state,
-                getters: auth_getters
+                getters: auth_getters,
+                actions: auth_actions
+            },
+            window: {
+                namespaced: true,
+                state: window_state,
+                getters: window_getters,
+                mutation: window_mutation,
+                actions: window_actions
             }
         }
     });
@@ -457,19 +503,19 @@ describe('Testing ArticleList Component', () => {
 
         test('v-pagination', () => {
             // 記事が一件以上存在する時
-            let pagination=wrapper.findComponent({name: 'v-pagination'})
+            let pagination = wrapper.findComponent({name: 'v-pagination'})
             expect(pagination.exists()).toBeTruthy();
             expect(wrapper.findAllComponents({name: 'v-pagination'}).length).toBe(1);
 
             // 記事が一件もなかった場合
             articles_state.articles = []
             updateMount()
-            pagination=wrapper.findComponent({name: 'v-pagination'})
+            pagination = wrapper.findComponent({name: 'v-pagination'})
             expect(pagination.exists()).toBeFalsy();
         })
     })
 
-    describe('v-model| v-radio/ v-select/ v-text-field/ v-autocomplete/ v-tab/ v-pagination', () => {
+    describe('v-model| v-radio/ v-select/ v-text-field/ v-autocomplete/ v-pagination', () => {
 
         test('radio-group/ radio', () => {
             // v-radio-group
@@ -509,29 +555,29 @@ describe('Testing ArticleList Component', () => {
             expect(textField.props().value).toBe('user')
         })
 
-        test('v-select/ sort',()=>{
+        test('v-select/ sort', () => {
             // default
             let sortSelect = wrapper.find(sel('sort'))
             expect(sortSelect.props().value).toBe(0)
             // sortNum == 1
-            articles_state.searchCriteria.sortNum=1
+            articles_state.searchCriteria.sortNum = 1
             updateMount()
             sortSelect = wrapper.find(sel('sort'))
             expect(sortSelect.props().value).toBe(1)
             // sortNum == 2
-            articles_state.searchCriteria.sortNum=2
+            articles_state.searchCriteria.sortNum = 2
             updateMount()
             sortSelect = wrapper.find(sel('sort'))
             expect(sortSelect.props().value).toBe(2)
             // sortNum == 3
-            articles_state.searchCriteria.sortNum=3
+            articles_state.searchCriteria.sortNum = 3
             updateMount()
             sortSelect = wrapper.find(sel('sort'))
             expect(sortSelect.props().value).toBe(3)
         })
 
-        test('v-select/ pageSize',()=>{
-            window.scrollTo=()=>{
+        test('v-select/ pageSize', () => {
+            window.scrollTo = () => {
                 return {
                     top: 0,
                     behavior: "smooth"
@@ -541,38 +587,281 @@ describe('Testing ArticleList Component', () => {
             let pageSizeDir = wrapper.find(sel('pageSize'))
             expect(pageSizeDir.props().value).toBe(10)
             // pageSize == 20
-            articles_state.searchCriteria.pageSize=20
+            articles_state.searchCriteria.pageSize = 20
             updateMount()
             pageSizeDir = wrapper.find(sel('pageSize'))
             expect(pageSizeDir.props().value).toBe(20)
             // pageSize == 30
-            articles_state.searchCriteria.pageSize=30
+            articles_state.searchCriteria.pageSize = 30
             updateMount()
             pageSizeDir = wrapper.find(sel('pageSize'))
             expect(pageSizeDir.props().value).toBe(30)
         })
 
-        test('v-autocomplete',()=>{
-            let autocompleteDir=wrapper.findComponent({name: 'v-autocomplete'})
+        test('v-autocomplete', () => {
+            let autocompleteDir = wrapper.findComponent({name: 'v-autocomplete'})
             expect(autocompleteDir.props().value).toStrictEqual([])
             // push('Java')
-            articles_state.searchCriteria.searchTag.push({tagOd:1,tagName:'Java'})
+            articles_state.searchCriteria.searchTag.push({tagId: 1, tagName: 'Java'})
             updateMount()
-            autocompleteDir=wrapper.findComponent({name: 'v-autocomplete'})
-            expect(autocompleteDir.props().value).toStrictEqual([{tagOd:1,tagName:'Java'}])
+            autocompleteDir = wrapper.findComponent({name: 'v-autocomplete'})
+            expect(autocompleteDir.props().value).toStrictEqual([{tagId: 1, tagName: 'Java'}])
+            // push('Ruby')
+            articles_state.searchCriteria.searchTag.push({tagId: 2, tagName: 'Ruby'})
+            updateMount()
+            autocompleteDir = wrapper.findComponent({name: 'v-autocomplete'})
+            expect(autocompleteDir.props().value).toStrictEqual([{tagId: 1, tagName: 'Java'}, {
+                tagId: 2,
+                tagName: 'Ruby'
+            }])
         })
 
-        test('v-tab',()=>{
+        test('v-pagination', () => {
+            let paginationDir = wrapper.findComponent({name: 'v-pagination'})
+            expect(paginationDir.props().value).toBe(1)
+            // 2ページ目に遷移
+            articles_state.searchCriteria.currentPage = 2
+            updateMount()
+            paginationDir = wrapper.findComponent({name: 'v-pagination'})
+            expect(paginationDir.props().value).toBe(2)
+        })
+    })
 
+    describe('Testing computed', () => {
+
+        test('apiToken', async () => {
+            await expect(auth_getters.apiToken).toHaveBeenCalled();
+            await expect(wrapper.vm.apiToken).toBe('token');
+        })
+    })
+
+    describe('Testing watch', () => {
+
+
+        test('apiToken', async () => {
+            //computedの上書き
+            wrapper = await shallowMount(Component, {
+                store,
+                localVue,
+                data() {
+                    return {
+                        testData: ''
+                    }
+                },
+                computed: {
+                    apiToken: {
+                        get() {
+                            return 'computed token' + this.testData;
+                        },
+                        set(val) {
+                            this.testData = val;
+                        }
+                    }
+                }
+            });
+
+            // 処理前
+            await expect(wrapper.vm.isLoading).toBeFalsy()
+            await expect(wrapper.vm.isDisplay).toBeTruthy()
+            await expect(articles_actions.fetchArticles).not.toBeCalled();
+            await expect(articles_actions.fetchTags).not.toBeCalled();
+
+            // 監視対象の変更
+
+            const func = function () {
+                wrapper.vm.apiToken = 'test';
+            } //computedのset()が実行される
+
+            await func();
+
+            // 処理後
+            await wrapper.vm.$nextTick();
+            await expect(wrapper.vm.isLoading).toBeTruthy()
+            await expect(wrapper.vm.isDisplay).toBeFalsy()
+            await expect(articles_actions.fetchArticles).toBeCalled();
+            await sleep(1000)
+            await expect(articles_actions.fetchTags).toBeCalled();
+            await expect(wrapper.vm.isLoading).toBeFalsy()
+            await expect(wrapper.vm.isDisplay).toBeTruthy()
         })
 
-        test('v-pagination',()=>{
+        test('searchCriteria.sortNum', async () => {
+            // 処理前
+            await expect(wrapper.vm.isLoading).toBeFalsy()
+            await expect(wrapper.vm.isDisplay).toBeTruthy()
+            await expect(articles_actions.fetchArticles).not.toBeCalled();
+            // 監視対象の変更
+            await wrapper.setData({searchCriteria: {sortNum: 1}})
+            // 処理後
+            await expect(articles_state.searchCriteria.currentPage).toBe(1)
+            await expect(wrapper.vm.isLoading).toBeTruthy()
+            await expect(wrapper.vm.isDisplay).toBeFalsy()
+            await expect(articles_actions.fetchArticles).toBeCalled();
+            await sleep(1000)
+            await expect(wrapper.vm.isLoading).toBeFalsy()
+            await expect(wrapper.vm.isDisplay).toBeTruthy()
+        })
 
+        test('searchCriteria.period', async () => {
+            // 処理前
+            await expect(wrapper.vm.isLoading).toBeFalsy()
+            await expect(wrapper.vm.isDisplay).toBeTruthy()
+            await expect(articles_actions.fetchArticles).not.toBeCalled();
+            // 監視対象の変更
+            await wrapper.setData({searchCriteria: {period: 1}})
+            // 処理後
+            await expect(articles_state.searchCriteria.currentPage).toBe(1)
+            await expect(wrapper.vm.isLoading).toBeTruthy()
+            await expect(wrapper.vm.isDisplay).toBeFalsy()
+            await expect(articles_actions.fetchArticles).toBeCalled();
+            await sleep(1000)
+            await expect(wrapper.vm.isLoading).toBeFalsy()
+            await expect(wrapper.vm.isDisplay).toBeTruthy()
+        })
+
+        test('searchCriteria.pageSize', async () => {
+            // 処理前
+            await expect(articles_actions.fetchArticles).not.toBeCalled();
+            // 監視対象の変更
+            await wrapper.setData({searchCriteria: {pageSize: 20}})
+            // 処理後
+            await expect(articles_state.searchCriteria.currentPage).toBe(1)
+            await expect(articles_actions.fetchArticles).toBeCalled();
+            scrollTop()
+        })
+
+        test('searchCriteria.currentPage', async () => {
+            // 処理前
+            await expect(articles_actions.fetchArticles).not.toBeCalled();
+            // 監視対象の変更
+            await wrapper.setData({searchCriteria: {pageSize: 20}})
+            // 処理後
+            await expect(articles_state.searchCriteria.currentPage).toBe(1)
+            await expect(articles_actions.fetchArticles).toBeCalled();
+            await sleep(50)
+            await scrollTop()
+        })
+
+    })
+
+    describe('Testing methods property', () => {
+
+        test('changePeriod method', async () => {
+            expect(articles_state.searchCriteria.period).toBe(null)
+            await wrapper.vm.changePeriod(1)
+            expect(articles_state.searchCriteria.period).toBe(1)
+        })
+
+        test('enable_submit method', async () => {
+            expect(wrapper.vm.can_submit_search).toBeFalsy()
+            await wrapper.vm.enable_submit()
+            expect(wrapper.vm.can_submit_search).toBeTruthy()
+        })
+
+        test('submit method', async () => {
+        //     let vuetify
+        //     beforeEach(() => {
+        //         vuetify = new Vuetify()
+        //     })
+        //
+        //     wrapper = shallowMount(Component, {
+        //         store,
+        //         localVue,
+        //         vuetify
+        //     });
+        //     // await expect(wrapper.vm.can_submit_search).toBeFalsy()
+        //     await wrapper.setData({can_submit_search: true})
+        //     // validationを通過した時
+        //     // wrapper.vm.$refs.search_form.value=true
+        //     await wrapper.vm.submit()
+        //     await expect(wrapper.vm.isLoading).toBeTruthy()
+        //     await expect(wrapper.vm.isDisplay).toBeFalsy()
+        //     await expect(articles_state.searchCriteria.currentPage).toBe(1)
+        //     await expect(articles_actions.fetchArticles).toBeCalled();
+        //     await sleep(1000)
+        //     await expect(wrapper.vm.isLoading).toBeFalsy()
+        //     await expect(wrapper.vm.isDisplay).toBeTruthy()
+        //     await expect(wrapper.vm.can_submit_search).toBeTruthy()
+        })
+
+        test('clickSubmit method', async () => {
+            await expect(wrapper.vm.can_submit_search).toBeFalsy()
+            await wrapper.vm.clickSubmit()
+            await expect(wrapper.vm.can_submit_search).toBeTruthy()
+        })
+
+        test('reset method', async () => {
+            await wrapper.vm.reset()
+            await expect(articles_actions.fetchArticles).toBeCalled();
+            await sleep(1000)
+            await expect(wrapper.vm.isLoading).toBeFalsy()
+            await expect(wrapper.vm.isDisplay).toBeTruthy()
+        })
+
+        test('errorHandle method', async () => {
+            // statusCode = 401 の時
+            let error = {response: {status: 401}}
+            await wrapper.vm.errorHandle(error)
+            await expect(wrapper.vm.nonValidToken).toBeTruthy()
+            await expect(auth_actions.logout).toBeCalled();
+            // statusCode = 500 の時
+            error = {response: {status: 500}}
+            await wrapper.vm.errorHandle(error)
+            await expect(window_actions.setInternalServerError).toBeCalled();
+            // else
+            error = {response: {status: 409}}
+            await wrapper.vm.errorHandle(error)
+            await expect(article_actions.toggleProcessFailure).toBeCalled();
+        })
+
+        test('articleErrorHandle method',async ()=>{
+            // statusCode = 400 の時
+            let error = {response: {status: 400}}
+            await wrapper.vm.articleErrorHandle(error)
+            await expect(window_actions.setNotFound).toBeCalled();
+            // statusCode = 401 の時
+            error = {response: {status: 401}}
+            await wrapper.vm.articleErrorHandle(error)
+            await expect(window_actions.setNotFound).toBeCalled();
+            // statusCode = 403 の時
+            error = {response: {status: 403}}
+            await wrapper.vm.articleErrorHandle(error)
+            await expect(window_actions.setForbidden).toBeCalled();
+            // else
+            wrapper.vm.errorHandle=jest.fn()
+            error = {response: {status: 409}}
+            await wrapper.vm.articleErrorHandle(error)
+            await expect(wrapper.vm.errorHandle).toBeCalled();
         })
     })
 
     // 子コンポーネントにデータを渡せているか
     describe('Testing props to child-component', () => {
 
+        test('ArticleCard', () => {
+            expect(wrapper.findAllComponents({name: 'ArticleCard'}).length).toBe(wrapper.vm.articles.length);
+
+            expect(wrapper.find(sel('articleCard0')).props().index).toBe(0);
+            expect(wrapper.find(sel('articleCard0')).props().article).toBe(wrapper.vm.articles[0]);
+            expect(wrapper.find(sel('articleCard1')).props().index).toBe(1);
+            expect(wrapper.find(sel('articleCard1')).props().article).toBe(wrapper.vm.articles[1]);
+            expect(wrapper.find(sel('articleCard2')).props().index).toBe(2);
+            expect(wrapper.find(sel('articleCard2')).props().article).toBe(wrapper.vm.articles[2]);
+            expect(wrapper.find(sel('articleCard3')).props().index).toBe(3);
+            expect(wrapper.find(sel('articleCard3')).props().article).toBe(wrapper.vm.articles[3]);
+            expect(wrapper.find(sel('articleCard4')).props().index).toBe(4);
+            expect(wrapper.find(sel('articleCard4')).props().article).toBe(wrapper.vm.articles[4]);
+            expect(wrapper.find(sel('articleCard5')).props().index).toBe(5);
+            expect(wrapper.find(sel('articleCard5')).props().article).toBe(wrapper.vm.articles[5]);
+            expect(wrapper.find(sel('articleCard6')).props().index).toBe(6);
+            expect(wrapper.find(sel('articleCard6')).props().article).toBe(wrapper.vm.articles[6]);
+            expect(wrapper.find(sel('articleCard7')).props().index).toBe(7);
+            expect(wrapper.find(sel('articleCard7')).props().article).toBe(wrapper.vm.articles[7]);
+            expect(wrapper.find(sel('articleCard8')).props().index).toBe(8);
+            expect(wrapper.find(sel('articleCard8')).props().article).toBe(wrapper.vm.articles[8]);
+            expect(wrapper.find(sel('articleCard9')).props().index).toBe(9);
+            expect(wrapper.find(sel('articleCard9')).props().article).toBe(wrapper.vm.articles[9]);
+
+        })
     })
 })
