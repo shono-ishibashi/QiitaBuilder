@@ -85,12 +85,13 @@ export default {
           position: 'right'
         }
       },//Pieコンポーネントのグラフ表示用オプション
-      change: true
+      change: true//Pieコンポーネントに変更を検知させるためのプロパティ
     };
   },
   watch: {
+    //storeのuserDetailにDBからの情報をsetしたときにタグ使用率グラフにデータを詰め込む
     userDetail() {
-      this.chartDatasets={
+      this.chartDatasets = {
         labels: [],
         datasets: [
           {

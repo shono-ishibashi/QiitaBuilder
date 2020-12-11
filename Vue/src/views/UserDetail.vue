@@ -289,8 +289,6 @@ export default {
     ...mapGetters("auth", ["loginUser"]),
   },
   watch: {
-    //storeのuserDetailにDBからの情報をsetしたときにタグ使用率グラフにデータを詰め込む
-
     //storeのpostedArticlesにDBからの情報をsetしたときに最初画面遷移時に表示する記事種に切り替える
     postedArticles() {
       const th = this;
@@ -496,7 +494,6 @@ export default {
     ...mapActions("user", [
       "setArticlesAndTags",
       "setArticles",
-      "setChartData",
       "fetchUserDetail",
       "fetchPostedArticles",
       "fetchFeedbackArticles",
