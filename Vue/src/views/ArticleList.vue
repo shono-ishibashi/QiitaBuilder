@@ -134,7 +134,7 @@
               item-color="green"
               label="並び替え"
               color="#5bc8ac"
-              >
+          >
           </v-select>
           <v-select
               data-test-id="pageSize"
@@ -202,7 +202,7 @@
 
 <script>
 import ArticleCard from "../components/ArticleCard"
-import {mapState, mapActions} from "vuex"
+import {mapState, mapActions, mapMutations} from "vuex"
 
 export default {
   name: "ArticleList",
@@ -249,7 +249,9 @@ export default {
       tags_limit_length: value => value.length <= 5 || "6個以上入力しないでください",
     }
   },
-
+  beforeDestroy() {
+    this.resetArticles()
+  },
   computed: {
     ...mapState("article", ["processFailure"]),
     ...mapState("articles", ["articles", "tags", "totalPage", "searchCriteria", "errorTransistionDialog"]),
@@ -338,6 +340,7 @@ export default {
   methods: {
     ...mapActions("article", ["toggleProcessFailure"]),
     ...mapActions("articles", ["fetchArticles", "fetchTags", "setToggleSearchWord"]),
+    ...mapMutations('articles', ['resetArticles']),
     changePeriod(key) {
       this.searchCriteria.period = key
     },

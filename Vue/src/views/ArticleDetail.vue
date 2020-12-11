@@ -21,24 +21,24 @@
     <v-row v-show="isLoading" justify="center">
       <v-col cols="6">
         <v-progress-linear
-          color="green"
-          indeterminate
-          rounded
-          height="10"
+            color="green"
+            indeterminate
+            rounded
+            height="10"
         ></v-progress-linear>
       </v-col>
     </v-row>
     <v-row v-show="!isLoading">
       <v-col class="hidden-xs-only hidden-sm-only" :md="mdPlacement.buttons">
         <v-row
-          v-if="article.stateFlag !== 0 && article.stateFlag !== 9"
-          id="qiita_btn"
+            v-if="article.stateFlag !== 0 && article.stateFlag !== 9"
+            id="qiita_btn"
         >
           <!-- Qiitaボタン -->
           <v-col
-            cols="12"
-            style="text-align: center; padding: 0"
-            class="green--text"
+              cols="12"
+              style="text-align: center; padding: 0"
+              class="green--text"
           >
             {{ article.qiitaRecommendPoint }}
           </v-col>
@@ -47,13 +47,13 @@
             <v-tooltip top v-if="recommendId">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
-                  v-bind="attrs"
-                  v-on="on"
-                  class="mx-2"
-                  fab
-                  dark
-                  color="green"
-                  @click="toggleRecommend"
+                    v-bind="attrs"
+                    v-on="on"
+                    class="mx-2"
+                    fab
+                    dark
+                    color="green"
+                    @click="toggleRecommend"
                 >
                   <v-icon large dark>
                     mdi-thumb-up
@@ -65,13 +65,13 @@
             <v-tooltip top v-if="!recommendId">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
-                  v-bind="attrs"
-                  v-on="on"
-                  class="mx-2"
-                  fab
-                  outlined
-                  color="green"
-                  @click="toggleRecommend"
+                    v-bind="attrs"
+                    v-on="on"
+                    class="mx-2"
+                    fab
+                    outlined
+                    color="green"
+                    @click="toggleRecommend"
                 >
                   <v-icon large color="green">
                     mdi-thumb-up
@@ -88,13 +88,13 @@
             <v-tooltip top v-if="myArticleId">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
-                  v-bind="attrs"
-                  v-on="on"
-                  class="mx-2"
-                  fab
-                  dark
-                  color="pink"
-                  @click="toggleMyArticle"
+                    v-bind="attrs"
+                    v-on="on"
+                    class="mx-2"
+                    fab
+                    dark
+                    color="pink"
+                    @click="toggleMyArticle"
                 >
                   <v-icon large dark>
                     mdi-heart
@@ -107,11 +107,11 @@
             <v-tooltip top v-if="!myArticleId">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
-                  v-bind="attrs"
-                  v-on="on"
-                  class="mx-2"
-                  fab
-                  @click="toggleMyArticle"
+                    v-bind="attrs"
+                    v-on="on"
+                    class="mx-2"
+                    fab
+                    @click="toggleMyArticle"
                 >
                   <v-icon large color="blue-grey">
                     mdi-heart
@@ -126,45 +126,45 @@
       <v-col cols="12" sm="12" :md="mdPlacement.article">
         <v-sheet min-height="70vh" rounded="lg">
           <Article
-            :article="article"
-            :myArticleId="myArticleId"
-            :recommendId="recommendId"
-            @toggleMyArticle="toggleMyArticle"
-            @toggleRecommend="toggleRecommend"
-            @deleteArticle="deleteArticle"
+              :article="article"
+              :myArticleId="myArticleId"
+              :recommendId="recommendId"
+              @toggleMyArticle="toggleMyArticle"
+              @toggleRecommend="toggleRecommend"
+              @deleteArticle="deleteArticle"
           />
           <Feedbacks
-            :feedbacks="feedbacks"
-            @editFeedback="editFeedback"
-            @deleteFeedback="deleteFeedback"
-            v-if="article.stateFlag !== 0 && article.stateFlag !== 9"
+              :feedbacks="feedbacks"
+              @editFeedback="editFeedback"
+              @deleteFeedback="deleteFeedback"
+              v-if="article.stateFlag !== 0 && article.stateFlag !== 9"
           />
         </v-sheet>
       </v-col>
       <v-col
-        v-if="article.stateFlag !== 0 && article.stateFlag !== 9"
-        cols="12"
-        sm="12"
-        :md="mdPlacement.editor"
+          v-if="article.stateFlag !== 0 && article.stateFlag !== 9"
+          cols="12"
+          sm="12"
+          :md="mdPlacement.editor"
       >
         <span v-show="EditorIsOpen">
           <FeedbackEditor
-            class="sticky"
-            @closeEditor="closeEditor"
-            @postFeedback="postFeedback"
-            :feedback="propsFeedback"
+              class="sticky"
+              @closeEditor="closeEditor"
+              @postFeedback="postFeedback"
+              :feedback="propsFeedback"
           />
         </span>
         <span v-show="!EditorIsOpen">
           <v-tooltip top>
             <template v-slot:activator="{ on, attrs }">
               <v-btn
-                v-bind="attrs"
-                v-on="on"
-                icon
-                large
-                @click="openNewEditor"
-                class="toggle_editor_btn"
+                  v-bind="attrs"
+                  v-on="on"
+                  icon
+                  large
+                  @click="openNewEditor"
+                  class="toggle_editor_btn"
               >
                 <v-icon large>mdi-comment-plus</v-icon>
               </v-btn>
@@ -178,7 +178,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import {mapActions, mapMutations} from "vuex";
 import Article from "../components/article_detail/Article";
 import Feedbacks from "../components/article_detail/Feedbacks";
 import FeedbackEditor from "../components/article_detail/FeedbackEditor";
@@ -225,8 +225,8 @@ export default {
       return this.$store.state.article.article.feedbacks;
     },
     mdPlacement() {
-      if (this.EditorIsOpen) return { buttons: 1, article: 7, editor: 4 };
-      return { buttons: 2, article: 8, editor: 2 };
+      if (this.EditorIsOpen) return {buttons: 1, article: 7, editor: 4};
+      return {buttons: 2, article: 8, editor: 2};
     },
     apiToken() {
       return this.$store.getters["auth/apiToken"];
@@ -242,7 +242,7 @@ export default {
     },
   },
   watch: {
-    apiToken: async function() {
+    apiToken: async function () {
       this.isLoading = true;
       const a = this.fetchArticle(this.slug).catch((error) => {
         this.articleErrorHandle(error);
@@ -254,10 +254,10 @@ export default {
         this.errorHandle(error);
       });
       const d = this.$store
-        .dispatch("auth/checkIsLinkedToQiita")
-        .catch((error) => {
-          this.errorHandle(error);
-        });
+          .dispatch("auth/checkIsLinkedToQiita")
+          .catch((error) => {
+            this.errorHandle(error);
+          });
       if (this.$route.query.isPostedArticleToQiita) {
         this.isPostedArticleToQiita = true;
       }
@@ -269,6 +269,9 @@ export default {
     this.isLoading = true;
     this.propsFeedback = this.feedbackForNewPost;
     this.scrollTop();
+  },
+  beforeDestroy() {
+    this.resetArticle()
   },
   methods: {
     //// 画面描画の調整
@@ -316,14 +319,14 @@ export default {
       const item = this.article;
       item.stateFlag = 9;
       this.$store
-        .dispatch("article/saveArticle", item)
-        .then(() => {
-          this.$router.push({ name: "articleList" });
-        })
-        .catch((error) => {
-          this.article.stateFlag = beforeStateFlag;
-          this.errorHandle(error);
-        });
+          .dispatch("article/saveArticle", item)
+          .then(() => {
+            this.$router.push({name: "articleList"});
+          })
+          .catch((error) => {
+            this.article.stateFlag = beforeStateFlag;
+            this.errorHandle(error);
+          });
     },
     closeEditor() {
       if (!this.propsFeedback.feedbackId) {
@@ -342,22 +345,22 @@ export default {
       if (!this.propsFeedback.feedbackId) {
         this.propsFeedback.articleId = this.article.articleId;
         this.$store
-          .dispatch("article/postFeedback", this.propsFeedback)
-          .then(() => {
-            this.postFeedbackSuccess = true;
-          })
-          .catch((error) => {
-            this.errorHandle(error);
-          });
+            .dispatch("article/postFeedback", this.propsFeedback)
+            .then(() => {
+              this.postFeedbackSuccess = true;
+            })
+            .catch((error) => {
+              this.errorHandle(error);
+            });
       } else {
         this.$store
-          .dispatch("article/updateFeedback", this.propsFeedback)
-          .then(() => {
-            this.updateFeedbackSuccess = true;
-          })
-          .catch((error) => {
-            this.errorHandle(error);
-          });
+            .dispatch("article/updateFeedback", this.propsFeedback)
+            .then(() => {
+              this.updateFeedbackSuccess = true;
+            })
+            .catch((error) => {
+              this.errorHandle(error);
+            });
       }
       this.closeEditor();
     },
@@ -378,27 +381,27 @@ export default {
     },
     async deleteFeedback(feedback) {
       this.$store
-        .dispatch("article/deleteFeedback", feedback)
-        .then(() => {
-          this.deleteFeedbackSuccess = true;
-        })
-        .catch((error) => {
-          this.errorHandle(error);
-        });
+          .dispatch("article/deleteFeedback", feedback)
+          .then(() => {
+            this.deleteFeedbackSuccess = true;
+          })
+          .catch((error) => {
+            this.errorHandle(error);
+          });
     },
     toggleMyArticle() {
       if (this.myArticleId) {
         this.$store
-          .dispatch("article/deleteMyArticle", this.myArticleId)
-          .catch((error) => {
-            this.errorHandle(error);
-          });
+            .dispatch("article/deleteMyArticle", this.myArticleId)
+            .catch((error) => {
+              this.errorHandle(error);
+            });
       } else {
         this.$store
-          .dispatch("article/registerMyArticle", this.article.articleId)
-          .catch((error) => {
-            this.errorHandle(error);
-          });
+            .dispatch("article/registerMyArticle", this.article.articleId)
+            .catch((error) => {
+              this.errorHandle(error);
+            });
       }
     },
     toggleRecommend() {
@@ -408,16 +411,16 @@ export default {
       }
       if (this.recommendId) {
         this.$store
-          .dispatch("article/deleteRecommend", this.recommendId)
-          .catch((error) => {
-            this.errorHandle(error);
-          });
+            .dispatch("article/deleteRecommend", this.recommendId)
+            .catch((error) => {
+              this.errorHandle(error);
+            });
       } else {
         this.$store
-          .dispatch("article/registerRecommend", this.article.articleId)
-          .catch((error) => {
-            this.errorHandle(error);
-          });
+            .dispatch("article/registerRecommend", this.article.articleId)
+            .catch((error) => {
+              this.errorHandle(error);
+            });
       }
     },
     ...mapActions("article", [
@@ -426,6 +429,7 @@ export default {
       "fetchRecommend",
       "toggleProcessFailure",
     ]),
+    ...mapMutations('article', ['resetArticle'])
   },
 };
 </script>
