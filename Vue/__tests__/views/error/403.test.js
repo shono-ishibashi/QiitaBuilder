@@ -1,5 +1,5 @@
 import {shallowMount, createLocalVue} from '@vue/test-utils';
-import Component from '@/views/error/500';
+import Component from '@/views/error/403';
 import VueRouter from "vue-router";
 import {afterEach, beforeEach, describe} from "@jest/globals";
 
@@ -28,12 +28,12 @@ describe('Testing App component', () => {
     describe('Testing element exist', () => {
         test('h1', () => {
             expect(wrapper.find('h1').isVisible()).toBeTruthy();
-            expect(wrapper.find('h1').text()).toBe('500 Internal Server Error');
+            expect(wrapper.find('h1').text()).toBe('403 Forbidden');
         })
 
         test('p', () => {
             expect(wrapper.findAll('p').isVisible()).toBeTruthy();
-            expect(wrapper.findAll('p').length).toBe(3);
+            expect(wrapper.findAll('p').length).toBe(2);
         })
 
         test('router-link', () => {
