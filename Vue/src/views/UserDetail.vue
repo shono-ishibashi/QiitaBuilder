@@ -332,7 +332,6 @@ export default {
     },
     apiToken: function () {
       if (this.apiToken) {
-        this.isLoading = true;
         const paramUserId = this.$route.params['userId'];
         const th = this;
         const fetch = async function () {
@@ -352,6 +351,7 @@ export default {
           }
         }
         const processAll = async function () {
+          th.isLoading = true;
           await fetch();
           th.isLoading = false;
         }
@@ -360,7 +360,6 @@ export default {
     },
     '$route': async function (to) {
       const th = this
-      this.isLoading = true
       const paramUserId = to.params['userId']
       if (paramUserId === '0') {
         if (!th.loginUser.uid) await th.$store.dispatch("window/setInternalServerError", true);
@@ -376,7 +375,6 @@ export default {
         await th.fetchMyArticles(paramUserId);
         await th.fetchPostedArticles(paramUserId);
       }
-      this.isLoading = false
     }
   },
   methods: {
