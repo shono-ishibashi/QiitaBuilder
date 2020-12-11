@@ -4,7 +4,7 @@
     <v-toolbar elevation="0">
       <v-icon>mdi-message-text-outline</v-icon>
       <v-spacer></v-spacer>
-      <v-toolbar-title
+      <v-toolbar-title data-test-id="title"
         >フィードバックを{{ feedback.feedbackId | postOrEdit }}する
       </v-toolbar-title>
       <v-spacer></v-spacer>
@@ -19,6 +19,7 @@
             <img
               v-if="loginUser.photoURL"
               :src="loginUser.photoURL"
+              data-test-id="userIcon"
               alt="user-icon"
             />
             <v-icon v-else dark size="36px">
@@ -27,7 +28,7 @@
           </v-avatar>
         </v-col>
         <v-col cols="">
-          <small>@{{ loginUser.displayName }}</small>
+          <small data-test-id="userName">@{{ loginUser.displayName }}</small>
         </v-col>
       </v-row>
     </v-card-title>
@@ -44,6 +45,7 @@
           <v-textarea
             background-color="grey lighten-2"
             color="green darken-2"
+            data-test-id="content"
             solo
             v-model="feedback.content"
             :rules="[required, maximum, blank]"
@@ -66,6 +68,7 @@
         <v-btn
           color="green"
           class="white--text"
+          data-test-id="postButton"
           :disabled="!valid"
           @click="saveFeedback"
         >
@@ -109,9 +112,6 @@ export default {
   props: ["feedback"],
   created() {
     this.loginUser = this.$store.state.auth.loginUser;
-  },
-  beforeUpdate() {
-    this.resetValidation();
   },
   filters: {
     postOrEdit: function(value) {
