@@ -2,11 +2,12 @@ import {shallowMount, createLocalVue} from '@vue/test-utils';
 import Vuex from 'vuex';
 import Component from '@/views/UserDetail';
 import {afterEach, beforeEach, describe, jest} from "@jest/globals";
+import Vuetify from 'vuetify'
 /*import * as palette from 'google-palette/palette'
 jest.mock('google-palette/palette.js')*/
 
 const localVue = createLocalVue();
-localVue.use(Vuex);
+localVue.use(Vuex, Vuetify);
 
 let wrapper;
 let store;
@@ -18,17 +19,43 @@ let auth_getters;
 let auth_state;
 let myMock = jest.fn();
 const sel = id => `[data-test-id="${id}"]`//sel('id')の形でidにtemplate内に付与されたdata-test属性の名前を指定したら付与された要素を指定できる
+function sleepByPromise(sec) {
+    return new Promise(resolve => setTimeout(resolve, sec * 1000));
+}
+
+async function wait(sec) {
+    // await句を使って、Promiseの非同期処理が完了するまで待機します。
+    await sleepByPromise(sec);
+}
 
 beforeEach(() => {
     //jest.resetModules()
     user_actions = {
         setArticlesAndTags: jest.fn(),
-        setArticles: jest.fn(),
+        setArticles: jest.fn().mockImplementationOnce(function (articles) {
+            return articles
+        }),
         setChartData: jest.fn(),
-        fetchUserDetail: jest.fn(),
-        fetchPostedArticles: jest.fn(),
-        fetchFeedbackArticles: jest.fn(),
-        fetchMyArticles: jest.fn(),
+        fetchUserDetail: jest.fn().mockImplementationOnce(function () {
+            return new Promise(resolve => {
+                resolve()
+            })
+        }),
+        fetchPostedArticles: jest.fn().mockImplementationOnce(function () {
+            return new Promise(resolve => {
+                resolve()
+            })
+        }),
+        fetchFeedbackArticles: jest.fn().mockImplementationOnce(function () {
+            return new Promise(resolve => {
+                resolve()
+            })
+        }),
+        fetchMyArticles: jest.fn().mockImplementationOnce(function () {
+            return new Promise(resolve => {
+                resolve()
+            })
+        }),
         findUserIdByUid: jest.fn(),
         clearState: jest.fn()
     };
@@ -74,57 +101,346 @@ beforeEach(() => {
         postedArticles() {
             return [
                 {
-                    articleId: 1
+                    articleId: 1,
+                    title: 'title1',
+                    createdAt: "00:00:01",
+                    updatedAt: "11:11:11",
+                    stateFlag: 1,
+                    feedbackCount: 1,
+                    registeredMyArticleCount: 3,
+                    qiitaRecommendPoint: 1,
+                    postedUser: {
+                        userId: 1,
+                        displayName: "user1",
+                        photoUrl: "photo1"
+                    },
+                    tags: [{
+                        tagId: 1,
+                        tagName: 'Java',
+                    }, {
+                        tagId: 3,
+                        tagName: "Javascript"
+                    }]
                 },
                 {
-                    articleId: 2
+                    articleId: 2,
+                    title: 'title2',
+                    createdAt: "00:00:02",
+                    updatedAt: "00:22:22",
+                    stateFlag: 2,
+                    feedbackCount: 2,
+                    registeredMyArticleCount: 2,
+                    qiitaRecommendPoint: 2,
+                    postedUser: {
+                        userId: 2,
+                        displayName: "user2",
+                        photoUrl: "photo2"
+                    },
+                    tags: [{
+                        tagId: 2,
+                        tagName: 'go',
+                    }, {
+                        tagId: 3,
+                        tagName: "Javascript"
+                    }]
                 },
                 {
-                    articleId: 3
+                    articleId: 3,
+                    title: 'title3',
+                    createdAt: "00:00:03",
+                    updatedAt: "00:03:33",
+                    stateFlag: 1,
+                    feedbackCount: 2,
+                    registeredMyArticleCount: 1,
+                    qiitaRecommendPoint: 3,
+                    postedUser: {
+                        userId: 1,
+                        displayName: "user1",
+                        photoUrl: "photo1"
+                    },
+                    tags: [{
+                        tagId: 2,
+                        tagName: 'go',
+                    }, {
+                        tagId: 3,
+                        tagName: "Javascript"
+                    }]
                 }]
         },
         notDraftArticles() {
-            return [{
-                articleId: 1
-            },
+            return [
                 {
-                    articleId: 2
+                    articleId: 1,
+                    title: 'title1',
+                    createdAt: "00:00:01",
+                    updatedAt: "11:11:11",
+                    stateFlag: 1,
+                    feedbackCount: 1,
+                    registeredMyArticleCount: 3,
+                    qiitaRecommendPoint: 1,
+                    postedUser: {
+                        userId: 1,
+                        displayName: "user1",
+                        photoUrl: "photo1"
+                    },
+                    tags: [{
+                        tagId: 1,
+                        tagName: 'Java',
+                    }, {
+                        tagId: 3,
+                        tagName: "Javascript"
+                    }]
                 },
                 {
-                    articleId: 3
+                    articleId: 2,
+                    title: 'title2',
+                    createdAt: "00:00:02",
+                    updatedAt: "00:22:22",
+                    stateFlag: 2,
+                    feedbackCount: 2,
+                    registeredMyArticleCount: 2,
+                    qiitaRecommendPoint: 2,
+                    postedUser: {
+                        userId: 2,
+                        displayName: "user2",
+                        photoUrl: "photo2"
+                    },
+                    tags: [{
+                        tagId: 2,
+                        tagName: 'go',
+                    }, {
+                        tagId: 3,
+                        tagName: "Javascript"
+                    }]
+                },
+                {
+                    articleId: 3,
+                    title: 'title3',
+                    createdAt: "00:00:03",
+                    updatedAt: "00:03:33",
+                    stateFlag: 1,
+                    feedbackCount: 2,
+                    registeredMyArticleCount: 1,
+                    qiitaRecommendPoint: 3,
+                    postedUser: {
+                        userId: 1,
+                        displayName: "user1",
+                        photoUrl: "photo1"
+                    },
+                    tags: [{
+                        tagId: 2,
+                        tagName: 'go',
+                    }, {
+                        tagId: 3,
+                        tagName: "Javascript"
+                    }]
                 }]
         },
         draftArticles() {
-            return [{
-                articleId: 1
-            },
+            return [
                 {
-                    articleId: 2
+                    articleId: 1,
+                    title: 'title1',
+                    createdAt: "00:00:01",
+                    updatedAt: "11:11:11",
+                    stateFlag: 1,
+                    feedbackCount: 1,
+                    registeredMyArticleCount: 3,
+                    qiitaRecommendPoint: 1,
+                    postedUser: {
+                        userId: 1,
+                        displayName: "user1",
+                        photoUrl: "photo1"
+                    },
+                    tags: [{
+                        tagId: 1,
+                        tagName: 'Java',
+                    }, {
+                        tagId: 3,
+                        tagName: "Javascript"
+                    }]
                 },
                 {
-                    articleId: 3
+                    articleId: 2,
+                    title: 'title2',
+                    createdAt: "00:00:02",
+                    updatedAt: "00:22:22",
+                    stateFlag: 2,
+                    feedbackCount: 2,
+                    registeredMyArticleCount: 2,
+                    qiitaRecommendPoint: 2,
+                    postedUser: {
+                        userId: 2,
+                        displayName: "user2",
+                        photoUrl: "photo2"
+                    },
+                    tags: [{
+                        tagId: 2,
+                        tagName: 'go',
+                    }, {
+                        tagId: 3,
+                        tagName: "Javascript"
+                    }]
+                },
+                {
+                    articleId: 3,
+                    title: 'title3',
+                    createdAt: "00:00:03",
+                    updatedAt: "00:03:33",
+                    stateFlag: 1,
+                    feedbackCount: 2,
+                    registeredMyArticleCount: 1,
+                    qiitaRecommendPoint: 3,
+                    postedUser: {
+                        userId: 1,
+                        displayName: "user1",
+                        photoUrl: "photo1"
+                    },
+                    tags: [{
+                        tagId: 2,
+                        tagName: 'go',
+                    }, {
+                        tagId: 3,
+                        tagName: "Javascript"
+                    }]
                 }]
         },
         feedbackArticles() {
-            return [{
-                articleId: 1
-            },
+            return [
                 {
-                    articleId: 2
+                    articleId: 1,
+                    title: 'title1',
+                    createdAt: "00:00:01",
+                    updatedAt: "11:11:11",
+                    stateFlag: 1,
+                    feedbackCount: 1,
+                    registeredMyArticleCount: 3,
+                    qiitaRecommendPoint: 1,
+                    postedUser: {
+                        userId: 1,
+                        displayName: "user1",
+                        photoUrl: "photo1"
+                    },
+                    tags: [{
+                        tagId: 1,
+                        tagName: 'Java',
+                    }, {
+                        tagId: 3,
+                        tagName: "Javascript"
+                    }]
                 },
                 {
-                    articleId: 3
+                    articleId: 2,
+                    title: 'title2',
+                    createdAt: "00:00:02",
+                    updatedAt: "00:22:22",
+                    stateFlag: 2,
+                    feedbackCount: 2,
+                    registeredMyArticleCount: 2,
+                    qiitaRecommendPoint: 2,
+                    postedUser: {
+                        userId: 2,
+                        displayName: "user2",
+                        photoUrl: "photo2"
+                    },
+                    tags: [{
+                        tagId: 2,
+                        tagName: 'go',
+                    }, {
+                        tagId: 3,
+                        tagName: "Javascript"
+                    }]
+                },
+                {
+                    articleId: 3,
+                    title: 'title3',
+                    createdAt: "00:00:03",
+                    updatedAt: "00:03:33",
+                    stateFlag: 1,
+                    feedbackCount: 2,
+                    registeredMyArticleCount: 1,
+                    qiitaRecommendPoint: 3,
+                    postedUser: {
+                        userId: 1,
+                        displayName: "user1",
+                        photoUrl: "photo1"
+                    },
+                    tags: [{
+                        tagId: 2,
+                        tagName: 'go',
+                    }, {
+                        tagId: 3,
+                        tagName: "Javascript"
+                    }]
                 }]
         },
         myArticles() {
-            return [{
-                articleId: 1
-            },
+            return [
                 {
-                    articleId: 2
+                    articleId: 1,
+                    title: 'title1',
+                    createdAt: "00:00:01",
+                    updatedAt: "11:11:11",
+                    stateFlag: 1,
+                    feedbackCount: 1,
+                    registeredMyArticleCount: 3,
+                    qiitaRecommendPoint: 1,
+                    postedUser: {
+                        userId: 1,
+                        displayName: "user1",
+                        photoUrl: "photo1"
+                    },
+                    tags: [{
+                        tagId: 1,
+                        tagName: 'Java',
+                    }, {
+                        tagId: 3,
+                        tagName: "Javascript"
+                    }]
                 },
                 {
-                    articleId: 3
+                    articleId: 2,
+                    title: 'title2',
+                    createdAt: "00:00:02",
+                    updatedAt: "00:22:22",
+                    stateFlag: 2,
+                    feedbackCount: 2,
+                    registeredMyArticleCount: 2,
+                    qiitaRecommendPoint: 2,
+                    postedUser: {
+                        userId: 2,
+                        displayName: "user2",
+                        photoUrl: "photo2"
+                    },
+                    tags: [{
+                        tagId: 2,
+                        tagName: 'go',
+                    }, {
+                        tagId: 3,
+                        tagName: "Javascript"
+                    }]
+                },
+                {
+                    articleId: 3,
+                    title: 'title3',
+                    createdAt: "00:00:03",
+                    updatedAt: "00:03:33",
+                    stateFlag: 1,
+                    feedbackCount: 2,
+                    registeredMyArticleCount: 1,
+                    qiitaRecommendPoint: 3,
+                    postedUser: {
+                        userId: 1,
+                        displayName: "user1",
+                        photoUrl: "photo1"
+                    },
+                    tags: [{
+                        tagId: 2,
+                        tagName: 'go',
+                    }, {
+                        tagId: 3,
+                        tagName: "Javascript"
+                    }]
                 }]
         },
         displayArticles() {
@@ -888,7 +1204,7 @@ describe('Testing UserDetail Component', () => {
             await expect(wrapper.vm.paging.now).toBe(1)
         })
         test('apiToken', async () => {
-            const userIdFromParams = 3
+            let userIdFromParams = 3
             const $route = {
                 params: {userId: userIdFromParams}
             };
@@ -916,8 +1232,8 @@ describe('Testing UserDetail Component', () => {
                     }
                 },
             });
+            wrapper.vm.fetchDetailAndArticles = jest.fn()
 
-            const spy = jest.spyOn(wrapper.vm, 'fetchFeedbackArticles')
             //変更前
             await expect(user_actions.fetchUserDetail).not.toBeCalled()
             await expect(user_actions.fetchFeedbackArticles).not.toBeCalled()
@@ -931,20 +1247,26 @@ describe('Testing UserDetail Component', () => {
             }
             await changeToken();
 
-            console.log(wrapper.vm.fetchFeedbackArticles)
-            console.log(user_actions.fetchFeedbackArticles)
-            await expect(user_actions.fetchUserDetail).toBeCalledTimes(1)
-            await expect(user_actions.fetchFeedbackArticles).toBeCalledTimes(1)
-            await expect(spy).toBeCalledTimes(1)
-            //await expect(user_actions.fetchMyArticles).toBeCalledTimes(1)
-            //await expect(user_actions.fetchPostedArticles).toBeCalledTimes(1)
-
-            //引数にuserIdを指定できているかのテスト。引数一つ目は{dispatch, commit, rootGetters, rootState}が自動で入れられるので引数の二つ目を検証
-            await expect(user_actions.fetchUserDetail).toBeCalledWith(user_actions.fetchUserDetail.mock.calls[0][0], userIdFromParams)
+            expect(wrapper.vm.fetchDetailAndArticles).toBeCalledTimes(1)
+            expect(wrapper.vm.fetchDetailAndArticles).toBeCalledWith(userIdFromParams)
         })
 
     })
     describe('Testing methods', () => {
+        test('fetchDetailAndArticles', async () => {
+            const userIdFromParams = 1
+            await wrapper.vm.fetchDetailAndArticles(userIdFromParams)
+            await expect(user_actions.fetchUserDetail).toBeCalledTimes(userIdFromParams)
+            await expect(user_actions.fetchFeedbackArticles).toBeCalledTimes(userIdFromParams)
+            await expect(user_actions.fetchMyArticles).toBeCalledTimes(userIdFromParams)
+            await expect(user_actions.fetchPostedArticles).toBeCalledTimes(userIdFromParams)
+
+            //引数にuserIdを指定できているかのテスト。引数一つ目は{dispatch, commit, rootGetters, rootState}が自動で入れられるので引数の二つ目を検証
+            await expect(user_actions.fetchUserDetail).toBeCalledWith(user_actions.fetchUserDetail.mock.calls[0][0], userIdFromParams)
+            await expect(user_actions.fetchFeedbackArticles).toBeCalledWith(user_actions.fetchFeedbackArticles.mock.calls[0][0], userIdFromParams)
+            await expect(user_actions.fetchMyArticles).toBeCalledWith(user_actions.fetchMyArticles.mock.calls[0][0], userIdFromParams)
+            await expect(user_actions.fetchPostedArticles).toBeCalledWith(user_actions.fetchPostedArticles.mock.calls[0][0], userIdFromParams)
+        })
         test('changeList', async () => {
             wrapper.setData({conditions: {title: 'title', conditionTags: ['a']}})
             wrapper.setData({displayListState: {id: 1, name: ['Qiita未投稿記事']}})
@@ -987,6 +1309,53 @@ describe('Testing UserDetail Component', () => {
             expect(user_actions.setArticlesAndTags).toBeCalled()
         })
         test('searchWithConditions', async () => {
+            const searchFormStub = {
+                render: () => {
+                },
+                methods: {
+                    validate: () => true,
+                }
+            }
+            wrapper = shallowMount(Component, {
+                localVue,
+                store,
+                stubs: {
+                    'search_form': searchFormStub,
+                },
+            })
+            wrapper.vm.$refs.search_form.validate = jest.fn().mockImplementation(() => {
+                return true
+            })
+            wrapper.setData({displayListNum: 0})
+            wrapper.setData({displayListState: {id: 1}})
+            wrapper.setData({conditions: {title: '1', conditionTags: [1]}})
+
+            await wrapper.vm.searchWithConditions();
+            await expect(user_actions.setArticles).toBeCalledTimes(1)
+            await expect(user_actions.setArticles).toBeCalledWith(user_actions.setArticles.mock.calls[0][0], [{
+                articleId: 1,
+                title: 'title1',
+                createdAt: "00:00:01",
+                updatedAt: "11:11:11",
+                stateFlag: 1,
+                feedbackCount: 1,
+                registeredMyArticleCount: 3,
+                qiitaRecommendPoint: 1,
+                postedUser: {
+                    userId: 1,
+                    displayName: "user1",
+                    photoUrl: "photo1"
+                },
+                tags: [{
+                    tagId: 1,
+                    tagName: 'Java',
+                }, {
+                    tagId: 3,
+                    tagName: "Javascript"
+                }]
+            }])
+            await expect(wrapper.vm.paging.now).toBe(1)
+            await expect(wrapper.vm.length).toBe(1)
         })
         test('resetConditions', () => {
             wrapper.setData({conditions: {title: '1', conditionTags: ['Java']}})
