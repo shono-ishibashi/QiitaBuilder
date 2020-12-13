@@ -22,7 +22,8 @@ let store = new Vuex.Store({
           password: null,
           postArticles: null,
           displayName: "gorilla",
-          photoUrl:
+
+          photoURL:
             "https://www.nationalgeographic.com/content/dam/animals/thumbs/rights-exempt/mammals/m/mountain-gorilla_thumb.ngsversion.1538530889286.adapt.1900.1.jpg",
           feedbacks: null,
           myArticles: null,

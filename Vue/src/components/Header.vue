@@ -8,7 +8,9 @@
         class="app-bar"
     >
       <v-toolbar-title
-          style="font-weight:bold;font-size:30px;cursor: pointer;"
+          id="logo"
+          text
+          style="font-size: 40px; cursor: pointer;"
           @click="toArticleList"
       >Qiita Builder
       </v-toolbar-title>
@@ -128,6 +130,8 @@ export default {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@800&display=swap');
+
 .app-bar {
   padding-left: 40px;
   padding-right: 20px;
@@ -135,5 +139,9 @@ export default {
 
 .header-btn {
   margin-right: 10px;
+}
+
+#logo {
+  font-family: poppins;
 }
 </style>

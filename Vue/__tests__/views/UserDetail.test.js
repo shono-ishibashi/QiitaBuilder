@@ -1136,7 +1136,7 @@ describe('Testing UserDetail Component', () => {
                 }
             }
             await changeUserDetail();
-
+          
             /* const chartDatasetsForTest = {
                  labels: ['Java', 'go', 'Javascript'],
                  datasets: [
@@ -1308,6 +1308,7 @@ describe('Testing UserDetail Component', () => {
 
             expect(user_actions.setArticlesAndTags).toBeCalled()
         })
+
         test('searchWithConditions', async () => {
             const searchFormStub = {
                 render: () => {
