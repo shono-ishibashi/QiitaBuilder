@@ -226,7 +226,7 @@ export default {
             const url = rootGetters.API_URL + 'userId';
             let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
 
-            await new Promise((resolve, reject) => {
+            let result = new Promise((resolve, reject) => {
                 axios.get(url, {
                     params: {uid},
                     headers: {
@@ -234,7 +234,7 @@ export default {
                     },
                 }).then(res => {
                     commit("setUserId", res.data);
-                    resolve(res)
+                    resolve(res.data)
                 }).catch((error) => {
                     const errorStatus = error.response.status;
                     if (errorStatus === 400) {
@@ -245,7 +245,7 @@ export default {
                     reject(errorStatus)
                 })
             })
-
+            return await result
         }
     }
 }

@@ -163,6 +163,7 @@
                         v-show="sortedArticles.length===0"
                         class="contentWrap"
                         data-test-id="no-articles-alert"
+                        v-if="!isLoading"
                     >
                       該当する記事がありません
                     </v-alert>
@@ -331,53 +332,38 @@ export default {
       }, 100)
     },
     apiToken: function () {
+      this.isLoading = true;
       if (this.apiToken) {
-        const paramUserId = this.$route.params['userId'];
+        let paramUserId = this.$route.params['userId'];
         const th = this;
         const fetch = async function () {
           if (paramUserId === '0') {
             if (!th.loginUser.uid) await th.$store.dispatch("window/setInternalServerError", true);
-            await th.findUserIdByUid(th.loginUser.uid);
-            await th.fetchUserDetail(th.userId);
-            //ユーザーが見つからない場合はこれ以降は実行されずwindow componentに切り替わる
-            await th.fetchFeedbackArticles(th.userId);
-            await th.fetchMyArticles(th.userId);
-            await th.fetchPostedArticles(th.userId);
+            await th.findUserIdByUid(th.loginUser.uid).then((res)=>{th.fetchDetailAndArticles(res)});
           } else {
-            await th.fetchUserDetail(paramUserId);
-            await th.fetchFeedbackArticles(paramUserId);
-            await th.fetchMyArticles(paramUserId);
-            await th.fetchPostedArticles(paramUserId);
+            await th.fetchDetailAndArticles(paramUserId)
           }
         }
         const processAll = async function () {
-          th.isLoading = true;
           await fetch();
           th.isLoading = false;
         }
         processAll();
       }
     },
-    '$route': async function (to) {
-      const th = this
-      const paramUserId = to.params['userId']
-      if (paramUserId === '0') {
-        if (!th.loginUser.uid) await th.$store.dispatch("window/setInternalServerError", true);
-        await th.findUserIdByUid(th.loginUser.uid);
-        await th.fetchUserDetail(th.userId);
-        //ユーザーが見つからない場合はこれ以降は実行されずwindow componentに切り替わる
-        await th.fetchFeedbackArticles(th.userId);
-        await th.fetchMyArticles(th.userId);
-        await th.fetchPostedArticles(th.userId);
-      } else {
-        await th.fetchUserDetail(paramUserId);
-        await th.fetchFeedbackArticles(paramUserId);
-        await th.fetchMyArticles(paramUserId);
-        await th.fetchPostedArticles(paramUserId);
-      }
-    }
   },
   methods: {
+    /**
+     * DBからユーザー詳細、各記事一覧を取ってくるメソッドを順次呼び出すメソッド
+     * @param userId(取得したいユーザーのuserId)
+     */
+    async fetchDetailAndArticles(userId) {
+      await this.fetchUserDetail(userId);
+      //ユーザーが見つからない場合はこれ以降は実行されずwindow componentに切り替わる
+      await this.fetchFeedbackArticles(userId);
+      await this.fetchMyArticles(userId);
+      await this.fetchPostedArticles(userId);
+    },
     /**
      * 表示したい記事に対応する数値を渡して、表示する記事一覧とオートコンプリート用タグリストを変更する
      * @param listNum (0:投稿記事), (1:FB記事), (2:お気に入り記事), (3:下書き記事)
@@ -504,6 +490,7 @@ export default {
   created() {
     //画面横幅が960px以上であればwindowWidthClassをtrueに変え画面を記事一覧を横に配置
     (window.innerWidth >= 960) ? this.windowWidthClass = true : this.windowWidthClass = false
+    this.isLoading = true
   }
   ,
   mounted() {
