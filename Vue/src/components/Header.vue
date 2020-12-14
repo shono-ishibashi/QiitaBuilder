@@ -17,17 +17,17 @@
 
       <v-spacer></v-spacer>
       <div class="header-action-field">
-        <v-btn class="header-btn" color="#008b8b" @click="toArticleList" v-if="loginUser!=null">
+        <v-btn data-test-id="toArticleList" class="header-btn" color="#008b8b" @click="toArticleList" v-if="loginUser">
           <v-icon>mdi-format-list-bulleted-type</v-icon>
           記事一覧
         </v-btn>
 
-        <v-btn class="header-btn" color="#008b8b" @click="toArticleNew" v-if="loginUser!=null">
+        <v-btn data-test-id="toArticleNew" class="header-btn" color="#008b8b" @click="toArticleNew" v-if="loginUser">
           <v-icon>mdi-square-edit-outline</v-icon>
           記事投稿
         </v-btn>
 
-        <v-btn class="header-btn" color="#008b8b" v-if="loginUser!=null" @click="toRanking">
+        <v-btn data-test-id="toRanking" class="header-btn" color="#008b8b" v-if="loginUser" @click="toRanking">
           <v-icon>mdi-chess-king</v-icon>
           ランキング
         </v-btn>
@@ -37,7 +37,7 @@
             left
             bottom
             offset-y
-            v-if="loginUser!=null"
+            v-if="loginUser"
         >
           <template v-slot:activator="{ on, attrs }">
             <v-btn
@@ -46,29 +46,29 @@
                 v-on="on"
             >
               <v-avatar>
-                <img
-                    :src="$store.getters['auth/loginUser'].photoURL"
-                    :alt="$store.getters['auth/loginUser'].displayName"
-                >
+                <v-img
+                    :src="loginUser.photoURL"
+                    :alt="loginUser.displayName"
+                />
               </v-avatar>
             </v-btn>
           </template>
 
           <v-list>
-            <v-list-item link @click="toMyPage">
+            <v-list-item link @click="toMyPage" data-test-id="menuToMyPage">
               <v-list-item-title>マイページ</v-list-item-title>
             </v-list-item>
-            <v-list-item link @click="toMyArticles">
+            <v-list-item link @click="toMyArticles" data-test-id="menuToMyArticles">
               <v-list-item-title>お気に入り記事一覧</v-list-item-title>
             </v-list-item>
-            <v-list-item link @click="toDraftArticles">
+            <v-list-item link @click="toDraftArticles" data-test-id="menuToDraftArticles">
               <v-list-item-title>下書き一覧</v-list-item-title>
             </v-list-item>
-            <v-list-item link @click="toQiitaAPIAuthentication">
+            <v-list-item link @click="toQiitaAPIAuthentication" data-test-id="menuToQiitaAPIAuthentication">
               <v-list-item-title>Qiitaと連携</v-list-item-title>
             </v-list-item>
             <v-divider></v-divider>
-            <v-list-item @click="$store.dispatch('auth/logout')">
+            <v-list-item @click="logout" data-test-id="menuLogout">
               <v-icon>mdi-logout</v-icon>
               <v-list-item-title>ログアウト</v-list-item-title>
             </v-list-item>

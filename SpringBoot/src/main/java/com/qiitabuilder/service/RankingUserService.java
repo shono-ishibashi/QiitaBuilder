@@ -109,10 +109,14 @@ public class RankingUserService {
                                 articleIdList = articleMapper.getArticleIdListByUserId(userId);
                                 break;
                         }
-                        relationArticleId.set(0, articleIdList.get(0));
+                        if (!articleIdList.isEmpty()) {
+                            relationArticleId.set(0, articleIdList.get(0));
+                        }
                     }
-                    Article relationArticle = articleMapper.findArticleById(relationArticleId.get(0)).get(0);
-                    rankUser.setRelationArticle(relationArticle);
+                    if (!Objects.isNull(relationArticleId.get(0))) {
+                        Article relationArticle = articleMapper.findArticleById(relationArticleId.get(0)).get(0);
+                        rankUser.setRelationArticle(relationArticle);
+                    }
                 });
         return rankingUserList;
     }
