@@ -223,6 +223,7 @@ export default {
       async handler() {
         if (this.apiToken) {
           await this.fetchRankingUser(this.selectRankItemId);
+          this.isLoading = false;
           this.rankUsersLength = await Number(this.users.length);
         }
       }
@@ -230,6 +231,9 @@ export default {
   },
   beforeDestroy() {
     this.resetRankingUsers()
+  },
+  created() {
+    this.isLoading = true;
   },
   methods: {
     ...mapActions("users", ["fetchRankingUser"]),
