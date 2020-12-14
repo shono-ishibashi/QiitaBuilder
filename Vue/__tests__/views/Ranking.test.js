@@ -106,7 +106,7 @@ describe('Testing Ranking component', () => {
             expect(wrapper.findAllComponents({name: 'v-select'}).length).toBe(2);
 
             //ランキング項目
-            const rankItemSelectWrapper = wrapper.findAllComponents({name: 'v-select'}).at(0);
+            const rankItemSelectWrapper = wrapper.find('[data-test-id="selectRankItem"]');
             expect(rankItemSelectWrapper.props().label).toBe('ランキング項目');
             expect(rankItemSelectWrapper.props().items[0].item).toBe('FBした数');
             expect(rankItemSelectWrapper.props().items[0].id).toBe(1);
@@ -118,7 +118,7 @@ describe('Testing Ranking component', () => {
             expect(rankItemSelectWrapper.props().value).toBe(wrapper.vm.selectRankItemId);
 
             //表示件数
-            const displayCountSelectWrapper = wrapper.findAllComponents({name: 'v-select'}).at(1);
+            const displayCountSelectWrapper = wrapper.find('[data-test-id="displayCount"]');
             expect(displayCountSelectWrapper.props().label).toBe('表示件数');
             expect(displayCountSelectWrapper.props().items[0].text).toBe('10件');
             expect(displayCountSelectWrapper.props().items[0].value).toBe(10);
@@ -139,7 +139,7 @@ describe('Testing Ranking component', () => {
             await wrapper.setData({isLoading: false})
             await expect(wrapper.findAllComponents({name: 'v-progress-linear'}).isVisible()).toBeFalsy();
 
-            await expect(wrapper.findComponent({name: 'v-progress-linear'}).exists()).toBeTruthy();
+            await expect(wrapper.findAllComponents({name: 'v-progress-linear'}).exists()).toBeTruthy();
             await expect(wrapper.findAllComponents({name: 'v-progress-linear'}).length).toBe(3);
         })
 
@@ -193,6 +193,50 @@ describe('Testing Ranking component', () => {
             //non-exist
             await wrapper.setData({rankUsersLength: 10})
             await expect(wrapper.findComponent({name: 'v-alert'}).exists()).toBeFalsy()
+        })
+    })
+
+    describe('Testing v-select/v-model', () => {
+        test('rankItem', async () => {
+            await expect(wrapper.find('[data-test-id="selectRankItem"]').props().value).toBe(wrapper.vm.selectRankItemId);
+
+            //VueInstance.dataを変える
+            let changeValue = 2;
+            await wrapper.setData({
+                selectRankItemId: changeValue
+            })
+            await expect(wrapper.find('[data-test-id="selectRankItem"]').props().value).toBe(changeValue);
+
+            //v-select.valueを変える
+            changeValue = 3;
+
+            //子コンポーネントはスタブ化するとv-onイベントが発火しなくなるため、$emitで疑似v-modelを行う。
+            await wrapper.find('[data-test-id="selectRankItem"]').vm.$emit('input', changeValue)
+
+            await wrapper.vm.$nextTick(() => {
+                expect(wrapper.vm.selectRankItemId).toBe(changeValue);
+            });
+        })
+
+        test('displayCount', async () => {
+            await expect(wrapper.find('[data-test-id="displayCount"]').props().value).toBe(wrapper.vm.selectDisplayCount);
+
+            //VueInstance.dataを変える
+            let changeValue = 20;
+            await wrapper.setData({
+                selectDisplayCount: changeValue
+            })
+            await expect(wrapper.find('[data-test-id="displayCount"]').props().value).toBe(changeValue);
+
+            //v-select.valueを変える
+            changeValue = 30;
+
+            //子コンポーネントはスタブ化するとv-onイベントが発火しなくなるため、$emitで疑似v-modelを行う。
+            await wrapper.find('[data-test-id="displayCount"]').vm.$emit('input', changeValue)
+
+            await wrapper.vm.$nextTick(() => {
+                expect(wrapper.vm.selectDisplayCount).toBe(changeValue);
+            });
         })
     })
 

@@ -159,7 +159,7 @@ public class ArticleService {
             Article currentArticle = articleMapper.load(article.getArticleId());
 
             // versionが異なる場合(排他制御)はConflictを返す
-            if(!Objects.equals(currentArticle.getArticleVersion(),article.getArticleVersion())){
+            if (!Objects.equals(currentArticle.getArticleVersion(), article.getArticleVersion())) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT);
             }
 
@@ -208,15 +208,42 @@ public class ArticleService {
                             )
                     );
         }
-        System.out.println(article);
         return article;
     }
 
+    /**
+     * 記事をフィードバック付きで取得するメソッド
+     *
+     * @param articleId
+     * @return
+     */
     public Article getArticle(Integer articleId) {
         Article article = articleMapper.getArticleAndFeedback(articleId);
-        if (Objects.nonNull(article) && Objects.isNull(article.getQiitaRecommendPoint())) {
+        // Nullの場合は即時返却
+        if (Objects.isNull(article)) {
+            return article;
+        }
+
+        // Qiita推薦ポイントを数値に変換
+        if (Objects.isNull(article.getQiitaRecommendPoint())) {
             article.setQiitaRecommendPoint(0);
         }
+
+        Integer stateFlag = article.getStateFlag();
+
+        // 削除済み記事(9)=>404エラーを返す
+        if (stateFlag == 9) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
+        // 下書き記事(0)&&アクセス権限なし=>403エラーを返す
+        SimpleLoginUser loginUser = (SimpleLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer loginUserId = loginUser.getUser().getUserId();
+        Integer articleUserId = article.getPostedUser().getUserId();
+        if (stateFlag == 0 && loginUserId != articleUserId) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
         return article;
     }
 

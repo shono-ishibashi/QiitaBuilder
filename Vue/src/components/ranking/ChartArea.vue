@@ -107,6 +107,10 @@ export default {
           countMax = champUser.qiitaRecommendedAllCount;
           countMin = lastUser.qiitaRecommendedAllCount;
           break;
+        default:
+          countMax = champUser.feedbackCount;
+          countMin = lastUser.feedbackCount;
+          break;
       }
       const suggestedMax = () => {
         return (Math.floor(countMax / 5) + 1) * 5;
@@ -115,7 +119,7 @@ export default {
       const suggestedMin = () => {
         let result;
         if (countMin % 5 === 0) {
-          result = ((countMax / 5) - 1) * 5;
+          result = ((countMin / 5) - 1) * 5;
         } else {
           result = Math.floor(countMin / 5) * 5;
         }
@@ -123,6 +127,9 @@ export default {
       }
 
       this.options = {
+        legend: {
+          display: false
+        },
         scales: {
           yAxes: [{
             ticks: {
@@ -136,7 +143,6 @@ export default {
         onClick: this.handle
       }
     }
-
   },
 
   methods: {

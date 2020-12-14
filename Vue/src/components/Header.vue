@@ -8,7 +8,9 @@
         class="app-bar"
     >
       <v-toolbar-title
-          style="font-weight:bold;font-size:30px;cursor: pointer;"
+          id="logo"
+          text
+          style="font-size: 40px; cursor: pointer;"
           @click="toArticleList"
       >Qiita Builder
       </v-toolbar-title>
@@ -57,7 +59,7 @@
               <v-list-item-title>マイページ</v-list-item-title>
             </v-list-item>
             <v-list-item link @click="toMyArticles">
-              <v-list-item-title>マイ記事</v-list-item-title>
+              <v-list-item-title>お気に入り記事一覧</v-list-item-title>
             </v-list-item>
             <v-list-item link @click="toDraftArticles">
               <v-list-item-title>下書き一覧</v-list-item-title>
@@ -128,6 +130,8 @@ export default {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@800&display=swap');
+
 .app-bar {
   padding-left: 40px;
   padding-right: 20px;
@@ -135,5 +139,9 @@ export default {
 
 .header-btn {
   margin-right: 10px;
+}
+
+#logo {
+  font-family: poppins;
 }
 </style>

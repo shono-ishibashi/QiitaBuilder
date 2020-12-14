@@ -38,16 +38,18 @@
             <div>
               <v-list-item-subtitle>
                 <v-row class="control-margin">
-                  <v-col cols="4" align="center" :class="[{box : (rankItemId === 1)}]">
+                  <v-col cols="4" align="center" :class="[{box : (rankItemId === 1)}]" data-test-id="fbCount">
                     FBした数
                     <div :class="[{count : true}, {select : (rankItemId === 1)}]">{{ rankUser.feedbackCount }}</div>
                   </v-col>
-                  <v-col cols="4" align="center" :class="[{box : (rankItemId === 2)}]">
+                  <v-col cols="4" align="center" :class="[{box : (rankItemId === 2)}]"
+                         data-test-id="postedArticleCount">
                     記事投稿数
                     <div :class="[{count : true}, {select : (rankItemId === 2)}]">{{ rankUser.postedArticleCount }}
                     </div>
                   </v-col>
-                  <v-col cols="4" align="center" :class="[{box : (rankItemId === 3)}]">
+                  <v-col cols="4" align="center" :class="[{box : (rankItemId === 3)}]"
+                         data-test-id="qiitaRecommendedCount">
                     Qiita推薦累計数
                     <div :class="[{count : true}, {select : (rankItemId === 3)}]">{{
                         rankUser.qiitaRecommendedAllCount

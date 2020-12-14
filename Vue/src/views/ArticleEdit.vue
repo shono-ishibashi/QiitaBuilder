@@ -30,7 +30,8 @@
                 :items="tagNameList"
                 color="#5bc8ac"
                 item-color="green"
-                label="プログラミング技術に関するタグを5つまで入力(例：Java)"
+                label="プログラミング技術に関するタグを5つまで入力"
+                placeholder="(例) Java + < Enter >"
                 deletable-chips
                 :rules="[tags_max_size,tags_min_size,blank]"
                 multiple
@@ -58,7 +59,7 @@
               </v-row>
               <v-row justify="center" class="post-article-toQiita-btn">
                 <v-btn @click.stop="toggleQiitaDialog" width="220" class="btn" outlined color="#008b8b">{{
-                    postToQiita
+                    postToQiitaTitle
                   }}
                 </v-btn>
               </v-row>
@@ -138,9 +139,9 @@
           <v-btn
               color="green darken-1"
               text
-              @click="postedToQiita(article)"
+              @click="postArticleToQiita(article)"
           >
-            投稿する
+            {{ postToQiitaButton }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -152,7 +153,7 @@ import EditAndPreview from '../components/article_edit/format/FormatEditAndPrevi
 import Edit from '../components/article_edit/format/FormatEdit'
 import Preview from '../components/article_edit/format/FormatPreview'
 import EditAndPreviewAndFeedback from '../components/article_edit/format/FormatEditAndPreviewAndFeedback'
-import {mapState, mapGetters, mapActions} from 'vuex'
+import {mapState, mapGetters, mapActions, mapMutations} from 'vuex'
 
 export default {
   name: "ArticleEdit",
@@ -169,15 +170,14 @@ export default {
       selectedFormat: 0,
       qiitaDialog: false,
       nonValidToken: false,
-      processFailure: false,
       // 各コンポーネント表示切替用のboolean
-      isDisplay: false,
+      isDisplay: true,
       // loading処理表示切替用のboolean
-      isLoading: true,
+      isLoading: false,
       required: value => value && !!value || "必ず入力してください",
       blank: value => {
         const pattern = /\S/g
-        return pattern.test(value[value.length - 1]) || "空文字のみの入力はできません"
+        return value === undefined ? true : pattern.test(value[value.length - 1]) || "空文字のみの入力はできません"
       },
       title_limit_length: value => value && value.length <= 255 || "255文字以内で入力してください",
       tags_max_size: value => value && value.length <= 5 || "5つまで入力してください",
@@ -186,35 +186,43 @@ export default {
   },
   watch: {
     async apiToken() {
-      // アクセス権限のあるユーザーにのみ編集ページを表示する
-      const uid = await this.loginUser.uid
-      await this.findUserIdByUid(uid).catch((error) => {
-        this.errorHandle(error);
-      })
-      const articleId = await this.slug
-      const params =  {
-        articleId: articleId,
-        userId: this.userId
+      if (this.apiToken) {
+        // アクセス権限のあるユーザーにのみ編集ページを表示する
+        this.isLoading = true
+        this.isDisplay = false
+        const uid = await this.loginUser.uid
+        await this.findUserIdByUid(uid)
+        const articleId = await this.slug
+        const params = {
+          articleId: articleId,
+          userId: this.userId
+        }
+        // 認証の通ったユーザーであれば該当する記事とタグを取得
+        await this.fetchArticleEdit(params)
+            .catch(error => {
+              this.articleErrorHandle(error)
+            })
+        await setTimeout(() => {
+          this.isLoading = false
+          this.isDisplay = true
+        }, 1000)
       }
-      // 認証の通ったユーザーであれば該当する記事とタグを取得
-      await this.fetchArticleEdit(params)
-      await setTimeout(() => {
-        this.toggleLoading()
-        this.toggleDisplay()
-      }, 1000)
     },
-    article(){
-      if(this.article.tags){
-        for(let i=0;i<this.article.tags.length;i++){
-          this.article.tags.splice(i,1,this.article.tags[i].tagName)
+    article() {
+      if (this.article.tags) {
+        for (let i = 0; i < this.article.tags.length; i++) {
+          this.article.tags.splice(i, 1, this.article.tags[i].tagName)
         }
       }
     }
   },
+  beforeDestroy() {
+    this.resetArticle()
+  },
   computed: {
     ...mapState("articles", ["tags", "searchCriteria"]),
-    ...mapGetters("articles",["tagNameList"]),
-    ...mapState("article", ["article"]),
+    ...mapGetters("articles", ["tagNameList"]),
+    ...mapState("article", ["article", "processFailure"]),
     ...mapGetters("auth", ["loginUser"]),
     ...mapGetters(["API_URL"]),
     ...mapGetters("user", ["userId"]),
@@ -224,35 +232,41 @@ export default {
     apiToken() {
       return this.$store.getters["auth/apiToken"];
     },
-    //qiitaのトークンを取得し、表示するボタンの文字列を変更
-    postToQiita() {
-      if (this.article.qiitaArticleId != null) {
-        return "Qiita に記事を更新"
+    postToQiitaTitle() {
+      if (this.article.stateFlag === 2) {
+        return "Qiita の記事を更新"
       } else {
         return "Qiita に記事を投稿"
       }
     },
     //qiitaのトークンを取得し、qiita更新時のモーダルのタイトルを変更
     qiitaConfirmTitle() {
-      if (this.article.qiitaArticleId != null) {
-        return "Qiitaに記事を更新しますか？"
+      if (this.article.stateFlag === 2) {
+        return "Qiitaの記事を更新しますか？"
       } else {
         return "Qiitaに記事を投稿しますか？"
       }
     },
     //qiitaのトークンを取得し、qiita更新時のモーダルのメッセージを変更
     qiitaConfirmMessage() {
-      if (this.article.qiitaArticleId != null) {
-        return "編集内容をQiitaBuilderに保存し、Qiitaに記事を更新します"
+      if (this.article.stateFlag === 2) {
+        return "編集内容をQiitaBuilderに保存し、Qiitaの記事を更新します"
       } else {
         return "編集内容をQiitaBuilderに保存し、Qiitaに記事を投稿します"
       }
     },
+    postToQiitaButton() {
+      if (this.article.stateFlag === 2) {
+        return "更新"
+      } else {
+        return "投稿"
+      }
+    }
   },
   methods: {
-    ...mapActions("article", ["fetchArticle", "saveArticle", "resetArticle","fetchArticleEdit"]),
-    ...mapActions("articles", ["fetchArticles"]),
+    ...mapActions("article", ["saveArticle", "resetArticle", "fetchArticleEdit", "toggleProcessFailure"]),
     ...mapActions("user", ["findUserIdByUid"]),
+    ...mapMutations("article", ['resetArticle']),
     //記事を投稿or更新するメソッド
     async postArticle(state) {
       //validationチェック
@@ -260,11 +274,11 @@ export default {
         //更新前のstateFlag
         const beforeStateFlag = this.article.stateFlag
         this.article.stateFlag = state
-        for(let i=0;i < this.article.tags.length; i++){
-          for(let tag of this.tags){
+        for (let i = 0; i < this.article.tags.length; i++) {
+          for (let tag of this.tags) {
             //タグが登録されているものには登録されているものをset
-            if(tag.tagName === this.article.tags[i]){
-              this.article.tags.splice(i,1,tag)
+            if (tag.tagName === this.article.tags[i]) {
+              this.article.tags.splice(i, 1, tag)
               break
             }
           }
@@ -280,11 +294,48 @@ export default {
         try {
           await this.saveArticle(this.article)
           await this.$router.push({name: "articleList"})
-          await this.resetArticle()
         } catch (error) {
           this.article.stateFlag = beforeStateFlag
           this.errorHandle(error);
         }
+      } else {
+        this.$refs.edit_form.validate()
+      }
+    },
+    async postArticleToQiita(article) {
+      let state = article.stateFlag;
+      //validationチェック
+      if (this.$refs.edit_form.validate()) {
+        //更新前のstateFlag
+        const beforeStateFlag = this.article.stateFlag
+        this.article.stateFlag = state
+        for (let i = 0; i < this.article.tags.length; i++) {
+          for (let tag of this.tags) {
+            //タグが登録されているものには登録されているものをset
+            if (tag.tagName === this.article.tags[i]) {
+              this.article.tags.splice(i, 1, tag)
+              break
+            }
+          }
+        }
+        //タグが登録されていないものにはtagIdにnullをset
+        for (let i = 0; i < this.article.tags.length; i++) {
+          if (typeof this.article.tags[i] == 'string') {
+            this.article.tags.splice(i, 1, {
+              tagId: null, tagName: this.article.tags[i]
+            })
+          }
+        }
+        try {
+          await this.saveArticle(this.article)
+        } catch (error) {
+          this.article.stateFlag = beforeStateFlag
+          this.errorHandle(error);
+        }
+        await this.$store.dispatch("article/postArticleToQiita", article.articleId).then(() => {
+          this.$router.push({name: "articleList"})
+        })
+        
       } else {
         this.$refs.edit_form.validate()
       }
@@ -304,30 +355,36 @@ export default {
     },
     errorHandle(error) {
       const status = error.response.status;
-      if (status === 404) {
-        this.$router.push({name: "404"});
-      } else if (status === 401) {
-        this.nonValidToken = true;
-      } else {
-        this.processFailure = true;
+      switch (status) {
+        case 401:
+          this.nonValidToken = true;
+          this.$store.dispatch("auth/logout");
+          break;
+        case 500:
+          this.$store.dispatch("window/setInternalServerError", true);
+          break;
+        default:
+          this.toggleProcessFailure();
       }
+    },
+    articleErrorHandle(error) {
+      console.log(error);
+      const status = error.response.status;
+      switch (status) {
+        case 400:
+        case 404:
+          this.$store.dispatch("window/setNotFound", true);
+          break;
+        case 403:
+          this.$store.dispatch("window/setForbidden", true);
+          break;
+      }
+      this.errorHandle(error);
     },
     //qiita投稿or更新ボタンを押下した時にモーダルを変更するメソッド
     toggleQiitaDialog() {
       this.qiitaDialog = !this.qiitaDialog
     },
-    //qiitaに投稿or更新するメソッド
-    async postedToQiita(article) {
-      await this.postArticle(article.stateFlag);
-      await this.$store.dispatch("article/postArticleToQiita", article.articleId);
-    },
-    // 読み込みと表示画面の切り替え
-    toggleDisplay() {
-      this.isDisplay = !this.isDisplay
-    },
-    toggleLoading(){
-      this.isLoading = !this.isLoading
-    }
   },
 
 }
@@ -380,8 +437,8 @@ export default {
   background-color: #ffffff;
 }
 
-.progress-linear{
-  padding-top:150px;
-  height:450px;
+.progress-linear {
+  padding-top: 150px;
+  height: 450px;
 }
 </style>

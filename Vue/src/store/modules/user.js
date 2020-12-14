@@ -18,7 +18,6 @@ export default {
         feedbackArticles: [],
         displayArticles: [],
         usedTags: [],
-        chartData: null,
     },
     getters: {
         userId(state) {
@@ -61,9 +60,6 @@ export default {
         usedTags(state) {
             return state.usedTags;
         },
-        chartData(state) {
-            return state.chartData;
-        },
     },
     mutations: {
         setUserDetail(state, user) {
@@ -99,9 +95,6 @@ export default {
         clearUsedTag(state) {
             state.usedTags.splice(0);
         },
-        setChartData(state, chartData) {
-            state.chartData = chartData;
-        },
         setUserId(state, userId) {
             state.userDetail.userId = userId;
         },
@@ -110,7 +103,7 @@ export default {
             state.displayArticles.splice(0)
             state.myArticles.splice(0)
             state.feedbackArticles.splice(0)
-            state.userDetail={
+            state.userDetail = {
                 userId: 0,
                 displayName: "",
                 photoUrl: "",
@@ -120,13 +113,13 @@ export default {
                 postedArticleCount: 0,
                 isLoginUser: false,
             }
-            state.chartData=null
+            state.chartData = null
             state.usedTags.splice(0)
         }
     },
     actions: {
-        clearState({commit}){
-          commit("clearState");
+        clearState({commit}) {
+            commit("clearState");
         },
         async setArticlesAndTags({commit}, articles) {
             await commit("clearDisplayArticles");
@@ -141,9 +134,6 @@ export default {
             if (articles.length !== 0) {
                 await commit("setDisplayArticles", articles);
             }
-        },
-        setChartData({commit}, chartData) {
-            commit("setChartData", chartData)
         },
         async fetchUserDetail({dispatch, commit, rootGetters, rootState}, userId) {
             const url = rootGetters.API_URL + 'user/detail/';
@@ -236,7 +226,7 @@ export default {
             const url = rootGetters.API_URL + 'userId';
             let apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
 
-            await new Promise((resolve, reject) => {
+            let result = new Promise((resolve, reject) => {
                 axios.get(url, {
                     params: {uid},
                     headers: {
@@ -244,7 +234,7 @@ export default {
                     },
                 }).then(res => {
                     commit("setUserId", res.data);
-                    resolve(res)
+                    resolve(res.data)
                 }).catch((error) => {
                     const errorStatus = error.response.status;
                     if (errorStatus === 400) {
@@ -255,7 +245,7 @@ export default {
                     reject(errorStatus)
                 })
             })
-
+            return await result
         }
     }
 }

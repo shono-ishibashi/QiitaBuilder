@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <ArticleCard v-for="(relArticle, index) in relArticles" :key="relArticle.articleId" :article="relArticle"
-                 :index="index"></ArticleCard>
+                 :index="index" :data-test-id="'articleCard'+index"></ArticleCard>
   </v-container>
 </template>
 

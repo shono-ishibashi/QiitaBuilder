@@ -19,15 +19,18 @@
               </v-row>
               <v-row>
                 <v-radio-group
+                    data-test-id="toggle-search"
                     v-model="toggleSearchWord"
                     row
                 >
                   <v-radio
+                      data-test-id="toggle-search0"
                       label="記事検索"
                       value="0"
                       color="success"
                   ></v-radio>
                   <v-radio
+                      data-test-id="toggle-search1"
                       label="ユーザー検索"
                       value="1"
                       color="success"
@@ -37,6 +40,7 @@
               <v-row>
                 <v-col>
                   <v-text-field
+                      data-test-id="search-article"
                       v-if="this.toggleSearchWord==0"
                       label="記事を検索"
                       color="#5bc8ac"
@@ -48,6 +52,7 @@
                   >
                   </v-text-field>
                   <v-text-field
+                      data-test-id="search-user"
                       v-if="this.toggleSearchWord==1"
                       label="ユーザーを検索"
                       color="#5bc8ac"
@@ -111,21 +116,28 @@
               fixed-tabs
               color="#5bc8ac"
           >
-            <v-tab v-for="period in periodList" :key="period.key" @click="changePeriod(period.key)">
+            <v-tab
+                v-for="(period,index) in periodList"
+                :data-test-id="'tab'+index"
+                :key="period.key"
+                @click="changePeriod(period.key)">
               {{ period.state }}
             </v-tab>
           </v-tabs>
           <v-spacer></v-spacer>
           <v-select
+              data-test-id="sort"
+              v-model="searchCriteria.sortNum"
               :items="sortList"
               item-value="key"
               item-text="state"
               item-color="green"
               label="並び替え"
               color="#5bc8ac"
-              v-model="searchCriteria.sortNum">
+          >
           </v-select>
           <v-select
+              data-test-id="pageSize"
               :items="displayCountList"
               item-text="text"
               item-value="value"
@@ -139,6 +151,7 @@
         <div v-show="isDisplay">
           <!--          記事がない場合の処理: 変数をクッションに挟んで取得後にbooleanで描画を決定-->
           <v-container
+              data-test-id="no-article-field"
               v-if="articles.length===0"
               class="no-article-field"
           >
@@ -147,17 +160,21 @@
           </v-container>
           <ArticleCard
               v-for="(article,index) in articles"
+              :data-test-id="'articleCard'+index"
               :key="article.articleId"
               :article="article"
-              :index="index">
-
+              :index="index"
+          >
           </ArticleCard>
         </div>
       </v-list>
     </v-row>
     <v-row>
       <v-col cols="3"></v-col>
-      <v-col cols="6" :class="{'progress-linear':isLoading}">
+      <v-col
+          cols="6"
+          :class="{'progress-linear':isLoading}"
+      >
         <v-progress-linear
             v-show="isLoading"
             color="green"
@@ -186,7 +203,7 @@
 
 <script>
 import ArticleCard from "../components/ArticleCard"
-import {mapState, mapActions} from "vuex"
+import {mapState, mapActions, mapMutations} from "vuex"
 
 export default {
   name: "ArticleList",
@@ -221,85 +238,27 @@ export default {
       nonValidToken: false,
       // submit処理の認証を行うboolean
       can_submit_search: false,
-      // 記事の存在の有無(true: 存在しない, false: 存在する)
-      isNotExistArticle: false,
       // 各コンポーネント表示切替用のboolean
-      isDisplay: false,
+      isDisplay: true,
       // loading処理表示切替用のboolean
-      isLoading: true,
+      isLoading: false,
       // validation条件
       title_limit_length: value => value.length <= 100 || "100文字以内で入力してください",
       user_limit_length: value => value.length <= 30 || "30文字以内で入力してください",
       tags_limit_length: value => value.length <= 5 || "6個以上入力しないでください",
     }
   },
-  watch: {
-    async apiToken() {
-      await this.fetchArticles(this.searchCriteria)
-          .then(() => {
-            if (this.articles.length === 0) {
-              this.isNotExistArticle = true
-            }
-          })
-          .catch(error => {
-            this.errorHandle(error)
-          })
-      await this.fetchTags();
-      await this.$nextTick();
-      await setTimeout(() => {
-        this.toggleLoading()
-        this.toggleDisplay()
-      }, 1000)
-    },
-    async ['searchCriteria.sortNum']() {
-      await this.toggleLoading()
-      await this.toggleDisplay()
-      this.searchCriteria.currentPage = 1;
-      await this.fetchArticles(this.searchCriteria).catch(error => {
-        this.errorHandle(error)
-      })
-      await this.$nextTick();
-      await setTimeout(() => {
-        this.toggleLoading()
-        this.toggleDisplay()
-      }, 1000)
-    },
-    async ['searchCriteria.period']() {
-      await this.toggleLoading()
-      await this.toggleDisplay()
-      this.searchCriteria.currentPage = 1;
-      this.fetchArticles(this.searchCriteria).catch(error => {
-        this.errorHandle(error)
-      })
-      await this.$nextTick();
-      await setTimeout(() => {
-        this.toggleLoading()
-        this.toggleDisplay()
-      }, 1000)
-    },
-    ['searchCriteria.pageSize']() {
-      this.searchCriteria.currentPage = 1;
-      this.fetchArticles(this.searchCriteria).catch(error => {
-        this.errorHandle(error)
-      })
-      this.scrollTop();
-    },
-    async ['searchCriteria.currentPage']() {
-      await this.fetchArticles(this.searchCriteria).catch(error => {
-        this.errorHandle(error)
-      })
-      await setTimeout(() => {
-        this.scrollTop();
-      }, 50)
-    }
+  beforeDestroy() {
+    this.resetArticles()
+    this.resetSearchCriteria()
   },
-
   computed: {
     ...mapState("article", ["processFailure"]),
     ...mapState("articles", ["articles", "tags", "totalPage", "searchCriteria", "errorTransistionDialog"]),
     apiToken() {
       return this.$store.getters["auth/apiToken"];
     },
+    // 記事検索かユーザー検索か
     toggleSearchWord: {
       get() {
         return this.searchCriteria.toggleSearchWord
@@ -309,32 +268,106 @@ export default {
       }
     }
   },
+
+  watch: {
+    async apiToken() {
+      if (this.apiToken) {
+        this.isLoading = true
+        this.isDisplay = false
+        await this.fetchArticles(this.searchCriteria)
+            .then(async () => {
+              await this.sleep(1000)
+              this.isLoading = await false
+              this.isDisplay = await true
+            })
+            .catch(error => {
+              console.log(2)
+              this.articleErrorHandle(error)
+            })
+        await this.fetchTags()
+            .catch(error => {
+              this.errorHandle(error)
+            });
+      }
+    },
+    // 並び順
+    async ['searchCriteria.sortNum']() {
+      this.isLoading = true
+      this.isDisplay = false
+      this.searchCriteria.currentPage = 1;
+      await this.fetchArticles(this.searchCriteria)
+          .then(async () => {
+            await this.sleep(1000)
+            this.isLoading = await false
+            this.isDisplay = await true
+          })
+          .catch(error => {
+            this.articleErrorHandle(error)
+          })
+    },
+    // 期間
+    async ['searchCriteria.period']() {
+      this.isLoading = true
+      this.isDisplay = false
+      this.searchCriteria.currentPage = 1;
+      await this.fetchArticles(this.searchCriteria)
+          .then(async () => {
+            await this.sleep(1000)
+            this.isLoading = await false
+            this.isDisplay = await true
+          })
+          .catch(error => {
+            this.articleErrorHandle(error)
+          })
+    },
+    // 表示ページ数
+    ['searchCriteria.pageSize']() {
+      this.searchCriteria.currentPage = 1;
+      this.fetchArticles(this.searchCriteria).catch(error => {
+        this.articleErrorHandle(error)
+      })
+      this.scrollTop();
+    },
+    // 現在のページ
+    async ['searchCriteria.currentPage']() {
+      await this.fetchArticles(this.searchCriteria).catch(error => {
+        this.articleErrorHandle(error)
+      })
+      await this.sleep(50)
+      this.scrollTop();
+    }
+  },
   components: {
     ArticleCard
   },
   methods: {
     ...mapActions("article", ["toggleProcessFailure"]),
-    ...mapActions("articles", ["fetchArticles", "fetchTags", "toggleErrorTransitionDialog", "setToggleSearchWord"]),
+    ...mapActions("articles", ["fetchArticles", "fetchTags", "setToggleSearchWord"]),
+    ...mapMutations('articles', ['resetArticles','resetSearchCriteria']),
+    // 期間を変更するメソッド
     changePeriod(key) {
       this.searchCriteria.period = key
     },
+    // 文字変換でenterを押下した場合はfalseのまま
     enable_submit() {
       this.can_submit_search = true;
     },
+    // 検索処理
     async submit() {
       if (!this.can_submit_search) return
       if (this.$refs.search_form.validate()) {
-        await this.toggleLoading()
-        await this.toggleDisplay()
+        this.isLoading = true;
+        this.isDisplay = false
         this.searchCriteria.currentPage = 1
-        await this.fetchArticles(this.searchCriteria).catch(error => {
-          this.errorHandle(error)
-        })
-        await this.$nextTick();
-        await setTimeout(() => {
-          this.toggleLoading()
-          this.toggleDisplay()
-        }, 1000)
+        await this.fetchArticles(this.searchCriteria)
+            .then(async () => {
+              await this.sleep(1000)
+              this.isLoading = await false
+              this.isDisplay = await true
+            })
+            .catch(error => {
+              this.articleErrorHandle(error)
+            })
         this.can_submit_search = false;
       }
     },
@@ -348,37 +381,59 @@ export default {
         behavior: "smooth"
       });
     },
+    // 検索条件のリセット処理
     async reset() {
-      await this.toggleLoading()
-      await this.toggleDisplay()
+      this.isLoading = true
+      this.isDisplay = false
       this.searchCriteria.searchWord = ""
       this.searchCriteria.searchTag = []
       this.searchCriteria.currentPage = 1
-      await this.fetchArticles(this.searchCriteria).catch(error => {
-        this.errorHandle(error)
-      })
-      await this.$nextTick();
-      await setTimeout(() => {
-        this.toggleLoading()
-        this.toggleDisplay()
-      }, 1000)
+      await this.fetchArticles(this.searchCriteria)
+          .then(async () => {
+            await this.sleep(1000)
+            this.isLoading = await false
+            this.isDisplay = await true
+          })
+          .catch(error => {
+            this.articleErrorHandle(error)
+          })
     },
+    // エラーハンドリング
     errorHandle(error) {
       const status = error.response.status;
-      if (status === 404) {
-        this.$router.push({name: "404"});
-      } else if (status === 401) {
-        this.nonValidToken = true;
-      } else {
-        this.toggleProcessFailure()
+      switch (status) {
+        case 401:
+          this.nonValidToken = true;
+          this.$store.dispatch("auth/logout");
+          break;
+        case 500:
+          this.$store.dispatch("window/setInternalServerError", true);
+          break;
+        default:
+          this.toggleProcessFailure();
       }
     },
-    toggleDisplay() {
-      this.isDisplay = !this.isDisplay
+    // エラーハンドリング
+    articleErrorHandle(error) {
+      const status = error.response.status;
+      switch (status) {
+        case 400:
+        case 404:
+          this.$store.dispatch("window/setNotFound", true);
+          break;
+        case 403:
+          this.$store.dispatch("window/setForbidden", true);
+          break;
+      }
+      this.errorHandle(error);
     },
-    toggleLoading(){
-      this.isLoading = !this.isLoading
-    }
+    sleep(msec) {
+      return new Promise(function (resolve) {
+        setTimeout(function () {
+          resolve()
+        }, msec);
+      })
+    },
   }
 }
 </script>

@@ -25,7 +25,8 @@
                 :items="tagNameList"
                 color="#5bc8ac"
                 item-color="green"
-                label="プログラミング技術に関するタグを5つまで入力(例：Java)"
+                label="プログラミング技術に関するタグを5つまで入力"
+                placeholder="(例) Java + <Enter>"
                 deletable-chips
                 :rules="[tags_max_size,tags_min_size,blank]"
                 multiple
@@ -95,7 +96,7 @@
 import EditAndPreview from '../components/article_edit/format/FormatEditAndPreview'
 import Edit from '../components/article_edit/format/FormatEdit'
 import Preview from '../components/article_edit/format/FormatPreview'
-import {mapState, mapGetters,mapActions} from 'vuex'
+import {mapState, mapGetters, mapActions} from 'vuex'
 
 export default {
   name: "ArticleNew",
@@ -125,15 +126,21 @@ export default {
   },
   watch: {
     apiToken() {
-      this.fetchTags()
-      // setTimeout(() => {
-      //   this.toggleDisplay()
-      // }, 1000)
+      if (this.apiToken) {
+        this.resetArticle()
+            .catch(error => {
+              this.articleErrorHandle(error)
+            })
+        this.fetchTags()
+            .catch(error => {
+              this.errorHandle(error)
+            })
+      }
     }
   },
   computed: {
     ...mapState("articles", ["tags"]),
-    ...mapGetters("articles",["tagNameList"]),
+    ...mapGetters("articles", ["tagNameList"]),
     ...mapState("article", ["article"]),
     slug() {
       return this.$route.params.articleId;
@@ -143,18 +150,18 @@ export default {
     },
   },
   methods: {
-    ...mapActions("article", ["fetchArticle", "saveArticle", "resetArticle"]),
+    ...mapActions("article", ["saveArticle", "resetArticle", "toggleProcessFailure"]),
     ...mapActions("articles", ["fetchTags"]),
     //記事を投稿or更新するメソッド
     async postArticle(state) {
       //validationチェック
       if (this.$refs.form.validate()) {
         this.article.stateFlag = state
-        for(let i=0;i < this.article.tags.length; i++){
-          for(let tag of this.tags){
+        for (let i = 0; i < this.article.tags.length; i++) {
+          for (let tag of this.tags) {
             //タグが登録されているものには登録されているものをset
-            if(tag.tagName === this.article.tags[i]){
-              this.article.tags.splice(i,1,tag)
+            if (tag.tagName === this.article.tags[i]) {
+              this.article.tags.splice(i, 1, tag)
               break
             }
           }
@@ -168,6 +175,9 @@ export default {
           }
         }
         await this.saveArticle(this.article)
+            .catch((error) => {
+              this.errorHandle(error)
+            })
         await this.$router.push({name: "articleList"})
       } else {
         this.$refs.form.validate()
@@ -184,11 +194,33 @@ export default {
         this.currentView = EditAndPreview
       }
     },
-    // 読み込みと表示画面の切り替え
-    // toggleDisplay() {
-    //   this.isLoading = !this.isLoading
-    //   this.isDisplay = !this.isDisplay
-    // }
+    errorHandle(error) {
+      const status = error.response.status;
+      switch (status) {
+        case 401:
+          this.nonValidToken = true;
+          this.$store.dispatch("auth/logout");
+          break;
+        case 500:
+          this.$store.dispatch("window/setInternalServerError", true);
+          break;
+        default:
+          this.toggleProcessFailure();
+      }
+    },
+    articleErrorHandle(error) {
+      const status = error.response.status;
+      switch (status) {
+        case 400:
+        case 404:
+          this.$store.dispatch("window/setNotFound", true);
+          break;
+        case 403:
+          this.$store.dispatch("window/setForbidden", true);
+          break;
+      }
+      this.errorHandle(error);
+    },
   }
 }
 

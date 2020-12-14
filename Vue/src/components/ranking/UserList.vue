@@ -6,16 +6,18 @@
         :length="totalPage"
         color="#5bc8ac"
         circle
+        data-test-id="topPagination"
     ></v-pagination>
-    <UserCard class="control-margin" v-for="rankUser in controlledRankUsers" :key="rankUser.userId"
+    <UserCard class="control-margin" v-for="(rankUser, index) in controlledRankUsers" :key="rankUser.userId"
               :rank-user="rankUser"
-              :rank-item-id="rankItemId" :rank-num="rankUser.rank"></UserCard>
+              :rank-item-id="rankItemId" :rank-num="rankUser.rank" :data-test-id="'userCard'+index"></UserCard>
     <v-pagination
         v-show="rankUsers.length"
         v-model="currentPage"
         :length="totalPage"
         color="#5bc8ac"
         circle
+        data-test-id="bottomPagination"
     ></v-pagination>
   </v-container>
 </template>

@@ -2,7 +2,7 @@
   <v-container :class="{'d-flex':windowWidthClass}" fluid>
     <v-row>
       <v-col cols="12" sm="12" md="6">
-        <UserInfo v-show="isDisplay"></UserInfo>
+        <UserInfo v-show="!isLoading"></UserInfo>
         <v-progress-linear
             v-show="isLoading"
             color="green"
@@ -14,11 +14,16 @@
 
       <v-col cols="12" sm="12" md="6">
         <v-container>
-          <v-tabs v-model="displayListNum" v-if="userDetail.isLoginUser" color="#5bc8ac">
-            <v-tab v-for="tab of loginListTabs" :key="tab.id" @click="changeList(tab.id)">{{ tab.name }}</v-tab>
+          <v-tabs v-model="displayListNum" v-if="userDetail.isLoginUser" color="#5bc8ac" data-test-id="login-tabs">
+            <v-tab v-for="(tab, index) of loginListTabs" :key="tab.id" @click="changeList(tab.id)"
+                   :data-test-id="'login-tab'+index">{{ tab.name }}
+            </v-tab>
           </v-tabs>
-          <v-tabs v-model="displayListNum" v-if="!(userDetail.isLoginUser)" color="#5bc8ac">
-            <v-tab v-for="tab of notLoginListTabs" :key="tab.id" @click="changeList(tab.id)">{{ tab.name }}</v-tab>
+          <v-tabs v-model="displayListNum" v-if="!(userDetail.isLoginUser)" color="#5bc8ac"
+                  data-test-id="not-login-tabs">
+            <v-tab v-for="(tab, index) of notLoginListTabs" :key="tab.id" @click="changeList(tab.id)"
+                   :data-test-id="'not-login-tab'+index">{{ tab.name }}
+            </v-tab>
           </v-tabs>
 
           <v-card outlined>
@@ -34,6 +39,7 @@
                       @change="changeListState"
                       v-model="displayListState"
                       label="絞り込み"
+                      data-test-id="list-state-selector"
                   ></v-select>
                 </v-col>
                 <v-col cols="1" style="padding: 0"></v-col>
@@ -47,6 +53,7 @@
                       v-model="sortNum"
                       style="padding-top: 9px"
                       label="並び順"
+                      data-test-id="sort-selector"
                   >
                   </v-select>
                 </v-col>
@@ -63,19 +70,24 @@
                           <v-icon>mdi-magnify</v-icon>
                         </v-col>
                         <v-col cols="4" style="padding: 0">
-                          <v-form ref="search_form">
+                          <v-form ref="search_form" @submit.prevent="">
                             <v-text-field
                                 v-model="conditions.title"
                                 label="記事タイトルを入力"
                                 :rules="[title_limit_length]"
                                 color="#5bc8ac"
+                                data-test-id="search-title"
+                                @keydown.enter.exact.prevent
+                                @keyup.enter="searchWithConditions"
                             ></v-text-field>
                           </v-form>
                         </v-col>
                         <v-col cols="4" style="padding: 0">
-                          <v-form ref="search_form">
+                          <v-form ref="search_form" @submit.prevent="">
                             <v-autocomplete
                                 v-model="conditions.conditionTags"
+                                @keyup.enter="searchWithConditions"
+                                @keydown.enter.exact.prevent
                                 :items="usedTags"
                                 :rules="[tags_limit_length]"
                                 item-value="tagId"
@@ -88,6 +100,7 @@
                                 multiple
                                 small-chips
                                 style="margin-top: 8px; margin-left: 2px"
+                                data-test-id="search-tag-form"
                             >
                             </v-autocomplete>
                           </v-form>
@@ -100,6 +113,7 @@
                                 elevation="2"
                                 small
                                 dark
+                                data-test-id="search-button"
                             >
                               検索
                             </v-btn>
@@ -125,8 +139,8 @@
                   <v-row align-content="center" justify="center">
                     <v-col cols="12">
                       <ArticleCard v-for="(article,index) in sortedArticles" :key="article.articleId" :article="article"
-                                   v-show="isDisplay&&sortedArticles.length!==0" :index="index"
-                                   @thisUserPage="resetPage"
+                                   v-show="!isLoading&&sortedArticles.length!==0" :index="index"
+                                   @thisUserPage="resetPage" :data-test-id="'article-card'+index"
                                    style="margin: 0; padding: 0;">
                       </ArticleCard>
                       <v-progress-linear
@@ -146,8 +160,10 @@
                         color="teal"
                         icon="mdi-emoticon-confused"
                         border="left"
-                        v-if="sortedArticles.length===0"
+                        v-show="sortedArticles.length===0"
                         class="contentWrap"
+                        data-test-id="no-articles-alert"
+                        v-if="!isLoading"
                     >
                       該当する記事がありません
                     </v-alert>
@@ -158,6 +174,7 @@
                         :length="length"
                         color="#5bc8ac"
                         circle
+                        data-test-id="article-pagination"
                     ></v-pagination>
                   </v-row>
                 </v-col>
@@ -174,58 +191,46 @@
 import {mapState, mapActions, mapGetters} from "vuex";
 import ArticleCard from "../components/ArticleCard";
 import UserInfo from "@/components/user_detail/UserInfo";
-import * as palette from "google-palette";
 
 export default {
   name: "userDetail",
   components: {ArticleCard, UserInfo},
   data() {
     return {
-      chartDatasets: {
-        labels: [],
-        datasets: [
-          {
-            data: [],
-            backgroundColor: [],
-          },
-        ]
-      },//Pieコンポーネントに渡してグラフを表示するためのデータ。DBからタグ使用率を取り次第dataとcolor指定
       sortList: [
         {key: 0, state: "新着順"},
         {key: 1, state: "更新順"},
         {key: 2, state: "Qiita推奨数順"},
-        {key: 3, state: "My記事登録数順"}
+        {key: 3, state: "お気に入り登録数順"}
       ],//並び替え選択用リスト
       sortNum: 0,//現在のソートkey
       paging: {
         now: 1,//現在のページ
         pageSize: 5,//1pあたりの記事数
       },//paging処理用オブジェクト
-      displayListNum: 0,//0:posted, 1:feedback, 2:my, 3:draft
+      displayListNum: 0,//0:notDraft, 1:feedback, 2:my, 3:draft
       displayListState: {id: 10, name: '全記事'},//10:all, 1:notPostedQiita, 2:postedQiita
       conditions: {
         title: "",
         conditionTags: []
       },//検索条件
-      windowWidth: window.innerWidth,//画面横幅
       windowWidthClass: false,//画面横幅に応じて付与するクラスの切り替え用boolean
       loginListTabs: [
         {id: 0, name: '投稿記事'},
         {id: 1, name: 'FBした記事'},
-        {id: 2, name: 'My記事'},
+        {id: 2, name: 'お気に入り記事'},
         {id: 3, name: '下書き記事'}
       ],//記事タブ表示用リスト(login user用)
       notLoginListTabs: [
         {id: 0, name: '公開中の投稿記事'},
         {id: 1, name: '公開中のFBした記事'},
-        {id: 2, name: '公開中のMy記事'},
+        {id: 2, name: '公開中のお気に入り記事'},
       ],//記事タブ表示用リスト(not login user用)
       stateList: [
         {id: 10, name: '全記事'},
         {id: 1, name: 'Qiita未投稿記事'},
         {id: 2, name: 'Qiita投稿済み記事'},
       ],//記事state select-box表示用リスト
-      isDisplay: false,//各コンポーネント表示切替用のboolean
       isLoading: false,//loading処理表示切替用のboolean
       title_limit_length: value => value.length <= 100 || "100文字以内で入力してください",//記事title検索用のvalidation
       tags_limit_length: value => value.length <= 5 || "6個以上入力しないでください",//記事tag検索用のvalidation
@@ -284,26 +289,6 @@ export default {
     ...mapGetters("auth", ["loginUser"]),
   },
   watch: {
-    //storeのuserDetailにDBからの情報をsetしたときにタグ使用率グラフにデータを詰め込む
-    userDetail() {
-      const th = this;
-      const chart = async function () {
-        th.userDetail.usedTags.forEach(function (tag) {
-          th.chartDatasets.labels.push(tag.tagName);
-          th.chartDatasets.datasets[0].data.push(tag.usedTagCount);
-        }, th);
-        th.chartDatasets.datasets[0].backgroundColor = palette('cb-YlGn', th.userDetail.usedTags.length).map(
-            function (hex) {
-              return '#' + hex
-            }
-        )
-        await th.setChartData(th.chartDatasets);
-      }
-      const processAll = async function () {
-        await chart();
-      }
-      processAll();
-    },
     //storeのpostedArticlesにDBからの情報をsetしたときに最初画面遷移時に表示する記事種に切り替える
     postedArticles() {
       const th = this;
@@ -347,37 +332,41 @@ export default {
       }, 100)
     },
     apiToken: function () {
-      const paramUserId = this.$route.params['userId'];
-      const th = this;
-      const fetch = async function () {
-        if (paramUserId === '0') {
-          if (!th.loginUser.uid) await th.$store.dispatch("window/setInternalServerError", true);
-          await th.findUserIdByUid(th.loginUser.uid);
-          await th.fetchUserDetail(th.userId);
-          //ユーザーが見つからない場合はこれ以降は実行されずwindow componentに切り替わる
-          await th.fetchFeedbackArticles(th.userId);
-          await th.fetchMyArticles(th.userId);
-          await th.fetchPostedArticles(th.userId);
-        } else {
-          await th.fetchUserDetail(paramUserId);
-          await th.fetchFeedbackArticles(paramUserId);
-          await th.fetchMyArticles(paramUserId);
-          await th.fetchPostedArticles(paramUserId);
+      this.isLoading = true;
+      if (this.apiToken) {
+        let paramUserId = this.$route.params['userId'];
+        const th = this;
+        const fetch = async function () {
+          if (paramUserId === '0') {
+            if (!th.loginUser.uid) await th.$store.dispatch("window/setInternalServerError", true);
+            await th.findUserIdByUid(th.loginUser.uid).then((res)=>{th.fetchDetailAndArticles(res)});
+          } else {
+            await th.fetchDetailAndArticles(paramUserId)
+          }
         }
+        const processAll = async function () {
+          await fetch();
+          th.isLoading = false;
+        }
+        processAll();
       }
-      const processAll = async function () {
-        await fetch();
-        th.isLoading = false;
-        th.isDisplay = true;
-      }
-      processAll();
-
     },
   },
   methods: {
     /**
+     * DBからユーザー詳細、各記事一覧を取ってくるメソッドを順次呼び出すメソッド
+     * @param userId(取得したいユーザーのuserId)
+     */
+    async fetchDetailAndArticles(userId) {
+      await this.fetchUserDetail(userId);
+      //ユーザーが見つからない場合はこれ以降は実行されずwindow componentに切り替わる
+      await this.fetchFeedbackArticles(userId);
+      await this.fetchMyArticles(userId);
+      await this.fetchPostedArticles(userId);
+    },
+    /**
      * 表示したい記事に対応する数値を渡して、表示する記事一覧とオートコンプリート用タグリストを変更する
-     * @param listNum (0:投稿記事), (1:FB記事), (2:My記事), (3:下書き記事)
+     * @param listNum (0:投稿記事), (1:FB記事), (2:お気に入り記事), (3:下書き記事)
      */
     async changeList(listNum) {
       this.conditions.title = "";
@@ -387,7 +376,7 @@ export default {
       this.sortNum = 0;
       let articlesFromVuex = [];
 
-      if (listNum === 0) articlesFromVuex = this.postedArticles;
+      if (listNum === 0) articlesFromVuex = this.notDraftArticles;
       if (listNum === 1) articlesFromVuex = this.feedbackArticles;
       if (listNum === 2) articlesFromVuex = this.myArticles;
       if (listNum === 3) articlesFromVuex = this.draftArticles;
@@ -397,7 +386,8 @@ export default {
       }
       this.paging.now = 1;
       this.length = Math.ceil(this.displayArticles.length / this.paging.pageSize);
-    },
+    }
+    ,
     /**
      * 表示したい記事に対応する数値を渡して、表示する記事一覧を変更する
      * @param listState (10:全記事), (1:Qiita未投稿記事), (2:Qiita投稿済み記事)
@@ -410,13 +400,13 @@ export default {
 
       let articlesFromVuex = [];
       if (listState === 10) {//全記事表示に切り替える
-        if (this.displayListNum === 0) articlesFromVuex = this.postedArticles;
+        if (this.displayListNum === 0) articlesFromVuex = this.notDraftArticles;
         if (this.displayListNum === 1) articlesFromVuex = this.feedbackArticles;
         if (this.displayListNum === 2) articlesFromVuex = this.myArticles;
       }
       if (listState !== 10) {//全記事以外の表示に切り替えるためにstateFlagでfilterをかけて絞り込む
-        if (this.displayListNum === 0 && this.postedArticles.length !== 0) {
-          articlesFromVuex = this.postedArticles.filter((art) => {
+        if (this.displayListNum === 0 && this.notDraftArticles.length !== 0) {
+          articlesFromVuex = this.notDraftArticles.filter((art) => {
             return art.stateFlag === listState
           })
         }
@@ -437,14 +427,15 @@ export default {
       }
       this.paging.now = 1;
       this.length = Math.ceil(this.displayArticles.length / this.paging.pageSize);
-    },
+    }
+    ,
     /**
      * 入力された検索条件とタグ条件に応じた記事を検索する
      */
     searchWithConditions() {
       if (this.$refs.search_form.validate()) {
         let articlesFromVuex = [];
-        if (this.displayListNum === 0) articlesFromVuex = this.postedArticles;
+        if (this.displayListNum === 0) articlesFromVuex = this.notDraftArticles;
         if (this.displayListNum === 1) articlesFromVuex = this.feedbackArticles;
         if (this.displayListNum === 2) articlesFromVuex = this.myArticles;
         if (this.displayListNum === 3) articlesFromVuex = this.draftArticles;
@@ -466,12 +457,14 @@ export default {
         this.paging.now = 1;
         this.length = Math.ceil(articlesFromVuex.length / this.paging.pageSize);
       }
-    },
+    }
+    ,
     resetConditions() {
       this.conditions.title = "";
       this.conditions.conditionTags.splice(0);
       this.searchWithConditions();
-    },
+    }
+    ,
     resetPage() {
       this.displayListNum = 0;
       this.displayListState = {id: 10, name: '全記事'};
@@ -480,11 +473,11 @@ export default {
         top: 0,
         behavior: "smooth"
       });
-    },
+    }
+    ,
     ...mapActions("user", [
       "setArticlesAndTags",
       "setArticles",
-      "setChartData",
       "fetchUserDetail",
       "fetchPostedArticles",
       "fetchFeedbackArticles",
@@ -492,22 +485,24 @@ export default {
       "findUserIdByUid",
       "clearState"
     ]),
-  },
+  }
+  ,
   created() {
     //画面横幅が960px以上であればwindowWidthClassをtrueに変え画面を記事一覧を横に配置
-    (this.windowWidth >= 960) ? this.windowWidthClass = true : this.windowWidthClass = false
-    this.isLoading = true;
-  },
+    (window.innerWidth >= 960) ? this.windowWidthClass = true : this.windowWidthClass = false
+    this.isLoading = true
+  }
+  ,
   mounted() {
     //画面の横幅が変わるが度に960px以上かを判定
     window.onresize = () => {
-      this.windowWidth = window.innerWidth;
-      (this.windowWidth >= 960) ? this.windowWidthClass = true : this.windowWidthClass = false;
+      (window.innerWidth >= 960) ? this.windowWidthClass = true : this.windowWidthClass = false;
     }
   },
-  beforeDestroy() {
+  destroyed() {
     this.clearState()//遷移前にstoreを空にしないと次にユーザー詳細画面来たとき前回のユーザーが表示されてしまう
-  },
+  }
+  ,
   beforeRouteEnter(to, from, next) {
     //URLのparam(userId)に数値以外が入力された際に記事一覧に戻る
     if (!isNaN(to.params['userId'])) {

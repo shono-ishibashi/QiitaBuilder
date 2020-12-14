@@ -52,12 +52,7 @@ const routes = [
         path: '*',
         name: '404',
         component: () => import(/* webpackChunkName: "404" */ '../views/error/404.vue')
-    },
-    {
-        path: '/500',
-        name: '500',
-        component: () => import(/* webpackChunkName: "500" */ '../views/error/500.vue')
-    },
+    }
 ]
 
 const router = new VueRouter({
@@ -85,7 +80,7 @@ router.beforeResolve(async (to, from, next) => {
                             })
                     })
                 if (to.path === '/login') {
-                    await next({path: '/'});
+                    await next({name: 'articleList'});
                 } else {
                     await next();
                 }

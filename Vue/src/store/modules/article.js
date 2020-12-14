@@ -81,40 +81,37 @@ export default {
         }
     },
     actions: {
-        async postArticleToQiita({commit, rootGetters, dispatch}, articleId) {
-            if (await rootGetters["auth/isLinkedToQiita"]) {
-                axios.post(rootGetters.API_URL + 'qiita/save-article-to-qiita/' + articleId, {}, {
+        async postArticleToQiita({commit, rootGetters, rootState, dispatch}, articleId) {
+            if (await rootState.auth.isLinkedToQiita) {
+                await axios.post(rootGetters.API_URL + 'qiita/save-article-to-qiita/' + articleId, {}, {
                     headers: {
-                        "Authorization": rootGetters["auth/apiToken"]
+                        "Authorization": rootState.auth.apiToken
                     }
                 }).then(() => {
                     alert('Qiitaに記事を投稿しました');
                     commit('updateStateFlag', 2);
-                }).catch(({response}) => {
-                        console.log(response);
-
+                }).catch(async ({response}) => {
                         const errorLocation = 'QiitaAPI';
-
                         //======================401======================
                         if (response.status === 401 && response.data.message === errorLocation) {
-                            if (confirm('Qiitaとの連携が確認できませんでした。Qiitaと連携しますか？')) {
-                                QiitaAPI.methods.toQiitaAPIAuthentication()
+                            if (await confirm('Qiitaとの連携が確認できませんでした。Qiitaと連携しますか？')) {
+                                await QiitaAPI.methods.toQiitaAPIAuthentication()
                             }
                             //======================403======================
                         } else if (response.status === 403 && response.data.message === errorLocation) {
-                            alert('この記事を更新する権限はありません。');
+                            await alert('この記事を更新する権限はありません。');
                             //======================404======================
                         } else if (response.status === 404 && response.data.message === errorLocation) {
-                            if (confirm('Qiitaの記事が見つからないため、更新できませんでした。\nQiitaに再投稿しますか？')) {
-                                commit("updateStateFlag", 2);
-                                dispatch('postArticleToQiita', articleId);
+                            if (await confirm('Qiitaの記事が見つからないため、更新できませんでした。\nQiitaに再投稿しますか？')) {
+                                await commit("updateStateFlag", 2);
+                                await dispatch('postArticleToQiita', articleId);
                             } else {
-                                commit("updateStateFlag", 1);
+                                await commit("updateStateFlag", 1);
                             }
                             //======================else======================
                         } else {
-                            if (confirm('Qiitaへの記事投稿に失敗しました。Qiita連携からやり直しますか?')) {
-                                QiitaAPI.methods.toQiitaAPIAuthentication()
+                            if (await confirm('Qiitaへの記事投稿に失敗しました。Qiita連携からやり直しますか?')) {
+                                await QiitaAPI.methods.toQiitaAPIAuthentication()
                             }
                         }
                     }
@@ -126,7 +123,7 @@ export default {
         },
         async fetchArticle({commit, rootGetters, rootState}, articleId) {
             const url = rootGetters.API_URL + "article/" + articleId;
-            const apiToken = rootState.auth.apiToken; // rootGetters["auth/apiToken"] も可
+            const apiToken = rootState.auth.apiToken;// rootGetters["auth/apiToken"] も可
             const reqHeader = {
                 headers: {
                     Authorization: apiToken,
@@ -140,11 +137,12 @@ export default {
                         resolve(res);
                     })
                     .catch((error) => {
+                        console.log(error);
                         reject(error);
                     });
             });
         },
-        async saveArticle({rootState,rootGetters}, article) {
+        async saveArticle({rootState, rootGetters}, article) {
             const articleEditUrl = rootGetters.API_URL + "article/";
             const apiToken = rootState.auth.apiToken;
             const insertRequestBody = {
@@ -201,9 +199,9 @@ export default {
             commit("mutateMarkDownText", text);
         },
         // feedback
-        async postFeedback({commit, rootGetters}, feedback) {
+        async postFeedback({commit, rootState, rootGetters}, feedback) {
             const url = rootGetters.API_URL + "feedback";
-            const apiToken = rootGetters["auth/apiToken"];
+            const apiToken = rootState.auth.apiToken;
             const requestConfig = {
                 headers: {
                     Authorization: apiToken,
@@ -222,9 +220,9 @@ export default {
                     });
             });
         },
-        async updateFeedback({commit, rootGetters}, feedback) {
+        async updateFeedback({commit, rootState, rootGetters}, feedback) {
             const url = rootGetters.API_URL + "feedback";
-            const apiToken = rootGetters["auth/apiToken"];
+            const apiToken = rootState.auth.apiToken;
             const requestConfig = {
                 headers: {
                     Authorization: apiToken,
@@ -243,9 +241,9 @@ export default {
                     });
             });
         },
-        async deleteFeedback({commit, rootGetters}, feedback) {
+        async deleteFeedback({commit, rootState, rootGetters}, feedback) {
             const url = rootGetters.API_URL + "feedback";
-            const apiToken = rootGetters["auth/apiToken"];
+            const apiToken = rootState.auth.apiToken;
             const requestConfig = {
                 headers: {
                     Authorization: apiToken,
@@ -267,9 +265,9 @@ export default {
             });
         },
         // MyArticle
-        async fetchMyArticle({commit, rootGetters}, articleId) {
+        async fetchMyArticle({commit, rootState, rootGetters}, articleId) {
             const url = rootGetters.API_URL + "my-article?articleId=" + articleId;
-            const apiToken = rootGetters["auth/apiToken"];
+            const apiToken = rootState.auth.apiToken;
             const requestConfig = {
                 headers: {
                     Authorization: apiToken,
@@ -288,12 +286,12 @@ export default {
                     });
             });
         },
-        async registerMyArticle({commit, rootGetters}, articleId) {
+        async registerMyArticle({commit, rootState, rootGetters}, articleId) {
             const url = rootGetters.API_URL + "my-article";
             const requestBody = {
                 articleId: articleId,
             };
-            const apiToken = rootGetters["auth/apiToken"];
+            const apiToken = rootState.auth.apiToken;
             const requestConfig = {
                 headers: {
                     Authorization: apiToken,
@@ -312,9 +310,9 @@ export default {
                     });
             });
         },
-        async deleteMyArticle({commit, rootGetters}, myArticleId) {
+        async deleteMyArticle({commit, rootState, rootGetters}, myArticleId) {
             const url = rootGetters.API_URL + "my-article/" + myArticleId;
-            const apiToken = rootGetters["auth/apiToken"];
+            const apiToken = rootState.auth.apiToken;
             const requestConfig = {
                 headers: {
                     Authorization: apiToken,
@@ -334,9 +332,9 @@ export default {
             });
         },
         // Recommend
-        async fetchRecommend({commit, rootGetters}, articleId) {
+        async fetchRecommend({commit, rootState, rootGetters}, articleId) {
             const url = rootGetters.API_URL + "recommend?articleId=" + articleId;
-            const apiToken = rootGetters["auth/apiToken"];
+            const apiToken = rootState.auth.apiToken;
             const requestConfig = {
                 headers: {
                     Authorization: apiToken,
@@ -355,12 +353,12 @@ export default {
                     });
             });
         },
-        async registerRecommend({commit, rootGetters}, articleId) {
+        async registerRecommend({commit, rootState, rootGetters}, articleId) {
             const url = rootGetters.API_URL + "recommend";
             const requestBody = {
                 articleId: articleId,
             };
-            const apiToken = rootGetters["auth/apiToken"];
+            const apiToken = rootState.auth.apiToken;
             const requestConfig = {
                 headers: {
                     Authorization: apiToken,
@@ -380,9 +378,9 @@ export default {
                     });
             });
         },
-        async deleteRecommend({commit, rootGetters}, recommendId) {
+        async deleteRecommend({commit, rootState, rootGetters}, recommendId) {
             const url = rootGetters.API_URL + "recommend/" + recommendId;
-            const apiToken = rootGetters["auth/apiToken"];
+            const apiToken = rootState.auth.apiToken;
             const requestConfig = {
                 headers: {
                     Authorization: apiToken,
@@ -404,7 +402,7 @@ export default {
         },
         // 認証の通ったユーザーであれば該当する記事とタグを取得
         // params(articleId: 記事ID,userid: ユーザーID)
-        async fetchArticleEdit({dispatch,state,rootState,rootGetters},params){
+        async fetchArticleEdit({dispatch, state, rootState, rootGetters}, params) {
             const apiToken = rootState.auth.apiToken;
             // アクセス権限のあるユーザーだと200が返ってくる
             await axios.get(rootGetters.API_URL + 'article/isExist', {
@@ -416,11 +414,12 @@ export default {
             })
                 .then(() => {
                     dispatch('resetArticle')
-                    dispatch('articles/fetchTags',null,{root:true})
-                    dispatch('fetchArticle',params.articleId)
+                    dispatch('articles/fetchTags', null, {root: true})
+                    dispatch('fetchArticle', params.articleId)
+                        // ここの処理はコンポーネントに書く
                         .then(() => {
                             if (state.article.stateFlag === 9) {
-                                dispatch("window/setNotFound", true,{root:true});
+                                dispatch("window/setNotFound", true, {root: true});
                             }
                         })
                         .catch((error) => {
@@ -434,7 +433,7 @@ export default {
 
                 })
                 .catch(() => {
-                    dispatch("window/setNotFound", true);
+                    dispatch("window/setNotFound", true, {root: true});
                 })
         },
         toggleProcessFailure({commit}) {

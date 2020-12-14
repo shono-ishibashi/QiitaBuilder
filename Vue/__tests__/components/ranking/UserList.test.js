@@ -113,12 +113,12 @@ describe('Testing UserList component', () => {
 
     describe('Testing element props', () => {
         test('v-pagination', () => {
-            const pageNationWrapper1 = wrapper.findAllComponents({name: 'v-pagination'}).at(0);
+            const pageNationWrapper1 = wrapper.find('[data-test-id="topPagination"]');
             expect(pageNationWrapper1.props().value).toBe(wrapper.vm.currentPage);
             expect(pageNationWrapper1.props().length).toBe(wrapper.vm.totalPage);
             expect(pageNationWrapper1.props().color).toBe('#5bc8ac');
 
-            const pageNationWrapper2 = wrapper.findAllComponents({name: 'v-pagination'}).at(1);
+            const pageNationWrapper2 = wrapper.find('[data-test-id="bottomPagination"]');
             expect(pageNationWrapper2.props().value).toBe(wrapper.vm.currentPage);
             expect(pageNationWrapper2.props().length).toBe(wrapper.vm.totalPage);
             expect(pageNationWrapper2.props().color).toBe('#5bc8ac');
@@ -126,7 +126,8 @@ describe('Testing UserList component', () => {
 
         test('UserCard', () => {
             for (let i = 0; i < 10; i++) {
-                const userCardWrapper = wrapper.findAllComponents({name: 'UserCard'}).at(i);
+                const testId = 'userCard' + i;
+                const userCardWrapper = wrapper.find('[data-test-id="' + testId + '"]');
                 expect(userCardWrapper.classes()).toStrictEqual(['control-margin']);
                 expect(userCardWrapper.props().rankUser).toStrictEqual(wrapper.vm.rankUsers[i]);
                 expect(userCardWrapper.props().rankNum).toBe(wrapper.vm.rankUsers[i].rank);

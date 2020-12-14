@@ -5,6 +5,7 @@
         <v-row justify="center" align-content="center">
           <v-col cols="5">
             <v-select
+                data-test-id="selectRankItem"
                 v-model="selectRankItemId"
                 :items="rankItems"
                 item-text="item"
@@ -17,6 +18,7 @@
           </v-col>
           <v-col cols="2">
             <v-select
+                data-test-id="displayCount"
                 :items="displayCountList"
                 item-text="text"
                 item-value="value"
@@ -103,7 +105,7 @@
 import ChartArea from "../components/ranking/ChartArea.vue";
 import UserList from "../components/ranking/UserList.vue";
 import RelationArticles from "../components/ranking/RelationArticles.vue";
-import {mapActions, mapGetters} from "vuex";
+import {mapActions, mapGetters, mapMutations} from "vuex";
 
 
 export default {
@@ -195,7 +197,7 @@ export default {
     selectRankItemId: {
       async handler() {
         //もしselectRankItemIdが予期しない型だった場合
-        if(typeof this.selectRankItemId !== 'number'){
+        if (typeof this.selectRankItemId !== 'number') {
           this.selectRankItemId = 1;
         }
         await this.fetchRankingUser(this.selectRankItemId);
@@ -219,14 +221,19 @@ export default {
     },
     apiToken: {
       async handler() {
-        await this.fetchRankingUser(this.selectRankItemId);
-        this.rankUsersLength = await Number(this.users.length);
+        if (this.apiToken) {
+          await this.fetchRankingUser(this.selectRankItemId);
+          this.rankUsersLength = await Number(this.users.length);
+        }
       }
     }
   },
-
+  beforeDestroy() {
+    this.resetRankingUsers()
+  },
   methods: {
     ...mapActions("users", ["fetchRankingUser"]),
+    ...mapMutations('users', ['resetRankingUsers']),
     toUserDetail(index) {
       const userId = this.users[index].userId;
       this.$router.push({name: 'userDetail', params: {userId: userId}});

@@ -5,7 +5,7 @@
           style="font-weight: bold; font-size: x-large;">@{{ userDetail.displayName }}</span></v-col>
       <v-col cols="6" class="contentWrap">
         <v-btn @click="toQiitaAPIAuthentication" v-if="userDetail.isLoginUser" color="#5bc8ac" elevation="2"
-               style="font-weight: bold" dark>Qiita連携
+               data-test-id="qiita-button" style="font-weight: bold" dark>Qiita連携
         </v-btn>
       </v-col>
     </v-row>
@@ -15,7 +15,7 @@
           <img :src="userDetail.photoUrl" alt=""/></v-avatar>
       </v-col>
       <v-col cols=6 align-self="center">
-        <Pie class="chart" :chart-data="chartData" :options="chartOptions"
+        <Pie class="chart" :chart-data="chartDatasets" :options="chartOptions" :change="change"
              v-if="userDetail.usedTags.length!==0"/>
         <v-alert
             v-if="userDetail.usedTags.length===0"
@@ -63,26 +63,82 @@
 <script>
 import {mapGetters, mapState} from "vuex";
 import Pie from "@/components/user_detail/Pie";
+import * as palette from "google-palette";
 
 export default {
   name: "UserInfo",
   components: {Pie},
   data() {
     return {
+      chartDatasets: {
+        labels: [],
+        datasets: [
+          {
+            data: [],
+            backgroundColor: [],
+          },
+        ]
+      },//Pieコンポーネントに渡してグラフを表示するためのデータ。DBからタグ使用率を取り次第dataとcolor指定
       chartOptions: {
         responsive: true,
         legend: {
           position: 'right'
         }
       },//Pieコンポーネントのグラフ表示用オプション
+      change: true//Pieコンポーネントに変更を検知させるためのプロパティ
     };
+  },
+  watch: {
+    //storeのuserDetailにDBからの情報をsetしたときにタグ使用率グラフにデータを詰め込む
+    userDetail() {
+      this.chartDatasets = {
+        labels: [],
+        datasets: [
+          {
+            data: [],
+            backgroundColor: [],
+          },
+        ]
+      }
+      const th = this;
+      const usedTagsForChart = []
+      this.userDetail.usedTags.forEach((tag) => {
+        usedTagsForChart.push(tag)
+      })
+
+      const chart = async function () {
+        //tag数が10を超えると自動配色できないので9個目からはその他扱い
+        if (usedTagsForChart.length >= 10) {
+          usedTagsForChart.splice(8)
+          usedTagsForChart.push({
+            tagId: null,
+            tagName: 'その他',
+            usedTagCount: th.userDetail.usedTags.length - usedTagsForChart.length + 1
+          })
+        }
+        usedTagsForChart.forEach(function (tag) {
+          th.chartDatasets.labels.push(tag.tagName);
+          th.chartDatasets.datasets[0].data.push(tag.usedTagCount);
+        }, th);
+        th.chartDatasets.datasets[0].backgroundColor = palette('cb-YlGn', usedTagsForChart.length).map(
+            function (hex) {
+              return '#' + hex
+            }
+        )
+      }
+      const processAll = async function () {
+        await chart();
+        th.change = !th.change
+      }
+      processAll();
+    },
   },
   computed: {
     ...mapGetters("user", [
       "notDraftArticles",
-      "chartData",]),
+    ]),
     ...mapState("user", ["userDetail",]),
-  }
+  },
 }
 </script>
 
