@@ -25,7 +25,8 @@
                 :items="tagNameList"
                 color="#5bc8ac"
                 item-color="green"
-                label="プログラミング技術に関するタグを5つまで入力(例：Java)"
+                label="プログラミング技術に関するタグを5つまで入力"
+                placeholder="(例) Java + <Enter>"
                 deletable-chips
                 :rules="[tags_max_size,tags_min_size,blank]"
                 multiple
