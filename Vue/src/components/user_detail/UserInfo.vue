@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import {mapActions, mapGetters, mapState} from "vuex";
+import {mapGetters, mapState} from "vuex";
 import Pie from "@/components/user_detail/Pie";
 import * as palette from "google-palette";
 
