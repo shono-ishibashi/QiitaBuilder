@@ -83,7 +83,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         final CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(new ArrayList<String>(Arrays.asList("*")));
+        configuration.setAllowedOrigins(new ArrayList<String>(Arrays.asList("https://qiita-builder.ga")));
         configuration.setAllowedMethods(new ArrayList<String>(Arrays.asList("GET","POST","DELETE","PUT")));
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(new ArrayList<>(Arrays.asList("Authorization","Content-Type")));
