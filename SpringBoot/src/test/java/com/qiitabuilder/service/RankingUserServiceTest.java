@@ -1055,10 +1055,18 @@ class RankingUserServiceTest {
     }
 
     @Test
-    void fbRank_relationArticle_none_exist(){
+    void fbRank_relationArticle_none_exist() {
         setUpForTest();
-        jdbcTemplate.execute("UPDATE articles SET state_flag = 9 WHERE article_id = 12;");
+        jdbcTemplate.update("UPDATE articles SET state_flag = 9 WHERE article_id = 101");
+        jdbcTemplate.update("UPDATE articles SET state_flag = 9 WHERE article_id = 102");
+        jdbcTemplate.update("UPDATE articles SET state_flag = 9 WHERE article_id = 103");
+        jdbcTemplate.update("UPDATE articles SET state_flag = 9 WHERE article_id = 104");
+        jdbcTemplate.update("DELETE FROM qiita_recommends WHERE article_id = 101");
+        jdbcTemplate.update("DELETE FROM qiita_recommends WHERE article_id = 102");
+        jdbcTemplate.update("DELETE FROM qiita_recommends WHERE article_id = 103");
+        jdbcTemplate.update("DELETE FROM qiita_recommends WHERE article_id = 104");
+
         List<RankingUser> rankingUserList = rankingUserService.fetchFBCountRank();
-        assertEquals(null, rankingUserList.get(34).getRelationArticle());
+        assertEquals(null, rankingUserList.get(17).getRelationArticle());
     }
 }
