@@ -248,6 +248,9 @@ export default {
       tags_limit_length: value => value.length <= 5 || "6個以上入力しないでください",
     }
   },
+  created() {
+    this.isLoading=true
+  },
   beforeDestroy() {
     this.resetArticles()
     this.resetSearchCriteria()
@@ -272,7 +275,6 @@ export default {
   watch: {
     async apiToken() {
       if (this.apiToken) {
-        this.isLoading = true
         this.isDisplay = false
         await this.fetchArticles(this.searchCriteria)
             .then(async () => {
