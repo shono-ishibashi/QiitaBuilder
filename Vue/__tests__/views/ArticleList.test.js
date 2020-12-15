@@ -1,6 +1,5 @@
 import {shallowMount, createLocalVue} from '@vue/test-utils';
 import Vuex from 'vuex';
-import Vuetify from 'vuetify'
 import Component from '@/views/ArticleList';
 import {afterEach, beforeEach, describe, jest} from "@jest/globals";
 

@@ -105,21 +105,33 @@ export default {
       })
     },
     async toMyPage() {
-      await this.$router.push('/user/0?defaultList=MyPage').catch(err => {
+      await this.$router.push({
+        name: 'userDetail',
+        params: {userId: '0'},
+        query: {defaultList: 'MyPage'}
+      }).catch(err => {
         if (this.$route.path === '/user/0') {
           console.log(err)
         }
       })
     },
     async toMyArticles() {
-      await this.$router.push('/user/0?defaultList=MyArticles').catch(err => {
+      await this.$router.push({
+        name: 'userDetail',
+        params: {userId: '0'},
+        query: {defaultList: 'MyArticles'}
+      }).catch(err => {
         if (this.$route.path === '/user/0') {
           console.log(err)
         }
       })
     },
     async toDraftArticles() {
-      await this.$router.push('/user/0?defaultList=DraftArticles').catch(err => {
+      await this.$router.push({
+        name: 'userDetail',
+        params: {userId: '0'},
+        query: {defaultList: 'DraftArticles'}
+      }).catch(err => {
         if (this.$route.path === '/user/0') {
           console.log(err)
         }

@@ -99,7 +99,7 @@ export default {
           await this.$store.dispatch("auth/checkIsLinkedToQiita");
 
           await this.$store.dispatch('article/postArticleToQiita', articleId);
-          await this.$router.push('/article/' + articleId);
+          await this.$router.push({name: "articleList", params: {articleId : articleId}});
           await localStorage.removeItem('articleId');
 
         } else {

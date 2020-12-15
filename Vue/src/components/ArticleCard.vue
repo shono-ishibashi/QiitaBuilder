@@ -123,7 +123,7 @@
 
 <script>
 import moment from 'moment'
-import {mapState, mapGetters, mapActions} from "vuex"
+import {mapState, mapActions} from "vuex"
 
 export default {
   name: "ArticleCard",
@@ -142,7 +142,6 @@ export default {
   },
   computed: {
     ...mapState("articles", ["searchCriteria"]),
-    ...mapGetters("auth", ["loginUser"])
   },
   filters: {
     moment(value) {

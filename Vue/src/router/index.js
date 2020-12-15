@@ -9,7 +9,7 @@ Vue.use(VueRouter)
 const routes = [
 
     {
-        path: '/article',
+        path: '/',
         name: 'articleList',
         component: () => import(/* webpackChunkName: "articleList" */'../views/ArticleList')
     },
