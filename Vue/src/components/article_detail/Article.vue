@@ -268,16 +268,6 @@ export default {
         this.article.articleId
       );
     },
-    errorHandle(error) {
-      const status = error.response.status;
-      if (status == 404) {
-        this.$router.push({ name: "404" });
-      } else if (status == 401) {
-        this.nonValidToken = true;
-      } else {
-        this.toggleProcessFailure();
-      }
-    },
   },
 };
 </script>
