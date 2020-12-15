@@ -126,6 +126,7 @@ export default {
     },
     saveFeedback() {
       if (this.valid) {
+        this.resetValidation();
         this.$emit("postFeedback");
       }
       this.feedback.content = undefined;
