@@ -171,7 +171,7 @@ export default {
       qiitaDialog: false,
       nonValidToken: false,
       // 各コンポーネント表示切替用のboolean
-      isDisplay: true,
+      isDisplay: false,
       // loading処理表示切替用のboolean
       isLoading: false,
       required: value => value && !!value || "必ず入力してください",
@@ -188,7 +188,6 @@ export default {
     async apiToken() {
       if (this.apiToken) {
         // アクセス権限のあるユーザーにのみ編集ページを表示する
-        this.isDisplay = false
         const uid = await this.loginUser.uid
         await this.findUserIdByUid(uid)
         const articleId = await this.slug
