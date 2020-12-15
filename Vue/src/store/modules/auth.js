@@ -1,7 +1,6 @@
 import firebase from "firebase/app";
 import {v4 as uuidv4} from "uuid";
 import axios from "axios";
-import router from "@/router";
 
 export default {
   namespaced: true,
@@ -119,7 +118,7 @@ export default {
           commit("setLoginUser", null);
           commit("setAPIToken", null);
           axios.post(rootGetters.API_URL + "logout").then(() => {
-            router.push("/login").catch(()=>{});
+            location.href = "http://localhost:8081/login";
           });
         });
     },
