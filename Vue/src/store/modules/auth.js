@@ -118,7 +118,7 @@ export default {
           commit("setLoginUser", null);
           commit("setAPIToken", null);
           axios.post(rootGetters.API_URL + "logout").then(() => {
-            location.href = "http://localhost:8081/login";
+            location.href = "https://qiita-builder.ga/login";
           });
         });
     },
