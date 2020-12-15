@@ -1053,4 +1053,12 @@ class RankingUserServiceTest {
         List<RankingUser> rankingUserList = rankingUserService.fetchQiitaCountRank();
         assertTrue(rankingUserList.isEmpty());
     }
+
+    @Test
+    void fbRank_relationArticle_none_exist(){
+        setUpForTest();
+        jdbcTemplate.execute("UPDATE articles SET state_flag = 9 WHERE article_id = 12;");
+        List<RankingUser> rankingUserList = rankingUserService.fetchFBCountRank();
+        assertEquals(null, rankingUserList.get(34).getRelationArticle());
+    }
 }
