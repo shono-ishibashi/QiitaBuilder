@@ -54,7 +54,7 @@
             <div class="article-edit-action-field" v-if="article.stateFlag===1||article.stateFlag===2">
               <v-row justify="center">
                 <v-btn @click="postArticle(article.stateFlag)" class="btn" outlined color="#008b8b">Qiita Builder
-                  に記事を更新
+                  の記事を更新
                 </v-btn>
               </v-row>
               <v-row justify="center" class="post-article-toQiita-btn">
@@ -171,7 +171,7 @@ export default {
       qiitaDialog: false,
       nonValidToken: false,
       // 各コンポーネント表示切替用のboolean
-      isDisplay: true,
+      isDisplay: false,
       // loading処理表示切替用のboolean
       isLoading: false,
       required: value => value && !!value || "必ず入力してください",
@@ -188,8 +188,6 @@ export default {
     async apiToken() {
       if (this.apiToken) {
         // アクセス権限のあるユーザーにのみ編集ページを表示する
-        this.isLoading = true
-        this.isDisplay = false
         const uid = await this.loginUser.uid
         await this.findUserIdByUid(uid)
         const articleId = await this.slug
@@ -215,6 +213,9 @@ export default {
         }
       }
     }
+  },
+  created() {
+    this.isLoading = true
   },
   beforeDestroy() {
     this.resetArticle()
