@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiitabuilder.mapper.MyArticleMapper">
+
+    <resultMap id="myArticlesResultMap" type="com.qiitabuilder.domain.Article">
+        <id column="article_id" property="articleId"/>
+        <result column="article_title" property="title"/>
+        <result column="state_flag" property="stateFlag"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="feedback_count" property="feedbackCount"/>
+        <result column="registered_my_article_count" property="registeredMyArticleCount"/>
+        <result column="qiita_recommend_point" property="qiitaRecommendPoint"/>
+        <collection property="postedUser" ofType="com.qiitabuilder.domain.User">
+            <result column="user_id" property="userId"/>
+            <result column="display_name" property="displayName"/>
+            <result column="photo_url" property="photoUrl"/>
+        </collection>
+        <collection property="tags" ofType="com.qiitabuilder.domain.Tag">
+            <result column="tag_id" property="tagId"/>
+            <result column="tag_name" property="tagName"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="myArticleResultMap" type="com.qiitabuilder.domain.MyArticle">
+        <id property="myArticleId" column="my_article_id"/>
+        <result property="articleId" column="article_id"/>
+        <result property="postedUserId" column="posted_user_id"/>
+        <result property="registerUserId" column="register_user_id"/>
+    </resultMap>
+
+    <!-- ****** SELECT ****** -->
+    <select id="getMyArticlesByUserId" resultMap="myArticlesResultMap">
+        SELECT art.article_id                                                              AS article_id,
+               art.title                                                                   AS article_title,
+               art.created_at                                                              AS created_at,
+               art.updated_at                                                              AS updated_at,
+               art.state_flag                                                              AS state_flag,
+               tags.tag_id                                                                 AS tag_id,
+               tags.tag_name                                                               AS tag_name,
+               IF(feed_cnt_table.feed_cnt, feed_cnt_table.feed_cnt, 0)                     AS feedback_count,
+               IF(my_cnt_table.my_cnt, my_cnt_table.my_cnt, 0)                             AS registered_my_article_count,
+               users.user_id                                                               AS user_id,
+               users.display_name                                                          AS display_name,
+               users.photo_url                                                             AS photo_url,
+               IF(recommend_cnt_table.recommend_cnt, recommend_cnt_table.recommend_cnt, 0) AS qiita_recommend_point
+        FROM my_articles AS my_art
+                 LEFT JOIN articles AS art
+                           ON my_art.article_id = art.article_id
+                 LEFT OUTER JOIN articles_tags_relations AS a_t_relation
+                                 ON art.article_id = a_t_relation.article_id
+                 LEFT OUTER JOIN tags AS tags
+                                 ON a_t_relation.tag_id = tags.tag_id
+                 LEFT OUTER JOIN (SELECT article_id,
+                                         count(feed.article_id) AS feed_cnt
+                                  FROM feedbacks AS feed
+                                  GROUP BY feed.article_id) AS feed_cnt_table
+                                 ON art.article_id = feed_cnt_table.article_id
+                 LEFT OUTER JOIN (SELECT article_id,
+                                         count(my.article_id) AS my_cnt
+                                  FROM my_articles AS my
+                                  GROUP BY my.article_id) AS my_cnt_table
+                                 ON art.article_id = my_cnt_table.article_id
+                 LEFT OUTER JOIN (SELECT article_id,
+                                         count(recommend.article_id) AS recommend_cnt
+                                  FROM qiita_recommends AS recommend
+                                  GROUP BY recommend.article_id) AS recommend_cnt_table
+                                 ON art.article_id = recommend_cnt_table.article_id
+                 LEFT JOIN users
+                           ON art.user_id = users.user_id
+        WHERE my_art.register_user_id = #{userId}
+          AND art.state_flag != 9
+        ORDER BY art.created_at DESC, tag_id;
+    </select>
+
+    <select id="findByArticleIdAndRegisterUserId" resultMap="myArticleResultMap">
+        SELECT *
+        FROM my_articles
+        WHERE article_id = #{articleId}
+          AND register_user_id = #{registerUserId};
+    </select>
+
+    <select id="getAutoIncrementKey" resultType="int">
+        SELECT LAST_INSERT_ID();
+    </select>
+
+    <select id="load" resultMap="myArticleResultMap">
+        SELECT *
+        FROM my_articles
+        WHERE my_article_id = #{myArticleId}
+    </select>
+
+
+    <!-- ****** INSERT ****** -->
+    <insert id="insert" parameterType="com.qiitabuilder.domain.MyArticle">
+        INSERT INTO my_articles(article_id, posted_user_id, register_user_id)
+        VALUES (#{articleId}, #{postedUserId}, #{registerUserId});
+    </insert>
+
+
+    <!-- ****** DELETE ****** -->
+    <delete id="delete">
+        DELETE
+        FROM my_articles
+        WHERE my_article_id = #{myArticleId};
+    </delete>
+
+</mapper>

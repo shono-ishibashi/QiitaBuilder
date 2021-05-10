@@ -3,9 +3,12 @@ package com.qiitabuilder.controller;
 import com.qiitabuilder.domain.User;
 import com.qiitabuilder.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Map;
+import java.util.Objects;
 
 
 @RestController
@@ -15,15 +18,25 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping(value = "/" , method = RequestMethod.POST)
-    public User insertUser(User user) {
-        return null;
+    /**
+     * userを新規登録するメソッド
+     *
+     * @param user フロント側から投げられてくるリクエストボディ
+     * @return
+     */
+    @ResponseStatus(HttpStatus.CREATED)
+    @RequestMapping(value = "/", method = RequestMethod.POST)
+    public void insertUser(@RequestBody User user) {
+        userService.insertUser(user);
     }
 
-    @RequestMapping(value = "/test",method = RequestMethod.GET)
-    public String test(){
-        userService.test();
-        return "test";
+    @RequestMapping(value = "userId", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public Integer findUserIdByUid(String uid) {
+        if (Objects.isNull(uid))throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        Integer userId=userService.findUserIdByUid(uid);
+        if (Objects.isNull(userId))throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        return userId;
     }
 
 }
